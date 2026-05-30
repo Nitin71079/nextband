@@ -1,507 +1,560 @@
 import {
-  useState,
-  useEffect,
-  useRef
+  useState
 } from "react";
 
-import { readingMocks } from "../data/readingMocks";
+import readingTests from "../data/readingTests";
 
 import {
-  collection,
-  addDoc
-} from "firebase/firestore";
+  useAuth
+} from "../context/AuthContext";
 
-import { db } from "../firebase";
+import {
+  saveResult
+} from "../utils/saveResult";
 
-import { useAuth } from "../context/AuthContext";
+import SearchBar from "../components/SearchBar";
+
+import ExamTimer from "../components/ExamTimer";
+
+import useMobile from "../hooks/useMobile";
 
 export default function Reading() {
-  const [answers, setAnswers] =
-    useState(() => {
-      const saved =
-        localStorage.getItem(
-          "readingAnswers"
-        );
-
-      return saved
-        ? JSON.parse(saved)
-        : {};
-    });
-
-  const [submitted, setSubmitted] =
-    useState(false);
-
-  const [currentSection, setCurrentSection] =
-    useState(0);
-
-  const [timeLeft, setTimeLeft] =
-    useState(60 * 60);
-
-  const questionRefs = useRef([]);
-
-  const currentMock =
-    readingMocks[0];
-
   const { user } =
     useAuth();
 
-  const currentPassage =
-    currentMock.sections[
-      currentSection
-    ];
+  const isMobile =
+    useMobile();
 
-  useEffect(() => {
-    localStorage.setItem(
-      "readingAnswers",
-      JSON.stringify(answers)
-    );
-  }, [answers]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-
-          setSubmitted(true);
-
-          return 0;
-        }
-
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const minutes = Math.floor(
-    timeLeft / 60
-  );
-
-  const seconds =
-    timeLeft % 60;
-
-  const totalQuestions =
-    currentMock.sections.reduce(
-      (total, section) =>
-        total +
-        section.questions.length,
-      0
+  const [currentTest,
+    setCurrentTest] =
+    useState(
+      readingTests[0]
     );
 
-  let correctAnswers = 0;
+  const [selectedAnswers,
+    setSelectedAnswers] =
+    useState({});
 
-  currentMock.sections.forEach(
-    (section, sectionIndex) => {
-      section.questions.forEach(
-        (question, qIndex) => {
-          const key =
-            `${sectionIndex}-${qIndex}`;
+  const [submitted,
+    setSubmitted] =
+    useState(false);
 
+  const handleSelect = (
+    qIndex,
+    option
+  ) => {
+    setSelectedAnswers({
+      ...selectedAnswers,
+      [qIndex]: option
+    });
+  };
+
+  const calculateScore =
+    () => {
+      let score = 0;
+
+      currentTest.questions.forEach(
+        (q, index) => {
           if (
-            answers[key] ===
-            question.answer
+            selectedAnswers[
+              index
+            ] === q.answer
           ) {
-            correctAnswers++;
+            score++;
           }
         }
       );
-    }
-  );
 
-  const calculateBand = (
-    score
-  ) => {
-    if (score >= 39) return 9;
-    if (score >= 37) return 8.5;
-    if (score >= 35) return 8;
-    if (score >= 32) return 7.5;
-    if (score >= 30) return 7;
-    if (score >= 26) return 6.5;
-    if (score >= 23) return 6;
-
-    return 5;
-  };
+      return score;
+    };
 
   const estimatedBand =
-    calculateBand(correctAnswers);
+    (
+      (calculateScore() /
+        currentTest
+          .questions
+          .length) *
+        3 +
+      6
+    ).toFixed(1);
 
-  const saveResults =
-    async () => {
-      try {
-        console.log(
-          "Starting Firestore save..."
-        );
+  async function handleAutoSubmit() {
+    if (submitted)
+      return;
 
-        console.log(
-          "Current user:",
-          user
-        );
+    setSubmitted(true);
 
-        await addDoc(
-          collection(
-            db,
-            "readingResults"
-          ),
-          {
-            userId:
-              user?.uid || "guest",
-
-            email:
-              user?.email ||
-              "guest",
-
-            score:
-              correctAnswers,
-
-            totalQuestions,
-
-            estimatedBand,
-
-            createdAt:
-              new Date()
-          }
-        );
-
-        console.log(
-          "Firestore save success"
-        );
-
-        alert(
-          "Results saved successfully."
-        );
-      } catch (error) {
-        console.error(
-          "Firestore error:",
-          error
-        );
-
-        alert(
-          error.message
-        );
-      }
-    };
+    if (user) {
+      await saveResult(
+        user.uid,
+        "Reading",
+        calculateScore(),
+        estimatedBand
+      );
+    }
+  }
 
   return (
     <div
       style={{
-        background: "#f1f5f9",
-        minHeight: "100vh",
-        fontFamily: "Arial"
+        minHeight:
+          "100vh",
+
+        background:
+          "#f8fafc",
+
+        padding: isMobile
+          ? "30px 15px"
+          : "60px 30px",
+
+        fontFamily:
+          "Arial"
       }}
     >
-      <header
-        style={{
-          background: "#0f172a",
-          color: "white",
-          padding: "20px 40px",
-          position: "sticky",
-          top: 0,
-          zIndex: 1000,
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center"
-        }}
-      >
-        <div>
-          <h1>
-            {currentMock.title}
-          </h1>
-
-          <p>
-            IELTS Academic Reading
-            Simulation
-          </p>
-        </div>
-
-        <div
-          style={{
-            background: "#22d3ee",
-            color: "black",
-            padding: "14px 24px",
-            borderRadius: "14px",
-            fontWeight: "bold",
-            fontSize: "24px"
-          }}
-        >
-          {minutes}:
-          {seconds
-            .toString()
-            .padStart(2, "0")}
-        </div>
-      </header>
-
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns:
-            "1fr 1fr",
-          gap: "30px",
-          padding: "40px"
+          maxWidth:
+            "1100px",
+
+          margin:
+            "0 auto",
+
+          background:
+            "white",
+
+          padding: isMobile
+            ? "25px"
+            : "40px",
+
+          borderRadius:
+            "24px",
+
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.08)"
         }}
       >
         <div
           style={{
-            background: "white",
-            padding: "30px",
-            borderRadius:
-              "20px",
-            lineHeight: "1.9",
-            maxHeight: "80vh",
-            overflowY: "auto"
+            display:
+              "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            flexWrap:
+              "wrap",
+
+            gap: "20px",
+
+            marginBottom:
+              "40px"
           }}
         >
-          <h2>
-            {currentPassage.title}
-          </h2>
+          <div>
+            <h1
+              style={{
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px"
+              }}
+            >
+              IELTS Reading
+            </h1>
 
-          <p>
-            {currentPassage.passage}
-          </p>
+            <p
+              style={{
+                color:
+                  "#64748b",
+
+                marginTop:
+                  "10px"
+              }}
+            >
+              {
+                currentTest.title
+              }
+            </p>
+          </div>
+
+          <select
+            onChange={(e) => {
+              const selected =
+                readingTests.find(
+                  (
+                    test
+                  ) =>
+                    test.id ===
+                    Number(
+                      e
+                        .target
+                        .value
+                    )
+                );
+
+              setCurrentTest(
+                selected
+              );
+
+              setSelectedAnswers(
+                {}
+              );
+
+              setSubmitted(
+                false
+              );
+            }}
+            style={{
+              padding:
+                "14px 18px",
+
+              borderRadius:
+                "14px",
+
+              border:
+                "1px solid #cbd5e1",
+
+              fontSize:
+                "16px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
+            }}
+          >
+            {readingTests.map(
+              (
+                test
+              ) => (
+                <option
+                  key={
+                    test.id
+                  }
+                  value={
+                    test.id
+                  }
+                >
+                  {
+                    test.title
+                  }
+                </option>
+              )
+            )}
+          </select>
         </div>
+
+        <SearchBar
+          data={
+            readingTests
+          }
+        />
+
+        {!submitted && (
+          <div
+            style={{
+              marginBottom:
+                "30px"
+            }}
+          >
+            <ExamTimer
+              initialMinutes={
+                60
+              }
+              onComplete={
+                handleAutoSubmit
+              }
+            />
+          </div>
+        )}
 
         <div
           style={{
-            background: "white",
-            padding: "30px",
+            background:
+              "#f1f5f9",
+
+            padding:
+              isMobile
+                ? "20px"
+                : "30px",
+
             borderRadius:
               "20px",
-            maxHeight: "80vh",
-            overflowY: "auto"
+
+            marginBottom:
+              "40px"
           }}
         >
-          <h2>
-            Questions
-          </h2>
+          <p
+            style={{
+              color:
+                "#334155",
 
-          {currentPassage.questions.map(
-            (
-              question,
-              qIndex
-            ) => {
-              const key =
-                `${currentSection}-${qIndex}`;
+              lineHeight:
+                "1.9",
 
-              return (
-                <div
-                  key={qIndex}
-                  ref={(el) =>
-                    (questionRefs.current[
-                      qIndex
-                    ] = el)
-                  }
-                  style={{
-                    background:
-                      "#e0f2fe",
+              fontSize:
+                isMobile
+                  ? "16px"
+                  : "18px"
+            }}
+          >
+            {
+              currentTest.passage
+            }
+          </p>
+        </div>
 
-                    padding:
-                      "20px",
+        {currentTest.questions.map(
+          (q, qIndex) => (
+            <div
+              key={qIndex}
+              style={{
+                marginBottom:
+                  "40px"
+              }}
+            >
+              <h2
+                style={{
+                  marginBottom:
+                    "20px",
 
-                    borderRadius:
-                      "14px",
+                  fontSize:
+                    isMobile
+                      ? "20px"
+                      : "24px"
+                }}
+              >
+                {qIndex + 1}.{" "}
+                {q.question}
+              </h2>
 
-                    marginBottom:
-                      "24px"
-                  }}
-                >
-                  <h3>
-                    Question{" "}
-                    {qIndex + 1}
-                  </h3>
+              <div
+                style={{
+                  display:
+                    "flex",
 
-                  <p
-                    style={{
-                      marginBottom:
-                        "16px"
-                    }}
-                  >
-                    {
-                      question.question
-                    }
-                  </p>
+                  flexDirection:
+                    "column",
 
-                  {(question.type ===
-                    "multiple-choice" ||
-                    question.type ===
-                      "true-false-not-given") &&
-                    question.options.map(
-                      (
-                        option,
-                        optionIndex
-                      ) => (
-                        <label
-                          key={
-                            optionIndex
-                          }
-                          style={{
-                            display:
-                              "block",
-                            marginBottom:
-                              "12px"
-                          }}
-                        >
-                          <input
-                            type="radio"
-                            name={key}
-                            value={
-                              option
-                            }
-                            checked={
-                              answers[
-                                key
-                              ] === option
-                            }
-                            onChange={() =>
-                              setAnswers({
-                                ...answers,
-                                [key]:
-                                  option
-                              })
-                            }
-                          />{" "}
-                          {option}
-                        </label>
-                      )
-                    )}
-
-                  {question.type ===
-                    "sentence-completion" && (
-                    <input
-                      type="text"
-                      value={
-                        answers[key] ||
-                        ""
+                  gap: "14px"
+                }}
+              >
+                {q.options.map(
+                  (
+                    option,
+                    index
+                  ) => (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        handleSelect(
+                          qIndex,
+                          option
+                        )
                       }
-                      onChange={(e) =>
-                        setAnswers({
-                          ...answers,
-                          [key]:
-                            e.target
-                              .value
-                        })
+                      disabled={
+                        submitted
                       }
                       style={{
-                        width: "100%",
                         padding:
-                          "14px",
+                          "16px",
+
                         borderRadius:
-                          "10px",
+                          "14px",
+
                         border:
-                          "1px solid #cbd5e1"
+                          selectedAnswers[
+                            qIndex
+                          ] ===
+                          option
+                            ? "2px solid #22d3ee"
+                            : "1px solid #cbd5e1",
+
+                        background:
+                          selectedAnswers[
+                            qIndex
+                          ] ===
+                          option
+                            ? "#ecfeff"
+                            : "white",
+
+                        cursor:
+                          submitted
+                            ? "default"
+                            : "pointer",
+
+                        textAlign:
+                          "left",
+
+                        fontSize:
+                          "16px",
+
+                        transition:
+                          "0.2s",
+
+                        opacity:
+                          submitted
+                            ? 0.85
+                            : 1
                       }}
-                    />
-                  )}
-                </div>
-              );
+                    >
+                      {option}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+          )
+        )}
+
+        {!submitted ? (
+          <button
+            onClick={
+              handleAutoSubmit
             }
-          )}
-
-          <div
             style={{
-              display: "flex",
-              justifyContent:
-                "space-between",
-              marginTop: "30px"
+              background:
+                "#22d3ee",
+
+              border:
+                "none",
+
+              padding:
+                "16px 32px",
+
+              borderRadius:
+                "14px",
+
+              fontWeight:
+                "bold",
+
+              cursor:
+                "pointer",
+
+              fontSize:
+                "18px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
             }}
           >
-            <button
-              disabled={
-                currentSection === 0
-              }
-              onClick={() =>
-                setCurrentSection(
-                  currentSection - 1
-                )
-              }
-            >
-              Previous Passage
-            </button>
-
-            <button
-              disabled={
-                currentSection ===
-                currentMock.sections
-                  .length -
-                  1
-              }
-              onClick={() =>
-                setCurrentSection(
-                  currentSection + 1
-                )
-              }
-            >
-              Next Passage
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div
-        style={{
-          textAlign: "center",
-          paddingBottom: "60px"
-        }}
-      >
-        <button
-          onClick={async () => {
-            setSubmitted(true);
-
-            await saveResults();
-          }}
-          style={{
-            padding: "18px 32px",
-            border: "none",
-            borderRadius: "14px",
-            background: "#0f172a",
-            color: "white",
-            fontSize: "22px",
-            cursor: "pointer",
-            fontWeight: "bold"
-          }}
-        >
-          Submit Reading Test
-        </button>
-
-        {submitted && (
+            Submit Answers
+          </button>
+        ) : (
           <div
             style={{
-              marginTop: "40px",
-              background: "#0f172a",
-              color: "white",
-              padding: "40px",
-              borderRadius: "20px",
-              width: "420px",
-              marginInline:
-                "auto"
+              marginTop:
+                "50px",
+
+              background:
+                "#f1f5f9",
+
+              padding:
+                isMobile
+                  ? "25px"
+                  : "40px",
+
+              borderRadius:
+                "24px"
             }}
           >
-            <h2>
-              Reading Test Results
+            <h1
+              style={{
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px",
+
+                color:
+                  "#22c55e",
+
+                marginBottom:
+                  "20px"
+              }}
+            >
+              Results
+            </h1>
+
+            <h2
+              style={{
+                marginBottom:
+                  "20px"
+              }}
+            >
+              Score:
+              {" "}
+              {
+                calculateScore()
+              }
+              /
+              {
+                currentTest
+                  .questions
+                  .length
+              }
+            </h2>
+
+            <h2
+              style={{
+                marginBottom:
+                  "16px"
+              }}
+            >
+              Estimated IELTS
+              Band:
+              {" "}
+              {estimatedBand}
             </h2>
 
             <div
               style={{
-                fontSize: "56px",
-                fontWeight: "bold",
-                marginTop: "20px"
-              }}
-            >
-              {correctAnswers}/
-              {totalQuestions}
-            </div>
+                marginTop:
+                  "30px",
 
-            <p
-              style={{
-                marginTop: "20px",
-                fontSize: "28px"
+                background:
+                  "white",
+
+                padding:
+                  "24px",
+
+                borderRadius:
+                  "18px"
               }}
             >
-              Estimated IELTS
-              Band:{" "}
-              {estimatedBand}
-            </p>
+              <h3
+                style={{
+                  marginBottom:
+                    "16px"
+                }}
+              >
+                Performance
+                Feedback
+              </h3>
+
+              <p
+                style={{
+                  color:
+                    "#475569",
+
+                  lineHeight:
+                    "1.8"
+                }}
+              >
+                {estimatedBand >=
+                7
+                  ? "Excellent reading performance. Continue practicing advanced passages and timed mock tests."
+                  : estimatedBand >=
+                    6
+                  ? "Good progress. Focus on accuracy and vocabulary improvement."
+                  : "Practice more reading passages regularly and improve comprehension strategies."}
+              </p>
+            </div>
           </div>
         )}
       </div>

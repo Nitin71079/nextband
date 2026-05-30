@@ -1,358 +1,475 @@
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(to bottom right,#0f172a,#1e293b)",
+  const features = [
+    {
+      title: "AI Speaking Analysis",
+      desc:
+        "Practice IELTS speaking with intelligent AI-powered fluency and pronunciation feedback."
+    },
 
-        color: "white",
-        fontFamily: "Arial"
-      }}
-    >
+    {
+      title: "Writing Evaluation",
+      desc:
+        "Receive essay corrections, grammar improvements, and estimated IELTS band scores."
+    },
+
+    {
+      title: "Full Mock Tests",
+      desc:
+        "Simulate realistic IELTS exams with timers, analytics, and progress tracking."
+    },
+
+    {
+      title: "Smart Study Planner",
+      desc:
+        "Build personalized study schedules and maintain learning consistency."
+    },
+
+    {
+      title: "Performance Analytics",
+      desc:
+        "Track progress, strengths, weaknesses, and study streaks visually."
+    },
+
+    {
+      title: "AI IELTS Assistant",
+      desc:
+        "Ask IELTS questions instantly and receive smart AI-powered guidance."
+    }
+  ];
+
+  const stats = [
+    {
+      number: "10K+",
+      label: "Practice Sessions"
+    },
+
+    {
+      number: "95%",
+      label: "Student Satisfaction"
+    },
+
+    {
+      number: "24/7",
+      label: "AI Assistance"
+    },
+
+    {
+      number: "140+",
+      label: "Countries Reached"
+    }
+  ];
+
+  const isMobile =
+    window.innerWidth < 768;
+
+  return (
+    <div className="fade-in">
+      {/* HERO */}
+
       <section
         style={{
-          maxWidth: "1300px",
-          margin: "0 auto",
           padding:
-            "100px 40px"
+            isMobile
+              ? "90px 20px"
+              : "120px 20px",
+
+          textAlign:
+            "center"
         }}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit,minmax(400px,1fr))",
+        <div className="container">
+          <span className="badge">
+            AI-Powered IELTS
+            Platform
+          </span>
 
-            alignItems: "center",
-            gap: "60px"
-          }}
-        >
-          <div>
-            <h1
-              style={{
-                fontSize: "72px",
-                lineHeight: "1.1",
-                marginBottom: "30px"
-              }}
-            >
-              Achieve Your
-              Dream IELTS
-              Band
-            </h1>
+          <h1
+            style={{
+              fontSize:
+                isMobile
+                  ? "42px"
+                  : "72px",
 
-            <p
-              style={{
-                fontSize: "22px",
-                lineHeight: "1.8",
-                color: "#cbd5e1",
-                marginBottom: "40px"
-              }}
-            >
-              NextBand is a
-              modern AI-powered
-              IELTS preparation
-              platform designed
-              to help students
-              improve Reading,
-              Listening,
-              Writing, and
-              Speaking with
-              realistic test
-              simulations and
-              analytics.
-            </p>
+              lineHeight:
+                "1.1",
 
-            <div
-              style={{
-                display: "flex",
-                gap: "20px",
-                flexWrap: "wrap"
-              }}
-            >
-              <Link
-                to="/reading"
-                style={{
-                  background:
-                    "#22d3ee",
+              marginTop:
+                "25px",
 
-                  color: "black",
+              fontWeight:
+                "900"
+            }}
+          >
+            Master IELTS
+            <br />
+            Smarter with AI 🚀
+          </h1>
 
-                  padding:
-                    "18px 34px",
+          <p
+            style={{
+              maxWidth:
+                "800px",
 
-                  borderRadius:
-                    "16px",
+              margin:
+                "30px auto",
 
-                  textDecoration:
-                    "none",
+              lineHeight:
+                "1.9",
 
-                  fontWeight:
-                    "bold",
+              color:
+                "#64748b",
 
-                  fontSize:
-                    "18px"
-                }}
-              >
-                Start Practice
-              </Link>
-
-              <Link
-                to="/dashboard"
-                style={{
-                  background:
-                    "transparent",
-
-                  border:
-                    "2px solid #22d3ee",
-
-                  color:
-                    "#22d3ee",
-
-                  padding:
-                    "18px 34px",
-
-                  borderRadius:
-                    "16px",
-
-                  textDecoration:
-                    "none",
-
-                  fontWeight:
-                    "bold",
-
-                  fontSize:
-                    "18px"
-                }}
-              >
-                View Dashboard
-              </Link>
-            </div>
-          </div>
+              fontSize:
+                isMobile
+                  ? "16px"
+                  : "20px"
+            }}
+          >
+            NextBand combines
+            artificial
+            intelligence, smart
+            analytics, mock
+            tests, and
+            personalized
+            learning tools to
+            help students
+            achieve higher IELTS
+            bands faster and
+            more effectively.
+          </p>
 
           <div
             style={{
-              background:
-                "rgba(255,255,255,0.05)",
+              display: "flex",
 
-              border:
-                "1px solid rgba(255,255,255,0.1)",
+              justifyContent:
+                "center",
 
-              padding: "40px",
+              gap: "20px",
 
-              borderRadius:
-                "30px",
+              flexWrap:
+                "wrap",
 
-              backdropFilter:
-                "blur(10px)"
+              marginTop:
+                "40px"
             }}
           >
-            <h2
-              style={{
-                marginBottom: "30px",
-                fontSize: "36px"
-              }}
-            >
-              Why Choose
-              NextBand?
-            </h2>
+            <Link to="/register">
+              <button className="primary-btn">
+                Start Free
+              </button>
+            </Link>
 
-            <div
-              style={{
-                display: "grid",
-                gap: "24px"
-              }}
-            >
-              <div>
-                <h3>
-                  Real IELTS
-                  Simulations
-                </h3>
-
-                <p
-                  style={{
-                    color:
-                      "#cbd5e1"
-                  }}
-                >
-                  Experience
-                  authentic exam
-                  environments
-                  with timers,
-                  scoring, and
-                  analytics.
-                </p>
-              </div>
-
-              <div>
-                <h3>
-                  AI-Powered
-                  Future
-                </h3>
-
-                <p
-                  style={{
-                    color:
-                      "#cbd5e1"
-                  }}
-                >
-                  Upcoming AI
-                  essay scoring,
-                  pronunciation
-                  analysis, and
-                  adaptive
-                  learning.
-                </p>
-              </div>
-
-              <div>
-                <h3>
-                  Performance
-                  Analytics
-                </h3>
-
-                <p
-                  style={{
-                    color:
-                      "#cbd5e1"
-                  }}
-                >
-                  Track your
-                  band scores,
-                  progress, and
-                  improvement
-                  over time.
-                </p>
-              </div>
-
-              <div>
-                <h3>
-                  Modern Learning
-                  Experience
-                </h3>
-
-                <p
-                  style={{
-                    color:
-                      "#cbd5e1"
-                  }}
-                >
-                  Built with
-                  modern
-                  full-stack
-                  technologies
-                  and scalable
-                  architecture.
-                </p>
-              </div>
-            </div>
+            <Link to="/full-mocks">
+              <button className="secondary-btn">
+                Explore Premium
+              </button>
+            </Link>
           </div>
         </div>
       </section>
 
+      {/* STATS */}
+
+      <section className="container">
+        <div className="grid">
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="card"
+              style={{
+                textAlign:
+                  "center"
+              }}
+            >
+              <h2
+                style={{
+                  fontSize:
+                    isMobile
+                      ? "40px"
+                      : "52px",
+
+                  color:
+                    "#22d3ee",
+
+                  marginBottom:
+                    "10px"
+                }}
+              >
+                {stat.number}
+              </h2>
+
+              <p
+                style={{
+                  color:
+                    "#64748b",
+
+                  fontWeight:
+                    "600"
+                }}
+              >
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FEATURES */}
+
       <section
+        className="container"
         style={{
-          maxWidth: "1300px",
-          margin: "0 auto",
-          padding:
-            "0 40px 100px"
+          marginTop:
+            "100px"
         }}
       >
         <h2
+          className="section-title"
           style={{
-            textAlign: "center",
-            fontSize: "48px",
-            marginBottom: "60px"
+            textAlign:
+              "center"
           }}
         >
-          Modules
+          Everything You Need
+          for IELTS Success
         </h2>
 
-        <div
+        <p
+          className="section-subtitle"
           style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit,minmax(260px,1fr))",
+            textAlign:
+              "center",
 
-            gap: "30px"
+            maxWidth:
+              "700px",
+
+            margin:
+              "0 auto 60px"
           }}
         >
-          {[
-            {
-              title:
-                "Reading",
-              desc:
-                "Practice academic reading passages with scoring and timing."
-            },
+          NextBand provides
+          modern AI-powered
+          learning systems to
+          help students improve
+          speaking, writing,
+          reading, listening,
+          and overall IELTS
+          performance.
+        </p>
 
-            {
-              title:
-                "Listening",
-              desc:
-                "Train with IELTS listening simulations and audio tests."
-            },
-
-            {
-              title:
-                "Writing",
-              desc:
-                "Improve essay writing with structured tasks and future AI feedback."
-            },
-
-            {
-              title:
-                "Speaking",
-              desc:
-                "Practice speaking parts, cue cards, and discussion rounds."
-            }
-          ].map(
-            (
-              item,
-              index
-            ) => (
+        <div className="grid">
+          {features.map(
+            (feature) => (
               <div
-                key={index}
-                style={{
-                  background:
-                    "rgba(255,255,255,0.05)",
-
-                  padding:
-                    "30px",
-
-                  borderRadius:
-                    "24px",
-
-                  border:
-                    "1px solid rgba(255,255,255,0.08)"
-                }}
+                key={
+                  feature.title
+                }
+                className="card"
               >
                 <h2
                   style={{
                     marginBottom:
-                      "20px"
+                      "18px",
+
+                    fontSize:
+                      "28px"
                   }}
                 >
                   {
-                    item.title
+                    feature.title
                   }
                 </h2>
 
                 <p
                   style={{
                     color:
-                      "#cbd5e1",
+                      "#64748b",
 
                     lineHeight:
                       "1.8"
                   }}
                 >
-                  {item.desc}
+                  {
+                    feature.desc
+                  }
                 </p>
               </div>
             )
           )}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+
+      <section
+        className="container"
+        style={{
+          marginTop:
+            "120px"
+        }}
+      >
+        <h2
+          className="section-title"
+          style={{
+            textAlign:
+              "center"
+          }}
+        >
+          How NextBand Works
+        </h2>
+
+        <div
+          className="grid"
+          style={{
+            marginTop:
+              "60px"
+          }}
+        >
+          <div className="card">
+            <h2
+              style={{
+                marginBottom:
+                  "15px"
+              }}
+            >
+              1. Practice Daily
+            </h2>
+
+            <p
+              style={{
+                color:
+                  "#64748b",
+
+                lineHeight:
+                  "1.8"
+              }}
+            >
+              Improve speaking,
+              writing, reading,
+              and listening
+              through AI-powered
+              exercises.
+            </p>
+          </div>
+
+          <div className="card">
+            <h2
+              style={{
+                marginBottom:
+                  "15px"
+              }}
+            >
+              2. Receive AI
+              Feedback
+            </h2>
+
+            <p
+              style={{
+                color:
+                  "#64748b",
+
+                lineHeight:
+                  "1.8"
+              }}
+            >
+              Analyze mistakes,
+              fluency, grammar,
+              and vocabulary
+              using intelligent
+              AI systems.
+            </p>
+          </div>
+
+          <div className="card">
+            <h2
+              style={{
+                marginBottom:
+                  "15px"
+              }}
+            >
+              3. Track
+              Improvement
+            </h2>
+
+            <p
+              style={{
+                color:
+                  "#64748b",
+
+                lineHeight:
+                  "1.8"
+              }}
+            >
+              Monitor performance
+              analytics, study
+              streaks, and IELTS
+              band progress over
+              time.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+
+      <section
+        style={{
+          padding:
+            "120px 20px"
+        }}
+      >
+        <div
+          className="container card"
+          style={{
+            textAlign:
+              "center"
+          }}
+        >
+          <h2
+            style={{
+              fontSize:
+                isMobile
+                  ? "36px"
+                  : "54px",
+
+              marginBottom:
+                "25px"
+            }}
+          >
+            Ready to Achieve
+            Your IELTS Goals?
+          </h2>
+
+          <p
+            style={{
+              color:
+                "#64748b",
+
+              lineHeight:
+                "1.9",
+
+              maxWidth:
+                "700px",
+
+              margin:
+                "0 auto 40px"
+            }}
+          >
+            Join students using
+            AI-powered learning
+            tools to prepare
+            smarter, faster, and
+            more effectively.
+          </p>
+
+          <Link to="/register">
+            <button className="primary-btn">
+              Start Learning Now
+            </button>
+          </Link>
         </div>
       </section>
     </div>

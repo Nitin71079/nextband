@@ -1,346 +1,544 @@
 import {
-  useState,
-  useEffect
+  useState
 } from "react";
 
+import listeningTests from "../data/listeningTests";
+
+import {
+  useAuth
+} from "../context/AuthContext";
+
+import {
+  saveResult
+} from "../utils/saveResult";
+
+import SearchBar from "../components/SearchBar";
+
+import ExamTimer from "../components/ExamTimer";
+
+import useMobile from "../hooks/useMobile";
+
 export default function Listening() {
-  const questions = [
-    {
-      question:
-        "What is the student's name?",
+  const { user } =
+    useAuth();
 
-      options: [
-        "John",
-        "David",
-        "Michael",
-        "Daniel"
-      ],
+  const isMobile =
+    useMobile();
 
-      answer: "David"
-    },
+  const [currentTest,
+    setCurrentTest] =
+    useState(
+      listeningTests[0]
+    );
 
-    {
-      question:
-        "Which course did she enroll in?",
-
-      options: [
-        "Engineering",
-        "Business",
-        "Design",
-        "Law"
-      ],
-
-      answer: "Business"
-    },
-
-    {
-      question:
-        "When does the semester begin?",
-
-      options: [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Friday"
-      ],
-
-      answer: "Monday"
-    }
-  ];
-
-  const [answers, setAnswers] =
+  const [selectedAnswers,
+    setSelectedAnswers] =
     useState({});
 
-  const [submitted, setSubmitted] =
+  const [submitted,
+    setSubmitted] =
     useState(false);
 
-  const [timeLeft, setTimeLeft] =
-    useState(30 * 60);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-
-          setSubmitted(true);
-
-          return 0;
-        }
-
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const minutes = Math.floor(
-    timeLeft / 60
-  );
-
-  const seconds =
-    timeLeft % 60;
-
-  let score = 0;
-
-  questions.forEach(
-    (question, index) => {
-      if (
-        answers[index] ===
-        question.answer
-      ) {
-        score++;
-      }
-    }
-  );
-
-  const calculateBand = (
-    score
+  const handleSelect = (
+    qIndex,
+    option
   ) => {
-    if (score === 3) return 9;
-    if (score === 2) return 7;
-    if (score === 1) return 5;
-
-    return 4;
+    setSelectedAnswers({
+      ...selectedAnswers,
+      [qIndex]: option
+    });
   };
 
+  const calculateScore =
+    () => {
+      let score = 0;
+
+      currentTest.questions.forEach(
+        (q, index) => {
+          if (
+            selectedAnswers[
+              index
+            ] === q.answer
+          ) {
+            score++;
+          }
+        }
+      );
+
+      return score;
+    };
+
   const estimatedBand =
-    calculateBand(score);
+    (
+      (calculateScore() /
+        currentTest
+          .questions
+          .length) *
+        3 +
+      6
+    ).toFixed(1);
+
+  async function handleAutoSubmit() {
+    if (submitted)
+      return;
+
+    setSubmitted(true);
+
+    if (user) {
+      await saveResult(
+        user.uid,
+        "Listening",
+        calculateScore(),
+        estimatedBand
+      );
+    }
+  }
 
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: "#f1f5f9",
-        fontFamily: "Arial"
+        minHeight:
+          "100vh",
+
+        background:
+          "#f8fafc",
+
+        padding: isMobile
+          ? "30px 15px"
+          : "60px 30px",
+
+        fontFamily:
+          "Arial"
       }}
     >
-      <header
-        style={{
-          background: "#0f172a",
-          color: "white",
-          padding: "20px 40px",
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center"
-        }}
-      >
-        <div>
-          <h1>
-            IELTS Listening Test
-          </h1>
-
-          <p>
-            Academic Listening
-            Simulation
-          </p>
-        </div>
-
-        <div
-          style={{
-            background: "#22d3ee",
-            color: "black",
-            padding: "14px 24px",
-            borderRadius: "14px",
-            fontWeight: "bold",
-            fontSize: "24px"
-          }}
-        >
-          {minutes}:
-          {seconds
-            .toString()
-            .padStart(2, "0")}
-        </div>
-      </header>
-
       <div
         style={{
-          maxWidth: "1000px",
-          margin: "40px auto",
-          background: "white",
-          padding: "40px",
-          borderRadius: "20px"
+          maxWidth:
+            "1100px",
+
+          margin:
+            "0 auto",
+
+          background:
+            "white",
+
+          padding: isMobile
+            ? "25px"
+            : "40px",
+
+          borderRadius:
+            "24px",
+
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.08)"
         }}
       >
-        <h2
+        <div
           style={{
-            marginBottom: "20px"
+            display:
+              "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            flexWrap:
+              "wrap",
+
+            gap: "20px",
+
+            marginBottom:
+              "40px"
           }}
         >
-          Audio Section
-        </h2>
+          <div>
+            <h1
+              style={{
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px"
+              }}
+            >
+              IELTS Listening
+            </h1>
+
+            <p
+              style={{
+                color:
+                  "#64748b",
+
+                marginTop:
+                  "10px"
+              }}
+            >
+              {
+                currentTest.title
+              }
+            </p>
+          </div>
+
+          <select
+            onChange={(e) => {
+              const selected =
+                listeningTests.find(
+                  (
+                    test
+                  ) =>
+                    test.id ===
+                    Number(
+                      e
+                        .target
+                        .value
+                    )
+                );
+
+              setCurrentTest(
+                selected
+              );
+
+              setSelectedAnswers(
+                {}
+              );
+
+              setSubmitted(
+                false
+              );
+            }}
+            style={{
+              padding:
+                "14px 18px",
+
+              borderRadius:
+                "14px",
+
+              border:
+                "1px solid #cbd5e1",
+
+              fontSize:
+                "16px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
+            }}
+          >
+            {listeningTests.map(
+              (
+                test
+              ) => (
+                <option
+                  key={
+                    test.id
+                  }
+                  value={
+                    test.id
+                  }
+                >
+                  {
+                    test.title
+                  }
+                </option>
+              )
+            )}
+          </select>
+        </div>
+
+        <SearchBar
+          data={
+            listeningTests
+          }
+        />
+
+        {!submitted && (
+          <div
+            style={{
+              marginBottom:
+                "30px"
+            }}
+          >
+            <ExamTimer
+              initialMinutes={
+                30
+              }
+              onComplete={
+                handleAutoSubmit
+              }
+            />
+          </div>
+        )}
 
         <div
           style={{
-            background: "#e2e8f0",
-            padding: "30px",
-            borderRadius: "16px",
-            marginBottom: "40px"
+            marginBottom:
+              "40px"
           }}
         >
-          <p>
-            MP3 audio integration
-            will be added here.
-          </p>
-
-          <audio controls>
+          <audio
+            controls
+            style={{
+              width: "100%"
+            }}
+          >
             <source
-              src=""
+              src={
+                currentTest.audio
+              }
               type="audio/mpeg"
             />
           </audio>
         </div>
 
-        <h2
-          style={{
-            marginBottom: "30px"
-          }}
-        >
-          Questions
-        </h2>
-
-        {questions.map(
-          (
-            question,
-            index
-          ) => (
+        {currentTest.questions.map(
+          (q, qIndex) => (
             <div
-              key={index}
+              key={qIndex}
               style={{
-                background:
-                  "#e0f2fe",
-
-                padding:
-                  "24px",
-
-                borderRadius:
-                  "16px",
-
                 marginBottom:
-                  "24px"
+                  "40px"
               }}
             >
-              <h3>
-                Question{" "}
-                {index + 1}
-              </h3>
-
-              <p
+              <h2
                 style={{
                   marginBottom:
-                    "16px"
+                    "20px",
+
+                  fontSize:
+                    isMobile
+                      ? "20px"
+                      : "24px"
                 }}
               >
-                {
-                  question.question
-                }
-              </p>
+                {qIndex + 1}.{" "}
+                {q.question}
+              </h2>
 
-              {question.options.map(
-                (
-                  option,
-                  optionIndex
-                ) => (
-                  <label
-                    key={
-                      optionIndex
-                    }
-                    style={{
-                      display:
-                        "block",
+              <div
+                style={{
+                  display:
+                    "flex",
 
-                      marginBottom:
-                        "12px"
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name={`question-${index}`}
-                      value={
-                        option
+                  flexDirection:
+                    "column",
+
+                  gap: "14px"
+                }}
+              >
+                {q.options.map(
+                  (
+                    option,
+                    index
+                  ) => (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        handleSelect(
+                          qIndex,
+                          option
+                        )
                       }
-                      checked={
-                        answers[
-                          index
-                        ] ===
-                        option
+                      disabled={
+                        submitted
                       }
-                      onChange={() =>
-                        setAnswers({
-                          ...answers,
-                          [index]:
-                            option
-                        })
-                      }
-                    />{" "}
-                    {option}
-                  </label>
-                )
-              )}
+                      style={{
+                        padding:
+                          "16px",
+
+                        borderRadius:
+                          "14px",
+
+                        border:
+                          selectedAnswers[
+                            qIndex
+                          ] ===
+                          option
+                            ? "2px solid #22d3ee"
+                            : "1px solid #cbd5e1",
+
+                        background:
+                          selectedAnswers[
+                            qIndex
+                          ] ===
+                          option
+                            ? "#ecfeff"
+                            : "white",
+
+                        cursor:
+                          submitted
+                            ? "default"
+                            : "pointer",
+
+                        textAlign:
+                          "left",
+
+                        fontSize:
+                          "16px",
+
+                        transition:
+                          "0.2s",
+
+                        opacity:
+                          submitted
+                            ? 0.85
+                            : 1
+                      }}
+                    >
+                      {option}
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           )
         )}
 
-        <button
-          onClick={() =>
-            setSubmitted(true)
-          }
-          style={{
-            width: "100%",
-            padding: "18px",
-            border: "none",
-            borderRadius: "14px",
-            background: "#0f172a",
-            color: "white",
-            fontSize: "22px",
-            cursor: "pointer",
-            fontWeight: "bold"
-          }}
-        >
-          Submit Listening Test
-        </button>
-
-        {submitted && (
-          <div
+        {!submitted ? (
+          <button
+            onClick={
+              handleAutoSubmit
+            }
             style={{
-              marginTop: "40px",
-              background: "#0f172a",
-              color: "white",
-              padding: "40px",
-              borderRadius: "20px",
-              textAlign: "center"
+              background:
+                "#22d3ee",
+
+              border:
+                "none",
+
+              padding:
+                "16px 32px",
+
+              borderRadius:
+                "14px",
+
+              fontWeight:
+                "bold",
+
+              cursor:
+                "pointer",
+
+              fontSize:
+                "18px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
             }}
           >
-            <h2>
-              Listening Results
-            </h2>
+            Submit Answers
+          </button>
+        ) : (
+          <div
+            style={{
+              marginTop:
+                "50px",
 
-            <div
+              background:
+                "#f1f5f9",
+
+              padding:
+                isMobile
+                  ? "25px"
+                  : "40px",
+
+              borderRadius:
+                "24px"
+            }}
+          >
+            <h1
               style={{
-                fontSize: "56px",
-                fontWeight: "bold",
-                marginTop: "20px"
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px",
+
+                color:
+                  "#22c55e",
+
+                marginBottom:
+                  "20px"
               }}
             >
-              {score}/
-              {
-                questions.length
-              }
-            </div>
+              Results
+            </h1>
 
-            <p
+            <h2
               style={{
-                marginTop: "20px",
-                fontSize: "28px"
+                marginBottom:
+                  "20px"
+              }}
+            >
+              Score:
+              {" "}
+              {
+                calculateScore()
+              }
+              /
+              {
+                currentTest
+                  .questions
+                  .length
+              }
+            </h2>
+
+            <h2
+              style={{
+                marginBottom:
+                  "16px"
               }}
             >
               Estimated IELTS
               Band:
               {" "}
               {estimatedBand}
-            </p>
+            </h2>
+
+            <div
+              style={{
+                marginTop:
+                  "30px",
+
+                background:
+                  "white",
+
+                padding:
+                  "24px",
+
+                borderRadius:
+                  "18px"
+              }}
+            >
+              <h3
+                style={{
+                  marginBottom:
+                    "16px"
+                }}
+              >
+                Performance
+                Feedback
+              </h3>
+
+              <p
+                style={{
+                  color:
+                    "#475569",
+
+                  lineHeight:
+                    "1.8"
+                }}
+              >
+                {estimatedBand >=
+                7
+                  ? "Excellent listening accuracy and comprehension. Continue timed audio practice."
+                  : estimatedBand >=
+                    6
+                  ? "Good listening performance. Improve concentration and note-taking strategies."
+                  : "Practice more listening sections regularly and focus on identifying keywords quickly."}
+              </p>
+            </div>
           </div>
         )}
       </div>

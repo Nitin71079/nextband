@@ -1,283 +1,592 @@
 import {
-  useState,
-  useEffect
+  useState
 } from "react";
 
+import OpenAI from "openai";
+
+import writingPrompts from "../data/writingPrompts";
+
+import {
+  useAuth
+} from "../context/AuthContext";
+
+import {
+  saveResult
+} from "../utils/saveResult";
+
+import SearchBar from "../components/SearchBar";
+
+import ExamTimer from "../components/ExamTimer";
+
+import useMobile from "../hooks/useMobile";
+
 export default function Writing() {
-  const [task1, setTask1] =
+  const { user } =
+    useAuth();
+
+  const isMobile =
+    useMobile();
+
+  const [currentPrompt,
+    setCurrentPrompt] =
+    useState(
+      writingPrompts[0]
+    );
+
+  const [essay,
+    setEssay] =
     useState("");
 
-  const [task2, setTask2] =
-    useState("");
-
-  const [submitted, setSubmitted] =
+  const [submitted,
+    setSubmitted] =
     useState(false);
 
-  const [timeLeft, setTimeLeft] =
-    useState(60 * 60);
+  const [loadingAI,
+    setLoadingAI] =
+    useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
+  const [aiFeedback,
+    setAiFeedback] =
+    useState("");
 
-          setSubmitted(true);
+  const [estimatedBand,
+    setEstimatedBand] =
+    useState("");
 
-          return 0;
-        }
-
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const minutes = Math.floor(
-    timeLeft / 60
-  );
-
-  const seconds =
-    timeLeft % 60;
-
-  const wordCountTask1 =
-    task1
+  const wordCount =
+    essay
       .trim()
       .split(/\s+/)
-      .filter(Boolean).length;
+      .filter(Boolean)
+      .length;
 
-  const wordCountTask2 =
-    task2
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean).length;
+  async function evaluateEssay() {
+    try {
+      setLoadingAI(true);
+
+      const openai =
+        new OpenAI({
+          apiKey:
+            import.meta.env
+              .VITE_OPENAI_API_KEY,
+
+          dangerouslyAllowBrowser: true
+        });
+
+      const response =
+        await openai.chat.completions.create(
+          {
+            model:
+              "gpt-4o-mini",
+
+            messages: [
+              {
+                role:
+                  "system",
+
+                content:
+                  "You are an IELTS examiner. Evaluate essays professionally with estimated IELTS band score, strengths, weaknesses, grammar feedback, vocabulary analysis, coherence analysis, and improvement suggestions."
+              },
+
+              {
+                role:
+                  "user",
+
+                content: `
+IELTS Writing Task:
+
+${currentPrompt.task}
+
+Student Essay:
+
+${essay}
+`
+              }
+            ]
+          }
+        );
+
+      const feedback =
+        response.choices[0]
+          .message
+          .content;
+
+      setAiFeedback(
+        feedback
+      );
+
+      const bandMatch =
+        feedback.match(
+          /Band[:\s]*([0-9.]+)/i
+        );
+
+      if (bandMatch) {
+        setEstimatedBand(
+          bandMatch[1]
+        );
+      } else {
+        setEstimatedBand(
+          "7.0"
+        );
+      }
+    } catch (error) {
+      console.error(
+        error
+      );
+
+      setAiFeedback(
+        "AI evaluation failed."
+      );
+    } finally {
+      setLoadingAI(false);
+    }
+  }
+
+  async function handleAutoSubmit() {
+    if (submitted)
+      return;
+
+    setSubmitted(true);
+
+    await evaluateEssay();
+
+    if (user) {
+      await saveResult(
+        user.uid,
+        "Writing",
+        wordCount,
+        estimatedBand || "7.0"
+      );
+    }
+  }
 
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: "#f1f5f9",
-        fontFamily: "Arial"
+        minHeight:
+          "100vh",
+
+        background:
+          "#f8fafc",
+
+        padding: isMobile
+          ? "30px 15px"
+          : "60px 30px",
+
+        fontFamily:
+          "Arial"
       }}
     >
-      <header
-        style={{
-          background: "#0f172a",
-          color: "white",
-          padding: "20px 40px",
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center"
-        }}
-      >
-        <div>
-          <h1>
-            IELTS Writing Test
-          </h1>
-
-          <p>
-            Academic Writing
-            Simulation
-          </p>
-        </div>
-
-        <div
-          style={{
-            background: "#22d3ee",
-            color: "black",
-            padding: "14px 24px",
-            borderRadius: "14px",
-            fontWeight: "bold",
-            fontSize: "24px"
-          }}
-        >
-          {minutes}:
-          {seconds
-            .toString()
-            .padStart(2, "0")}
-        </div>
-      </header>
-
       <div
         style={{
-          maxWidth: "1200px",
-          margin: "40px auto",
-          display: "grid",
-          gap: "40px"
+          maxWidth:
+            "1100px",
+
+          margin:
+            "0 auto",
+
+          background:
+            "white",
+
+          padding: isMobile
+            ? "25px"
+            : "40px",
+
+          borderRadius:
+            "24px",
+
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.08)"
         }}
       >
         <div
           style={{
-            background: "white",
-            padding: "40px",
-            borderRadius: "20px"
+            display:
+              "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            flexWrap:
+              "wrap",
+
+            gap: "20px",
+
+            marginBottom:
+              "40px"
           }}
         >
-          <h2>
-            Task 1
-          </h2>
-
-          <p
-            style={{
-              marginBottom: "20px",
-              lineHeight: "1.8"
-            }}
-          >
-            The chart below shows
-            the percentage of
-            households using
-            different internet
-            services in a European
-            country between 2000
-            and 2020.
-
-            Summarise the
-            information by
-            selecting and reporting
-            the main features, and
-            make comparisons where
-            relevant.
-          </p>
-
-          <textarea
-            value={task1}
-            onChange={(e) =>
-              setTask1(
-                e.target.value
-              )
-            }
-            placeholder="Write your Task 1 response here..."
-            style={{
-              width: "100%",
-              height: "300px",
-              padding: "20px",
-              borderRadius: "16px",
-              border:
-                "1px solid #cbd5e1",
-              fontSize: "16px",
-              resize: "vertical"
-            }}
-          />
-
-          <p
-            style={{
-              marginTop: "16px",
-              fontWeight: "bold"
-            }}
-          >
-            Word Count:
-            {" "}
-            {wordCountTask1}
-          </p>
-        </div>
-
-        <div
-          style={{
-            background: "white",
-            padding: "40px",
-            borderRadius: "20px"
-          }}
-        >
-          <h2>
-            Task 2
-          </h2>
-
-          <p
-            style={{
-              marginBottom: "20px",
-              lineHeight: "1.8"
-            }}
-          >
-            Some people believe
-            that universities
-            should focus only on
-            academic subjects,
-            while others think
-            students should also
-            learn practical skills.
-
-            Discuss both views and
-            give your opinion.
-          </p>
-
-          <textarea
-            value={task2}
-            onChange={(e) =>
-              setTask2(
-                e.target.value
-              )
-            }
-            placeholder="Write your Task 2 essay here..."
-            style={{
-              width: "100%",
-              height: "400px",
-              padding: "20px",
-              borderRadius: "16px",
-              border:
-                "1px solid #cbd5e1",
-              fontSize: "16px",
-              resize: "vertical"
-            }}
-          />
-
-          <p
-            style={{
-              marginTop: "16px",
-              fontWeight: "bold"
-            }}
-          >
-            Word Count:
-            {" "}
-            {wordCountTask2}
-          </p>
-        </div>
-
-        <button
-          onClick={() =>
-            setSubmitted(true)
-          }
-          style={{
-            width: "100%",
-            padding: "20px",
-            border: "none",
-            borderRadius: "16px",
-            background: "#0f172a",
-            color: "white",
-            fontSize: "24px",
-            cursor: "pointer",
-            fontWeight: "bold"
-          }}
-        >
-          Submit Writing Test
-        </button>
-
-        {submitted && (
-          <div
-            style={{
-              background: "#0f172a",
-              color: "white",
-              padding: "40px",
-              borderRadius: "20px",
-              textAlign: "center"
-            }}
-          >
-            <h2>
-              Writing Submitted
-            </h2>
+          <div>
+            <h1
+              style={{
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px"
+              }}
+            >
+              AI IELTS Writing
+            </h1>
 
             <p
               style={{
-                marginTop: "20px",
-                fontSize: "20px"
+                color:
+                  "#64748b",
+
+                marginTop:
+                  "10px"
               }}
             >
-              AI scoring and band
-              prediction will be
-              added in future
-              versions.
+              GPT-Powered
+              Essay Evaluation
             </p>
+          </div>
+
+          <select
+            onChange={(e) => {
+              const selected =
+                writingPrompts.find(
+                  (
+                    prompt
+                  ) =>
+                    prompt.id ===
+                    Number(
+                      e
+                        .target
+                        .value
+                    )
+                );
+
+              setCurrentPrompt(
+                selected
+              );
+
+              setEssay("");
+
+              setSubmitted(
+                false
+              );
+
+              setAiFeedback(
+                ""
+              );
+            }}
+            style={{
+              padding:
+                "14px 18px",
+
+              borderRadius:
+                "14px",
+
+              border:
+                "1px solid #cbd5e1",
+
+              fontSize:
+                "16px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
+            }}
+          >
+            {writingPrompts.map(
+              (
+                prompt
+              ) => (
+                <option
+                  key={
+                    prompt.id
+                  }
+                  value={
+                    prompt.id
+                  }
+                >
+                  Prompt{" "}
+                  {
+                    prompt.id
+                  }
+                </option>
+              )
+            )}
+          </select>
+        </div>
+
+        <SearchBar
+          data={
+            writingPrompts
+          }
+        />
+
+        {!submitted && (
+          <div
+            style={{
+              marginBottom:
+                "30px"
+            }}
+          >
+            <ExamTimer
+              initialMinutes={
+                60
+              }
+              onComplete={
+                handleAutoSubmit
+              }
+            />
+          </div>
+        )}
+
+        <div
+          style={{
+            background:
+              "#f1f5f9",
+
+            padding:
+              isMobile
+                ? "20px"
+                : "30px",
+
+            borderRadius:
+              "20px",
+
+            marginBottom:
+              "40px"
+          }}
+        >
+          <p
+            style={{
+              lineHeight:
+                "1.9",
+
+              fontSize:
+                isMobile
+                  ? "16px"
+                  : "18px",
+
+              color:
+                "#334155"
+            }}
+          >
+            {
+              currentPrompt.task
+            }
+          </p>
+        </div>
+
+        <textarea
+          value={essay}
+          onChange={(e) =>
+            setEssay(
+              e.target.value
+            )
+          }
+          disabled={
+            submitted
+          }
+          placeholder="Write your essay here..."
+          style={{
+            width: "100%",
+
+            minHeight:
+              isMobile
+                ? "260px"
+                : "350px",
+
+            padding:
+              "24px",
+
+            borderRadius:
+              "20px",
+
+            border:
+              "1px solid #cbd5e1",
+
+            fontSize:
+              "17px",
+
+            lineHeight:
+              "1.8",
+
+            resize:
+              "vertical",
+
+            marginBottom:
+              "30px",
+
+            outline:
+              "none"
+          }}
+        />
+
+        <div
+          style={{
+            display:
+              "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              isMobile
+                ? "flex-start"
+                : "center",
+
+            flexDirection:
+              isMobile
+                ? "column"
+                : "row",
+
+            gap: "20px",
+
+            marginBottom:
+              "30px"
+          }}
+        >
+          <h2>
+            Word Count:
+            {" "}
+            {wordCount}
+          </h2>
+
+          <div
+            style={{
+              color:
+                wordCount >=
+                250
+                  ? "#22c55e"
+                  : "#ef4444",
+
+              fontWeight:
+                "bold"
+            }}
+          >
+            {wordCount >=
+            250
+              ? "Minimum word count achieved"
+              : "Recommended minimum: 250 words"}
+          </div>
+        </div>
+
+        {!submitted ? (
+          <button
+            onClick={
+              handleAutoSubmit
+            }
+            style={{
+              background:
+                "#22d3ee",
+
+              border:
+                "none",
+
+              padding:
+                "16px 32px",
+
+              borderRadius:
+                "14px",
+
+              fontWeight:
+                "bold",
+
+              cursor:
+                "pointer",
+
+              fontSize:
+                "18px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
+            }}
+          >
+            Submit For AI
+            Evaluation
+          </button>
+        ) : (
+          <div
+            style={{
+              marginTop:
+                "50px",
+
+              background:
+                "#f1f5f9",
+
+              padding:
+                isMobile
+                  ? "25px"
+                  : "40px",
+
+              borderRadius:
+                "24px"
+            }}
+          >
+            <h1
+              style={{
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px",
+
+                color:
+                  "#22c55e",
+
+                marginBottom:
+                  "20px"
+              }}
+            >
+              AI Evaluation
+            </h1>
+
+            {loadingAI ? (
+              <p>
+                Evaluating essay
+                with AI...
+              </p>
+            ) : (
+              <>
+                <h2
+                  style={{
+                    marginBottom:
+                      "20px"
+                  }}
+                >
+                  Estimated IELTS
+                  Band:
+                  {" "}
+                  {
+                    estimatedBand
+                  }
+                </h2>
+
+                <div
+                  style={{
+                    background:
+                      "white",
+
+                    padding:
+                      "24px",
+
+                    borderRadius:
+                      "18px",
+
+                    lineHeight:
+                      "1.9",
+
+                    whiteSpace:
+                      "pre-wrap",
+
+                    color:
+                      "#334155"
+                  }}
+                >
+                  {aiFeedback}
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

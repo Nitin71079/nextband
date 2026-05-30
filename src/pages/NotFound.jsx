@@ -1,34 +1,29 @@
-import { Link } from "react-router-dom";
+import { Link }
+from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(to bottom right,#0f172a,#1e293b)",
+    <div className="container fade-in">
+      <div
+        className="card"
+        style={{
+          textAlign:
+            "center",
 
-        color: "white",
-
-        display: "flex",
-
-        justifyContent:
-          "center",
-
-        alignItems: "center",
-
-        textAlign: "center",
-
-        padding: "40px",
-
-        fontFamily: "Arial"
-      }}
-    >
-      <div>
+          padding:
+            "100px 30px"
+        }}
+      >
         <h1
           style={{
-            fontSize: "120px",
-            marginBottom: "20px"
+            fontSize:
+              "120px",
+
+            color:
+              "#22d3ee",
+
+            marginBottom:
+              "20px"
           }}
         >
           404
@@ -36,8 +31,11 @@ export default function NotFound() {
 
         <h2
           style={{
-            fontSize: "42px",
-            marginBottom: "20px"
+            fontSize:
+              "42px",
+
+            marginBottom:
+              "20px"
           }}
         >
           Page Not Found
@@ -45,30 +43,29 @@ export default function NotFound() {
 
         <p
           style={{
-            fontSize: "20px",
-            color: "#cbd5e1",
-            marginBottom: "40px",
-            lineHeight: "1.8"
+            color:
+              "#64748b",
+
+            lineHeight:
+              "1.8",
+
+            maxWidth:
+              "600px",
+
+            margin:
+              "0 auto 40px"
           }}
         >
-          The page you are
-          looking for does not
-          exist or has been moved.
+          The page you’re
+          looking for doesn’t
+          exist or may have
+          been moved.
         </p>
 
-        <Link
-          to="/"
-          style={{
-            background: "#22d3ee",
-            color: "black",
-            padding: "18px 34px",
-            borderRadius: "16px",
-            textDecoration: "none",
-            fontWeight: "bold",
-            fontSize: "18px"
-          }}
-        >
-          Go Back Home
+        <Link to="/">
+          <button className="primary-btn">
+            Return Home
+          </button>
         </Link>
       </div>
     </div>

@@ -1,312 +1,546 @@
 import {
-  useState,
-  useEffect
+  useState
 } from "react";
 
+import OpenAI from "openai";
+
+import speakingMocks from "../data/speakingMocks";
+
+import {
+  useAuth
+} from "../context/AuthContext";
+
+import {
+  saveResult
+} from "../utils/saveResult";
+
+import SearchBar from "../components/SearchBar";
+
+import ExamTimer from "../components/ExamTimer";
+
+import useMobile from "../hooks/useMobile";
+
 export default function Speaking() {
-  const [submitted, setSubmitted] =
+  const { user } =
+    useAuth();
+
+  const isMobile =
+    useMobile();
+
+  const [currentSet,
+    setCurrentSet] =
+    useState(
+      speakingMocks[0]
+    );
+
+  const [response,
+    setResponse] =
+    useState("");
+
+  const [submitted,
+    setSubmitted] =
     useState(false);
 
-  const [timeLeft, setTimeLeft] =
-    useState(15 * 60);
+  const [loadingAI,
+    setLoadingAI] =
+    useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
+  const [aiFeedback,
+    setAiFeedback] =
+    useState("");
 
-          setSubmitted(true);
+  const [estimatedBand,
+    setEstimatedBand] =
+    useState("");
 
-          return 0;
-        }
+  async function evaluateSpeaking() {
+    try {
+      setLoadingAI(true);
 
-        return prev - 1;
-      });
-    }, 1000);
+      const openai =
+        new OpenAI({
+          apiKey:
+            import.meta.env
+              .VITE_OPENAI_API_KEY,
 
-    return () => clearInterval(timer);
-  }, []);
+          dangerouslyAllowBrowser: true
+        });
 
-  const minutes = Math.floor(
-    timeLeft / 60
-  );
+      const completion =
+        await openai.chat.completions.create(
+          {
+            model:
+              "gpt-4o-mini",
 
-  const seconds =
-    timeLeft % 60;
+            messages: [
+              {
+                role:
+                  "system",
+
+                content:
+                  "You are an IELTS Speaking examiner. Evaluate fluency, vocabulary, grammar, pronunciation confidence, idea development, coherence, and estimated IELTS band score."
+              },
+
+              {
+                role:
+                  "user",
+
+                content: `
+Cue Card:
+
+${currentSet.cueCard}
+
+Student Response:
+
+${response}
+`
+              }
+            ]
+          }
+        );
+
+      const feedback =
+        completion.choices[0]
+          .message
+          .content;
+
+      setAiFeedback(
+        feedback
+      );
+
+      const bandMatch =
+        feedback.match(
+          /Band[:\s]*([0-9.]+)/i
+        );
+
+      if (bandMatch) {
+        setEstimatedBand(
+          bandMatch[1]
+        );
+      } else {
+        setEstimatedBand(
+          "7.0"
+        );
+      }
+    } catch (error) {
+      console.error(
+        error
+      );
+
+      setAiFeedback(
+        "AI speaking evaluation failed."
+      );
+    } finally {
+      setLoadingAI(false);
+    }
+  }
+
+  async function handleSubmit() {
+    if (submitted)
+      return;
+
+    setSubmitted(true);
+
+    await evaluateSpeaking();
+
+    if (user) {
+      await saveResult(
+        user.uid,
+        "Speaking",
+        response.length,
+        estimatedBand || "7.0"
+      );
+    }
+  }
 
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: "#f1f5f9",
-        fontFamily: "Arial"
+        minHeight:
+          "100vh",
+
+        background:
+          "#f8fafc",
+
+        padding: isMobile
+          ? "30px 15px"
+          : "60px 30px",
+
+        fontFamily:
+          "Arial"
       }}
     >
-      <header
-        style={{
-          background: "#0f172a",
-          color: "white",
-          padding: "20px 40px",
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center"
-        }}
-      >
-        <div>
-          <h1>
-            IELTS Speaking Test
-          </h1>
-
-          <p>
-            Speaking Simulation
-          </p>
-        </div>
-
-        <div
-          style={{
-            background: "#22d3ee",
-            color: "black",
-            padding: "14px 24px",
-            borderRadius: "14px",
-            fontWeight: "bold",
-            fontSize: "24px"
-          }}
-        >
-          {minutes}:
-          {seconds
-            .toString()
-            .padStart(2, "0")}
-        </div>
-      </header>
-
       <div
         style={{
-          maxWidth: "1100px",
-          margin: "40px auto",
-          display: "grid",
-          gap: "40px"
+          maxWidth:
+            "1100px",
+
+          margin:
+            "0 auto",
+
+          background:
+            "white",
+
+          padding: isMobile
+            ? "25px"
+            : "40px",
+
+          borderRadius:
+            "24px",
+
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.08)"
         }}
       >
         <div
           style={{
-            background: "white",
-            padding: "40px",
-            borderRadius: "20px"
+            display:
+              "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            flexWrap:
+              "wrap",
+
+            gap: "20px",
+
+            marginBottom:
+              "40px"
           }}
         >
-          <h2>
-            Part 1:
-            Introduction and
-            Interview
-          </h2>
+          <div>
+            <h1
+              style={{
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px"
+              }}
+            >
+              AI IELTS Speaking
+            </h1>
 
-          <div
-            style={{
-              marginTop: "20px",
-              lineHeight: "2"
-            }}
-          >
-            <p>
-              • Tell me about
-              your hometown.
-            </p>
+            <p
+              style={{
+                color:
+                  "#64748b",
 
-            <p>
-              • Do you enjoy
-              reading books?
-            </p>
-
-            <p>
-              • What type of
-              music do you
-              prefer?
-            </p>
-
-            <p>
-              • How do you
-              usually spend your
-              weekends?
+                marginTop:
+                  "10px"
+              }}
+            >
+              GPT-Powered
+              Speaking Feedback
             </p>
           </div>
+
+          <select
+            onChange={(e) => {
+              const selected =
+                speakingMocks.find(
+                  (
+                    mock
+                  ) =>
+                    mock.id ===
+                    Number(
+                      e
+                        .target
+                        .value
+                    )
+                );
+
+              setCurrentSet(
+                selected
+              );
+
+              setResponse("");
+
+              setSubmitted(
+                false
+              );
+
+              setAiFeedback(
+                ""
+              );
+            }}
+            style={{
+              padding:
+                "14px 18px",
+
+              borderRadius:
+                "14px",
+
+              border:
+                "1px solid #cbd5e1",
+
+              fontSize:
+                "16px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
+            }}
+          >
+            {speakingMocks.map(
+              (
+                mock
+              ) => (
+                <option
+                  key={
+                    mock.id
+                  }
+                  value={
+                    mock.id
+                  }
+                >
+                  Speaking Set{" "}
+                  {
+                    mock.id
+                  }
+                </option>
+              )
+            )}
+          </select>
         </div>
+
+        <SearchBar
+          data={
+            speakingMocks
+          }
+        />
+
+        {!submitted && (
+          <div
+            style={{
+              marginBottom:
+                "30px"
+            }}
+          >
+            <ExamTimer
+              initialMinutes={
+                15
+              }
+              onComplete={
+                handleSubmit
+              }
+            />
+          </div>
+        )}
 
         <div
           style={{
-            background: "white",
-            padding: "40px",
-            borderRadius: "20px"
+            background:
+              "#f1f5f9",
+
+            padding:
+              isMobile
+                ? "20px"
+                : "30px",
+
+            borderRadius:
+              "20px",
+
+            marginBottom:
+              "40px"
           }}
         >
-          <h2>
-            Part 2:
+          <h2
+            style={{
+              marginBottom:
+                "20px"
+            }}
+          >
             Cue Card
-          </h2>
-
-          <div
-            style={{
-              background: "#e0f2fe",
-              padding: "30px",
-              borderRadius: "18px",
-              marginTop: "20px",
-              lineHeight: "2"
-            }}
-          >
-            <h3>
-              Describe a person
-              who inspired you.
-            </h3>
-
-            <p>
-              You should say:
-            </p>
-
-            <p>
-              • who the person
-              is
-            </p>
-
-            <p>
-              • how you know
-              them
-            </p>
-
-            <p>
-              • what qualities
-              they have
-            </p>
-
-            <p>
-              • and explain why
-              they inspired you.
-            </p>
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "white",
-            padding: "40px",
-            borderRadius: "20px"
-          }}
-        >
-          <h2>
-            Part 3:
-            Discussion
-          </h2>
-
-          <div
-            style={{
-              marginTop: "20px",
-              lineHeight: "2"
-            }}
-          >
-            <p>
-              • Why do people
-              admire successful
-              individuals?
-            </p>
-
-            <p>
-              • Do role models
-              influence young
-              people strongly?
-            </p>
-
-            <p>
-              • How has social
-              media changed the
-              idea of inspiration?
-            </p>
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "white",
-            padding: "40px",
-            borderRadius: "20px"
-          }}
-        >
-          <h2>
-            Speaking Recorder
           </h2>
 
           <p
             style={{
-              marginTop: "16px",
-              marginBottom: "20px"
-            }}
-          >
-            Voice recording and
-            AI pronunciation
-            analysis will be
-            integrated here.
-          </p>
+              lineHeight:
+                "1.9",
 
-          <button
-            style={{
-              padding: "16px 28px",
-              border: "none",
-              borderRadius: "14px",
-              background: "#22c55e",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "18px",
-              cursor: "pointer"
+              fontSize:
+                isMobile
+                  ? "16px"
+                  : "18px",
+
+              color:
+                "#334155"
             }}
           >
-            Start Recording
-          </button>
+            {
+              currentSet.cueCard
+            }
+          </p>
         </div>
 
-        <button
-          onClick={() =>
-            setSubmitted(true)
+        <textarea
+          value={response}
+          onChange={(e) =>
+            setResponse(
+              e.target.value
+            )
           }
+          disabled={
+            submitted
+          }
+          placeholder="Write your speaking response here..."
           style={{
             width: "100%",
-            padding: "20px",
-            border: "none",
-            borderRadius: "16px",
-            background: "#0f172a",
-            color: "white",
-            fontSize: "24px",
-            cursor: "pointer",
-            fontWeight: "bold"
-          }}
-        >
-          Submit Speaking Test
-        </button>
 
-        {submitted && (
-          <div
+            minHeight:
+              isMobile
+                ? "240px"
+                : "320px",
+
+            padding:
+              "24px",
+
+            borderRadius:
+              "20px",
+
+            border:
+              "1px solid #cbd5e1",
+
+            fontSize:
+              "17px",
+
+            lineHeight:
+              "1.8",
+
+            resize:
+              "vertical",
+
+            marginBottom:
+              "30px",
+
+            outline:
+              "none"
+          }}
+        />
+
+        {!submitted ? (
+          <button
+            onClick={
+              handleSubmit
+            }
             style={{
-              background: "#0f172a",
-              color: "white",
-              padding: "40px",
-              borderRadius: "20px",
-              textAlign: "center"
+              background:
+                "#22d3ee",
+
+              border:
+                "none",
+
+              padding:
+                "16px 32px",
+
+              borderRadius:
+                "14px",
+
+              fontWeight:
+                "bold",
+
+              cursor:
+                "pointer",
+
+              fontSize:
+                "18px",
+
+              width:
+                isMobile
+                  ? "100%"
+                  : "auto"
             }}
           >
-            <h2>
-              Speaking Test
-              Submitted
-            </h2>
+            Submit For AI
+            Evaluation
+          </button>
+        ) : (
+          <div
+            style={{
+              marginTop:
+                "50px",
 
-            <p
+              background:
+                "#f1f5f9",
+
+              padding:
+                isMobile
+                  ? "25px"
+                  : "40px",
+
+              borderRadius:
+                "24px"
+            }}
+          >
+            <h1
               style={{
-                marginTop: "20px",
-                fontSize: "20px"
+                fontSize:
+                  isMobile
+                    ? "32px"
+                    : "42px",
+
+                color:
+                  "#22c55e",
+
+                marginBottom:
+                  "20px"
               }}
             >
-              AI speaking
-              evaluation and band
-              prediction will be
-              added in future
-              versions.
-            </p>
+              AI Speaking
+              Evaluation
+            </h1>
+
+            {loadingAI ? (
+              <p>
+                Evaluating
+                speaking response...
+              </p>
+            ) : (
+              <>
+                <h2
+                  style={{
+                    marginBottom:
+                      "20px"
+                  }}
+                >
+                  Estimated IELTS
+                  Band:
+                  {" "}
+                  {
+                    estimatedBand
+                  }
+                </h2>
+
+                <div
+                  style={{
+                    background:
+                      "white",
+
+                    padding:
+                      "24px",
+
+                    borderRadius:
+                      "18px",
+
+                    lineHeight:
+                      "1.9",
+
+                    whiteSpace:
+                      "pre-wrap",
+
+                    color:
+                      "#334155"
+                  }}
+                >
+                  {aiFeedback}
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

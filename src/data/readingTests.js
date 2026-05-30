@@ -1,21 +1,72 @@
-export const readingTests = [
+const readingTests = [
   {
     id: 1,
-    title: "The Rise of Vertical Farming",
+
+    title:
+      "Climate Change Basics",
+
     passage:
-      "In recent decades, concerns regarding food security and environmental sustainability have encouraged researchers and urban planners to reconsider traditional agricultural practices.",
+      "Climate change refers to long-term shifts in temperatures and weather patterns. Human activities are the primary cause of modern climate change.",
 
     questions: [
       {
-        question: "Why has vertical farming become popular?",
+        question:
+          "What is the primary cause of climate change?",
+
         options: [
-          "It eliminates all farming costs",
-          "It improves sustainable food production",
-          "It removes urbanization"
+          "Natural causes",
+          "Human activities",
+          "Ocean tides",
+          "Solar flares"
         ],
 
-        answer: "It improves sustainable food production"
+        answer:
+          "Human activities"
+      },
+
+      {
+        question:
+          "Climate change affects:",
+
+        options: [
+          "Only temperature",
+          "Only rainfall",
+          "Weather patterns",
+          "Nothing"
+        ],
+
+        answer:
+          "Weather patterns"
+      }
+    ]
+  },
+
+  {
+    id: 2,
+
+    title:
+      "Technology & Society",
+
+    passage:
+      "Technology has transformed communication, education, and business across the world.",
+
+    questions: [
+      {
+        question:
+          "Technology has improved:",
+
+        options: [
+          "Communication",
+          "Transportation only",
+          "Agriculture only",
+          "None"
+        ],
+
+        answer:
+          "Communication"
       }
     ]
   }
 ];
+
+export default readingTests;

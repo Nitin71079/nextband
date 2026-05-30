@@ -1,183 +1,211 @@
-import { Link } from "react-router-dom";
+import {
+  Link
+} from "react-router-dom";
 
 export default function Footer() {
   return (
     <footer
       style={{
-        background: "#0f172a",
-        color: "white",
-        padding: "60px 40px",
-        marginTop: "80px"
+        marginTop: "100px",
+
+        padding:
+          "60px 20px",
+
+        background:
+          "#0f172a",
+
+        color: "white"
       }}
     >
-      <div
-        style={{
-          maxWidth: "1300px",
-          margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(250px,1fr))",
+      <div className="container">
+        <div
+          style={{
+            display: "grid",
 
-          gap: "40px"
-        }}
-      >
-        <div>
-          <h2
-            style={{
-              marginBottom: "20px"
-            }}
-          >
-            NextBand
-          </h2>
+            gridTemplateColumns:
+              "repeat(auto-fit,minmax(220px,1fr))",
 
-          <p
-            style={{
-              lineHeight: "1.8",
-              color: "#cbd5e1"
-            }}
-          >
-            Modern AI-powered
-            IELTS preparation
-            platform for Reading,
-            Listening, Writing,
-            and Speaking practice.
-          </p>
-        </div>
+            gap: "40px"
+          }}
+        >
+          {/* BRAND */}
 
-        <div>
-          <h3
-            style={{
-              marginBottom: "20px"
-            }}
-          >
-            Modules
-          </h3>
+          <div>
+            <h2
+              style={{
+                marginBottom:
+                  "20px",
 
-          <div
-            style={{
-              display: "grid",
-              gap: "10px"
-            }}
-          >
-            <Link
-              to="/reading"
-              style={linkStyle}
+                color:
+                  "#22d3ee"
+              }}
             >
-              Reading
-            </Link>
+              NextBand
+            </h2>
 
-            <Link
-              to="/listening"
-              style={linkStyle}
-            >
-              Listening
-            </Link>
+            <p
+              style={{
+                lineHeight:
+                  "1.8",
 
-            <Link
-              to="/writing"
-              style={linkStyle}
+                opacity: 0.8
+              }}
             >
-              Writing
-            </Link>
-
-            <Link
-              to="/speaking"
-              style={linkStyle}
-            >
-              Speaking
-            </Link>
+              AI-powered IELTS
+              preparation platform
+              helping students
+              improve smarter and
+              faster.
+            </p>
           </div>
-        </div>
 
-        <div>
-          <h3
-            style={{
-              marginBottom: "20px"
-            }}
-          >
-            Legal
-          </h3>
+          {/* LINKS */}
 
-          <div
-            style={{
-              display: "grid",
-              gap: "10px"
-            }}
-          >
-            <Link
-              to="/privacy-policy"
-              style={linkStyle}
+          <div>
+            <h3
+              style={{
+                marginBottom:
+                  "20px"
+              }}
             >
-              Privacy Policy
-            </Link>
+              Platform
+            </h3>
 
-            <Link
-              to="/terms"
-              style={linkStyle}
+            <div
+              style={{
+                display: "flex",
+
+                flexDirection:
+                  "column",
+
+                gap: "12px",
+
+                opacity: 0.85
+              }}
             >
-              Terms &
-              Conditions
-            </Link>
+              <Link to="/dashboard">
+                Dashboard
+              </Link>
 
-            <Link
-              to="/contact"
-              style={linkStyle}
+              <Link to="/ai-assistant">
+                AI Assistant
+              </Link>
+
+              <Link to="/planner">
+                Study Planner
+              </Link>
+
+              <Link to="/community">
+                Community
+              </Link>
+            </div>
+          </div>
+
+          {/* FEATURES */}
+
+          <div>
+            <h3
+              style={{
+                marginBottom:
+                  "20px"
+              }}
+            >
+              Features
+            </h3>
+
+            <div
+              style={{
+                display: "flex",
+
+                flexDirection:
+                  "column",
+
+                gap: "12px",
+
+                opacity: 0.85
+              }}
+            >
+              <div>
+                AI Speaking
+              </div>
+
+              <div>
+                Writing Evaluation
+              </div>
+
+              <div>
+                Mock Tests
+              </div>
+
+              <div>
+                Performance Analytics
+              </div>
+            </div>
+          </div>
+
+          {/* CONTACT */}
+
+          <div>
+            <h3
+              style={{
+                marginBottom:
+                  "20px"
+              }}
             >
               Contact
-            </Link>
+            </h3>
+
+            <div
+              style={{
+                display: "flex",
+
+                flexDirection:
+                  "column",
+
+                gap: "12px",
+
+                opacity: 0.85
+              }}
+            >
+              <div>
+                hello@nextband.ai
+              </div>
+
+              <div>
+                support@nextband.ai
+              </div>
+
+              <div>
+                Global AI IELTS
+                Platform
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <h3
-            style={{
-              marginBottom: "20px"
-            }}
-          >
-            Future Upgrades
-          </h3>
+        {/* BOTTOM */}
 
-          <p>
-            AI Essay Scoring
-          </p>
+        <div
+          style={{
+            marginTop:
+              "60px",
 
-          <p>
-            Pronunciation
-            Analysis
-          </p>
+            paddingTop:
+              "25px",
 
-          <p>
-            Adaptive Learning
-          </p>
+            borderTop:
+              "1px solid rgba(255,255,255,0.1)",
 
-          <p>
-            Full Mock Exams
-          </p>
+            textAlign:
+              "center",
+
+            opacity: 0.7
+          }}
+        >
+          © 2026 NextBand.
+          All rights reserved.
         </div>
-      </div>
-
-      <div
-        style={{
-          borderTop:
-            "1px solid rgba(255,255,255,0.1)",
-
-          marginTop: "50px",
-
-          paddingTop: "30px",
-
-          textAlign: "center",
-
-          color: "#94a3b8"
-        }}
-      >
-        © 2026 NextBand. All
-        rights reserved.
       </div>
     </footer>
   );
 }
-
-const linkStyle = {
-  color: "#cbd5e1",
-  textDecoration: "none"
-};

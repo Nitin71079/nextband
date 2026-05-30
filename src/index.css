@@ -4,80 +4,125 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: #f1f5f9;
-  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  font-family: Arial,
+    sans-serif;
+  color: #0f172a;
   overflow-x: hidden;
 }
 
+a {
+  transition: 0.3s ease;
+}
+
 button {
-  transition: 0.3s;
+  transition: 0.3s ease;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
 }
 
 button:hover {
-  opacity: 0.9;
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
-a {
-  transition: 0.3s;
-}
-
-a:hover {
-  opacity: 0.8;
-}
-
-textarea,
-input {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
+  border-color: #22d3ee !important;
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      34,
+      211,
+      238,
+      0.15
+    );
+}
+
+::selection {
+  background: #22d3ee;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+}
+
+.mobile-menu-btn {
+  display: none;
 }
 
 @media (max-width: 900px) {
+  .desktop-links {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
   h1 {
-    font-size: 42px !important;
+    line-height: 1.2;
+  }
+
+  section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  textarea {
+    min-height: 220px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 38px !important;
   }
 
   h2 {
-    font-size: 28px !important;
+    font-size: 26px !important;
   }
 
   p {
     font-size: 16px !important;
   }
 
-  nav {
-    padding: 20px !important;
+  button,
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
   }
 }
 
-@media (max-width: 700px) {
-  nav {
-    flex-direction: column !important;
-    gap: 20px;
-  }
-
-  nav div {
-    justify-content: center;
-  }
-
-  textarea {
-    height: 250px !important;
-  }
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-@media (max-width: 500px) {
-  h1 {
-    font-size: 34px !important;
-  }
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
 
-  h2 {
-    font-size: 24px !important;
-  }
+::-webkit-scrollbar-thumb {
+  background: #22d3ee;
+  border-radius: 999px;
+}
 
-  button {
-    width: 100%;
-  }
-
-  nav div {
-    gap: 14px !important;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
 }

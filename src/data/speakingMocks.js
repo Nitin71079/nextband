@@ -1,26 +1,48 @@
-export const speakingMocks = [
+const speakingSets = [
   {
     id: 1,
 
-    part1: [
-      "What is your full name?",
+    cueCard:
+      "Describe a memorable trip you have taken.",
 
-      "Do you enjoy studying English?",
+    followUps: [
+      "Why was this trip memorable?",
 
-      "What do you usually do in your free time?"
-    ],
+      "Would you visit again?",
 
-    part2: {
-      cueCard:
-        "Describe a memorable journey you had. You should say where you went, who you went with, what happened during the trip, and explain why it was memorable."
-    },
+      "How do travel experiences help people?"
+    ]
+  },
 
-    part3: [
-      "Why do people enjoy travelling?",
+  {
+    id: 2,
 
-      "How has tourism changed in recent years?",
+    cueCard:
+      "Describe a person who inspired you.",
 
-      "Do you think international travel is important?"
+    followUps: [
+      "How did this person influence you?",
+
+      "What qualities do you admire?",
+
+      "Do role models affect young people?"
+    ]
+  },
+
+  {
+    id: 3,
+
+    cueCard:
+      "Describe a skill you want to learn.",
+
+    followUps: [
+      "Why do you want this skill?",
+
+      "How will it help your future?",
+
+      "Is learning new skills important?"
     ]
   }
 ];
+
+export default speakingSets;

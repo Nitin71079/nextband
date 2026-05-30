@@ -6,12 +6,11 @@ import {
 } from "react";
 
 import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
+  onAuthStateChanged
 } from "firebase/auth";
 
-import { app } from "../firebase";
+import { auth }
+from "../firebase";
 
 const AuthContext =
   createContext();
@@ -19,42 +18,38 @@ const AuthContext =
 export function AuthProvider({
   children
 }) {
-  const [user, setUser] =
+  const [user,
+    setUser] =
     useState(null);
 
-  const [loading, setLoading] =
+  const [loading,
+    setLoading] =
     useState(true);
-
-  const auth = getAuth(app);
 
   useEffect(() => {
     const unsubscribe =
       onAuthStateChanged(
         auth,
         (currentUser) => {
-          setUser(currentUser);
+          setUser(
+            currentUser
+          );
 
           setLoading(false);
         }
       );
 
-    return () =>
-      unsubscribe();
+    return unsubscribe;
   }, []);
-
-  const logout = async () => {
-    await signOut(auth);
-  };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        logout
+        loading
       }}
     >
-      {!loading &&
-        children}
+      {children}
     </AuthContext.Provider>
   );
 }

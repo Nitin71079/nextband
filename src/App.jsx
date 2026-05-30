@@ -1,106 +1,275 @@
 import {
-  BrowserRouter,
   Routes,
   Route
 } from "react-router-dom";
 
+import {
+  lazy,
+  Suspense
+} from "react";
+
 import Navbar from "./components/Navbar";
-
 import Footer from "./components/Footer";
+import MobileNav from "./components/MobileNav";
 
-import ProtectedRoute from "./components/ProtectedRoute";
+import Loader from "./components/Loader";
 
-import Home from "./pages/Home";
+import PremiumGate from "./components/PremiumGate";
+import AdminRoute from "./components/AdminRoute";
+import PrivateRoute from "./components/PrivateRoute";
 
-import Reading from "./pages/Reading";
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Profile = lazy(() => import("./pages/Profile"));
+const StudyPlanner = lazy(() => import("./pages/StudyPlanner"));
+const Achievements = lazy(() => import("./pages/Achievements"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const Community = lazy(() => import("./pages/Community"));
+const Mentors = lazy(() => import("./pages/Mentors"));
+const LiveClasses = lazy(() => import("./pages/LiveClasses"));
+const AIAssistant = lazy(() => import("./pages/AIAssistant"));
+const Insights = lazy(() => import("./pages/Insights"));
+const Streaks = lazy(() => import("./pages/Streaks"));
+const Referrals = lazy(() => import("./pages/Referrals"));
+const Support = lazy(() => import("./pages/Support"));
+const Reading = lazy(() => import("./pages/Reading"));
+const Listening = lazy(() => import("./pages/Listening"));
+const Writing = lazy(() => import("./pages/Writing"));
+const Speaking = lazy(() => import("./pages/Speaking"));
+const FullMocks = lazy(() => import("./pages/FullMocks"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Admin = lazy(() => import("./pages/Admin"));
+const Success = lazy(() => import("./pages/Success"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
-import Listening from "./pages/Listening";
-
-import Writing from "./pages/Writing";
-
-import Speaking from "./pages/Speaking";
-
-import Login from "./pages/Login";
-
-import Dashboard from "./pages/Dashboard";
-
-import NotFound from "./pages/NotFound";
-
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-
-import Terms from "./pages/Terms";
-
-import Contact from "./pages/Contact";
-
-export default function App() {
+function App() {
   return (
-    <BrowserRouter>
+    <>
       <Navbar />
 
-      <Routes>
-        <Route
-          path="/"
-          element={<Home />}
-        />
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-        <Route
-          path="/reading"
-          element={<Reading />}
-        />
+          <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/listening"
-          element={<Listening />}
-        />
+          <Route
+            path="/register"
+            element={<Register />}
+          />
 
-        <Route
-          path="/writing"
-          element={<Writing />}
-        />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/speaking"
-          element={<Speaking />}
-        />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+          <Route
+            path="/planner"
+            element={
+              <PrivateRoute>
+                <StudyPlanner />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/achievements"
+            element={
+              <PrivateRoute>
+                <Achievements />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/privacy-policy"
-          element={
-            <PrivacyPolicy />
-          }
-        />
+          <Route
+            path="/notifications"
+            element={
+              <PrivateRoute>
+                <Notifications />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/terms"
-          element={<Terms />}
-        />
+          <Route
+            path="/community"
+            element={
+              <PrivateRoute>
+                <Community />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/contact"
-          element={<Contact />}
-        />
+          <Route
+            path="/mentors"
+            element={
+              <PrivateRoute>
+                <Mentors />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
-      </Routes>
+          <Route
+            path="/live-classes"
+            element={
+              <PrivateRoute>
+                <LiveClasses />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/ai-assistant"
+            element={
+              <PrivateRoute>
+                <AIAssistant />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/insights"
+            element={
+              <PrivateRoute>
+                <Insights />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/streaks"
+            element={
+              <PrivateRoute>
+                <Streaks />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/referrals"
+            element={
+              <PrivateRoute>
+                <Referrals />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/support"
+            element={
+              <PrivateRoute>
+                <Support />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/reading"
+            element={
+              <PrivateRoute>
+                <Reading />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/listening"
+            element={
+              <PrivateRoute>
+                <Listening />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/writing"
+            element={
+              <PrivateRoute>
+                <Writing />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/speaking"
+            element={
+              <PrivateRoute>
+                <Speaking />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/leaderboard"
+            element={
+              <PrivateRoute>
+                <Leaderboard />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/pricing"
+            element={
+              <PrivateRoute>
+                <Pricing />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/success"
+            element={
+              <PrivateRoute>
+                <Success />
+              </PrivateRoute>
+            }
+          />
+
+          {/* TEMPORARY DIRECT ROUTE */}
+          <Route
+            path="/full-mocks"
+            element={<FullMocks />}
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <AdminRoute>
+                  <Admin />
+                </AdminRoute>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="*"
+            element={<NotFound />}
+          />
+        </Routes>
+      </Suspense>
 
       <Footer />
-    </BrowserRouter>
+
+      <MobileNav />
+    </>
   );
 }
+
+export default App;
