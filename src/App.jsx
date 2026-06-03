@@ -1,23 +1,32 @@
+import AudioGenerator from "./pages/AudioGenerator";
+import AccentLab from "./pages/AccentLab";
+import AIControlCenter from "./pages/AIControlCenter";
+import ResultsHistory from "./pages/ResultsHistory";
+import ProgressAnalytics from "./pages/ProgressAnalytics";
+import ExamResults from "./pages/ExamResults";
+import FullAcademicMock from "./pages/FullAcademicMock";
+import FullGeneralMock from "./pages/FullGeneralMock";
 import {
   Routes,
   Route
 } from "react-router-dom";
 
+import MockListening from "./pages/MockListening";
+import MockWriting from "./pages/MockWriting";
+import MockSpeaking from "./pages/MockSpeaking";
+import PerformanceDashboard from "./pages/PerformanceDashboard";
 import {
   lazy,
   Suspense
 } from "react";
-
+import MockReading from "./pages/MockReading";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import MobileNav from "./components/MobileNav";
-
 import Loader from "./components/Loader";
-
 import PremiumGate from "./components/PremiumGate";
 import AdminRoute from "./components/AdminRoute";
 import PrivateRoute from "./components/PrivateRoute";
-
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -60,7 +69,14 @@ function App() {
             path="/register"
             element={<Register />}
           />
-
+<Route
+  path="/accent-lab"
+  element={
+    <PrivateRoute>
+      <AccentLab />
+    </PrivateRoute>
+  }
+/>
           <Route
             path="/dashboard"
             element={
@@ -105,6 +121,24 @@ function App() {
               </PrivateRoute>
             }
           />
+<Route
+  path="/results-history"
+  element={
+    <PrivateRoute>
+      <ResultsHistory />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/analytics"
+  element={
+    <PrivateRoute>
+      <ProgressAnalytics />
+    </PrivateRoute>
+  }
+/>
+
 
           <Route
             path="/community"
@@ -150,7 +184,14 @@ function App() {
               </PrivateRoute>
             }
           />
-
+<Route
+  path="/exam-results"
+  element={
+    <PrivateRoute>
+      <ExamResults />
+    </PrivateRoute>
+  }
+/>
           <Route
             path="/streaks"
             element={
@@ -204,7 +245,19 @@ function App() {
               </PrivateRoute>
             }
           />
+<Route
+  path="/mock/academic"
+  element={
+    <FullAcademicMock />
+  }
+/>
 
+<Route
+  path="/mock/general"
+  element={
+    <FullGeneralMock />
+  }
+/>
           <Route
             path="/speaking"
             element={
@@ -257,7 +310,43 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route
+  path="/mock/listening"
+  element={<MockListening />}
+/>
 
+<Route
+  path="/mock/writing"
+  element={<MockWriting />}
+/>
+<Route
+  path="/performance"
+  element={
+    <PrivateRoute>
+      <PerformanceDashboard />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/mock/speaking"
+  element={<MockSpeaking />}
+/>
+<Route
+  path="/ai-center"
+  element={
+    <PrivateRoute>
+      <AIControlCenter />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/audio-generator"
+  element={<AudioGenerator />}
+/>
+        <Route
+          path="/mock/reading"
+           element={<MockReading />}
+        />
           <Route
             path="*"
             element={<NotFound />}

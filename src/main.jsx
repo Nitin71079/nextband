@@ -6,16 +6,21 @@ import App from "./App";
 
 import "./styles/global.css";
 
-import { BrowserRouter }
-from "react-router-dom";
+import {
+  BrowserRouter,
+} from "react-router-dom";
 
 import {
-  ThemeProvider
+  ThemeProvider,
 } from "./context/ThemeContext";
 
 import {
-  AuthProvider
+  AuthProvider,
 } from "./context/AuthContext";
+
+import {
+  ExamProvider,
+} from "./context/ExamContext";
 
 import { Toaster }
 from "react-hot-toast";
@@ -29,11 +34,13 @@ ReactDOM.createRoot(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <Toaster
-            position="top-right"
-          />
+          <ExamProvider>
+            <Toaster
+              position="top-right"
+            />
 
-          <App />
+            <App />
+          </ExamProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
