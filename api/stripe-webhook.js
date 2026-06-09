@@ -7,7 +7,7 @@ import {
 import {
   getFirestore,
   doc,
-  setDoc
+  updateDoc
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -72,32 +72,32 @@ export default async function handler(
       );
 
     switch (event.type) {
-      case "checkout.session.completed":
-        const session =
-          event.data.object;
+  case "checkout.session.completed": {
+  const session =
+    event.data.object;
 
-        const email =
-          session.customer_email;
+  const uid =
+    session.metadata?.uid;
 
-        if (email) {
-          await setDoc(
-            doc(
-              db,
-              "premiumUsers",
-              email
-            ),
-            {
-              premium: true,
+  if (uid) {
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        uid
+      ),
+      {
+        premium: true
+      }
+    );
 
-              email,
+    console.log(
+      `Premium activated for ${uid}`
+    );
+  }
 
-              updatedAt:
-                new Date()
-            }
-          );
-        }
-
-        break;
+  break;
+}
 
       case "customer.subscription.deleted":
         console.log(

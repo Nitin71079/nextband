@@ -1,10 +1,16 @@
-    import { useEffect, useState } from "react";
+import {
+  useExam,
+} from "../context/ExamContext";
+import { useEffect, useState } from "react";
 
     import AudioPlayer from "../components/AudioPlayer";
 
     import listeningTests from "../data/listening/tests";
 
     export default function MockListening() {
+        const {
+  setListeningBand,
+} = useExam();
     const [test] = useState(
     () =>
     listeningTests[
@@ -26,31 +32,43 @@
     (test.duration || 30) * 60
     );
 
-    useEffect(() => {
-    const timer =
+   useEffect(() => {
+  const timer =
     setInterval(() => {
-    setTimeLeft(
-    (prev) => {
-    if (prev <= 1) {
-    clearInterval(
-    timer
-    );
+      setTimeLeft(
+        (prev) => {
+          if (prev <= 1) {
+            clearInterval(
+              timer
+            );
 
             setSubmitted(
-                true
+              true
             );
 
             return 0;
-            }
+          }
 
-            return prev - 1;
+          return prev - 1;
         }
-        );
+      );
     }, 1000);
 
-    return () =>
+  return () =>
     clearInterval(timer);
-    }, []);
+}, []);
+useEffect(() => {
+  if (submitted) {
+    const score =
+      calculateScore();
+
+    const band = getBand(score);
+
+    setListeningBand(
+      band
+    );
+  }
+}, [submitted]);
 
     function updateAnswer(
     questionId,
@@ -135,14 +153,13 @@
 
     const seconds =
     timeLeft % 60;
-
-    if (submitted) {
-    const score =
+if (submitted) {
+  const score =
     calculateScore();
 
-
-    const band =
+  const band =
     getBand(score);
+
 
     const result = {
     testId: test.id,
@@ -262,7 +279,6 @@
     > <div> <h1>
     IELTS Listening Test </h1>
 
-    ```
         <p>
             {test.title}
         </p>

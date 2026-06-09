@@ -15,12 +15,10 @@ export default async function handler(
   }
 
   try {
+    const { uid } = req.body;
+
     const session =
       await stripe.checkout.sessions.create({
-        payment_method_types: [
-          "card",
-        ],
-
         mode: "subscription",
 
         line_items: [
@@ -31,8 +29,12 @@ export default async function handler(
           },
         ],
 
+        metadata: {
+          uid,
+        },
+
         success_url:
-          `${req.headers.origin}/dashboard`,
+          `${req.headers.origin}/success`,
 
         cancel_url:
           `${req.headers.origin}/pricing`,
@@ -42,11 +44,15 @@ export default async function handler(
       url: session.url,
     });
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Stripe Error:",
+      error
+    );
 
     return res.status(500).json({
       error:
-        "Failed to create checkout session",
+        error.message ||
+        "Checkout failed",
     });
   }
 }

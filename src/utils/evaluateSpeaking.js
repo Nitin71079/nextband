@@ -1,66 +1,50 @@
-import OpenAI from "openai";
-
-const openai =
-  new OpenAI({
-    apiKey:
-      import.meta.env
-        .VITE_OPENAI_API_KEY,
-
-    dangerouslyAllowBrowser:
-      true
-  });
-
 export async function evaluateSpeaking(
   transcript,
   cueCard
 ) {
   try {
     const response =
-      await openai.chat.completions.create(
+      await fetch(
+        "/api/evaluate-speaking",
         {
-          model:
-            "gpt-4.1-mini",
+          method: "POST",
 
-          messages: [
-            {
-              role:
-                "system",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
-              content:
-                "You are a professional IELTS speaking examiner. Evaluate speaking responses and provide estimated IELTS band score, fluency feedback, grammar feedback, vocabulary feedback, coherence analysis, pronunciation suggestions, and improvement tips."
-            },
-
-            {
-              role:
-                "user",
-
-              content: `
+          body:
+            JSON.stringify({
+              transcript: `
 IELTS Cue Card:
 ${cueCard}
 
 Student Transcript:
 ${transcript}
-
-Please provide:
-1. Estimated IELTS Band
-2. Fluency Feedback
-3. Grammar Feedback
-4. Vocabulary Feedback
-5. Coherence Feedback
-6. Pronunciation Suggestions
-7. Improvement Tips
-`
-            }
-          ],
-
-          temperature:
-            0.7
+`,
+            }),
         }
       );
 
-    return response
-      .choices[0]
-      .message.content;
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+          "Evaluation failed"
+      );
+    }
+
+    return `
+Overall Band: ${data.overallBand}
+
+Fluency & Coherence: ${data.fluency}
+Lexical Resource: ${data.lexicalResource}
+Grammar: ${data.grammar}
+Pronunciation: ${data.pronunciation}
+`;
   } catch (error) {
     console.error(
       error

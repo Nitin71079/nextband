@@ -13,33 +13,23 @@ export async function transcribeAudio(
       "speech.webm"
     );
 
-    formData.append(
-      "model",
-      "whisper-1"
-    );
-
     const response =
       await axios.post(
-        "https://api.openai.com/v1/audio/transcriptions",
-
+        "/api/transcribe",
         formData,
-
         {
           headers: {
-            Authorization: `Bearer ${
-              import.meta
-                .env
-                .VITE_OPENAI_API_KEY
-            }`,
-
             "Content-Type":
-              "multipart/form-data"
-          }
+              "multipart/form-data",
+          },
         }
       );
 
-    return response
-      .data.text;
+    return (
+      response.data
+        .transcript ||
+      "No transcript returned."
+    );
   } catch (error) {
     console.error(
       error

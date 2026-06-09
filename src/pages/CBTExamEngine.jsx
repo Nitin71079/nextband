@@ -1,3 +1,6 @@
+import {
+  useExam,
+} from "../context/ExamContext";
 import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
@@ -12,26 +15,56 @@ import {
 } from "../services/examSession";
 
 export default function CBTExamEngine() {
+  const {
+  readingBand,
+  listeningBand,
+  writingBand,
+  speakingBand,
+} = useExam();
+  
   const navigate =
     useNavigate();
 
   const [stage, setStage] =
     useState("intro");
+function finishExam() {
+  console.log("READING", readingBand);
+  console.log("LISTENING", listeningBand);
+  console.log("WRITING", writingBand);
+  console.log("SPEAKING", speakingBand);
 
-  function finishExam() {
-    saveExamSession({
-      reading: 7.0,
-      listening: 6.5,
-      writing: 6.5,
-      speaking: 7.0,
-      completedAt:
-        new Date().toLocaleString(),
-    });
+  saveExamSession({
+    reading: readingBand || 0,
+    listening: listeningBand || 0,
+    writing: writingBand || 0,
+    speaking: speakingBand || 0,
+    completedAt: new Date().toLocaleString(),
+  });
 
-    navigate(
-      "/exam-results"
-    );
-  }
+  navigate("/exam-results");
+}
+function finishExam() {
+  saveExamSession({
+    reading:
+      readingBand || 0,
+
+    listening:
+      listeningBand || 0,
+
+    writing:
+      writingBand || 0,
+
+    speaking:
+      speakingBand || 0,
+
+    completedAt:
+      new Date().toLocaleString(),
+  });
+
+  navigate(
+    "/exam-results"
+  );
+}
 
   if (stage === "intro") {
     return (

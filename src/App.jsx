@@ -38,7 +38,6 @@ const Notifications = lazy(() => import("./pages/Notifications"));
 const Community = lazy(() => import("./pages/Community"));
 const Mentors = lazy(() => import("./pages/Mentors"));
 const LiveClasses = lazy(() => import("./pages/LiveClasses"));
-const AIAssistant = lazy(() => import("./pages/AIAssistant"));
 const Insights = lazy(() => import("./pages/Insights"));
 const Streaks = lazy(() => import("./pages/Streaks"));
 const Referrals = lazy(() => import("./pages/Referrals"));
@@ -73,7 +72,9 @@ function App() {
   path="/accent-lab"
   element={
     <PrivateRoute>
-      <AccentLab />
+      <PremiumGate>
+        <AccentLab />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -134,7 +135,9 @@ function App() {
   path="/analytics"
   element={
     <PrivateRoute>
-      <ProgressAnalytics />
+      <PremiumGate>
+        <ProgressAnalytics />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -163,15 +166,6 @@ function App() {
             element={
               <PrivateRoute>
                 <LiveClasses />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/ai-assistant"
-            element={
-              <PrivateRoute>
-                <AIAssistant />
               </PrivateRoute>
             }
           />
@@ -248,14 +242,18 @@ function App() {
 <Route
   path="/mock/academic"
   element={
-    <FullAcademicMock />
+    <PremiumGate>
+      <FullAcademicMock />
+    </PremiumGate>
   }
 />
 
 <Route
   path="/mock/general"
   element={
-    <FullGeneralMock />
+    <PremiumGate>
+      <FullGeneralMock />
+    </PremiumGate>
   }
 />
           <Route
@@ -310,43 +308,68 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
+    <Route
   path="/mock/listening"
-  element={<MockListening />}
+  element={
+    <PremiumGate>
+      <MockListening />
+    </PremiumGate>
+  }
 />
-
 <Route
   path="/mock/writing"
-  element={<MockWriting />}
+  element={
+    <PremiumGate>
+      <MockWriting />
+    </PremiumGate>
+  }
 />
 <Route
   path="/performance"
   element={
     <PrivateRoute>
-      <PerformanceDashboard />
+      <PremiumGate>
+        <PerformanceDashboard />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
 <Route
   path="/mock/speaking"
-  element={<MockSpeaking />}
+  element={
+    <PremiumGate>
+      <MockSpeaking />
+    </PremiumGate>
+  }
 />
 <Route
   path="/ai-center"
   element={
     <PrivateRoute>
-      <AIControlCenter />
+      <PremiumGate>
+        <AIControlCenter />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
 <Route
   path="/audio-generator"
-  element={<AudioGenerator />}
+  element={
+    <PrivateRoute>
+      <PremiumGate>
+        <AudioGenerator />
+      </PremiumGate>
+    </PrivateRoute>
+  }
 />
-        <Route
-          path="/mock/reading"
-           element={<MockReading />}
-        />
+     <Route
+  path="/mock/reading"
+  element={
+    <PremiumGate>
+      <MockReading />
+    </PremiumGate>
+  }
+/>
           <Route
             path="*"
             element={<NotFound />}

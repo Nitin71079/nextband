@@ -1,130 +1,77 @@
-import {
-  useState
-} from "react";
-
-import OpenAI from "openai";
-
-const openai =
-  new OpenAI({
-    apiKey:
-      import.meta.env
-        .VITE_OPENAI_API_KEY,
-
-    dangerouslyAllowBrowser:
-      true
-  });
+import { useState } from "react";
 
 export default function AIChatbot() {
-  const [open,
-    setOpen] =
-    useState(false);
+  const [open, setOpen] = useState(false);
 
-  const [input,
-    setInput] =
-    useState("");
+  const [input, setInput] = useState("");
 
-  const [messages,
-    setMessages] =
-    useState([
-      {
-        role:
-          "assistant",
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content:
+        "Hi! I'm your AI IELTS Coach. Ask me anything about IELTS preparation.",
+    },
+  ]);
 
-        content:
-          "Hi! I'm your AI IELTS Coach. Ask me anything about IELTS preparation."
-      }
-    ]);
-
-  const [loading,
-    setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleSend() {
-    if (!input.trim())
-      return;
+    if (!input.trim()) return;
 
-    const updatedMessages =
-      [
-        ...messages,
+    const userInput = input;
 
-        {
-          role: "user",
+    const updatedMessages = [
+      ...messages,
+      {
+        role: "user",
+        content: userInput,
+      },
+    ];
 
-          content: input
-        }
-      ];
-
-    setMessages(
-      updatedMessages
-    );
-
+    setMessages(updatedMessages);
     setInput("");
-
     setLoading(true);
 
     try {
-      const response =
-        await openai.chat.completions.create(
-          {
-            model:
-              "gpt-4.1-mini",
+      const response = await fetch("/api/chat", {
+        method: "POST",
 
-            messages: [
-              {
-                role:
-                  "system",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-                content:
-                  "You are an expert IELTS coach helping students improve Reading, Listening, Writing, and Speaking band scores."
-              },
+        body: JSON.stringify({
+          message: userInput,
+        }),
+      });
 
-              ...updatedMessages.map(
-                (msg) => ({
-                  role:
-                    msg.role,
+      const data = await response.json();
 
-                  content:
-                    msg.content
-                })
-              )
-            ],
-
-            temperature:
-              0.7
-          }
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Request failed"
         );
-
-      const aiReply =
-        response
-          .choices[0]
-          .message.content;
+      }
 
       setMessages([
         ...updatedMessages,
-
         {
-          role:
-            "assistant",
-
+          role: "assistant",
           content:
-            aiReply
-        }
+            data.reply ||
+            "No response received.",
+        },
       ]);
     } catch (error) {
-      console.error(
-        error
-      );
+      console.error(error);
 
       setMessages([
         ...updatedMessages,
-
         {
-          role:
-            "assistant",
-
+          role: "assistant",
           content:
-            "AI response failed."
-        }
+            "Unable to contact AI. Check API configuration.",
+        },
       ]);
     }
 
@@ -133,107 +80,55 @@ export default function AIChatbot() {
 
   return (
     <>
-      {/* FLOATING BUTTON */}
-
       <button
         onClick={() =>
           setOpen(!open)
         }
         style={{
-          position:
-            "fixed",
-
+          position: "fixed",
           bottom: "30px",
-
           right: "30px",
-
           width: "70px",
-
           height: "70px",
-
-          borderRadius:
-            "50%",
-
-          border:
-            "none",
-
-          background:
-            "#22d3ee",
-
+          borderRadius: "50%",
+          border: "none",
+          background: "#22d3ee",
           color: "white",
-
-          fontSize:
-            "30px",
-
-          cursor:
-            "pointer",
-
+          fontSize: "30px",
+          cursor: "pointer",
           boxShadow:
             "0 10px 30px rgba(0,0,0,0.2)",
-
-          zIndex: 9999
+          zIndex: 9999,
         }}
       >
         🤖
       </button>
 
-      {/* CHAT WINDOW */}
-
       {open && (
         <div
           style={{
-            position:
-              "fixed",
-
-            bottom:
-              "120px",
-
-            right:
-              "30px",
-
-            width:
-              "380px",
-
-            maxHeight:
-              "650px",
-
-            background:
-              "white",
-
-            borderRadius:
-              "24px",
-
+            position: "fixed",
+            bottom: "120px",
+            right: "30px",
+            width: "380px",
+            maxHeight: "650px",
+            background: "white",
+            borderRadius: "24px",
             boxShadow:
               "0 20px 50px rgba(0,0,0,0.2)",
-
-            display:
-              "flex",
-
-            flexDirection:
-              "column",
-
-            overflow:
-              "hidden",
-
-            zIndex: 9999
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            zIndex: 9999,
           }}
         >
           <div
             style={{
-              background:
-                "#0f172a",
-
-              color:
-                "white",
-
-              padding:
-                "20px",
-
-              fontWeight:
-                "bold",
-
-              fontSize:
-                "20px"
+              background: "#0f172a",
+              color: "white",
+              padding: "20px",
+              fontWeight: "bold",
+              fontSize: "20px",
             }}
           >
             AI IELTS Coach
@@ -242,30 +137,16 @@ export default function AIChatbot() {
           <div
             style={{
               flex: 1,
-
-              overflowY:
-                "auto",
-
-              padding:
-                "20px",
-
-              display:
-                "flex",
-
-              flexDirection:
-                "column",
-
+              overflowY: "auto",
+              padding: "20px",
+              display: "flex",
+              flexDirection: "column",
               gap: "16px",
-
-              background:
-                "#f8fafc"
+              background: "#f8fafc",
             }}
           >
             {messages.map(
-              (
-                msg,
-                index
-              ) => (
+              (msg, index) => (
                 <div
                   key={index}
                   style={{
@@ -303,7 +184,7 @@ export default function AIChatbot() {
                       "pre-wrap",
 
                     boxShadow:
-                      "0 4px 12px rgba(0,0,0,0.05)"
+                      "0 4px 12px rgba(0,0,0,0.05)",
                   }}
                 >
                   {msg.content}
@@ -316,15 +197,12 @@ export default function AIChatbot() {
                 style={{
                   background:
                     "white",
-
                   padding:
                     "14px 18px",
-
                   borderRadius:
                     "18px",
-
                   width:
-                    "fit-content"
+                    "fit-content",
                 }}
               >
                 Thinking...
@@ -334,16 +212,11 @@ export default function AIChatbot() {
 
           <div
             style={{
-              display:
-                "flex",
-
-              padding:
-                "16px",
-
+              display: "flex",
+              padding: "16px",
               borderTop:
                 "1px solid #e2e8f0",
-
-              gap: "10px"
+              gap: "10px",
             }}
           >
             <input
@@ -356,18 +229,22 @@ export default function AIChatbot() {
               placeholder="Ask IELTS doubts..."
               style={{
                 flex: 1,
-
-                padding:
-                  "14px",
-
+                padding: "14px",
                 borderRadius:
                   "14px",
-
                 border:
                   "1px solid #cbd5e1",
-
                 outline:
-                  "none"
+                  "none",
+              }}
+              onKeyDown={(e) => {
+                if (
+                  e.key ===
+                    "Enter" &&
+                  !loading
+                ) {
+                  handleSend();
+                }
               }}
             />
 
@@ -375,30 +252,25 @@ export default function AIChatbot() {
               onClick={
                 handleSend
               }
+              disabled={loading}
               style={{
                 background:
                   "#22d3ee",
-
-                border:
-                  "none",
-
-                color:
-                  "white",
-
+                border: "none",
+                color: "white",
                 padding:
                   "14px 18px",
-
                 borderRadius:
                   "14px",
-
                 cursor:
                   "pointer",
-
                 fontWeight:
-                  "bold"
+                  "bold",
               }}
             >
-              Send
+              {loading
+                ? "..."
+                : "Send"}
             </button>
           </div>
         </div>

@@ -18,9 +18,9 @@ export async function saveResult(
   try {
     await addDoc(
       collection(
-        db,
-        "results"
-      ),
+  db,
+  "mockResults"
+),
       result
     );
 
@@ -36,16 +36,16 @@ export async function saveResult(
 
 export async function fetchResults() {
   try {
-    const q = query(
-      collection(
-        db,
-        "results"
-      ),
-      orderBy(
-        "createdAt",
-        "desc"
-      )
-    );
+  const q = query(
+  collection(
+    db,
+    "mockResults"
+  ),
+  orderBy(
+    "createdAt",
+    "desc"
+  )
+);
 
     const snapshot =
       await getDocs(q);

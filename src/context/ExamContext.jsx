@@ -30,23 +30,21 @@ export function ExamProvider({
     setSpeakingBand,
   ] = useState(null);
 
-  const value = {
-    readingBand,
-    setReadingBand,
-
-    listeningBand,
-    setListeningBand,
-
-    writingBand,
-    setWritingBand,
-
-    speakingBand,
-    setSpeakingBand,
-  };
-
   return (
     <ExamContext.Provider
-      value={value}
+      value={{
+        readingBand,
+        setReadingBand,
+
+        listeningBand,
+        setListeningBand,
+
+        writingBand,
+        setWritingBand,
+
+        speakingBand,
+        setSpeakingBand,
+      }}
     >
       {children}
     </ExamContext.Provider>

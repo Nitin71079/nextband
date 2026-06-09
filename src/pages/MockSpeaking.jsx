@@ -1,3 +1,7 @@
+
+import {
+  useExam,
+} from "../context/ExamContext";
 import { useState } from "react";
 
 import speakingTest001 from "../data/speaking/speakingTest001";
@@ -15,6 +19,9 @@ import AudioPlayback from "../components/AudioPlayback";
 import MicrophoneStatus from "../components/MicrophoneStatus";
 
 export default function MockSpeaking() {
+  const {
+  setSpeakingBand,
+} = useExam();
 const [currentPart, setCurrentPart] =
 useState(1);
 
@@ -63,10 +70,15 @@ try {
   const result =
     await speechToText(audioBlob);
 
-  if (result.success) {
-    setTranscript(
-      result.transcript
+ if (result.success) {
+  setReport(result);
+
+  if (result.overallBand) {
+    setSpeakingBand(
+      result.overallBand
     );
+  }
+
 
     setResponse(
       result.transcript

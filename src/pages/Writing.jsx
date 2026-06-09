@@ -2,7 +2,6 @@ import {
   useState
 } from "react";
 
-import OpenAI from "openai";
 
 import writingPrompts from "../data/writingPrompts";
 
@@ -60,87 +59,70 @@ export default function Writing() {
       .filter(Boolean)
       .length;
 
-  async function evaluateEssay() {
-    try {
-      setLoadingAI(true);
+      async function evaluateEssay() {
+  try {
+    setLoadingAI(true);
 
-      const openai =
-        new OpenAI({
-          apiKey:
-            import.meta.env
-              .VITE_OPENAI_API_KEY,
+    const response = await fetch(
+      "/api/evaluate-writing",
+      {
+        method: "POST",
 
-          dangerouslyAllowBrowser: true
-        });
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
 
-      const response =
-        await openai.chat.completions.create(
-          {
-            model:
-              "gpt-4o-mini",
-
-            messages: [
-              {
-                role:
-                  "system",
-
-                content:
-                  "You are an IELTS examiner. Evaluate essays professionally with estimated IELTS band score, strengths, weaknesses, grammar feedback, vocabulary analysis, coherence analysis, and improvement suggestions."
-              },
-
-              {
-                role:
-                  "user",
-
-                content: `
-IELTS Writing Task:
-
-${currentPrompt.task}
-
-Student Essay:
-
-${essay}
-`
-              }
-            ]
-          }
-        );
-
-      const feedback =
-        response.choices[0]
-          .message
-          .content;
-
-      setAiFeedback(
-        feedback
-      );
-
-      const bandMatch =
-        feedback.match(
-          /Band[:\s]*([0-9.]+)/i
-        );
-
-      if (bandMatch) {
-        setEstimatedBand(
-          bandMatch[1]
-        );
-      } else {
-        setEstimatedBand(
-          "7.0"
-        );
+        body: JSON.stringify({
+          essay,
+        }),
       }
-    } catch (error) {
-      console.error(
-        error
+    );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+          "Evaluation failed"
+      );
+    }
+
+    const feedback =
+      data.feedback ||
+      "No feedback received.";
+
+    setAiFeedback(
+      feedback
+    );
+
+    const bandMatch =
+      feedback.match(
+        /Band[:\s]*([0-9.]+)/i
       );
 
-      setAiFeedback(
-        "AI evaluation failed."
+    if (bandMatch) {
+      setEstimatedBand(
+        bandMatch[1]
       );
-    } finally {
-      setLoadingAI(false);
+    } else {
+      setEstimatedBand(
+        "7.0"
+      );
     }
+  } catch (error) {
+    console.error(
+      error
+    );
+
+    setAiFeedback(
+      "AI evaluation failed."
+    );
+  } finally {
+    setLoadingAI(false);
   }
+}
 
   async function handleAutoSubmit() {
     if (submitted)

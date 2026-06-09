@@ -502,10 +502,10 @@ export default function Admin() {
                 >
                   <div>
                     <h2>
-                      {
-                        user.email
-                      }
-                    </h2>
+  {user.displayName ||
+    user.email?.split("@")[0] ||
+    "Unknown User"}
+</h2>
 
                     <p
                       style={{
@@ -513,10 +513,9 @@ export default function Admin() {
                           "#64748b"
                       }}
                     >
-                      User ID:
-                      {" "}
-                      {
-                        user.id
+                     User ID:
+{" "}
+{user.id.slice(0, 8)
                       }
                     </p>
                   </div>

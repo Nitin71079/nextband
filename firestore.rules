@@ -3,17 +3,80 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.admin == true;
+    }
+
+    // USERS
+    match /users/{userId} {
+      allow read, write:
+        if isSignedIn()
+        && request.auth.uid == userId;
+    }
+
+    // MOCK RESULTS
+    match /mockResults/{docId} {
+      allow create:
+        if isSignedIn();
+
+      allow read, update, delete:
+        if isSignedIn()
+        && resource.data.userId
+           == request.auth.uid;
+    }
+
+    // NOTIFICATIONS
+    match /notifications/{docId} {
+      allow read, write:
+        if isSignedIn()
+        && resource.data.userId
+           == request.auth.uid;
+    }
+
+    // REFERRALS
+    match /referrals/{userId} {
+      allow read, write:
+        if isSignedIn()
+        && request.auth.uid == userId;
+    }
+
+    // COMMUNITY POSTS
+    match /communityPosts/{postId} {
+      allow read:
+        if isSignedIn();
+
+      allow create:
+        if isSignedIn();
+
+      allow update, delete:
+        if isSignedIn()
+        && resource.data.email
+           == request.auth.token.email;
+    }
+
+    // MENTOR REQUESTS
+    match /mentorRequests/{requestId} {
+      allow create:
+        if isSignedIn();
+
+      allow read:
+        if isSignedIn();
+
+      allow update, delete:
+        if isAdmin();
+    }
+
+    // ADMIN ACCESS
     match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 6, 18);
+      allow read, write:
+        if isAdmin();
     }
   }
 }

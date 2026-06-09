@@ -1,4 +1,6 @@
-
+import {
+  useExam,
+} from "../context/ExamContext";
 import { useEffect, useState } from "react";
 
 import readingTests from "../data/reading/tests";
@@ -10,6 +12,9 @@ import ExamHeader from "../components/ExamHeader";
 import ExamProgressBar from "../components/ExamProgressBar";
 
 export default function MockReading() {
+  const {
+  setReadingBand,
+} = useExam();
   const [testIndex, setTestIndex] =
     useState(0);
 
@@ -159,6 +164,8 @@ export default function MockReading() {
 
     const band =
       getBand(score);
+
+      setReadingBand(band);
 
     return (
       <div

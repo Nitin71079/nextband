@@ -2,8 +2,6 @@ import {
   useState
 } from "react";
 
-import OpenAI from "openai";
-
 import speakingMocks from "../data/speakingMocks";
 
 import {
@@ -53,39 +51,22 @@ export default function Speaking() {
     setEstimatedBand] =
     useState("");
 
-  async function evaluateSpeaking() {
-    try {
-      setLoadingAI(true);
+ async function evaluateSpeaking() {
+  try {
+    setLoadingAI(true);
 
-      const openai =
-        new OpenAI({
-          apiKey:
-            import.meta.env
-              .VITE_OPENAI_API_KEY,
+    const responseApi = await fetch(
+      "/api/evaluate-speaking",
+      {
+        method: "POST",
 
-          dangerouslyAllowBrowser: true
-        });
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
 
-      const completion =
-        await openai.chat.completions.create(
-          {
-            model:
-              "gpt-4o-mini",
-
-            messages: [
-              {
-                role:
-                  "system",
-
-                content:
-                  "You are an IELTS Speaking examiner. Evaluate fluency, vocabulary, grammar, pronunciation confidence, idea development, coherence, and estimated IELTS band score."
-              },
-
-              {
-                role:
-                  "user",
-
-                content: `
+        body: JSON.stringify({
+          transcript: `
 Cue Card:
 
 ${currentSet.cueCard}
@@ -93,47 +74,78 @@ ${currentSet.cueCard}
 Student Response:
 
 ${response}
-`
-              }
-            ]
-          }
-        );
-
-      const feedback =
-        completion.choices[0]
-          .message
-          .content;
-
-      setAiFeedback(
-        feedback
-      );
-
-      const bandMatch =
-        feedback.match(
-          /Band[:\s]*([0-9.]+)/i
-        );
-
-      if (bandMatch) {
-        setEstimatedBand(
-          bandMatch[1]
-        );
-      } else {
-        setEstimatedBand(
-          "7.0"
-        );
+`,
+        }),
       }
-    } catch (error) {
-      console.error(
-        error
-      );
+    );
 
-      setAiFeedback(
-        "AI speaking evaluation failed."
+    const data =
+      await responseApi.json();
+
+    if (!responseApi.ok) {
+      throw new Error(
+        data.error ||
+          "Evaluation failed"
       );
-    } finally {
-      setLoadingAI(false);
     }
+
+    const feedback = `
+Overall Band: ${data.overallBand}
+
+Fluency & Coherence: ${data.fluency}
+Lexical Resource: ${data.lexicalResource}
+Grammar: ${data.grammar}
+Pronunciation: ${data.pronunciation}
+
+Strengths:
+${(data.strengths || [])
+  .map(
+    (item) =>
+      `• ${item}`
+  )
+  .join("\n")}
+
+Weaknesses:
+${(data.weaknesses || [])
+  .map(
+    (item) =>
+      `• ${item}`
+  )
+  .join("\n")}
+
+Improvements:
+${(data.improvements || [])
+  .map(
+    (item) =>
+      `• ${item}`
+  )
+  .join("\n")}
+
+Sample Better Answer:
+
+${data.sampleBetterAnswer || ""}
+`;
+
+    setAiFeedback(
+      feedback
+    );
+
+    setEstimatedBand(
+      data.overallBand ||
+        "7.0"
+    );
+  } catch (error) {
+    console.error(
+      error
+    );
+
+    setAiFeedback(
+      "AI speaking evaluation failed."
+    );
+  } finally {
+    setLoadingAI(false);
   }
+}
 
   async function handleSubmit() {
     if (submitted)

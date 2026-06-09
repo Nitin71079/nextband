@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import PremiumGate from "../components/PremiumGate";
 
 export default function FullMocks() {
   const navigate = useNavigate();
@@ -49,98 +50,100 @@ export default function FullMocks() {
   ];
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: "40px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-      }}
-    >
+    <PremiumGate>
       <div
         style={{
-          textAlign: "center",
-          marginBottom: "50px",
+          minHeight: "100vh",
+          padding: "40px",
+          maxWidth: "1200px",
+          margin: "0 auto",
         }}
       >
-        <h1
+        <div
           style={{
-            fontSize: "48px",
-            marginBottom: "15px",
+            textAlign: "center",
+            marginBottom: "50px",
           }}
         >
-          IELTS Mock Test Center
-        </h1>
-
-        <p
-          style={{
-            fontSize: "18px",
-            color: "#64748b",
-          }}
-        >
-          Experience the IELTS exam in a
-          realistic test environment.
-        </p>
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit, minmax(320px, 1fr))",
-          gap: "24px",
-        }}
-      >
-        {cards.map((card) => (
-          <div
-            key={card.title}
+          <h1
             style={{
-              background: "#fff",
-              borderRadius: "20px",
-              padding: "25px",
-              boxShadow:
-                "0 4px 12px rgba(0,0,0,0.08)",
+              fontSize: "48px",
+              marginBottom: "15px",
             }}
           >
-            <h2>{card.title}</h2>
+            IELTS Mock Test Center
+          </h1>
 
-            <p>
-              <strong>Duration:</strong>{" "}
-              {card.duration}
-            </p>
+          <p
+            style={{
+              fontSize: "18px",
+              color: "#64748b",
+            }}
+          >
+            Experience the IELTS exam in a
+            realistic test environment.
+          </p>
+        </div>
 
-            <p>{card.description}</p>
-
-            <button
-              onClick={() =>
-                navigate(card.path)
-              }
-              className="primary-btn"
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "24px",
+          }}
+        >
+          {cards.map((card) => (
+            <div
+              key={card.title}
+              style={{
+                background: "#fff",
+                borderRadius: "20px",
+                padding: "25px",
+                boxShadow:
+                  "0 4px 12px rgba(0,0,0,0.08)",
+              }}
             >
-              Start Test
-            </button>
-          </div>
-        ))}
-      </div>
+              <h2>{card.title}</h2>
 
-      <div
-        style={{
-          marginTop: "60px",
-          padding: "30px",
-          borderRadius: "20px",
-          background: "#f8fafc",
-        }}
-      >
-        <h2>Premium Features</h2>
+              <p>
+                <strong>Duration:</strong>{" "}
+                {card.duration}
+              </p>
 
-        <ul>
-          <li>AI Writing Evaluation</li>
-          <li>AI Speaking Analysis</li>
-          <li>Band Prediction</li>
-          <li>Performance Analytics</li>
-          <li>Detailed Score Reports</li>
-        </ul>
+              <p>{card.description}</p>
+
+              <button
+                onClick={() =>
+                  navigate(card.path)
+                }
+                className="primary-btn"
+              >
+                Start Test
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            marginTop: "60px",
+            padding: "30px",
+            borderRadius: "20px",
+            background: "#f8fafc",
+          }}
+        >
+          <h2>Premium Features</h2>
+
+          <ul>
+            <li>AI Writing Evaluation</li>
+            <li>AI Speaking Analysis</li>
+            <li>Band Prediction</li>
+            <li>Performance Analytics</li>
+            <li>Detailed Score Reports</li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </PremiumGate>
   );
 }

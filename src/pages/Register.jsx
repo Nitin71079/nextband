@@ -1,6 +1,4 @@
-import {
-  useState
-} from "react";
+import { useState } from "react";
 
 import {
   createUserWithEmailAndPassword
@@ -21,28 +19,21 @@ import {
   db
 } from "../firebase";
 
-import toast
-from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function Register() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [email,
-    setEmail] =
+  const [email, setEmail] =
     useState("");
 
-  const [password,
-    setPassword] =
+  const [password, setPassword] =
     useState("");
 
-  const [loading,
-    setLoading] =
+  const [loading, setLoading] =
     useState(false);
 
-  async function handleRegister(
-    e
-  ) {
+  async function handleRegister(e) {
     e.preventDefault();
 
     try {
@@ -66,8 +57,13 @@ export default function Register() {
 
           premium: false,
 
-          createdAt:
-            Date.now()
+          admin: false,
+
+          averageBand: 0,
+
+          testsTaken: 0,
+
+          createdAt: Date.now()
         }
       );
 
@@ -75,13 +71,9 @@ export default function Register() {
         "Account created!"
       );
 
-      navigate(
-        "/dashboard"
-      );
+      navigate("/dashboard");
     } catch (error) {
-      console.error(
-        error
-      );
+      console.error(error);
 
       toast.error(
         error.message
@@ -94,14 +86,10 @@ export default function Register() {
   return (
     <div
       style={{
-        minHeight:
-          "100vh",
-
+        minHeight: "100vh",
         display: "grid",
-
         gridTemplateColumns:
-          window.innerWidth <
-          900
+          window.innerWidth < 900
             ? "1fr"
             : "1fr 1fr"
       }}
@@ -112,45 +100,27 @@ export default function Register() {
         style={{
           background:
             "linear-gradient(135deg,#0891b2,#22d3ee)",
-
           color: "white",
-
           display: "flex",
-
-          flexDirection:
-            "column",
-
-          justifyContent:
-            "center",
-
-          padding:
-            "60px"
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "60px"
         }}
       >
         <h1
           style={{
-            fontSize:
-              "64px",
-
-            lineHeight:
-              "1.1",
-
-            marginBottom:
-              "25px"
+            fontSize: "64px",
+            lineHeight: "1.1",
+            marginBottom: "25px"
           }}
         >
-          Start Your
-          IELTS Journey 🚀
+          Start Your IELTS Journey 🚀
         </h1>
 
         <p
           style={{
-            lineHeight:
-              "1.9",
-
-            maxWidth:
-              "500px",
-
+            lineHeight: "1.9",
+            maxWidth: "500px",
             opacity: 0.95
           }}
         >
@@ -170,33 +140,22 @@ export default function Register() {
       <div
         style={{
           display: "flex",
-
-          justifyContent:
-            "center",
-
-          alignItems:
-            "center",
-
-          padding:
-            "30px"
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "30px"
         }}
       >
         <div
           className="card fade-in"
           style={{
             width: "100%",
-
-            maxWidth:
-              "500px"
+            maxWidth: "500px"
           }}
         >
           <h2
             style={{
-              fontSize:
-                "42px",
-
-              marginBottom:
-                "10px"
+              fontSize: "42px",
+              marginBottom: "10px"
             }}
           >
             Create Account
@@ -204,25 +163,15 @@ export default function Register() {
 
           <p
             style={{
-              color:
-                "#64748b",
-
-              marginBottom:
-                "30px"
+              color: "#64748b",
+              marginBottom: "30px"
             }}
           >
-            Start preparing
-            smarter with AI.
+            Start preparing smarter with AI.
           </p>
 
-          <form
-            onSubmit={
-              handleRegister
-            }
-          >
-            <label>
-              Email
-            </label>
+          <form onSubmit={handleRegister}>
+            <label>Email</label>
 
             <input
               type="email"
@@ -239,13 +188,10 @@ export default function Register() {
 
             <div
               style={{
-                marginTop:
-                  "20px"
+                marginTop: "20px"
               }}
             >
-              <label>
-                Password
-              </label>
+              <label>Password</label>
 
               <input
                 type="password"
@@ -265,11 +211,8 @@ export default function Register() {
               type="submit"
               className="primary-btn"
               style={{
-                width:
-                  "100%",
-
-                marginTop:
-                  "30px"
+                width: "100%",
+                marginTop: "30px"
               }}
             >
               {loading
@@ -280,23 +223,16 @@ export default function Register() {
 
           <p
             style={{
-              marginTop:
-                "25px",
-
-              textAlign:
-                "center"
+              marginTop: "25px",
+              textAlign: "center"
             }}
           >
-            Already have an
-            account?{" "}
+            Already have an account?{" "}
             <Link
               to="/login"
               style={{
-                color:
-                  "#22d3ee",
-
-                fontWeight:
-                  "700"
+                color: "#22d3ee",
+                fontWeight: "700"
               }}
             >
               Login

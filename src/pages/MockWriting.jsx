@@ -1,3 +1,6 @@
+import {
+  useExam,
+} from "../context/ExamContext";
 import { useEffect, useState } from "react";
 
 import {
@@ -7,6 +10,10 @@ import {
 import WritingReport from "../components/WritingReport";
 
 export default function MockWriting() {
+  const {
+  setWritingBand,
+} = useExam();
+
   const [task1, setTask1] =
     useState("");
 
@@ -57,13 +64,18 @@ export default function MockWriting() {
 
   function handleEvaluation() {
     const result =
-      evaluateWriting(task2);
+  evaluateWriting(task2);
 
-    setReport(result);
-  }
+setReport(result);
+
+if (result.overallBand) {
+  setWritingBand(
+    result.overallBand
+  );
+}}
 
   return (
-    <div
+    <div  
       style={{
         minHeight: "100vh",
         maxWidth: "1200px",

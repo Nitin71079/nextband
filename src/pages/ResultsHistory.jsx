@@ -108,14 +108,11 @@ export default function ResultsHistory() {
                   result.band
                 }
               </p>
-
-              <p>
-                Date:
-                {" "}
-                {
-                  result.createdAt
-                }
-              </p>
+<p>
+  Date:{" "}
+  {result.createdAt?.toDate?.()
+    ?.toLocaleDateString() || "N/A"}
+</p>
             </div>
           )
         )

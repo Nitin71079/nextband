@@ -1,3 +1,6 @@
+import {
+  ExamProvider,
+} from "./context/ExamContext";
 import React from "react";
 
 import ReactDOM from "react-dom/client";
@@ -18,10 +21,6 @@ import {
   AuthProvider,
 } from "./context/AuthContext";
 
-import {
-  ExamProvider,
-} from "./context/ExamContext";
-
 import { Toaster }
 from "react-hot-toast";
 
@@ -34,14 +33,10 @@ ReactDOM.createRoot(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <ExamProvider>
-            <Toaster
-              position="top-right"
-            />
-
-            <App />
-          </ExamProvider>
-        </AuthProvider>
+  <ExamProvider>
+    <App />
+  </ExamProvider>
+</AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

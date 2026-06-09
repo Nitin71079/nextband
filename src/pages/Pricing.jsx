@@ -6,7 +6,7 @@ export default function Pricing() {
     try {
       const response =
         await fetch(
-          "/api/create-checkout-session",
+          "/api/checkout",
           {
             method: "POST"
           }
