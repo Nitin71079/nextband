@@ -3,7 +3,7 @@ import {
 } from "../context/ExamContext";
 import { useEffect, useState } from "react";
 
-import readingTests from "../data/reading/tests";
+import readingTests from "../data/reading/academicTests";
 
 import QuestionRenderer from "../components/QuestionRenderer";
 import QuestionPalette from "../components/QuestionPalette";
@@ -11,8 +11,9 @@ import QuestionPalette from "../components/QuestionPalette";
 import ExamHeader from "../components/ExamHeader";
 import ExamProgressBar from "../components/ExamProgressBar";
 
-export default function MockReading() {
-  const {
+export default function MockReading({
+  onComplete,
+}) {  const {
   setReadingBand,
 } = useExam();
   const [testIndex, setTestIndex] =
@@ -59,6 +60,9 @@ export default function MockReading() {
     return () =>
       clearInterval(timer);
   }, []);
+  useEffect(() => {
+  setPassageIndex(0);
+}, [testIndex]);
 
   function selectAnswer(
     questionId,
@@ -143,42 +147,40 @@ export default function MockReading() {
   const seconds =
     timeLeft % 60;
 
-  if (
-    !currentTest ||
-    !currentPassage
-  ) {
-    return (
-      <div
-        style={{
-          padding: "40px",
-        }}
-      >
-        Loading...
-      </div>
-    );
-  }
+if (
+  !currentTest ||
+  !currentPassage
+) {
+  return (
+    <div
+      style={{
+        padding: "40px",
+      }}
+    >
+      Loading...
+    </div>
+  );
+}
 
-  if (submitted) {
-    const score =
-      calculateScore();
+if (submitted) {
+  const score =
+    calculateScore();
 
-    const band =
-      getBand(score);
+  const band =
+    getBand(score);
 
-      setReadingBand(band);
-
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          padding: "40px",
-          maxWidth: "1000px",
-          margin: "0 auto",
-        }}
-      >
-        <h1>
-          IELTS Reading Results
-        </h1>
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        padding: "40px",
+        maxWidth: "1000px",
+        margin: "0 auto",
+      }}
+    >
+      <h1>
+        IELTS Reading Results
+      </h1>
 
         <div
           style={{
@@ -298,15 +300,25 @@ export default function MockReading() {
             </button>
 
             <button
-              className="primary-btn"
-              onClick={() =>
-                setSubmitted(
-                  true
-                )
-              }
-            >
-              Submit Exam
-            </button>
+  className="primary-btn"
+  onClick={() => {
+    const score =
+      calculateScore();
+
+    const band =
+      getBand(score);
+
+    setReadingBand(
+      band
+    );
+
+    if (onComplete) {
+      onComplete(band);
+    }
+  }}
+>
+  Submit Reading & Continue →
+</button>
           </div>
         </div>
       </div>
@@ -322,6 +334,34 @@ export default function MockReading() {
         margin: "0 auto",
       }}
     >
+      <select
+  value={testIndex}
+  onChange={(e) =>
+    setTestIndex(
+      Number(
+        e.target.value
+      )
+    )
+  }
+  style={{
+    padding: "10px",
+    marginBottom: "20px",
+  }}
+>
+  {readingTests.map(
+    (
+      test,
+      index
+    ) => (
+      <option
+        key={test.id}
+        value={index}
+      >
+        {test.title}
+      </option>
+    )
+  )}
+</select>
       <ExamHeader
         title="IELTS Reading Test"
         minutes={minutes}
@@ -494,5 +534,6 @@ export default function MockReading() {
       </div>
     </div>
   );
-}
 
+
+}

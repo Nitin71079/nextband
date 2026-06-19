@@ -1,3 +1,7 @@
+import ReviewModal
+from "../components/ReviewModal";
+import QuestionNavigator
+from "../components/QuestionNavigator";
 import {
   useExam,
 } from "../context/ExamContext";
@@ -6,27 +10,43 @@ import { useEffect, useState } from "react";
     import AudioPlayer from "../components/AudioPlayer";
 
     import listeningTests from "../data/listening/tests";
+    console.log(
+  "TEST 1 SECTIONS:",
+  listeningTests[0]?.sections
+);
 
-    export default function MockListening() {
-        const {
+console.log(
+  "TEST 2 SECTIONS:",
+  listeningTests[1]?.sections
+);
+
+export default function MockListening({
+  onComplete,
+}) {
+    const {
   setListeningBand,
 } = useExam();
-    const [test] = useState(
-    () =>
-    listeningTests[
-    Math.floor(
-    Math.random() *
-    listeningTests.length
-    )
-    ]
-    );
+    const [test, setTest] = useState(
+  listeningTests[0]
+);
+    console.log(
+  "SELECTED TEST:",
+  test
+);
+console.log(
+  "SECTIONS:",
+  test.sections
+);
 
     const [answers, setAnswers] =
     useState({});
 
     const [submitted, setSubmitted] =
     useState(false);
-
+const [
+  showReview,
+  setShowReview
+] = useState(false);
     const [timeLeft, setTimeLeft] =
     useState(
     (test.duration || 30) * 60
@@ -42,10 +62,28 @@ import { useEffect, useState } from "react";
               timer
             );
 
-            setSubmitted(
-              true
-            );
+          {showReview && (
+  <ReviewModal
+    totalQuestions={
+      totalQuestions
+    }
+    answers={answers}
+    onClose={() =>
+      setShowReview(
+        false
+      )
+    }
+    onSubmit={() => {
+      setShowReview(
+        false
+      );
 
+      setSubmitted(
+        true
+      );
+    }}
+  />
+)}
             return 0;
           }
 
@@ -64,9 +102,17 @@ useEffect(() => {
 
     const band = getBand(score);
 
-    setListeningBand(
-      band
-    );
+    console.log(
+  "SETTING LISTENING BAND:",
+  band
+);
+
+setListeningBand(
+  band
+);
+if (onComplete) {
+  onComplete(band);
+}
   }
 }, [submitted]);
 
@@ -79,46 +125,42 @@ useEffect(() => {
     [questionId]: value,
     }));
     }
+function calculateScore() {
+  let score = 0;
 
-    function calculateScore() {
-    let score = 0;
-
-    
-    test.sections.forEach(
+  test.sections.forEach(
     (section) => {
-        section.questions.forEach(
+      section.questions.forEach(
         (question) => {
-            const userAnswer =
+          const userAnswer =
             String(
-                answers[
+              answers[
                 question.id
-                ] || ""
+              ] || ""
             )
-                .trim()
-                .toLowerCase();
+              .trim()
+              .toLowerCase();
 
-            const correctAnswer =
+          const correctAnswer =
             String(
-                question.answer
+              question.answer
             )
-                .trim()
-                .toLowerCase();
+              .trim()
+              .toLowerCase();
 
-            if (
+          if (
             userAnswer ===
             correctAnswer
-            ) {
+          ) {
             score++;
-            }
+          }
         }
-        );
+      );
     }
-    );
+  );
 
-    return score;
-
-
-    }
+  return score;
+}
 
     function getBand(score) {
     if (score >= 39) return 9;
@@ -134,14 +176,19 @@ useEffect(() => {
     
 
     }
+console.log("CURRENT TEST:", test);
+console.log("CURRENT SECTIONS:", test?.sections);
 
-    const totalQuestions =
-    test.sections.reduce(
-    (total, section) =>
-    total +
-    section.questions.length,
+const totalQuestions =
+  test?.sections?.reduce(
+    (
+      total,
+      section
+    ) =>
+      total +
+      section.questions.length,
     0
-    );
+  ) || 0;
 
     const answeredQuestions =
     Object.keys(
@@ -294,90 +341,125 @@ if (submitted) {
         )}
         </h2>
     </div>
+    <select
+  onChange={(e) => {
+  const selected =
+    listeningTests.find(
+      (t) =>
+        t.id === Number(
+          e.target.value
+        )
+    );
 
-    <AudioPlayer
-        audioUrl={
-        test.audioUrl
+  setTest(selected);
+
+  setAnswers({});
+
+  setSubmitted(false);
+}}
+  style={{
+    padding: "10px",
+    marginBottom: "20px",
+  }}
+>
+  {listeningTests.map((t) => (
+    <option
+      key={t.id}
+      value={t.id}
+    >
+      {t.title}
+    </option>
+  ))}
+</select>
+<QuestionNavigator
+  totalQuestions={
+    totalQuestions
+  }
+  answers={answers}
+/>
+ <AudioPlayer
+  audioUrl={
+    test.audio
+  }
+/>
+
+  {test.sections.map(
+  (section) => (
+    <div
+      key={
+        section.id
+      }
+      style={{
+        background:
+          "#fff",
+        padding:
+          "20px",
+        borderRadius:
+          "16px",
+        marginBottom:
+          "20px",
+      }}
+    >
+      <h2>
+        {
+          section.title
         }
-    />
+      </h2>
 
-    {test.sections.map(
-        (section) => (
-        <div
+      {section.questions.map(
+        (
+          question
+        ) => (
+          <div
             key={
-            section.id
+              question.id
             }
             style={{
-            background:
-                "#fff",
-            padding:
-                "20px",
-            borderRadius:
-                "16px",
-            marginBottom:
+              marginBottom:
                 "20px",
             }}
-        >
-            <h2>
-            {
-                section.title
-            }
-            </h2>
-
-            {section.questions.map(
-            (
-                question
-            ) => (
-                <div
-                key={
-                    question.id
+          >
+            <p>
+              <strong>
+                {
+                  question.id
                 }
-                style={{
-                    marginBottom:
-                    "20px",
-                }}
-                >
-                <p>
-                    <strong>
-                    {
-                        question.id
-                    }
-                    .
-                    </strong>{" "}
-                    {
-                    question.question
-                    }
-                </p>
+                .
+              </strong>{" "}
+              {
+                question.question
+              }
+            </p>
 
-                <input
-                    type="text"
-                    value={
-                    answers[
-                        question.id
-                    ] || ""
-                    }
-                    onChange={(
-                    e
-                    ) =>
-                    updateAnswer(
-                        question.id,
-                        e.target
-                        .value
-                    )
-                    }
-                    style={{
-                    width:
-                        "100%",
-                    padding:
-                        "10px",
-                    }}
-                />
-                </div>
-            )
-            )}
-        </div>
+            <input
+              type="text"
+              value={
+                answers[
+                  question.id
+                ] || ""
+              }
+              onChange={(
+                e
+              ) =>
+                updateAnswer(
+                  question.id,
+                  e.target
+                    .value
+                )
+              }
+              style={{
+                width:
+                  "100%",
+                padding:
+                  "10px",
+              }}
+            />
+          </div>
         )
-    )}
+      )}
+    </div>
+  )
+)}
 
     <button
         className="primary-btn"

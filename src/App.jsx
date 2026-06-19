@@ -1,3 +1,16 @@
+const EvaluationHistory =
+  lazy(() =>
+    import(
+      "./pages/EvaluationHistory"
+    )
+  );
+  import PaymentSuccess
+from "./pages/PaymentSuccess";
+
+import PaymentCancelled
+from "./pages/PaymentCancelled";
+import ExamHistory from "./pages/ExamHistory";
+import AIAssistant from "./pages/AIAssistant";
 import AudioGenerator from "./pages/AudioGenerator";
 import AccentLab from "./pages/AccentLab";
 import AIControlCenter from "./pages/AIControlCenter";
@@ -27,6 +40,22 @@ import Loader from "./components/Loader";
 import PremiumGate from "./components/PremiumGate";
 import AdminRoute from "./components/AdminRoute";
 import PrivateRoute from "./components/PrivateRoute";
+
+
+
+const ExpertProfile =
+  lazy(() =>
+    import(
+      "./pages/ExpertProfile"
+    )
+  );
+
+const MySessions =
+  lazy(() =>
+    import(
+      "./pages/MySessions"
+    )
+  );
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -54,6 +83,7 @@ const Success = lazy(() => import("./pages/Success"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
+  
   return (
     <>
       <Navbar />
@@ -68,6 +98,45 @@ function App() {
             path="/register"
             element={<Register />}
           />
+<Route
+  path="/ai-assistant"
+  element={
+    <PrivateRoute>
+      <AIAssistant />
+    </PrivateRoute>
+  }
+/>
+
+
+<Route
+  path="/payment-success"
+  element={
+    <PaymentSuccess />
+  }
+/>
+
+<Route
+  path="/payment-cancelled"
+  element={
+    <PaymentCancelled />
+  }
+/>
+<Route
+  path="/experts/:id"
+  element={
+    <PrivateRoute>
+      <ExpertProfile />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/my-sessions"
+  element={
+    <PrivateRoute>
+      <MySessions />
+    </PrivateRoute>
+  }
+/>
 <Route
   path="/accent-lab"
   element={
@@ -86,7 +155,14 @@ function App() {
               </PrivateRoute>
             }
           />
-
+<Route
+  path="/evaluation-history"
+  element={
+    <PrivateRoute>
+      <EvaluationHistory />
+    </PrivateRoute>
+  }
+/>
           <Route
             path="/profile"
             element={
@@ -216,44 +292,37 @@ function App() {
           <Route
             path="/reading"
             element={
-              <PrivateRoute>
                 <Reading />
-              </PrivateRoute>
             }
           />
 
           <Route
             path="/listening"
             element={
-              <PrivateRoute>
                 <Listening />
-              </PrivateRoute>
             }
           />
 
           <Route
             path="/writing"
             element={
-              <PrivateRoute>
                 <Writing />
-              </PrivateRoute>
             }
           />
 <Route
   path="/mock/academic"
   element={
-    <PremiumGate>
+   
       <FullAcademicMock />
-    </PremiumGate>
+ 
   }
 />
 
 <Route
   path="/mock/general"
   element={
-    <PremiumGate>
+    
       <FullGeneralMock />
-    </PremiumGate>
   }
 />
           <Route
@@ -352,6 +421,13 @@ function App() {
     </PrivateRoute>
   }
 />
+ <Route
+  path="/history"
+  element={
+    <ExamHistory />
+  }
+/>
+
 <Route
   path="/audio-generator"
   element={
@@ -370,6 +446,7 @@ function App() {
     </PremiumGate>
   }
 />
+
           <Route
             path="*"
             element={<NotFound />}

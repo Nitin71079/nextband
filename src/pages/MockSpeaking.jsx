@@ -1,4 +1,9 @@
 
+
+import {
+  saveEvaluation,
+} from "../services/evaluationStorage";
+
 import {
   useExam,
 } from "../context/ExamContext";
@@ -6,401 +11,531 @@ import { useState } from "react";
 
 import speakingTest001 from "../data/speaking/speakingTest001";
 
-import { evaluateSpeaking } from "../services/speakingEvaluator";
+import {
+  evaluateSpeakingGPT,
+} from "../services/evaluateSpeakingGPT";
 
-import { speechToText } from "../services/speechToText";
+import {
+  trackAIUsage,
+  canUseAI,
+  getAIUsage,
+} from "../services/aiUsage";import { speechToText } from "../services/speechToText";
 
 import SpeakingReport from "../components/SpeakingReport";
 
 import AudioRecorder from "../components/AudioRecorder";
-
 import AudioPlayback from "../components/AudioPlayback";
-
 import MicrophoneStatus from "../components/MicrophoneStatus";
 
-export default function MockSpeaking() {
+export default function MockSpeaking({
+  onComplete,
+}) {
   const {
-  setSpeakingBand,
-} = useExam();
-const [currentPart, setCurrentPart] =
-useState(1);
+    setSpeakingBand,
+  } = useExam();
 
-const [response, setResponse] =
-useState("");
+  const [
+    currentPart,
+    setCurrentPart,
+  ] = useState(1);
 
-const [report, setReport] =
-useState(null);
+  const [
+    response,
+    setResponse,
+  ] = useState("");
 
-const [audioBlob, setAudioBlob] =
-useState(null);
+  const [
+    report,
+    setReport,
+  ] = useState(null);
 
-const [audioUrl, setAudioUrl] =
-useState("");
+  const [
+    audioBlob,
+    setAudioBlob,
+  ] = useState(null);
 
-const [transcript, setTranscript] =
-useState("");
+  const [
+    audioUrl,
+    setAudioUrl,
+  ] = useState("");
 
-const [transcribing, setTranscribing] =
-useState(false);
+  const [
+    transcript,
+    setTranscript,
+  ] = useState("");
 
-const [evaluating, setEvaluating] =
-useState(false);
+  const [
+    transcribing,
+    setTranscribing,
+  ] = useState(false);
 
-function handleRecording(blob) {
-setAudioBlob(blob);
+  const [
+    evaluating,
+    setEvaluating,
+  ] = useState(false);
 
-const url =
-  URL.createObjectURL(blob);
+  function handleRecording(blob) {
+    setAudioBlob(blob);
 
-setAudioUrl(url);
+    const url =
+      URL.createObjectURL(blob);
 
-}
-
-async function generateTranscript() {
-if (!audioBlob) {
-alert(
-"Please record audio first."
-);
-return;
-}
-
-setTranscribing(true);
-
-try {
-  const result =
-    await speechToText(audioBlob);
-
- if (result.success) {
-  setReport(result);
-
-  if (result.overallBand) {
-    setSpeakingBand(
-      result.overallBand
-    );
+    setAudioUrl(url);
   }
 
-
-    setResponse(
-      result.transcript
-    );
-  } else {
+  async function generateTranscript() {
+    if (!audioBlob) {
+      alert(
+        "Please record audio first."
+      );
+      return;
+    }
+  if (!isPremium()) {
     alert(
-      result.error ||
-        "Unable to generate transcript."
+      "🔒 Transcript generation is a Premium feature."
     );
+    return;
   }
-} catch (error) {
-  console.error(error);
+    setTranscribing(true);
 
+    try {
+   
+      const result =
+        await speechToText(
+          audioBlob
+        );
+
+      if (result.success) {
+        setTranscript(
+          result.transcript ||
+            ""
+        );
+
+        setResponse(
+          result.transcript ||
+            ""
+        );
+      } else {
+        alert(
+          result.error ||
+            "Unable to generate transcript."
+        );
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        "Transcript generation failed."
+      );
+    } finally {
+      setTranscribing(false);
+    }
+  }
+
+ async function handleEvaluation() {
+     if (!isPremium()) {
   alert(
-    "Transcript generation failed."
+    "🔒 AI Speaking Evaluation is a Premium feature."
   );
-} finally {
-  setTranscribing(false);
+  return;
 }
-}
-
-async function handleEvaluation() {
-if (!response.trim()) {
-alert(
-"Please provide a speaking response."
-);
-return;
-}
-
-setEvaluating(true);
-
-try {
-  const result =
-    await evaluateSpeaking(
-      response
+  if (!canUseAI()) {
+    alert(
+      "Free AI evaluation limit reached."
     );
+    return;
+  }
 
-  if (result.success) {
+  const words =
+    response
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .length;
+
+  if (words < 15) {
+    alert(
+      "Speaking response is too short."
+    );
+    return;
+  }
+
+  setEvaluating(true);
+
+  try {
+    const result =
+      await evaluateSpeakingGPT(
+        response
+      );
+if (!result) {
+  throw new Error(
+    "No evaluation returned."
+  );
+}
+    if (!result) {
+      throw new Error(
+        "No evaluation returned."
+      );
+    }
+
     setReport(result);
-  } else {
-    alert(
-      result.error ||
-        "Evaluation failed."
+
+    if (result.success) {
+      trackAIUsage();
+
+      saveEvaluation({
+        type: "speaking",
+        overallBand:
+          result.overallBand || 6,
+        report: result,
+        createdAt:
+          new Date().toISOString(),
+      });
+
+      if (
+        result.overallBand
+      ) {
+        setSpeakingBand(
+          result.overallBand
+        );
+      }
+    }
+  } catch (error) {
+    console.error(
+      error
     );
+
+    alert(
+      "Speaking evaluation failed."
+    );
+  } finally {
+    setEvaluating(false);
   }
-} catch (error) {
-  console.error(error);
-
-  alert(
-    "Evaluation failed."
-  );
-} finally {
-  setEvaluating(false);
 }
 
-}
-
-return (
-<div
-style={{
-minHeight: "100vh",
-maxWidth: "1200px",
-margin: "0 auto",
-padding: "30px",
-}}
-> <h1>
-IELTS Speaking Test </h1>
-
-  <p>
-    Complete all three parts
-    of the IELTS Speaking exam.
-  </p>
-
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      marginTop: "20px",
-      marginBottom: "20px",
-    }}
-  >
-    <button
-      onClick={() =>
-        setCurrentPart(1)
-      }
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "30px",
+      }}
     >
-      Part 1
-    </button>
+      <h1>
+        IELTS Speaking Test
+      </h1>
 
-    <button
-      onClick={() =>
-        setCurrentPart(2)
-      }
-    >
-      Part 2
-    </button>
+      <p>
+        Complete all three parts
+        of the IELTS Speaking
+        exam.
+      </p>
 
-    <button
-      onClick={() =>
-        setCurrentPart(3)
-      }
-    >
-      Part 3
-    </button>
-  </div>
-
-  <div
-    style={{
-      background: "#ffffff",
-      padding: "25px",
-      borderRadius: "16px",
-      marginBottom: "25px",
-    }}
-  >
-    {currentPart === 1 && (
-      <>
-        <h2>
-          {
-            speakingTest001.part1
-              .title
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "20px",
+          marginBottom: "20px",
+        }}
+      >
+        <button
+          onClick={() =>
+            setCurrentPart(1)
           }
+        >
+          Part 1
+        </button>
+
+        <button
+          onClick={() =>
+            setCurrentPart(2)
+          }
+        >
+          Part 2
+        </button>
+
+        <button
+          onClick={() =>
+            setCurrentPart(3)
+          }
+        >
+          Part 3
+        </button>
+      </div>
+
+      <div
+        style={{
+          background:
+            "#ffffff",
+          padding: "25px",
+          borderRadius:
+            "16px",
+          marginBottom:
+            "25px",
+        }}
+      >
+        {currentPart === 1 && (
+          <>
+            <h2>
+              {
+                speakingTest001
+                  .part1.title
+              }
+            </h2>
+
+            <ul>
+              {speakingTest001.part1.questions.map(
+                (
+                  question,
+                  index
+                ) => (
+                  <li
+                    key={index}
+                    style={{
+                      marginBottom:
+                        "10px",
+                    }}
+                  >
+                    {question}
+                  </li>
+                )
+              )}
+            </ul>
+          </>
+        )}
+
+        {currentPart === 2 && (
+          <>
+            <h2>
+              {
+                speakingTest001
+                  .part2.title
+              }
+            </h2>
+
+            <div
+              style={{
+                whiteSpace:
+                  "pre-wrap",
+                lineHeight:
+                  "1.8",
+              }}
+            >
+              {
+                speakingTest001
+                  .part2.cueCard
+              }
+            </div>
+          </>
+        )}
+
+        {currentPart === 3 && (
+          <>
+            <h2>
+              {
+                speakingTest001
+                  .part3.title
+              }
+            </h2>
+
+            <ul>
+              {speakingTest001.part3.questions.map(
+                (
+                  question,
+                  index
+                ) => (
+                  <li
+                    key={index}
+                    style={{
+                      marginBottom:
+                        "10px",
+                    }}
+                  >
+                    {question}
+                  </li>
+                )
+              )}
+            </ul>
+          </>
+        )}
+      </div>
+
+      <div
+        style={{
+          background:
+            "#ffffff",
+          padding: "25px",
+          borderRadius:
+            "16px",
+          marginBottom:
+            "25px",
+        }}
+      >
+        <h2>
+          Audio Recording
         </h2>
 
-        <ul>
-          {speakingTest001.part1.questions.map(
-            (
-              question,
-              index
-            ) => (
-              <li
-                key={index}
-                style={{
-                  marginBottom:
-                    "10px",
-                }}
-              >
-                {question}
-              </li>
-            )
-          )}
-        </ul>
-      </>
-    )}
-
-    {currentPart === 2 && (
-      <>
-        <h2>
-          {
-            speakingTest001.part2
-              .title
+        <AudioRecorder
+          onRecordingComplete={
+            handleRecording
           }
-        </h2>
+        />
+
+        <MicrophoneStatus
+          audioBlob={audioBlob}
+        />
+
+        <AudioPlayback
+          audioUrl={audioUrl}
+        />
 
         <div
           style={{
-            whiteSpace:
-              "pre-wrap",
-            lineHeight: "1.8",
+            marginTop: "20px",
           }}
         >
-          {
-            speakingTest001.part2
-              .cueCard
-          }
+          <button
+            onClick={
+              generateTranscript
+            }
+            disabled={
+              transcribing
+            }
+            className="primary-btn"
+          >
+            {transcribing
+              ? "Generating Transcript..."
+              : "Generate Transcript"}
+          </button>
         </div>
-      </>
-    )}
 
-    {currentPart === 3 && (
-      <>
+        {transcript && (
+          <div
+            style={{
+              marginTop:
+                "20px",
+              background:
+                "#f8fafc",
+              padding: "15px",
+              borderRadius:
+                "12px",
+            }}
+          >
+            <h3>
+              Transcript
+            </h3>
+
+            <p>
+              {transcript}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div
+        style={{
+          background:
+            "#ffffff",
+          padding: "25px",
+          borderRadius:
+            "16px",
+        }}
+      >
         <h2>
-          {
-            speakingTest001.part3
-              .title
-          }
+          Speaking Response
         </h2>
 
-        <ul>
-          {speakingTest001.part3.questions.map(
-            (
-              question,
-              index
-            ) => (
-              <li
-                key={index}
-                style={{
-                  marginBottom:
-                    "10px",
-                }}
-              >
-                {question}
-              </li>
+        <textarea
+          rows={10}
+          value={response}
+          onChange={(e) =>
+            setResponse(
+              e.target.value
             )
-          )}
-        </ul>
-      </>
-    )}
-  </div>
+          }
+          placeholder="Type or generate your speaking response..."
+          style={{
+            width: "100%",
+            padding: "15px",
+            border:
+              "1px solid #cbd5e1",
+            borderRadius:
+              "10px",
+          }}
+        />
+<div
+  style={{
+    marginTop: "15px",
+    fontWeight: "bold",
+  }}
+>
+  AI Evaluations Used:
+  {" "}
+  {getAIUsage()}
+  /10
+</div>
 
+{getAIUsage() >= 8 && (
   <div
     style={{
-      background: "#ffffff",
-      padding: "25px",
-      borderRadius: "16px",
-      marginBottom: "25px",
+      color: "#dc2626",
+      marginTop: "10px",
+      fontWeight: "bold",
     }}
   >
-    <h2>
-      Audio Recording
-    </h2>
+    Approaching AI limit.
+    Upgrade for unlimited
+    evaluations.
+  </div>
+)}
 
-    <AudioRecorder
-      onRecordingComplete={
-        handleRecording
-      }
-    />
+        <button
+          className="primary-btn"
+          style={{
+            marginTop: "20px",
+          }}
+          onClick={
+            handleEvaluation
+          }
+          disabled={
+            evaluating
+          }
+        >
+          {evaluating
+            ? "Evaluating..."
+            : "Evaluate Speaking"}
+        </button>
 
-    <MicrophoneStatus
-      audioBlob={audioBlob}
-    />
-
-    <AudioPlayback
-      audioUrl={audioUrl}
+        {report && (
+  <>
+    <SpeakingReport
+      report={report}
     />
 
     <div
       style={{
         marginTop: "20px",
+        textAlign: "center",
       }}
     >
       <button
-        onClick={
-          generateTranscript
-        }
-        disabled={
-          transcribing
-        }
         className="primary-btn"
-      >
-        {transcribing
-          ? "Generating Transcript..."
-          : "Generate Transcript"}
-      </button>
-    </div>
-
-    {transcript && (
-      <div
-        style={{
-          marginTop: "20px",
-          background:
-            "#f8fafc",
-          padding: "15px",
-          borderRadius:
-            "12px",
+        onClick={() => {
+          if (onComplete) {
+            onComplete(
+              report.overallBand || 6
+            );
+          }
         }}
       >
-        <h3>
-          Transcript
-        </h3>
-
-        <p>
-          {transcript}
-        </p>
-      </div>
-    )}
-  </div>
-
-  <div
-    style={{
-      background: "#ffffff",
-      padding: "25px",
-      borderRadius: "16px",
-    }}
-  >
-    <h2>
-      Speaking Response
-    </h2>
-
-    <textarea
-      rows={10}
-      value={response}
-      onChange={(e) =>
-        setResponse(
-          e.target.value
-        )
-      }
-      placeholder="Type or generate your speaking response..."
-      style={{
-        width: "100%",
-        padding: "15px",
-        border:
-          "1px solid #cbd5e1",
-        borderRadius:
-          "10px",
-      }}
-    />
-
-    <button
-      className="primary-btn"
-      style={{
-        marginTop: "20px",
-      }}
-      onClick={
-        handleEvaluation
-      }
-      disabled={
-        evaluating
-      }
-    >
-      {evaluating
-        ? "Evaluating..."
-        : "Evaluate Speaking"}
-    </button>
-
-    {report && (
-      <SpeakingReport
-        report={report}
-      />
-    )}
-  </div>
+        Finish Exam & View Results →
+      </button>
+    </div>
+  </>
+)}
 </div>
-
-
-);
-}
+</div>
+)
+};

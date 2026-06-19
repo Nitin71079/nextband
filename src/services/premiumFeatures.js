@@ -1,0 +1,20 @@
+export const PREMIUM_FEATURES =
+{
+  GPT_EVALUATION:
+    "GPT_EVALUATION",
+
+  AI_COACH:
+    "AI_COACH",
+
+  FORECAST:
+    "FORECAST",
+
+  ANALYTICS:
+    "ANALYTICS",
+
+  REWRITE:
+    "REWRITE",
+
+  EXPERTS:
+    "EXPERTS",
+};

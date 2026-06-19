@@ -50,7 +50,6 @@ export default function FullMocks() {
   ];
 
   return (
-    <PremiumGate>
       <div
         style={{
           minHeight: "100vh",
@@ -144,6 +143,5 @@ export default function FullMocks() {
           </ul>
         </div>
       </div>
-    </PremiumGate>
   );
 }

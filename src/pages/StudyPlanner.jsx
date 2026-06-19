@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState
-} from "react";
+import { useEffect, useState } from "react";
 
 import {
   getFirestore,
@@ -9,39 +6,48 @@ import {
   addDoc,
   query,
   where,
-  getDocs
+  getDocs,
 } from "firebase/firestore";
 
 import { app } from "../firebase";
 
-import {
-  useAuth
-} from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 import useMobile from "../hooks/useMobile";
 
 export default function StudyPlanner() {
-  const { user } =
-    useAuth();
+  const { user } = useAuth();
 
   const isMobile =
     useMobile();
 
-  const [task,
-    setTask] =
+  const [task, setTask] =
     useState("");
 
-  const [date,
-    setDate] =
+  const [date, setDate] =
     useState("");
 
-  const [tasks,
-    setTasks] =
+  const [tasks, setTasks] =
     useState([]);
+
+  const [
+    currentBand,
+    setCurrentBand,
+  ] = useState("");
+
+  const [
+    targetBand,
+    setTargetBand,
+  ] = useState("");
+
+  const [
+    generatedPlan,
+    setGeneratedPlan,
+  ] = useState("");
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [user]);
 
   async function fetchTasks() {
     try {
@@ -55,7 +61,6 @@ export default function StudyPlanner() {
           db,
           "studyPlans"
         ),
-
         where(
           "userId",
           "==",
@@ -70,25 +75,34 @@ export default function StudyPlanner() {
         snapshot.docs.map(
           (doc) => ({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
           })
         );
 
       setTasks(data);
     } catch (error) {
-      console.error(
-        error
+      console.error(error);
+      alert(
+        error.message
       );
     }
   }
 
   async function addTask() {
     try {
-      if (
-        !task ||
-        !date
-      )
+      if (!task || !date) {
+        alert(
+          "Please enter a task and date."
+        );
         return;
+      }
+
+      if (!user) {
+        alert(
+          "Please login first."
+        );
+        return;
+      }
 
       const db =
         getFirestore(app);
@@ -101,15 +115,17 @@ export default function StudyPlanner() {
         {
           userId:
             user.uid,
-
           task,
           date,
           completed:
             false,
-
           createdAt:
-            new Date()
+            new Date(),
         }
+      );
+
+      alert(
+        "Task Added Successfully"
       );
 
       setTask("");
@@ -117,9 +133,68 @@ export default function StudyPlanner() {
 
       fetchTasks();
     } catch (error) {
-      console.error(
-        error
+      console.error(error);
+      alert(
+        error.message
       );
+    }
+  }
+
+  function generatePlan() {
+    if (
+      !currentBand ||
+      !targetBand
+    ) {
+      alert(
+        "Enter current and target band."
+      );
+      return;
+    }
+
+    const gap =
+      Number(targetBand) -
+      Number(currentBand);
+
+    if (gap <= 0) {
+      setGeneratedPlan(
+        "You have already reached your target band."
+      );
+      return;
+    }
+
+    if (gap <= 1) {
+      setGeneratedPlan(`
+Week 1
+• Reading Practice Daily
+• Listening Practice Daily
+
+Week 2
+• Writing Task 2 Practice
+• Speaking Mock Interviews
+
+Week 3
+• Full Mock Tests
+
+Week 4
+• Review Weak Areas
+`);
+    } else {
+      setGeneratedPlan(`
+Week 1-2
+• Reading Foundations
+• Listening Foundations
+
+Week 3-4
+• Writing Task 1 & Task 2
+
+Week 5-6
+• Speaking Fluency Practice
+
+Week 7-8
+• Full IELTS Mock Tests
+
+Focus on consistency and weekly review.
+`);
     }
   }
 
@@ -128,224 +203,215 @@ export default function StudyPlanner() {
       style={{
         minHeight:
           "100vh",
-
         background:
           "#f8fafc",
-
-        padding: isMobile
-          ? "30px 15px"
-          : "60px 30px",
-
-        fontFamily:
-          "Arial"
+        padding:
+          isMobile
+            ? "20px"
+            : "40px",
       }}
     >
       <div
         style={{
           maxWidth:
             "1000px",
-
           margin:
-            "0 auto"
+            "0 auto",
         }}
       >
-        <div
-          style={{
-            marginBottom:
-              "40px"
-          }}
-        >
-          <h1
-            style={{
-              fontSize:
-                isMobile
-                  ? "36px"
-                  : "52px"
-            }}
-          >
-            Study Planner
-          </h1>
+        <h1>
+          Study Planner
+        </h1>
 
-          <p
-            style={{
-              color:
-                "#64748b",
+        <p>
+          Organize your IELTS
+          preparation journey
+        </p>
 
-              marginTop:
-                "10px",
-
-              fontSize:
-                "18px"
-            }}
-          >
-            Organize your
-            IELTS preparation
-            journey
-          </p>
-        </div>
+        {/* Add Task */}
 
         <div
           style={{
             background:
-              "white",
-
+              "#fff",
             padding:
-              isMobile
-                ? "25px"
-                : "40px",
-
+              "30px",
             borderRadius:
-              "24px",
-
-            boxShadow:
-              "0 10px 30px rgba(0,0,0,0.08)",
-
-            marginBottom:
-              "40px"
+              "20px",
+            marginTop:
+              "30px",
           }}
         >
-          <h2
-            style={{
-              marginBottom:
-                "25px"
-            }}
-          >
+          <h2>
             Add Study Task
           </h2>
 
-          <div
+          <input
+            value={task}
+            onChange={(e) =>
+              setTask(
+                e.target.value
+              )
+            }
+            placeholder="Example: Complete Reading Test 4"
             style={{
-              display:
-                "flex",
+              width: "100%",
+              padding:
+                "12px",
+              marginTop:
+                "15px",
+            }}
+          />
 
-              flexDirection:
-                "column",
+          <input
+            type="date"
+            value={date}
+            onChange={(e) =>
+              setDate(
+                e.target.value
+              )
+            }
+            style={{
+              width: "100%",
+              padding:
+                "12px",
+              marginTop:
+                "15px",
+            }}
+          />
 
-              gap: "20px"
+          <button
+            className="primary-btn"
+            onClick={
+              addTask
+            }
+            style={{
+              marginTop:
+                "15px",
             }}
           >
-            <input
-              value={task}
-              onChange={(e) =>
-                setTask(
-                  e.target.value
-                )
-              }
-              placeholder="Example: Complete Reading Test 4"
-              style={{
-                padding:
-                  "16px",
-
-                borderRadius:
-                  "14px",
-
-                border:
-                  "1px solid #cbd5e1",
-
-                fontSize:
-                  "16px"
-              }}
-            />
-
-            <input
-              type="date"
-              value={date}
-              onChange={(e) =>
-                setDate(
-                  e.target.value
-                )
-              }
-              style={{
-                padding:
-                  "16px",
-
-                borderRadius:
-                  "14px",
-
-                border:
-                  "1px solid #cbd5e1",
-
-                fontSize:
-                  "16px"
-              }}
-            />
-
-            <button
-              onClick={
-                addTask
-              }
-              style={{
-                background:
-                  "#22d3ee",
-
-                border:
-                  "none",
-
-                padding:
-                  "16px",
-
-                borderRadius:
-                  "14px",
-
-                color:
-                  "white",
-
-                fontWeight:
-                  "bold",
-
-                fontSize:
-                  "17px",
-
-                cursor:
-                  "pointer"
-              }}
-            >
-              Add Study Task
-            </button>
-          </div>
+            Add Study Task
+          </button>
         </div>
+
+        {/* AI Planner */}
 
         <div
           style={{
             background:
-              "white",
-
+              "#fff",
             padding:
-              isMobile
-                ? "25px"
-                : "40px",
-
+              "30px",
             borderRadius:
-              "24px",
-
-            boxShadow:
-              "0 10px 30px rgba(0,0,0,0.08)"
+              "20px",
+            marginTop:
+              "30px",
           }}
         >
-          <h2
+          <h2>
+            AI Study Plan
+            Generator
+          </h2>
+
+          <input
+            placeholder="Current Band"
+            value={
+              currentBand
+            }
+            onChange={(e) =>
+              setCurrentBand(
+                e.target.value
+              )
+            }
             style={{
-              marginBottom:
-                "30px"
+              width: "100%",
+              padding:
+                "12px",
+              marginTop:
+                "15px",
+            }}
+          />
+
+          <input
+            placeholder="Target Band"
+            value={
+              targetBand
+            }
+            onChange={(e) =>
+              setTargetBand(
+                e.target.value
+              )
+            }
+            style={{
+              width: "100%",
+              padding:
+                "12px",
+              marginTop:
+                "15px",
+            }}
+          />
+
+          <button
+            className="primary-btn"
+            onClick={
+              generatePlan
+            }
+            style={{
+              marginTop:
+                "15px",
             }}
           >
+            Generate Plan
+          </button>
+
+          {generatedPlan && (
+            <div
+              style={{
+                marginTop:
+                  "20px",
+                background:
+                  "#f8fafc",
+                padding:
+                  "20px",
+                borderRadius:
+                  "16px",
+                whiteSpace:
+                  "pre-wrap",
+              }}
+            >
+              {
+                generatedPlan
+              }
+            </div>
+          )}
+        </div>
+
+        {/* Tasks */}
+
+        <div
+          style={{
+            background:
+              "#fff",
+            padding:
+              "30px",
+            borderRadius:
+              "20px",
+            marginTop:
+              "30px",
+          }}
+        >
+          <h2>
             Upcoming Tasks
           </h2>
 
-          <div
-            style={{
-              display:
-                "flex",
-
-              flexDirection:
-                "column",
-
-              gap: "20px"
-            }}
-          >
-            {tasks.map(
-              (
-                task
-              ) => (
+          {tasks.length ===
+          0 ? (
+            <p>
+              No tasks found.
+            </p>
+          ) : (
+            tasks.map(
+              (task) => (
                 <div
                   key={
                     task.id
@@ -353,78 +419,29 @@ export default function StudyPlanner() {
                   style={{
                     background:
                       "#f8fafc",
-
                     padding:
-                      "20px",
-
+                      "15px",
+                    marginTop:
+                      "15px",
                     borderRadius:
-                      "18px",
-
-                    display:
-                      "flex",
-
-                    justifyContent:
-                      "space-between",
-
-                    alignItems:
-                      isMobile
-                        ? "flex-start"
-                        : "center",
-
-                    flexDirection:
-                      isMobile
-                        ? "column"
-                        : "row",
-
-                    gap: "15px"
+                      "12px",
                   }}
                 >
-                  <div>
-                    <h2>
-                      {
-                        task.task
-                      }
-                    </h2>
+                  <h3>
+                    {
+                      task.task
+                    }
+                  </h3>
 
-                    <p
-                      style={{
-                        color:
-                          "#64748b",
-
-                        marginTop:
-                          "6px"
-                      }}
-                    >
-                      {
-                        task.date
-                      }
-                    </p>
-                  </div>
-
-                  <div
-                    style={{
-                      background:
-                        "#dbeafe",
-
-                      color:
-                        "#1d4ed8",
-
-                      padding:
-                        "10px 18px",
-
-                      borderRadius:
-                        "999px",
-
-                      fontWeight:
-                        "bold"
-                    }}
-                  >
-                    Planned
-                  </div>
+                  <p>
+                    {
+                      task.date
+                    }
+                  </p>
                 </div>
               )
-            )}
-          </div>
+            )
+          )}
         </div>
       </div>
     </div>

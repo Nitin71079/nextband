@@ -1,60 +1,25 @@
+import passage1 from "./academicTest003_passage1";
+import passage2 from "./academicTest003_passage2";
+import passage3 from "./academicTest003_passage3";
+
 const academicTest003 = {
-  id: "academic-003",
+  id: 3,
 
-  title: "Renewable Energy",
+  title:
+    "Academic Reading Test 3",
 
-  type: "Academic",
+  level:
+    "Academic",
 
-  difficulty: "Medium",
+  estimatedBand:
+    "6.5 - 8.5",
 
-  estimatedBand: "6.5-7.5",
+  duration: 60,
 
   passages: [
-    {
-      id: 1,
-
-      title: "Solar Power Growth",
-
-      content: `
-Solar energy has become one of the fastest-growing renewable energy sources worldwide.
-
-Advances in photovoltaic technology have reduced costs significantly, making solar power more accessible.
-
-Governments continue investing in solar infrastructure to reduce dependence on fossil fuels.
-      `,
-
-      questions: [
-        {
-          id: 1,
-          type: "multiple-choice",
-          question:
-            "Why has solar power become more accessible?",
-          options: [
-            "Reduced costs",
-            "Higher taxes",
-            "Coal shortages",
-            "Population growth",
-          ],
-          answer: "Reduced costs",
-        },
-      ],
-    },
-
-    {
-      id: 2,
-      title: "Wind Energy",
-      content:
-        "Wind farms are increasingly used to generate electricity while reducing carbon emissions.",
-      questions: [],
-    },
-
-    {
-      id: 3,
-      title: "Future Energy Systems",
-      content:
-        "Renewable energy integration requires improvements in storage technologies and grid management.",
-      questions: [],
-    },
+    passage1,
+    passage2,
+    passage3,
   ],
 };
 

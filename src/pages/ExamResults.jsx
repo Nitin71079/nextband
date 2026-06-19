@@ -1,8 +1,18 @@
+import AICoachCard from "../components/AICoachCard";
+import BandBreakdown from "../components/BandBreakdown";
+import ForecastCard from "../components/ForecastCard";
+
 import {
   getExamSession,
 } from "../services/examSession";
 
-import BandBreakdown from "../components/BandBreakdown";
+import {
+  getGoals,
+} from "../services/goalService";
+
+import {
+  generateForecast,
+} from "../services/forecastEngine";
 
 export default function ExamResults() {
   const session =
@@ -46,6 +56,79 @@ export default function ExamResults() {
       ) / 4
     ).toFixed(1);
 
+  const scores = {
+    Reading: Number(
+      session.reading || 0
+    ),
+
+    Listening: Number(
+      session.listening || 0
+    ),
+
+    Writing: Number(
+      session.writing || 0
+    ),
+
+    Speaking: Number(
+      session.speaking || 0
+    ),
+  };
+  <p
+  style={{
+    color: "#64748b",
+    marginTop: "10px",
+  }}
+>
+  Completed:
+  {" "}
+  {new Date(
+    session.completedAt
+  ).toLocaleString()}
+</p>
+
+  const strongestSkill =
+    Object.keys(scores).reduce(
+      (a, b) =>
+        scores[a] >
+        scores[b]
+          ? a
+          : b
+    );
+
+  const weakestSkill =
+    Object.keys(scores).reduce(
+      (a, b) =>
+        scores[a] <
+        scores[b]
+          ? a
+          : b
+    );
+
+  const defaultTargetBand =
+    (
+      Number(overallBand) +
+      0.5
+    ).toFixed(1);
+
+  const goals =
+    getGoals();
+
+  const targetBand =
+    goals.goalBand ||
+    defaultTargetBand;
+
+  const forecast =
+    generateForecast({
+      currentBand:
+        overallBand,
+
+      targetBand,
+
+      dailyHours:
+        goals.dailyHours ||
+        1,
+    });
+
   return (
     <div
       style={{
@@ -71,6 +154,8 @@ export default function ExamResults() {
           marginBottom: "30px",
           boxShadow:
             "0 10px 30px rgba(0,0,0,0.08)",
+          textAlign:
+            "center",
         }}
       >
         <h2>
@@ -80,9 +165,18 @@ export default function ExamResults() {
         <div
           style={{
             fontSize: "72px",
-            fontWeight: "bold",
-            color: "#22c55e",
-            marginTop: "10px",
+            fontWeight:
+              "bold",
+           color:
+  overallBand >= 8
+    ? "#22c55e"
+    : overallBand >= 7
+    ? "#3b82f6"
+    : overallBand >= 6
+    ? "#f59e0b"
+    : "#ef4444",
+            marginTop:
+              "10px",
           }}
         >
           {overallBand}
@@ -104,12 +198,40 @@ export default function ExamResults() {
         }
       />
 
+      <AICoachCard
+        overallBand={
+          overallBand
+        }
+        strongestSkill={
+          strongestSkill
+        }
+        weakestSkill={
+          weakestSkill
+        }
+      />
+
+      <ForecastCard
+        currentBand={
+          overallBand
+        }
+        targetBand={
+          targetBand
+        }
+        weeks={
+          forecast.weeks
+        }
+        confidence={
+          forecast.confidence
+        }
+      />
+
       <div
         style={{
           marginTop: "30px",
           background: "#fff",
           padding: "30px",
-          borderRadius: "20px",
+          borderRadius:
+            "20px",
           boxShadow:
             "0 10px 30px rgba(0,0,0,0.08)",
         }}
@@ -120,22 +242,30 @@ export default function ExamResults() {
 
         <p>
           Reading:{" "}
-          {session.reading}
+          {
+            session.reading
+          }
         </p>
 
         <p>
           Listening:{" "}
-          {session.listening}
+          {
+            session.listening
+          }
         </p>
 
         <p>
           Writing:{" "}
-          {session.writing}
+          {
+            session.writing
+          }
         </p>
 
         <p>
           Speaking:{" "}
-          {session.speaking}
+          {
+            session.speaking
+          }
         </p>
       </div>
 
@@ -144,45 +274,114 @@ export default function ExamResults() {
           marginTop: "30px",
           background: "#fff",
           padding: "30px",
-          borderRadius: "20px",
+          borderRadius:
+            "20px",
           boxShadow:
             "0 10px 30px rgba(0,0,0,0.08)",
         }}
       >
         <h2>
+          Personalized
           Feedback
         </h2>
 
         <ul
           style={{
-            lineHeight: "2",
+            lineHeight:
+              "2",
           }}
         >
           <li>
-            Continue Reading
-            practice for higher
-            accuracy.
+            Strongest Area:
+            {" "}
+            {
+              strongestSkill
+            }
           </li>
 
           <li>
-            Improve Listening
-            concentration and
-            note-taking.
+            Priority Focus:
+            {" "}
+            {
+              weakestSkill
+            }
           </li>
 
           <li>
-            Focus on Writing
-            structure and
-            coherence.
+            Improving{" "}
+            {
+              weakestSkill
+            }
+            {" "}
+            by 0.5 bands
+            could raise
+            your overall
+            score.
           </li>
 
           <li>
-            Practice Speaking
-            fluency and
-            vocabulary.
+            Continue
+            regular mock
+            testing and
+            review your
+            mistakes.
+          </li>
+
+          <li>
+            Current Goal:
+            {" "}
+            Band{" "}
+            {
+              targetBand
+            }
+          </li>
+
+          <li>
+            Forecast:
+            {" "}
+            {
+              forecast.weeks
+            }
+            {" "}
+            weeks
+            (
+            {
+              forecast.confidence
+            }
+            {" "}
+            confidence)
           </li>
         </ul>
       </div>
-    </div>
-  );
+      <div
+  style={{
+    marginTop: "30px",
+    textAlign: "center",
+  }}
+>
+  <button
+    className="primary-btn"
+    onClick={() => {
+      window.location.href =
+        "/history";
+    }}
+  >
+    View Exam History
+  </button>
+  <button
+  className="primary-btn"
+  style={{
+    marginLeft: "12px",
+  }}
+  onClick={() => {
+    window.location.href =
+      "/cbt-exam";
+  }}
+>
+  Retake Exam
+</button>
+</div>
+
+</div>
+);
 }

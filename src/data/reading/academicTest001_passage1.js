@@ -166,57 +166,63 @@ Nevertheless, experts generally agree that renewable energy will play a critical
         "grids"
     },
 
-    {
-      id: 10,
+   {
+  id: 10,
 
-      type:
-        "true-false-not-given",
+  type: "matching-headings",
 
-      question:
-        "Renewable energy produces lower levels of pollution than fossil fuels.",
+  question:
+    "Match the best heading to the paragraph discussing government incentives.",
 
-      answer:
-        "True"
-    },
+  options: [
+    "The Growth of Solar Energy",
+    "Government Support for Renewables",
+    "Hydroelectric Challenges",
+    "Future Energy Storage"
+  ],
 
-    {
-      id: 11,
+  answer:
+    "Government Support for Renewables"
+},
 
-      type:
-        "true-false-not-given",
+{
+  id: 11,
 
-      question:
-        "All countries have completely replaced fossil fuels.",
+  type:
+    "summary-completion",
 
-      answer:
-        "False"
-    },
+  question:
+    "Renewable energy is considered important because it produces lower levels of ______.",
 
-    {
-      id: 12,
+  answer:
+    "pollution"
+},
 
-      type:
-        "true-false-not-given",
+{
+  id: 12,
 
-      question:
-        "Geothermal energy is discussed in the passage.",
+  type:
+    "short-answer",
 
-      answer:
-        "True"
-    },
+  question:
+    "Which renewable energy technology has experienced particularly rapid growth?",
 
-    {
-      id: 13,
+  answer:
+    "solar energy"
+},
 
-      type:
-        "true-false-not-given",
+{
+  id: 13,
 
-      question:
-        "Renewable energy adoption has no challenges.",
+  type:
+    "true-false-not-given",
 
-      answer:
-        "False"
-    }
+  question:
+    "Renewable energy systems require no infrastructure investment.",
+
+  answer:
+    "False"
+},
   ]
 };
 

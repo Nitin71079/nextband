@@ -1,8 +1,5 @@
-import {
-  useExam,
-} from "../context/ExamContext";
+import ExamProgressHeader from "../components/ExamProgressHeader";
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 
 import MockReading from "./MockReading";
@@ -10,290 +7,139 @@ import MockListening from "./MockListening";
 import MockWriting from "./MockWriting";
 import MockSpeaking from "./MockSpeaking";
 
-import {
-  saveExamSession,
-} from "../services/examSession";
+import { saveExamSession } from "../services/examSession";
+import { updateStreak } from "../services/streakService";
 
 export default function CBTExamEngine() {
-  const {
-  readingBand,
-  listeningBand,
-  writingBand,
-  speakingBand,
-} = useExam();
-  
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
   const [stage, setStage] =
     useState("intro");
-function finishExam() {
-  console.log("READING", readingBand);
-  console.log("LISTENING", listeningBand);
-  console.log("WRITING", writingBand);
-  console.log("SPEAKING", speakingBand);
 
-  saveExamSession({
-    reading: readingBand || 0,
-    listening: listeningBand || 0,
-    writing: writingBand || 0,
-    speaking: speakingBand || 0,
-    completedAt: new Date().toLocaleString(),
-  });
+  const [results, setResults] =
+    useState({
+      reading: null,
+      listening: null,
+      writing: null,
+      speaking: null,
+    });
 
-  navigate("/exam-results");
-}
-function finishExam() {
-  saveExamSession({
-    reading:
-      readingBand || 0,
+  function finishExam(
+    finalResults
+  ) {
+    updateStreak();
 
-    listening:
-      listeningBand || 0,
+    saveExamSession({
+      ...finalResults,
+      completedAt:
+        new Date().toLocaleString(),
+    });
 
-    writing:
-      writingBand || 0,
-
-    speaking:
-      speakingBand || 0,
-
-    completedAt:
-      new Date().toLocaleString(),
-  });
-
-  navigate(
-    "/exam-results"
-  );
-}
-
-  if (stage === "intro") {
-    return (
-      <div
-        style={{
-          minHeight:
-            "100vh",
-          display:
-            "flex",
-          justifyContent:
-            "center",
-          alignItems:
-            "center",
-          padding:
-            "40px",
-        }}
-      >
-        <div
-          style={{
-            background:
-              "#fff",
-            padding:
-              "40px",
-            borderRadius:
-              "24px",
-            maxWidth:
-              "800px",
-            width:
-              "100%",
-            boxShadow:
-              "0 10px 30px rgba(0,0,0,0.08)",
-          }}
-        >
-          <h1>
-            IELTS Computer
-            Based Test
-          </h1>
-
-          <p>
-            Complete all
-            sections of the
-            IELTS exam.
-          </p>
-
-          <div
-            style={{
-              marginTop:
-                "20px",
-            }}
-          >
-            <h3>
-              Test Modules
-            </h3>
-
-            <ul>
-              <li>
-                Reading
-                (60 mins)
-              </li>
-
-              <li>
-                Listening
-                (30 mins)
-              </li>
-
-              <li>
-                Writing
-                (60 mins)
-              </li>
-
-              <li>
-                Speaking
-                (11–14 mins)
-              </li>
-            </ul>
-          </div>
-
-          <button
-            className="primary-btn"
-            onClick={() =>
-              setStage(
-                "reading"
-              )
-            }
-          >
-            Start Exam
-          </button>
-        </div>
-      </div>
+    navigate(
+      "/exam-results"
     );
   }
 
-  if (
-    stage ===
-    "reading"
-  ) {
+  if (stage === "reading") {
     return (
       <>
-        <MockReading />
+        <ExamProgressHeader
+          currentSection="reading"
+        />
 
-        <div
-          style={{
-            position:
-              "fixed",
-            bottom:
-              "20px",
-            right:
-              "20px",
-            zIndex:
-              9999,
+        <MockReading
+          onComplete={(band) => {
+            setResults((prev) => ({
+              ...prev,
+              reading: band,
+            }));
+
+            setStage(
+              "listening"
+            );
           }}
-        >
-          <button
-            className="primary-btn"
-            onClick={() =>
-              setStage(
-                "listening"
-              )
-            }
-          >
-            Continue →
-            Listening
-          </button>
-        </div>
+        />
       </>
     );
   }
 
-  if (
-    stage ===
-    "listening"
-  ) {
+  if (stage === "listening") {
     return (
       <>
-        <MockListening />
+        <ExamProgressHeader
+          currentSection="listening"
+        />
 
-        <div
-          style={{
-            position:
-              "fixed",
-            bottom:
-              "20px",
-            right:
-              "20px",
-            zIndex:
-              9999,
+        <MockListening
+          onComplete={(band) => {
+            setResults((prev) => ({
+              ...prev,
+              listening: band,
+            }));
+
+            setStage(
+              "writing"
+            );
           }}
-        >
-          <button
-            className="primary-btn"
-            onClick={() =>
-              setStage(
-                "writing"
-              )
-            }
-          >
-            Continue →
-            Writing
-          </button>
-        </div>
+        />
       </>
     );
   }
 
-  if (
-    stage ===
-    "writing"
-  ) {
+  if (stage === "writing") {
     return (
       <>
-        <MockWriting />
+        <ExamProgressHeader
+          currentSection="writing"
+        />
 
-        <div
-          style={{
-            position:
-              "fixed",
-            bottom:
-              "20px",
-            right:
-              "20px",
-            zIndex:
-              9999,
+        <MockWriting
+          onComplete={(band) => {
+            setResults((prev) => ({
+              ...prev,
+              writing: band,
+            }));
+
+            setStage(
+              "speaking"
+            );
           }}
-        >
-          <button
-            className="primary-btn"
-            onClick={() =>
-              setStage(
-                "speaking"
-              )
-            }
-          >
-            Continue →
-            Speaking
-          </button>
-        </div>
+        />
       </>
     );
   }
 
-  if (
-    stage ===
-    "speaking"
-  ) {
+  if (stage === "speaking") {
     return (
       <>
-        <MockSpeaking />
+        <ExamProgressHeader
+          currentSection="speaking"
+        />
 
-        <div
-          style={{
-            position:
-              "fixed",
-            bottom:
-              "20px",
-            right:
-              "20px",
-            zIndex:
-              9999,
+        <MockSpeaking
+          onComplete={(band) => {
+ const overallBand =
+  session.overall ??
+  (
+    (
+      Number(session.reading || 0) +
+      Number(session.listening || 0) +
+      Number(session.writing || 0) +
+      Number(session.speaking || 0)
+    ) / 4
+  ).toFixed(1);
+
+const finalResults = {
+  ...results,
+  speaking: band,
+  overall,
+};
+
+            finishExam(
+              finalResults
+            );
           }}
-        >
-          <button
-            className="primary-btn"
-            onClick={
-              finishExam
-            }
-          >
-            Finish Exam
-          </button>
-        </div>
+        />
       </>
     );
   }
@@ -301,19 +147,46 @@ function finishExam() {
   return (
     <div
       style={{
-        minHeight:
-          "100vh",
-        display:
-          "flex",
+        minHeight: "100vh",
+        display: "flex",
         justifyContent:
           "center",
         alignItems:
           "center",
       }}
     >
-      <h1>
-        Loading...
-      </h1>
+      <div
+        style={{
+          textAlign: "center",
+          background: "#fff",
+          padding: "40px",
+          borderRadius: "20px",
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.08)",
+        }}
+      >
+        <h1>
+          IELTS CBT Exam
+        </h1>
+
+        <p>
+          Complete Reading,
+          Listening, Writing
+          and Speaking under
+          exam conditions.
+        </p>
+
+        <button
+          className="primary-btn"
+          onClick={() =>
+            setStage(
+              "reading"
+            )
+          }
+        >
+          Start Exam
+        </button>
+      </div>
     </div>
   );
 }

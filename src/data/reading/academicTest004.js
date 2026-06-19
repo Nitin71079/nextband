@@ -1,63 +1,24 @@
+// academicTest004.js
+
+import passage1 from "./academicTest004_passage1";
+import passage2 from "./academicTest004_passage2";
+import passage3 from "./academicTest004_passage3";
+
 const academicTest004 = {
-  id: "academic-004",
+  id: 4,
 
-  title: "Ocean Exploration",
+  title: "Academic Reading Test 4",
 
-  type: "Academic",
+  level: "Academic",
 
-  difficulty: "Medium-Hard",
+  estimatedBand: "6.5 - 8.5",
 
-  estimatedBand: "7.0-8.0",
+  duration: 60,
 
   passages: [
-    {
-      id: 1,
-
-      title: "Deep Sea Research",
-
-      content: `
-Scientists continue exploring the deep ocean to discover unknown species and geological formations.
-
-Modern submersibles allow researchers to reach depths that were previously inaccessible.
-      `,
-
-      questions: [
-        {
-          id: 1,
-
-          type: "multiple-choice",
-
-          question:
-            "What do modern submersibles allow?",
-
-          options: [
-            "Faster airplanes",
-            "Ocean depth exploration",
-            "Space travel",
-            "River transport",
-          ],
-
-          answer:
-            "Ocean depth exploration",
-        },
-      ],
-    },
-
-    {
-      id: 2,
-      title: "Marine Biodiversity",
-      content:
-        "Thousands of marine species remain undiscovered in deep ocean ecosystems.",
-      questions: [],
-    },
-
-    {
-      id: 3,
-      title: "Ocean Technology",
-      content:
-        "Autonomous underwater vehicles are becoming essential tools for exploration.",
-      questions: [],
-    },
+    passage1,
+    passage2,
+    passage3,
   ],
 };
 

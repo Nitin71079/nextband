@@ -1,82 +1,25 @@
+import passage1 from "./academicTest002_passage1";
+import passage2 from "./academicTest002_passage2";
+import passage3 from "./academicTest002_passage3";
+
 const academicTest002 = {
-  id: "academic-002",
+  id: 2,
 
   title:
-    "Artificial Intelligence",
+    "Academic Reading Test 2",
 
-  type:
+  level:
     "Academic",
 
-  difficulty:
-    "Medium",
-
   estimatedBand:
-    "6.5-7.5",
+    "6.5 - 8.5",
+
+  duration: 60,
 
   passages: [
-    {
-      id: 1,
-
-      title:
-        "The Rise of AI",
-
-      content: `
-Artificial Intelligence has transformed
-many industries including healthcare,
-finance, and education.
-
-Machine learning algorithms are capable
-of identifying patterns in large datasets
-and making predictions with remarkable
-accuracy.
-      `,
-
-      questions: [
-        {
-          id: 1,
-
-          type:
-            "multiple-choice",
-
-          question:
-            "Which industries are mentioned?",
-
-          options: [
-            "Healthcare",
-            "Finance",
-            "Education",
-            "All of the above",
-          ],
-
-          answer:
-            "All of the above",
-        },
-      ],
-    },
-
-    {
-      id: 2,
-
-      title:
-        "AI In Education",
-
-      content:
-        "Content Here",
-
-      questions: [],
-    },
-
-    {
-      id: 3,
-
-      title:
-        "Future Challenges",
-
-      content:
-        "Content Here",
-
-      questions: [],
-    },
+    passage1,
+    passage2,
+    passage3,
   ],
 };
 

@@ -1,44 +1,133 @@
+import { useEffect, useState } from "react";
 
-import { useMemo } from "react";
+import {
+  fetchResults,
+} from "../services/firebaseResults";
 
 export default function PerformanceDashboard() {
-  const stats = useMemo(
-    () => ({
-      reading: 7.0,
-      listening: 6.5,
-      writing: 6.5,
-      speaking: 7.0,
-    }),
-    []
-  );
+  const [results, setResults] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      const data =
+        await fetchResults();
+
+      setResults(data);
+
+      setLoading(false);
+    }
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          padding: "40px",
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
+
+  if (results.length === 0) {
+    return (
+      <div
+        style={{
+          padding: "40px",
+        }}
+      >
+        <h1>
+          Performance Dashboard
+        </h1>
+
+        <p>
+          No test results found.
+        </p>
+      </div>
+    );
+  }
+
+  const latest =
+  results.find(
+    (result) =>
+      result.reading !== undefined &&
+      result.listening !== undefined &&
+      result.writing !== undefined &&
+      result.speaking !== undefined
+  ) || {};
+  
+  const reading =
+    Number(
+      latest.reading || 0
+    );
+
+  const listening =
+    Number(
+      latest.listening || 0
+    );
+
+  const writing =
+    Number(
+      latest.writing || 0
+    );
+
+  const speaking =
+    Number(
+      latest.speaking || 0
+    );
 
   const overallBand =
     (
-      (stats.reading +
-        stats.listening +
-        stats.writing +
-        stats.speaking) /
+      (reading +
+        listening +
+        writing +
+        speaking) /
       4
     ).toFixed(1);
 
   const cards = [
     {
       title: "Reading",
-      band: stats.reading,
+      band: reading,
     },
     {
       title: "Listening",
-      band: stats.listening,
+      band: listening,
     },
     {
       title: "Writing",
-      band: stats.writing,
+      band: writing,
     },
     {
       title: "Speaking",
-      band: stats.speaking,
+      band: speaking,
     },
   ];
+
+  const strongest =
+    cards.reduce(
+      (best, current) =>
+        current.band >
+        best.band
+          ? current
+          : best
+    );
+
+  const weakest =
+    cards.reduce(
+      (worst, current) =>
+        current.band <
+        worst.band
+          ? current
+          : worst
+    );
 
   return (
     <div
@@ -76,13 +165,19 @@ export default function PerformanceDashboard() {
         >
           {overallBand}
         </div>
+
+        <p>
+          Tests Taken:
+          {" "}
+          {results.length}
+        </p>
       </div>
 
       <div
         style={{
           display: "grid",
           gridTemplateColumns:
-            "repeat(auto-fit, minmax(250px,1fr))",
+            "repeat(auto-fit,minmax(250px,1fr))",
           gap: "20px",
         }}
       >
@@ -127,18 +222,20 @@ export default function PerformanceDashboard() {
         <ul>
           <li>
             Strongest Skill:
-            Reading
+            {" "}
+            {strongest.title}
           </li>
 
           <li>
             Improvement Area:
-            Listening
+            {" "}
+            {weakest.title}
           </li>
 
           <li>
-            Recommended Focus:
-            Mock Tests +
-            Listening Practice
+            Latest Overall Band:
+            {" "}
+            {overallBand}
           </li>
         </ul>
       </div>

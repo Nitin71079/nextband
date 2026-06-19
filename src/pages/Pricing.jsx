@@ -1,194 +1,63 @@
-import toast
-from "react-hot-toast";
+import PricingCard from "../components/PricingCard";
 
 export default function Pricing() {
-  async function handleUpgrade() {
-    try {
-      const response =
-        await fetch(
-          "/api/checkout",
-          {
-            method: "POST"
-          }
-        );
-
-      const data =
-        await response.json();
-
-      if (
-        data.url
-      ) {
-        window.location.href =
-          data.url;
-      }
-    } catch (error) {
-      console.error(
-        error
-      );
-
-      toast.error(
-        "Payment initialization failed."
-      );
-    }
-  }
-
   return (
-    <div className="container fade-in">
-      <div
+    <div
+      style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "40px",
+      }}
+    >
+      <h1
         style={{
-          textAlign:
-            "center",
-
-          marginBottom:
-            "60px"
+          textAlign: "center",
+          marginBottom: "40px",
         }}
       >
-        <span className="badge">
-          Premium Upgrade
-        </span>
-
-        <h1
-          className="section-title"
-          style={{
-            marginTop:
-              "20px"
-          }}
-        >
-          Unlock Premium 🚀
-        </h1>
-
-        <p
-          className="section-subtitle"
-          style={{
-            maxWidth:
-              "700px",
-
-            margin:
-              "0 auto"
-          }}
-        >
-          Access full IELTS mock
-          tests, advanced AI
-          analytics, premium
-          study systems, and
-          exclusive learning
-          tools.
-        </p>
-      </div>
+        NextBand Premium
+      </h1>
 
       <div
-        className="card"
         style={{
-          maxWidth:
-            "550px",
-
-          margin:
-            "0 auto",
-
-          textAlign:
-            "center"
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit,minmax(300px,1fr))",
+          gap: "30px",
         }}
       >
-        <h2
-          style={{
-            fontSize:
-              "42px",
+        <PricingCard
+          title="Free"
+          price="0"
+          features={[
+            "1 Reading Test",
+            "1 Listening Test",
+            "Basic Results",
+          ]}
+        />
 
-            marginBottom:
-              "20px"
-          }}
-        >
-          Premium Plan
-        </h2>
+        <PricingCard
+          title="Premium Monthly"
+          price="299"
+          features={[
+            "Unlimited Tests",
+            "AI Evaluation",
+            "AI Coach",
+            "Band Prediction",
+            "Analytics",
+          ]}
+        />
 
-        <div
-          style={{
-            fontSize:
-              "72px",
-
-            fontWeight:
-              "900",
-
-            color:
-              "#22d3ee",
-
-            marginBottom:
-              "10px"
-          }}
-        >
-          $9
-        </div>
-
-        <p
-          style={{
-            color:
-              "#64748b",
-
-            marginBottom:
-              "30px"
-          }}
-        >
-          per month
-        </p>
-
-        <div
-          style={{
-            display: "flex",
-
-            flexDirection:
-              "column",
-
-            gap: "18px",
-
-            marginBottom:
-              "40px",
-
-            textAlign:
-              "left"
-          }}
-        >
-          <div>
-            ✅ Full IELTS Mock
-            Tests
-          </div>
-
-          <div>
-            ✅ AI Speaking
-            Analysis
-          </div>
-
-          <div>
-            ✅ AI Essay
-            Evaluation
-          </div>
-
-          <div>
-            ✅ Advanced Analytics
-          </div>
-
-          <div>
-            ✅ Unlimited AI
-            Assistant Access
-          </div>
-
-          <div>
-            ✅ Premium Study
-            Planner
-          </div>
-        </div>
-
-        <button
-          onClick={
-            handleUpgrade
-          }
-          className="primary-btn"
-          style={{
-            width: "100%"
-          }}
-        >
-          Upgrade Now
-        </button>
+        <PricingCard
+          title="Premium 3 Months"
+          price="799"
+          features={[
+            "Everything Included",
+            "Best Value",
+            "3 Month Access",
+          ]}
+        />
       </div>
     </div>
   );
-}   
+}

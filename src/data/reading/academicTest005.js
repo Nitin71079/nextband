@@ -1,63 +1,22 @@
+import passage1 from "./academicTest005_passage1";
+import passage2 from "./academicTest005_passage2";
+import passage3 from "./academicTest005_passage3";
+
 const academicTest005 = {
-  id: "academic-005",
+  id: 5,
 
-  title: "Ancient Civilizations",
+  title: "Academic Reading Test 5",
 
-  type: "Academic",
+  level: "Academic",
 
-  difficulty: "Hard",
+  estimatedBand: "7.0 - 9.0",
 
-  estimatedBand: "7.5-8.5",
+  duration: 60,
 
   passages: [
-    {
-      id: 1,
-
-      title: "Early Urban Societies",
-
-      content: `
-Ancient civilizations emerged near rivers due to access to water, fertile land, and transportation routes.
-
-These societies developed complex political systems and trade networks.
-      `,
-
-      questions: [
-        {
-          id: 1,
-
-          type: "multiple-choice",
-
-          question:
-            "Why were rivers important?",
-
-          options: [
-            "Entertainment",
-            "Transportation",
-            "Sports",
-            "Decoration",
-          ],
-
-          answer:
-            "Transportation",
-        },
-      ],
-    },
-
-    {
-      id: 2,
-      title: "Trade Networks",
-      content:
-        "Trade allowed civilizations to exchange resources, technology, and cultural ideas.",
-      questions: [],
-    },
-
-    {
-      id: 3,
-      title: "Archaeological Evidence",
-      content:
-        "Modern archaeology continues uncovering evidence of ancient life and governance.",
-      questions: [],
-    },
+    passage1,
+    passage2,
+    passage3,
   ],
 };
 

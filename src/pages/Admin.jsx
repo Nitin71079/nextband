@@ -98,6 +98,20 @@ export default function Admin() {
   const estimatedRevenue =
     premiumUsers * 499;
 
+    const averageBand =
+  results.length > 0
+    ? (
+        results.reduce(
+          (sum, result) =>
+            sum +
+            Number(
+              result.band || 0
+            ),
+          0
+        ) / results.length
+      ).toFixed(1)
+    : "0.0"; 
+
   const chartData = [
     {
       name: "Users",
@@ -119,6 +133,7 @@ export default function Admin() {
   ];
 
   return (
+    
     <div
       style={{
         minHeight:
@@ -210,142 +225,17 @@ export default function Admin() {
                 "0 10px 30px rgba(0,0,0,0.08)"
             }}
           >
-            <h2
-              style={{
-                color:
-                  "#64748b",
+           <h2
+  style={{
+    color:
+      "#64748b",
 
-                marginBottom:
-                  "16px"
-              }}
-            >
-              Total Users
-            </h2>
-
-            <h1
-              style={{
-                fontSize:
-                  "52px",
-
-                color:
-                  "#22d3ee"
-              }}
-            >
-              {users.length}
-            </h1>
-          </div>
-
-          <div
-            style={{
-              background:
-                "white",
-
-              padding:
-                "35px",
-
-              borderRadius:
-                "24px",
-
-              boxShadow:
-                "0 10px 30px rgba(0,0,0,0.08)"
-            }}
-          >
-            <h2
-              style={{
-                color:
-                  "#64748b",
-
-                marginBottom:
-                  "16px"
-              }}
-            >
-              Premium Users
-            </h2>
-
-            <h1
-              style={{
-                fontSize:
-                  "52px",
-
-                color:
-                  "#22c55e"
-              }}
-            >
-              {
-                premiumUsers
-              }
-            </h1>
-          </div>
-
-          <div
-            style={{
-              background:
-                "white",
-
-              padding:
-                "35px",
-
-              borderRadius:
-                "24px",
-
-              boxShadow:
-                "0 10px 30px rgba(0,0,0,0.08)"
-            }}
-          >
-            <h2
-              style={{
-                color:
-                  "#64748b",
-
-                marginBottom:
-                  "16px"
-              }}
-            >
-              Total Tests
-            </h2>
-
-            <h1
-              style={{
-                fontSize:
-                  "52px",
-
-                color:
-                  "#f59e0b"
-              }}
-            >
-              {
-                results.length
-              }
-            </h1>
-          </div>
-
-          <div
-            style={{
-              background:
-                "white",
-
-              padding:
-                "35px",
-
-              borderRadius:
-                "24px",
-
-              boxShadow:
-                "0 10px 30px rgba(0,0,0,0.08)"
-            }}
-          >
-            <h2
-              style={{
-                color:
-                  "#64748b",
-
-                marginBottom:
-                  "16px"
-              }}
-            >
-              Estimated Revenue
-            </h2>
-
+    marginBottom:
+      "16px"
+  }}
+>
+  Estimated Revenue
+</h2>
             <h1
               style={{
                 fontSize:
@@ -361,6 +251,33 @@ export default function Admin() {
               }
             </h1>
           </div>
+          <div
+  style={{
+    background: "white",
+    padding: "35px",
+    borderRadius: "24px",
+    boxShadow:
+      "0 10px 30px rgba(0,0,0,0.08)"
+  }}
+>
+  <h2
+    style={{
+      color: "#64748b",
+      marginBottom: "16px"
+    }}
+  >
+    Average Band
+  </h2>
+
+  <h1
+    style={{
+      fontSize: "52px",
+      color: "#ef4444"
+    }}
+  >
+    {averageBand}
+  </h1>
+</div>
         </div>
 
         <div

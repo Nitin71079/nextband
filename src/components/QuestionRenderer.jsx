@@ -33,7 +33,6 @@ export default function QuestionRenderer({
                   )
                 }
               />
-
               {" "}
               {option}
             </label>
@@ -76,7 +75,6 @@ export default function QuestionRenderer({
                 )
               }
             />
-
             {" "}
             {option}
           </label>
@@ -114,5 +112,100 @@ export default function QuestionRenderer({
     );
   }
 
+  if (
+    question.type ===
+    "matching-headings"
+  ) {
+    return (
+      <select
+        value={
+          value || ""
+        }
+        onChange={(e) =>
+          onChange(
+            question.id,
+            e.target.value
+          )
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+        }}
+      >
+        <option value="">
+          Select Heading
+        </option>
+
+        {question.options.map(
+          (option) => (
+            <option
+              key={option}
+              value={option}
+            >
+              {option}
+            </option>
+          )
+        )}
+      </select>
+    );
+  }
+
+  if (
+    question.type ===
+    "short-answer"
+  ) {
+    return (
+      <input
+        type="text"
+        value={
+          value || ""
+        }
+        onChange={(e) =>
+          onChange(
+            question.id,
+            e.target.value
+          )
+        }
+        placeholder="Short answer"
+        style={{
+          width: "100%",
+          padding: "10px",
+          borderRadius:
+            "8px",
+          border:
+            "1px solid #cbd5e1",
+        }}
+      />
+    );
+  }
+
+if (
+  question.type ===
+  "summary-completion"
+) {
+  return (
+    <input
+      type="text"
+      value={
+        value || ""
+      }
+      onChange={(e) =>
+        onChange(
+          question.id,
+          e.target.value
+        )
+      }
+      placeholder="Complete summary"
+      style={{
+        width: "100%",
+        padding: "10px",
+        borderRadius:
+          "8px",
+        border:
+          "1px solid #cbd5e1",
+      }}
+    />
+  );
+}
   return null;
 }

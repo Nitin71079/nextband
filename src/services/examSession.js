@@ -1,30 +1,43 @@
 const STORAGE_KEY =
   "nextband_exam";
 
+const HISTORY_KEY =
+  "nextband_history";
+
 export function saveExamSession(
-  data
+  session
 ) {
   localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify(data)
+    JSON.stringify(session)
+  );
+
+  const history =
+    getExamHistory();
+
+  history.push({
+    ...session,
+    id: Date.now(),
+  });
+
+  localStorage.setItem(
+    HISTORY_KEY,
+    JSON.stringify(history)
   );
 }
 
 export function getExamSession() {
-  const raw =
+  return JSON.parse(
     localStorage.getItem(
       STORAGE_KEY
-    );
-
-  if (!raw) {
-    return null;
-  }
-
-  return JSON.parse(raw);
+    )
+  );
 }
 
-export function clearExamSession() {
-  localStorage.removeItem(
-    STORAGE_KEY
+export function getExamHistory() {
+  return JSON.parse(
+    localStorage.getItem(
+      HISTORY_KEY
+    ) || "[]"
   );
 }

@@ -1,4 +1,4 @@
-const script = `
+const section1Script = `
 Receptionist:
 Good morning, Greenfield Student Housing.
 
@@ -19,4 +19,4 @@ Student:
 I'll take the first option.
 `;
 
-export default script;
+export default section1Script;

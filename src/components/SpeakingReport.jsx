@@ -1,6 +1,19 @@
+import AIErrorCard from "./AIErrorCard";
+
 export default function SpeakingReport({
   report,
-}) {
+}) {  
+  if (!report) return null;
+
+  if (!report.success) {
+    return (
+      <AIErrorCard
+        error={
+          report.error
+        }
+      />
+    );
+  }
   if (!report) return null;
 
   return (
@@ -25,8 +38,48 @@ export default function SpeakingReport({
         }}
       >
         <h1>
-          Band {report.overallBand}
+          Band {
+            report.overallBand
+          }
         </h1>
+
+        <p>
+          <strong>
+            Confidence:
+          </strong>{" "}
+          {
+            report.confidence
+          }
+          %
+        </p>
+
+        <p>
+          <strong>
+            Estimated IELTS Range:
+          </strong>{" "}
+          {
+            report.estimatedRange
+          }
+        </p>
+      </div>
+
+      <div
+        style={{
+          background: "#f8fafc",
+          padding: "15px",
+          borderRadius: "12px",
+          marginBottom: "20px",
+        }}
+      >
+        <h3>
+          IELTS Benchmark
+        </h3>
+
+        <p>
+          {
+            report.benchmark
+          }
+        </p>
       </div>
 
       <div
@@ -42,8 +95,11 @@ export default function SpeakingReport({
           <strong>
             Fluency
           </strong>
+
           <p>
-            {report.fluency}
+            {
+              report.fluency
+            }
           </p>
         </div>
 
@@ -51,6 +107,7 @@ export default function SpeakingReport({
           <strong>
             Lexical Resource
           </strong>
+
           <p>
             {
               report.lexicalResource
@@ -62,8 +119,11 @@ export default function SpeakingReport({
           <strong>
             Grammar
           </strong>
+
           <p>
-            {report.grammar}
+            {
+              report.grammar
+            }
           </p>
         </div>
 
@@ -71,9 +131,22 @@ export default function SpeakingReport({
           <strong>
             Pronunciation
           </strong>
+
           <p>
             {
               report.pronunciation
+            }
+          </p>
+        </div>
+
+        <div>
+          <strong>
+            Word Count
+          </strong>
+
+          <p>
+            {
+              report.wordCount
             }
           </p>
         </div>
@@ -151,12 +224,9 @@ export default function SpeakingReport({
       {report.sampleBetterAnswer && (
         <div
           style={{
-            background:
-              "#f8fafc",
-            padding:
-              "15px",
-            borderRadius:
-              "12px",
+            background: "#f8fafc",
+            padding: "15px",
+            borderRadius: "12px",
           }}
         >
           <h3>

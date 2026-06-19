@@ -1,15 +1,31 @@
+
+import {
+  getAIUsage,
+} from "../services/aiUsage";
+import {
+  saveEvaluation,
+} from "../services/evaluationStorage";
+
 import {
   useExam,
 } from "../context/ExamContext";
 import { useEffect, useState } from "react";
 
 import {
-  evaluateWriting,
-} from "../services/writingEvaluator";
+  evaluateWritingGPT,
+} from "../services/evaluateWritingGPT";
+
+import {
+  trackAIUsage,
+  canUseAI,
+} from "../services/aiUsage";
 
 import WritingReport from "../components/WritingReport";
 
-export default function MockWriting() {
+export default function MockWriting({
+  onComplete,
+})
+ {
   const {
   setWritingBand,
 } = useExam();
@@ -19,9 +35,11 @@ export default function MockWriting() {
 
   const [task2, setTask2] =
     useState("");
+const [report, setReport] =
+  useState(null);
 
-  const [report, setReport] =
-    useState(null);
+const [loading, setLoading] =
+  useState(false);
 
   const [timeLeft, setTimeLeft] =
     useState(60 * 60);
@@ -62,17 +80,61 @@ export default function MockWriting() {
       .filter(Boolean)
       .length;
 
-  function handleEvaluation() {
-    const result =
-  evaluateWriting(task2);
+async function handleEvaluation() {
+  if (!canUseAI()) {
+    alert(
+      "Free AI evaluation limit reached."
+    );
 
-setReport(result);
+    return;
+  }
 
-if (result.overallBand) {
-  setWritingBand(
-    result.overallBand
+  if (task2Words < 50) {
+    alert(
+      "Essay is too short for IELTS evaluation."
+    );
+
+    return;
+  }
+if (!isPremium()) {
+  alert(
+    "🔒 AI Writing Evaluation is a Premium feature."
   );
-}}
+  return;
+}
+  setLoading(true);
+
+  try {
+    
+    const result =
+      await evaluateWritingGPT(
+        task2
+      );
+
+    trackAIUsage();
+
+    setReport(result);
+
+    saveEvaluation({
+      type: "writing",
+      overallBand:
+        result.overallBand,
+      report: result,
+    });
+
+    if (
+      result.overallBand
+    ) {
+      setWritingBand(
+        result.overallBand
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+}
 
   return (
     <div  
@@ -83,50 +145,47 @@ if (result.overallBand) {
         padding: "30px",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems:
-            "center",
-          marginBottom:
-            "30px",
-        }}
-      >
-        <div>
-          <h1>
-            IELTS Writing Test
-          </h1>
+      
+     <div>
+  <div
+    style={{
+      background:
+        "#0f172a",
+      color: "white",
+      padding:
+        "15px 25px",
+      borderRadius:
+        "12px",
+      fontWeight:
+        "bold",
+      fontSize:
+        "24px",
+      textAlign:
+        "center",
+    }}
+  >
+    {minutes}:
+    {String(
+      seconds
+    ).padStart(2, "0")}
+  </div>
 
-          <p>
-            Complete Task 1
-            and Task 2 within
-            60 minutes.
-          </p>
-        </div>
-
-        <div
-          style={{
-            background:
-              "#0f172a",
-            color: "white",
-            padding:
-              "15px 25px",
-            borderRadius:
-              "12px",
-            fontWeight:
-              "bold",
-            fontSize:
-              "24px",
-          }}
-        >
-          {minutes}:
-          {String(
-            seconds
-          ).padStart(2, "0")}
-        </div>
-      </div>
+  <div
+    style={{
+      marginTop:
+        "10px",
+      fontWeight:
+        "bold",
+      textAlign:
+        "center",
+    }}
+  >
+    AI Evaluations Used:
+    {" "}
+    {getAIUsage()}
+    /10
+  </div>
+</div>
 
       <div
         style={{
@@ -276,13 +335,16 @@ if (result.overallBand) {
         }}
       >
         <button
-          className="primary-btn"
-          onClick={
-            handleEvaluation
-          }
-        >
-          AI Evaluate Essay
-        </button>
+  className="primary-btn"
+  onClick={
+    handleEvaluation
+  }
+  disabled={loading}
+>
+  {loading
+    ? "Evaluating..."
+    : "AI Evaluate Essay"}
+</button>
 
         <button
           onClick={() => {
@@ -295,11 +357,33 @@ if (result.overallBand) {
         </button>
       </div>
 
-      {report && (
-        <WritingReport
-          report={report}
-        />
-      )}
+     {report && (
+  <>
+    <WritingReport
+      report={report}
+    />
+
+    <div
+      style={{
+        marginTop: "20px",
+        textAlign: "center",
+      }}
+    >
+      <button
+        className="primary-btn"
+        onClick={() => {
+          if (onComplete) {
+            onComplete(
+              report.overallBand || 6
+            );
+          }
+        }}
+      >
+        Continue To Speaking →
+      </button>
+    </div>
+  </>
+)}
     </div>
   );
 }

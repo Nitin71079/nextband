@@ -1,31 +1,38 @@
-export default function AIStatusCard({
-  title,
-  status,
-}) {
+import {
+  getAIUsage,
+} from "../services/aiUsage";
+import {
+  AI_CONFIG,
+} from "../config/aiConfig";
+
+export default function AIStatusCard() {
   return (
     <div
       style={{
-        background:
-          "#fff",
-
-        padding:
-          "20px",
-
-        borderRadius:
-          "16px",
-
-        marginBottom:
-          "15px",
+        background: "#fff",
+        padding: "25px",
+        borderRadius: "16px",
+        marginTop: "20px",
       }}
     >
-      <h3>
-        {title}
-      </h3>
+      <h2>
+        AI Evaluation
+      </h2>
 
       <p>
         Status:
         {" "}
-        {status}
+        {AI_CONFIG.enabled
+          ? "Enabled"
+          : "Disabled"}
+      </p>
+
+      <p>
+        Model:
+        {" "}
+        {
+          AI_CONFIG.model
+        }
       </p>
     </div>
   );
