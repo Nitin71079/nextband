@@ -3,10 +3,10 @@ export async function startCheckout(
 ) {
   const links = {
     "Premium Monthly":
-      "PASTE_MONTHLY_LINK_HERE",
+      "https://buy.stripe.com/test_8x29AVdhL2gaePh0Svgw000",
 
     "Premium 3 Months":
-      "PASTE_3MONTH_LINK_HERE",
+      "https://buy.stripe.com/test_8x2cN7elP2gabD57gTgw002",
   };
 
   const url =

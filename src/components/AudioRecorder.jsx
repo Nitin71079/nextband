@@ -1,107 +1,182 @@
-  import { useState, useRef } from "react";
+import { useState, useRef } from "react";
 
-  export default function AudioRecorder({
-    onRecordingComplete,
-  }) {
-    const [recording,
-      setRecording] =
-      useState(false);
+export default function AudioRecorder({
+onRecordingComplete,
+onTranscriptGenerated,
+}) {
+const [recording, setRecording] =
+useState(false);
 
-    const mediaRecorderRef =
-      useRef(null);
+const mediaRecorderRef =
+useRef(null);
 
-    const chunksRef =
-      useRef([]);
+const recognitionRef =
+useRef(null);
 
-    async function startRecording() {
-      try {
-        const stream =
-          await navigator.mediaDevices.getUserMedia(
-            {
-              audio: true,
-            }
-          );
+const transcriptRef =
+useRef("");
 
-        const recorder =
-          new MediaRecorder(
-            stream
-          );
+const chunksRef =
+useRef([]);
 
-        chunksRef.current =
-          [];
+async function startRecording() {
+try {
+transcriptRef.current = "";
 
-        recorder.ondataavailable =
-          (
-            event
-          ) => {
-            chunksRef.current.push(
-              event.data
-            );
-          };
 
-        recorder.onstop =
-          () => {
-            const blob =
-              new Blob(
-                chunksRef.current,
-                {
-                  type:
-                    "audio/webm",
-                }
-              );
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
 
-            onRecordingComplete(
-              blob
-            );
-          };
+    console.log(
+  "SpeechRecognition:",
+  SpeechRecognition
+);
 
-        recorder.start();
+  if (SpeechRecognition) {
+    const recognition =
+      new SpeechRecognition();
 
-        mediaRecorderRef.current =
-          recorder;
+    recognition.continuous =
+      true;
 
-        setRecording(
-          true
+    recognition.interimResults =
+      true;
+
+    recognition.lang =
+      "en-US";
+
+recognition.onresult =
+  (event) => {
+    console.log(
+      "Speech event:",
+      event
+    );
+
+    let transcript =
+      "";
+
+    for (
+      let i = 0;
+      i <
+      event.results.length;
+      i++
+    ) {
+      transcript +=
+        event.results[i][0]
+          .transcript +
+        " ";
+    }
+
+    console.log(
+      "Transcript:",
+      transcript
+    );
+
+    transcriptRef.current =
+      transcript;
+  };
+
+recognition.start();
+
+console.log(
+  "Speech recognition started"
+);
+
+    recognitionRef.current =
+      recognition;
+  }
+
+  const stream =
+    await navigator.mediaDevices.getUserMedia(
+      {
+        audio: true,
+      }
+    );
+
+  const recorder =
+    new MediaRecorder(
+      stream
+    );
+
+  chunksRef.current = [];
+
+  recorder.ondataavailable =
+    (event) => {
+      chunksRef.current.push(
+        event.data
+      );
+    };
+
+  recorder.onstop =
+    () => {
+      const blob =
+        new Blob(
+          chunksRef.current,
+          {
+            type:
+              "audio/webm",
+          }
         );
-      } catch (error) {
-        console.error(
-          error
-        );
 
-        alert(
-          "Microphone access denied."
+      onRecordingComplete(
+        blob
+      );
+
+      if (
+        onTranscriptGenerated
+      ) {
+        onTranscriptGenerated(
+          transcriptRef.current
         );
       }
-    }
+    };
 
-    function stopRecording() {
-      mediaRecorderRef.current?.stop();
+  recorder.start();
 
-      setRecording(
-        false
-      );
-    }
+  mediaRecorderRef.current =
+    recorder;
 
-    return (
-      <div>
-        {!recording ? (
-          <button
-            className="primary-btn"
-            onClick={
-              startRecording
-            }
-          >
-            Start Recording
-          </button>
-        ) : (
-          <button
-            onClick={
-              stopRecording
-            }
-          >
-            Stop Recording
-          </button>
-        )}
-      </div>
-    );
-  }
+  setRecording(true);
+} catch (error) {
+  console.error(
+    "Recording Error:",
+    error
+  );
+
+  alert(
+    error?.message ||
+    JSON.stringify(error)
+  );
+}
+
+}
+
+function stopRecording() {
+mediaRecorderRef.current?.stop();
+
+recognitionRef.current?.stop();
+
+setRecording(false);
+
+}
+
+return ( <div>
+{!recording ? (
+<button
+className="primary-btn"
+onClick={
+startRecording
+}
+>
+🎤 Start Recording </button>
+) : (
+<button
+onClick={
+stopRecording
+}
+>
+⏹ Stop Recording </button>
+)} </div>
+);
+}

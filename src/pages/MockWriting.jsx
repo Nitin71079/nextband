@@ -5,7 +5,9 @@ import {
 import {
   saveEvaluation,
 } from "../services/evaluationStorage";
-
+import {
+  useAuth,
+} from "../context/AuthContext";
 import {
   useExam,
 } from "../context/ExamContext";
@@ -26,9 +28,8 @@ export default function MockWriting({
   onComplete,
 })
  {
-  const {
-  setWritingBand,
-} = useExam();
+ const { premium } =
+  useAuth();
 
   const [task1, setTask1] =
     useState("");
@@ -85,7 +86,6 @@ async function handleEvaluation() {
     alert(
       "Free AI evaluation limit reached."
     );
-
     return;
   }
 
@@ -93,15 +93,9 @@ async function handleEvaluation() {
     alert(
       "Essay is too short for IELTS evaluation."
     );
-
     return;
   }
-if (!isPremium()) {
-  alert(
-    "🔒 AI Writing Evaluation is a Premium feature."
-  );
-  return;
-}
+
   setLoading(true);
 
   try {
@@ -122,13 +116,10 @@ if (!isPremium()) {
       report: result,
     });
 
-    if (
-      result.overallBand
-    ) {
-      setWritingBand(
-        result.overallBand
-      );
-    }
+    console.log(
+  "Writing Band:",
+  result.overallBand
+);
   } catch (error) {
     console.error(error);
   } finally {

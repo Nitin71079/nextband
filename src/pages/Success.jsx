@@ -1,6 +1,49 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
+import {
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+
+import {
+  db,
+} from "../firebase";
+
+import {
+  useAuth,
+} from "../context/AuthContext";
 export default function Success() {
+  const { user } =
+  useAuth();
+  useEffect(() => {
+  async function activatePremium() {
+    if (!user) return;
+
+    try {
+      await updateDoc(
+        doc(
+          db,
+          "users",
+          user.uid
+        ),
+        {
+          premium: true,
+        }
+      );
+
+      console.log(
+        "Premium Activated"
+      );
+    } catch (error) {
+      console.error(
+        error
+      );
+    }
+  }
+
+  activatePremium();
+}, [user]);
   return (
     <div className="container fade-in">
       <div

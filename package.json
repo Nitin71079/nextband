@@ -10,14 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@stripe/stripe-js": "^9.6.0",
     "@tailwindcss/postcss": "^4.3.0",
     "axios": "^1.16.1",
     "firebase": "^12.13.0",
-    "openai": "^6.42.0",
+    "openai": "^6.44.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
     "react-media-recorder": "^1.7.2",
     "react-responsive": "^10.0.1",
     "react-router-dom": "^7.15.0",

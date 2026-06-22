@@ -19,7 +19,7 @@ import {
   trackAIUsage,
   canUseAI,
   getAIUsage,
-} from "../services/aiUsage";import { speechToText } from "../services/speechToText";
+} from "../services/aiUsage";
 
 import SpeakingReport from "../components/SpeakingReport";
 
@@ -83,62 +83,9 @@ export default function MockSpeaking({
     setAudioUrl(url);
   }
 
-  async function generateTranscript() {
-    if (!audioBlob) {
-      alert(
-        "Please record audio first."
-      );
-      return;
-    }
-  if (!isPremium()) {
-    alert(
-      "🔒 Transcript generation is a Premium feature."
-    );
-    return;
-  }
-    setTranscribing(true);
-
-    try {
-   
-      const result =
-        await speechToText(
-          audioBlob
-        );
-
-      if (result.success) {
-        setTranscript(
-          result.transcript ||
-            ""
-        );
-
-        setResponse(
-          result.transcript ||
-            ""
-        );
-      } else {
-        alert(
-          result.error ||
-            "Unable to generate transcript."
-        );
-      }
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        "Transcript generation failed."
-      );
-    } finally {
-      setTranscribing(false);
-    }
-  }
 
  async function handleEvaluation() {
-     if (!isPremium()) {
-  alert(
-    "🔒 AI Speaking Evaluation is a Premium feature."
-  );
-  return;
-}
+    
   if (!canUseAI()) {
     alert(
       "Free AI evaluation limit reached."
@@ -377,11 +324,21 @@ if (!result) {
           Audio Recording
         </h2>
 
-        <AudioRecorder
-          onRecordingComplete={
-            handleRecording
-          }
-        />
+   <AudioRecorder
+  onRecordingComplete={
+    handleRecording
+  }
+  onTranscriptGenerated={
+    (transcript) => {
+      setTranscript(
+        transcript
+      );
+      setResponse(
+        transcript
+      );
+    }
+  }
+/>
 
         <MicrophoneStatus
           audioBlob={audioBlob}
@@ -390,26 +347,6 @@ if (!result) {
         <AudioPlayback
           audioUrl={audioUrl}
         />
-
-        <div
-          style={{
-            marginTop: "20px",
-          }}
-        >
-          <button
-            onClick={
-              generateTranscript
-            }
-            disabled={
-              transcribing
-            }
-            className="primary-btn"
-          >
-            {transcribing
-              ? "Generating Transcript..."
-              : "Generate Transcript"}
-          </button>
-        </div>
 
         {transcript && (
           <div

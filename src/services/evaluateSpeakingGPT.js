@@ -2,14 +2,14 @@ import { callOpenAI } from "./openAIService";
 import { buildSpeakingPrompt } from "./speakingPrompt";
 
 export async function evaluateSpeakingGPT(
-response
+  response
 ) {
-const prompt =
-buildSpeakingPrompt(
-response
-);
+  const prompt =
+    buildSpeakingPrompt(
+      response
+    );
 
-return await callOpenAI(
-prompt
-);
+  return await callOpenAI(
+    prompt
+  );
 }

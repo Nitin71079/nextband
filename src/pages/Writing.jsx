@@ -2,7 +2,9 @@ import {
   useState
 } from "react";
 
-
+import {
+  evaluateWriting,
+} from "../services/evaluateWriting";
 import writingPrompts from "../data/writingPrompts";
 
 import {
@@ -59,39 +61,14 @@ export default function Writing() {
       .filter(Boolean)
       .length;
 
-      async function evaluateEssay() {
+  async function evaluateEssay() {
   try {
     setLoadingAI(true);
 
-    const response = await fetch(
-      "/api/evaluate-writing",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify({
-          essay,
-        }),
-      }
-    );
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error ||
-          "Evaluation failed"
-      );
-    }
-
     const feedback =
-      data.feedback ||
-      "No feedback received.";
+      await evaluateWriting(
+        essay
+      );
 
     setAiFeedback(
       feedback
@@ -112,9 +89,12 @@ export default function Writing() {
       );
     }
   } catch (error) {
-    console.error(
-      error
-    );
+  console.error(error);
+
+  alert(
+    error.message ||
+    JSON.stringify(error)
+  );
 
     setAiFeedback(
       "AI evaluation failed."

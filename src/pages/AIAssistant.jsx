@@ -1,7 +1,12 @@
+import ReactMarkdown from "react-markdown";
 import PremiumGate
 from "../components/PremiumGate";
 import { useState } from "react";
-console.log(import.meta.env);
+console.log(
+  "Groq Key:",
+  import.meta.env
+    .VITE_GROQ_API_KEY
+);
 export default function AIAssistant() {
   const [messages, setMessages] =
     useState([
@@ -28,100 +33,126 @@ export default function AIAssistant() {
   ];
 
   async function sendMessage() {
-    if (!input.trim()) return;
+  if (!input.trim()) return;
 
-    const userMessage = {
-      role: "user",
-      content: input,
-    };
+  const userMessage = {
+    role: "user",
+    content: input,
+  };
+
+  setMessages((prev) => [
+    ...prev,
+    userMessage,
+  ]);
+
+  const currentInput =
+    input;
+
+  setInput("");
+  setLoading(true);
+
+  try {
+    const response =
+      await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              `Bearer ${
+                import.meta.env
+                  .VITE_GROQ_API_KEY
+              }`,
+          },
+
+          body: JSON.stringify({
+            model:
+              "llama-3.3-70b-versatile",
+messages: [
+  {
+    role: "system",
+    content: `
+You are NextBand AI Coach.
+
+You are an expert IELTS mentor.
+
+Rules:
+- Use clean formatting.
+- Use bullet points.
+- Use headings.
+- Keep responses concise.
+- Never exceed 200 words unless asked.
+- Give practical IELTS advice.
+- For study plans, create tables or day-by-day lists.
+- For score improvement, focus on actionable steps.
+- Use emojis sparingly.
+- Sound like a professional tutor.
+`,
+  },
+
+  {
+    role: "user",
+    content: `
+Question:
+${currentInput}
+
+Format your answer professionally.
+`,
+  },
+],
+
+            temperature: 0.5,
+          }),
+        }
+      );
+
+    const data =
+      await response.json();
+
+    console.log(
+      "GROQ RESPONSE:",
+      data
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        JSON.stringify(data)
+      );
+    }
+
+    const aiReply =
+      data.choices[0]
+        .message.content;
 
     setMessages((prev) => [
       ...prev,
-      userMessage,
+      {
+        role:
+          "assistant",
+        content:
+          aiReply,
+      },
     ]);
+  } catch (error) {
+    console.error(error);
 
-    const currentInput =
-      input;
-
-    setInput("");
-    setLoading(true);
-
-    try {
-      const response =
-        await fetch(
-          "https://api.openai.com/v1/chat/completions",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-
-             
-                  
-            },
-
-            body: JSON.stringify({
-              model:
-                "gpt-4o-mini",
-
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    "You are an expert IELTS coach. Help students improve Reading, Listening, Writing and Speaking scores. Give practical IELTS-focused guidance and actionable advice.",
-                },
-
-                {
-                  role: "user",
-                  content:
-                    currentInput,
-                },
-              ],
-            }),
-          }
-        );
-const data =
-  await response.json();
-
-console.log(
-  "OPENAI RESPONSE:",
-  data
-);
-if (!response.ok) {
-  throw new Error(
-    JSON.stringify(data)
-  );
-}
-
-const aiReply =
-  data.choices[0]
-    .message.content;
-      setMessages((prev) => [
-        ...prev,
-        {
-          role:
-            "assistant",
-          content:
-            aiReply,
-        },
-      ]);
-    } catch (error) {
-      console.error(error);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role:
-            "assistant",
-          content:
-            "Unable to contact AI service.",
-        },
-      ]);
-    }
-
-    setLoading(false);
+    setMessages((prev) => [
+      ...prev,
+      {
+        role:
+          "assistant",
+        content:
+          "Unable to contact AI Coach.",
+      },
+    ]);
   }
+
+  setLoading(false);
+}
 
   return (
         <PremiumGate>
@@ -210,11 +241,9 @@ const aiReply =
                   : "You"}
               </strong>
 
-              <p>
-                {
-                  message.content
-                }
-              </p>
+          <ReactMarkdown>
+  {message.content}
+</ReactMarkdown>
             </div>
           )
         )}
