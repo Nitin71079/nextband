@@ -43,6 +43,23 @@ console.log(
 
     const [submitted, setSubmitted] =
     useState(false);
+    
+    const [
+  currentSection,
+  setCurrentSection
+] = useState(0);
+console.log(
+  "Current Section:",
+  currentSection
+);
+
+console.log(
+  "Current Section Data:",
+  test.sections?.[
+    currentSection
+  ]
+);
+
 const [
   showReview,
   setShowReview
@@ -379,41 +396,38 @@ if (submitted) {
 />
  <AudioPlayer
   audioUrl={
-    test.audio
+    test.sections[
+      currentSection
+    ].audio
   }
 />
 
-  {test.sections.map(
-  (section) => (
+
+
+
+ {(() => {
+  const section =
+    test.sections[
+      currentSection
+    ];
+
+  return (
     <div
-      key={
-        section.id
-      }
       style={{
-        background:
-          "#fff",
-        padding:
-          "20px",
-        borderRadius:
-          "16px",
-        marginBottom:
-          "20px",
+        background: "#fff",
+        padding: "20px",
+        borderRadius: "16px",
+        marginBottom: "20px",
       }}
     >
       <h2>
-        {
-          section.title
-        }
+        {section.title}
       </h2>
 
       {section.questions.map(
-        (
-          question
-        ) => (
+        (question) => (
           <div
-            key={
-              question.id
-            }
+            key={question.id}
             style={{
               marginBottom:
                 "20px",
@@ -421,10 +435,7 @@ if (submitted) {
           >
             <p>
               <strong>
-                {
-                  question.id
-                }
-                .
+                {question.id}.
               </strong>{" "}
               {
                 question.question
@@ -438,18 +449,14 @@ if (submitted) {
                   question.id
                 ] || ""
               }
-              onChange={(
-                e
-              ) =>
+              onChange={(e) =>
                 updateAnswer(
                   question.id,
-                  e.target
-                    .value
+                  e.target.value
                 )
               }
               style={{
-                width:
-                  "100%",
+                width: "100%",
                 padding:
                   "10px",
               }}
@@ -458,19 +465,53 @@ if (submitted) {
         )
       )}
     </div>
-  )
-)}
+  );
+})()}
 
+ <div
+  style={{
+    display: "flex",
+    justifyContent:
+      "space-between",
+    marginTop: "20px",
+  }}
+>
+  <button
+    disabled={
+      currentSection === 0
+    }
+    onClick={() =>
+      setCurrentSection(
+        currentSection - 1
+      )
+    }
+  >
+    Previous
+  </button>
+
+  {currentSection <
+  test.sections.length - 1 ? (
     <button
-        className="primary-btn"
-        onClick={() =>
-        setSubmitted(
-            true
+      className="primary-btn"
+      onClick={() =>
+        setCurrentSection(
+          currentSection + 1
         )
-        }
+      }
     >
-        Submit Test
+      Next Section
     </button>
+  ) : (
+    <button
+      className="primary-btn"
+      onClick={() =>
+        setSubmitted(true)
+      }
+    >
+      Submit Test
+    </button>
+  )}
+</div>
     </div>
 
     );

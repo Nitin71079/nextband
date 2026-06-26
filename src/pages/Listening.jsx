@@ -33,6 +33,7 @@ export default function Listening() {
   currentTest.sections.flatMap(
     (section) => section.questions
   );
+  
     console.log(
   "Current Test:",
   currentTest
@@ -45,6 +46,14 @@ export default function Listening() {
   const [submitted,
     setSubmitted] =
     useState(false);
+    const [
+  currentSection,
+  setCurrentSection
+] = useState(0);
+const currentSectionData =
+  currentTest.sections[
+    currentSection
+  ];
 
   const handleSelect = (
     qIndex,
@@ -100,20 +109,20 @@ else if (score >= 2) estimatedBand = 2;
 else if (score >= 1) estimatedBand = 1.5;
 
   async function handleAutoSubmit() {
-    if (submitted)
-      return;
+  if (submitted)
+    return;
 
-    setSubmitted(true);
+  setSubmitted(true);
 
-    if (user) {
-      await saveResult(
-        user.uid,
-        "Listening",
-        calculateScore(),
-        estimatedBand
-      );
-    }
+  if (user) {
+    await saveResult(
+      user.uid,
+      "Listening",
+      calculateScore(),
+      estimatedBand
+    );
   }
+}
 
   return (
     <div
@@ -215,7 +224,11 @@ onChange={(e) => {
     );
 
   setCurrentTest(selected);
+
+  setCurrentSection(0);
+
   setSelectedAnswers({});
+
   setSubmitted(false);
 }}
   style={{
@@ -280,34 +293,41 @@ onChange={(e) => {
       "40px"
   }}
 >
-  <p>
-    Audio URL:
-    {currentTest.audio}
-  </p>
 
-  <audio
-    controls
-    src={currentTest.audio}
-    style={{
-      width: "100%"
-    }}
-  />
+<audio
+  controls
+  src={
+    currentSectionData
+      ?.audio
+  }
+  style={{
+    width: "100%"
+  }}
+/>
 </div>
+{(() => {
+  const section =
+    currentTest.sections[
+      currentSection
+    ];
 
-{currentTest.sections.map(
-  (section) => (
+  return (
     <div
-      key={section.id}
       style={{
-        marginBottom: "50px",
+        marginBottom:
+          "50px",
       }}
     >
       <h2
         style={{
-          background: "#e2e8f0",
-          padding: "15px",
-          borderRadius: "12px",
-          marginBottom: "20px",
+          background:
+            "#e2e8f0",
+          padding:
+            "15px",
+          borderRadius:
+            "12px",
+          marginBottom:
+            "20px",
         }}
       >
         {section.title}
@@ -318,77 +338,145 @@ onChange={(e) => {
           <div
             key={q.id}
             style={{
-              marginBottom: "25px",
+              marginBottom:
+                "25px",
             }}
           >
             <h3>
-              {q.id}. {q.question}
+              {q.id}.{" "}
+              {q.question}
             </h3>
 
-            <input
-              type="text"
-              value={
-                selectedAnswers[q.id] || ""
-              }
-              onChange={(e) =>
-                setSelectedAnswers({
-                  ...selectedAnswers,
-                  [q.id]:
-                    e.target.value,
-                })
-              }
-              placeholder="Type your answer"
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "10px",
-                border:
-                  "1px solid #cbd5e1",
-                marginTop: "10px",
-              }}
-            />
+   {q.type === "mcq" ? (
+  q.options.map((option) => (
+    <label
+      key={option}
+      style={{
+        display: "block",
+        marginTop: "10px",
+      }}
+    >
+      <input
+        type="radio"
+        name={`q-${q.id}`}
+        value={option}
+        checked={
+          selectedAnswers[q.id] === option
+        }
+        onChange={(e) =>
+          setSelectedAnswers({
+            ...selectedAnswers,
+            [q.id]: e.target.value,
+          })
+        }
+      />
+      {" "}
+      {option}
+    </label>
+  ))
+) : q.type === "matching" ? (
+  <select
+    value={
+      selectedAnswers[q.id] || ""
+    }
+    onChange={(e) =>
+      setSelectedAnswers({
+        ...selectedAnswers,
+        [q.id]: e.target.value,
+      })
+    }
+    style={{
+      width: "100%",
+      padding: "12px",
+      marginTop: "10px",
+    }}
+  >
+    <option value="">
+      Select Answer
+    </option>
+
+    {q.options.map((option) => (
+      <option
+        key={option}
+        value={option}
+      >
+        {option}
+      </option>
+    ))}
+  </select>
+) : (
+  <input
+    type="text"
+    value={
+      selectedAnswers[q.id] || ""
+    }
+    onChange={(e) =>
+      setSelectedAnswers({
+        ...selectedAnswers,
+        [q.id]: e.target.value,
+      })
+    }
+    placeholder="Type your answer"
+    style={{
+      width: "100%",
+      padding: "12px",
+      borderRadius: "10px",
+      border: "1px solid #cbd5e1",
+      marginTop: "10px",
+    }}
+  />
+)}
           </div>
         )
       )}
     </div>
-  )
-)}
-        {!submitted ? (
-          <button
-            onClick={
-              handleAutoSubmit
-            }
-            style={{
-              background:
-                "#22d3ee",
+  );
+})()}
+<div
+  style={{
+    display: "flex",
+    justifyContent:
+      "space-between",
+    marginBottom:
+      "30px",
+  }}
+>
+  <button
+    disabled={
+      currentSection === 0
+    }
+    onClick={() =>
+      setCurrentSection(
+        currentSection - 1
+      )
+    }
+  >
+    Previous
+  </button>
 
-              border:
-                "none",
-
-              padding:
-                "16px 32px",
-
-              borderRadius:
-                "14px",
-
-              fontWeight:
-                "bold",
-
-              cursor:
-                "pointer",
-
-              fontSize:
-                "18px",
-
-              width:
-                isMobile
-                  ? "100%"
-                  : "auto"
-            }}
-          >
-            Submit Answers
-          </button>
-        ) : (
+ 
+{currentSection <
+currentTest.sections.length - 1 ? (
+  <button
+    onClick={() =>
+      setCurrentSection(
+        currentSection + 1
+      )
+    }
+  >
+    Next Section
+  </button>
+) : (
+ <button
+  className="primary-btn"
+  onClick={
+    handleAutoSubmit
+  }
+>
+  Submit Test
+</button>
+)}</div>
+        
           <div
             style={{
               marginTop:
@@ -490,7 +578,6 @@ onChange={(e) => {
               </p>
             </div>
           </div>
-        )}
       </div>
     </div>
   );
