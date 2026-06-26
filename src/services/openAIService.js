@@ -1,3 +1,5 @@
+console.log("Groq key exists:", !!import.meta.env.VITE_GROQ_API_KEY);
+console.log("Groq key prefix:", import.meta.env.VITE_GROQ_API_KEY?.substring(0, 6));
 import OpenAI from "openai";
 
 const client = new OpenAI({

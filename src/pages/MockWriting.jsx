@@ -100,10 +100,7 @@ async function handleEvaluation() {
 
   try {
     
-    const result =
-      await evaluateWritingGPT(
-        task2
-      );
+   const result = await evaluateWritingGPT(essay);
 
     trackAIUsage();
 

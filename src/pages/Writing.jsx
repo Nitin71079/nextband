@@ -2,9 +2,8 @@ import {
   useState
 } from "react";
 
-import {
-  evaluateWriting,
-} from "../services/evaluateWriting";
+import { evaluateWritingGPT } from "../services/evaluateWritingGPT";
+
 import writingPrompts from "../data/writingPrompts";
 
 import {
