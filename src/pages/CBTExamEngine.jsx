@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import MockReading from "./MockReading";
 import MockListening from "./MockListening";
-import MockWriting from "./MockWriting";
+import MockWriting from "./Mockwriting";
 import MockSpeaking from "./MockSpeaking";
 
 import { saveExamSession } from "../services/examSession";

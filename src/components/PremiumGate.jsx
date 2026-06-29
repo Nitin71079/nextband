@@ -3,12 +3,19 @@ import { useAuth } from "../context/AuthContext";
 export default function PremiumGate({
   children,
 }) {
+
   const {
     premium,
     loading,
   } = useAuth();
 
-  if (loading) {
+  // ===================================
+  // DEVELOPMENT ONLY
+  // Change to false before production
+  // ===================================
+  const DEV_BYPASS = true;
+
+  if (loading && !DEV_BYPASS) {
     return (
       <div
         style={{
@@ -21,7 +28,7 @@ export default function PremiumGate({
     );
   }
 
-  if (!premium) {
+  if (!premium && !DEV_BYPASS) {
     return (
       <div
         style={{

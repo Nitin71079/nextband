@@ -1,4 +1,4 @@
-
+import "../styles/exam/shared.css";
 
 import {
   saveEvaluation,
@@ -28,7 +28,13 @@ import AudioPlayback from "../components/AudioPlayback";
 import MicrophoneStatus from "../components/MicrophoneStatus";
 
 export default function MockSpeaking({
+
+  mode = "practice",
+
   onComplete,
+
+  testId,
+
 }) {
   const {
     setSpeakingBand,
@@ -119,11 +125,6 @@ if (!result) {
     "No evaluation returned."
   );
 }
-    if (!result) {
-      throw new Error(
-        "No evaluation returned."
-      );
-    }
 
     setReport(result);
 
@@ -444,7 +445,27 @@ if (!result) {
             ? "Evaluating..."
             : "Evaluate Speaking"}
         </button>
+<button
 
+onClick={() => {
+
+setResponse("");
+
+setTranscript("");
+
+setAudioBlob(null);
+
+setAudioUrl("");
+
+setReport(null);
+
+}}
+
+>
+
+Reset Test
+
+</button>
         {report && (
   <>
     <SpeakingReport

@@ -36,6 +36,9 @@ export function AuthProvider({
   const [admin, setAdmin] =
     useState(false);
 
+    const [name, setName] =
+  useState("");
+
   useEffect(() => {
     const unsubscribe =
       onAuthStateChanged(
@@ -62,6 +65,10 @@ export function AuthProvider({
                 const data =
                   userSnap.data();
 
+                  setName(
+  data.name || ""
+);
+
                 setPremium(
                   data.premium ||
                     false
@@ -72,8 +79,9 @@ export function AuthProvider({
                     false
                 );
               } else {
-                setPremium(false);
-                setAdmin(false);
+               setPremium(false);
+setAdmin(false);
+setName("");
               }
             } catch (error) {
               console.error(
@@ -81,12 +89,14 @@ export function AuthProvider({
                 error
               );
 
-              setPremium(false);
-              setAdmin(false);
+           setPremium(false);
+setAdmin(false);
+setName("");
             }
           } else {
-            setPremium(false);
-            setAdmin(false);
+        setPremium(false);
+setAdmin(false);
+setName("");
           }
 
           setLoading(false);
@@ -99,11 +109,12 @@ export function AuthProvider({
   return (
     <AuthContext.Provider
       value={{
-        user,
-        loading,
-        premium,
-        admin,
-      }}
+  user,
+  loading,
+  premium,
+  admin,
+  name,
+}}
     >
       {children}
     </AuthContext.Provider>

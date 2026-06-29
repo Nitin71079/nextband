@@ -106,22 +106,22 @@ export default function AIChatbot() {
 
       {open && (
         <div
-          style={{
-            position: "fixed",
-            bottom: "120px",
-            right: "30px",
-            width: "380px",
-            maxHeight: "650px",
-            background: "white",
-            borderRadius: "24px",
-            boxShadow:
-              "0 20px 50px rgba(0,0,0,0.2)",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            zIndex: 9999,
-          }}
-        >
+            style={{
+              position: "fixed",
+              bottom: "120px",
+              right: "30px",
+              width: "380px",
+              maxHeight: "650px",
+              background: "white",
+              borderRadius: "24px",
+              boxShadow:
+                "0 20px 50px rgba(0,0,0,0.2)",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              zIndex: 9999,
+            }}
+          >
           <div
             style={{
               background: "#0f172a",

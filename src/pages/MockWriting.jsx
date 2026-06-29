@@ -1,4 +1,4 @@
-
+import "../styles/exam/shared.css";
 import {
   getAIUsage,
 } from "../services/aiUsage";
@@ -25,11 +25,16 @@ import {
 import WritingReport from "../components/WritingReport";
 
 export default function MockWriting({
+
+  mode = "practice",
+
   onComplete,
+
+  testId,
+
 })
  {
- const { premium } =
-  useAuth();
+ 
 
   const [task1, setTask1] =
     useState("");
@@ -100,8 +105,21 @@ async function handleEvaluation() {
 
   try {
     
-   const result = await evaluateWritingGPT(essay);
+const essay = `
 
+Task 1:
+
+${task1}
+
+------------------------
+
+Task 2:
+
+${task2}
+
+`;
+
+const result = await evaluateWritingGPT(essay);
     trackAIUsage();
 
     setReport(result);
@@ -337,8 +355,12 @@ async function handleEvaluation() {
         <button
           onClick={() => {
             setTask1("");
-            setTask2("");
-            setReport(null);
+
+setTask2("");
+
+setReport(null);
+
+setTimeLeft(60 * 60);
           }}
         >
           Reset Test

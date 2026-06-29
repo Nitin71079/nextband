@@ -1,3 +1,4 @@
+import "../styles/exam/shared.css";
 import {
   useExam,
 } from "../context/ExamContext";
@@ -12,12 +13,18 @@ import ExamHeader from "../components/ExamHeader";
 import ExamProgressBar from "../components/ExamProgressBar";
 
 export default function MockReading({
+
+  mode = "practice",
+
   onComplete,
+
+  testId,
+
 }) {  const {
   setReadingBand,
 } = useExam();
-  const [testIndex, setTestIndex] =
-    useState(0);
+const [testIndex, setTestIndex] =
+  useState(testId ?? 0);
 
   const [passageIndex, setPassageIndex] =
     useState(0);
@@ -219,16 +226,30 @@ if (submitted) {
         </div>
 
         <button
-          className="primary-btn"
-          style={{
-            marginTop: "20px",
-          }}
-          onClick={() =>
-            window.location.reload()
-          }
-        >
-          Restart Test
-        </button>
+  className="primary-btn"
+  style={{
+    marginTop: "20px",
+  }}
+  onClick={() => {
+
+    setAnswers({});
+
+    setSubmitted(false);
+
+    setReviewMode(false);
+
+    setTimeLeft(60 * 60);
+
+    setPassageIndex(0);
+
+    if (mode === "practice") {
+      setTestIndex(testId ?? 0);
+    }
+
+  }}
+>
+  Restart Test
+</button>
       </div>
     );
   }
@@ -334,34 +355,33 @@ if (submitted) {
         margin: "0 auto",
       }}
     >
-      <select
-  value={testIndex}
-  onChange={(e) =>
-    setTestIndex(
-      Number(
-        e.target.value
+    {mode === "practice" && (
+
+  <select
+    value={testIndex}
+    onChange={(e) =>
+      setTestIndex(
+        Number(e.target.value)
       )
-    )
-  }
-  style={{
-    padding: "10px",
-    marginBottom: "20px",
-  }}
->
-  {readingTests.map(
-    (
-      test,
-      index
-    ) => (
-      <option
-        key={test.id}
-        value={index}
-      >
-        {test.title}
-      </option>
-    )
-  )}
-</select>
+    }
+    style={{
+      padding: "10px",
+      marginBottom: "20px",
+    }}
+  >
+    {readingTests.map(
+      (test, index) => (
+        <option
+          key={test.id}
+          value={index}
+        >
+          {test.title}
+        </option>
+      )
+    )}
+  </select>
+
+)}
       <ExamHeader
         title="IELTS Reading Test"
         minutes={minutes}

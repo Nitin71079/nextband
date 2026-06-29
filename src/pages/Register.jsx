@@ -27,6 +27,9 @@ export default function Register() {
   const [email, setEmail] =
     useState("");
 
+    const [name, setName] =
+  useState("");
+
   const [password, setPassword] =
     useState("");
 
@@ -52,19 +55,21 @@ export default function Register() {
           "users",
           userCredential.user.uid
         ),
-        {
-          email,
+      {
+  name,
 
-          premium: false,
+  email,
 
-          admin: false,
+  premium: false,
 
-          averageBand: 0,
+  admin: false,
 
-          testsTaken: 0,
+  averageBand: 0,
 
-          createdAt: Date.now()
-        }
+  testsTaken: 0,
+
+  createdAt: Date.now()
+}
       );
 
       toast.success(
@@ -171,6 +176,18 @@ export default function Register() {
           </p>
 
           <form onSubmit={handleRegister}>
+            <label>Full Name</label>
+
+<input
+  type="text"
+  className="input"
+  placeholder="Enter your full name"
+  value={name}
+  onChange={(e) =>
+    setName(e.target.value)
+  }
+  required
+/>
             <label>Email</label>
 
             <input

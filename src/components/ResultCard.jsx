@@ -1,33 +1,77 @@
+import "./resultCard.css";
+
 export default function ResultCard({
+
+  title = "Reading",
+
   score,
+
   total,
+
   band,
+
 }) {
-  return (
-    <div
-      style={{
-        background: "#ffffff",
-        padding: "30px",
-        borderRadius: "16px",
-        boxShadow:
-          "0 4px 12px rgba(0,0,0,0.08)",
-      }}
-    >
-      <h2>
-        Reading Results
-      </h2>
 
-      <h3>
-        Score:
-        {" "}
-        {score}/{total}
-      </h3>
+  const percentage = Math.round(
 
-      <h3>
-        Estimated IELTS Band:
-        {" "}
-        {band}
-      </h3>
-    </div>
+    (score / total) * 100
+
   );
+
+  return (
+
+    <div className="result-card">
+
+      <div className="result-header">
+
+        <h2>
+
+          {title} Results
+
+        </h2>
+
+        <span>
+
+          {percentage}%
+
+        </span>
+
+      </div>
+
+      <div className="result-score">
+
+        <h1>
+
+          {score}
+
+        </h1>
+
+        <p>
+
+          / {total}
+
+        </p>
+
+      </div>
+
+      <div className="band-box">
+
+        <span>
+
+          Estimated IELTS Band
+
+        </span>
+
+        <h2>
+
+          {band}
+
+        </h2>
+
+      </div>
+
+    </div>
+
+  );
+
 }

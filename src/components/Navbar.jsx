@@ -1,180 +1,192 @@
-import {
-  NavLink
-} from "react-router-dom";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
+
+import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+
+import toast from "react-hot-toast";
 
 import {
-  signOut
-} from "firebase/auth";
+  Menu,
+  X,
+  Sun,
+  Moon,
+  LayoutDashboard,
+  BrainCircuit,
+  CalendarDays,
+  Trophy,
+  Users,
+  LogOut,
+  User
+} from "lucide-react";
 
-import { auth }
-from "../firebase";
-
-import {
-  useTheme
-} from "../context/ThemeContext";
-
-import {
-  useAuth
-} from "../context/AuthContext";
-
-import toast
-from "react-hot-toast";
+import "../styles/navbar.css";
 
 export default function Navbar() {
-  const {
-    darkMode,
-    toggleTheme
-  } = useTheme();
 
-  const { user } =
-    useAuth();
+  const { darkMode, toggleTheme } =
+    useTheme();
+const {
+  user,
+  name,
+} = useAuth();
+
+  const [menuOpen, setMenuOpen] =
+    useState(false);
 
   async function logout() {
+
     try {
+
       await signOut(auth);
 
       toast.success(
-        "Logged out!"
+        "Logged out successfully."
       );
-    } catch (error) {
-      console.error(error);
+
+    } catch {
 
       toast.error(
-        "Logout failed"
+        "Logout failed."
       );
+
     }
+
   }
 
-  const navStyle = ({
-    isActive
-  }) => ({
-    color: isActive
-      ? "#22d3ee"
-      : darkMode
-      ? "white"
-      : "#0f172a",
+  const navStyle = ({ isActive }) => ({
+
+    color:
+      isActive
+        ? "#06b6d4"
+        : darkMode
+        ? "#ffffff"
+        : "#0f172a",
 
     fontWeight:
-      isActive ? "700" : "500",
+      isActive ? 700 : 500,
 
-    transition:
-      "0.2s ease"
+    textDecoration:
+      "none"
+
   });
 
-  return (
+  const username =
+    user
+      ? user.email.split("@")[0]
+      : "";
+        return (
+
     <nav
-      style={{
-        position: "sticky",
-
-        top: 0,
-
-        zIndex: 1000,
-
-        background:
-          darkMode
-            ? "#0f172a"
-            : "white",
-
-        padding:
-          window.innerWidth <
-          768
-            ? "16px"
-            : "18px 30px",
-
-        display: "flex",
-
-        justifyContent:
-          "space-between",
-
-        alignItems:
-          "center",
-
-        boxShadow:
-          "0 4px 20px rgba(0,0,0,0.06)",
-
-        flexWrap:
-          "wrap",
-
-        gap: "20px"
-      }}
+      className={
+        darkMode
+          ? "navbar dark"
+          : "navbar"
+      }
     >
-      <NavLink
-        to="/"
-        style={{
-          fontSize: "28px",
 
-          fontWeight:
-            "900",
+      <div className="navbar-logo">
 
-          color:
-            "#22d3ee"
-        }}
-      >
-        NextBand
-      </NavLink>
-
-      <div
-        style={{
-          display: "flex",
-
-          gap:
-            window.innerWidth <
-            768
-              ? "12px"
-              : "20px",
-
-          alignItems:
-            "center",
-
-          flexWrap:
-            "wrap",
-
-          justifyContent:
-            window.innerWidth <
-            768
-              ? "center"
-              : "flex-end"
-        }}
-      >
         <NavLink
           to="/"
-          style={navStyle}
         >
-          Home
+          NextBand
         </NavLink>
 
-        <NavLink
-          to="/dashboard"
-          style={navStyle}
-        >
-          Dashboard
-        </NavLink>
+      </div>
 
-        <NavLink
-          to="/reading"
-          style={navStyle}
-        >
-          Reading
-        </NavLink>
+      <button
+        className="mobile-menu-btn"
+        onClick={() =>
+          setMenuOpen(
+            !menuOpen
+          )
+        }
+      >
+        {menuOpen
+          ? <X size={28}/>
+          : <Menu size={28}/>}
+      </button>
 
-        <NavLink
-          to="/writing"
-          style={navStyle}
-        >
-          Writing
-        </NavLink>
+      <div
+        className={
+          menuOpen
+            ? "navbar-links open"
+            : "navbar-links"
+        }
+      >
 
-        <NavLink
-          to="/speaking"
-          style={navStyle}
-        >
-          Speaking
-        </NavLink>
+        {!user && (
+
+          <>
+            <NavLink
+              to="/"
+              style={navStyle}
+            >
+              Home
+            </NavLink>
+
+            <NavLink
+              to="/pricing"
+              style={navStyle}
+            >
+              Pricing
+            </NavLink>
+          </>
+
+        )}
+
+        {user && (
+
+          <>
+
+            <NavLink
+              to="/dashboard"
+              style={navStyle}
+            >
+              <LayoutDashboard
+                size={18}
+              />
+
+              Dashboard
+            </NavLink>
+
+            <NavLink
+              to="/planner"
+              style={navStyle}
+            >
+              <CalendarDays
+                size={18}
+              />
+
+              Planner
+            </NavLink>
+
+            <NavLink
+              to="/ai-center"
+              style={navStyle}
+            >
+              <BrainCircuit
+                size={18}
+              />
+
+              AI Center
+            </NavLink>
+
+          </>
+
+        )}
 
         <NavLink
           to="/community"
           style={navStyle}
         >
+          <Users
+            size={18}
+          />
+
           Community
         </NavLink>
 
@@ -182,78 +194,74 @@ export default function Navbar() {
           to="/leaderboard"
           style={navStyle}
         >
+          <Trophy
+            size={18}
+          />
+
           Leaderboard
         </NavLink>
 
-        {user && (
-          <div
-            style={{
-              padding:
-                "10px 14px",
-
-              borderRadius:
-                "12px",
-
-              background:
-                "#f1f5f9",
-
-              fontSize:
-                "14px",
-
-              fontWeight:
-                "600"
-            }}
-          >
-            {user.email}
-          </div>
-        )}
-
         <button
+          className="theme-btn"
           onClick={
             toggleTheme
           }
-          style={{
-            background:
-              "#e2e8f0",
-
-            padding:
-              "10px 18px",
-
-            borderRadius:
-              "12px",
-
-            fontWeight:
-              "700"
-          }}
         >
           {darkMode
-            ? "Light"
-            : "Dark"}
+            ? <Sun size={20}/>
+            : <Moon size={20}/>}
         </button>
 
-        {user && (
-          <button
-            onClick={logout}
-            style={{
-              background:
-                "#ef4444",
+                {user && (
 
-              color: "white",
+          <div className="navbar-user">
 
-              padding:
-                "10px 18px",
+            <div className="user-chip">
 
-              borderRadius:
-                "12px",
+              <div className="avatar">
 
-              fontWeight:
-                "700"
-            }}
-          >
-            Logout
-          </button>
+                <User size={18}/>
+
+              </div>
+
+              <div className="user-details">
+
+                <span className="username">
+
+{name || username}
+                </span>
+
+                <span className="plan">
+
+                  NextBand User
+
+                </span>
+
+              </div>
+
+            </div>
+
+            <button
+              className="logout-btn"
+              onClick={logout}
+            >
+
+              <LogOut
+                size={18}
+              />
+
+              Logout
+
+            </button>
+
+          </div>
+
         )}
+
       </div>
+
     </nav>
+
   );
+
 }

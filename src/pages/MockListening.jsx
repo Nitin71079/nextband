@@ -1,3 +1,4 @@
+import "../styles/exam/shared.css";
 import ReviewModal
 from "../components/ReviewModal";
 import QuestionNavigator
@@ -21,13 +22,21 @@ console.log(
 );
 
 export default function MockListening({
+
+  mode = "practice",
+
   onComplete,
-}) {
+
+  testId,
+
+})  {
     const {
   setListeningBand,
 } = useExam();
-    const [test, setTest] = useState(
-  listeningTests[0]
+   const [test, setTest] = useState(
+
+  listeningTests[testId ?? 0]
+
 );
     console.log(
   "SELECTED TEST:",
@@ -303,19 +312,35 @@ if (submitted) {
             }
         </h3>
         </div>
+<button
+  className="primary-btn"
+  style={{
+    marginTop: "20px",
+  }}
+  onClick={() => {
 
-        <button
-        className="primary-btn"
-        style={{
-            marginTop:
-            "20px",
-        }}
-        onClick={() =>
-            window.location.reload()
-        }
-        >
-        Restart Test
-        </button>
+    setAnswers({});
+
+    setSubmitted(false);
+
+    setCurrentSection(0);
+
+    setTimeLeft(
+      (test.duration || 30) * 60
+    );
+
+    if (mode === "practice") {
+
+      setTest(
+        listeningTests[testId ?? 0]
+      );
+
+    }
+
+  }}
+>
+  Restart Test
+</button>
     </div>
     );
 
@@ -358,36 +383,53 @@ if (submitted) {
         )}
         </h2>
     </div>
-    <select
-  onChange={(e) => {
-  const selected =
-    listeningTests.find(
-      (t) =>
-        t.id === Number(
-          e.target.value
-        )
-    );
+  {mode === "practice" && (
 
-  setTest(selected);
+  <select
+    value={test.id}
+    onChange={(e) => {
 
-  setAnswers({});
+      const selected =
+        listeningTests.find(
+          (t) =>
+            t.id === Number(
+              e.target.value
+            )
+        );
 
-  setSubmitted(false);
-}}
-  style={{
-    padding: "10px",
-    marginBottom: "20px",
-  }}
->
-  {listeningTests.map((t) => (
-    <option
-      key={t.id}
-      value={t.id}
-    >
-      {t.title}
-    </option>
-  ))}
-</select>
+      setTest(selected);
+
+      setAnswers({});
+
+      setSubmitted(false);
+
+      setCurrentSection(0);
+
+      setTimeLeft(
+        (selected.duration || 30) * 60
+      );
+
+    }}
+    style={{
+      padding: "10px",
+      marginBottom: "20px",
+    }}
+  >
+
+    {listeningTests.map((t) => (
+
+      <option
+        key={t.id}
+        value={t.id}
+      >
+        {t.title}
+      </option>
+
+    ))}
+
+  </select>
+
+)}
 <QuestionNavigator
   totalQuestions={
     totalQuestions

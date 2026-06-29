@@ -25,7 +25,7 @@ import {
 } from "react-router-dom";
 
 import MockListening from "./pages/MockListening";
-import MockWriting from "./pages/MockWriting";
+import MockWriting from "./pages/Mockwriting";
 import MockSpeaking from "./pages/MockSpeaking";
 import PerformanceDashboard from "./pages/PerformanceDashboard";
 import {
@@ -71,10 +71,10 @@ const Insights = lazy(() => import("./pages/Insights"));
 const Streaks = lazy(() => import("./pages/Streaks"));
 const Referrals = lazy(() => import("./pages/Referrals"));
 const Support = lazy(() => import("./pages/Support"));
-const Reading = lazy(() => import("./pages/Reading"));
-const Listening = lazy(() => import("./pages/Listening"));
-const Writing = lazy(() => import("./pages/Writing"));
-const Speaking = lazy(() => import("./pages/Speaking"));
+const Reading = lazy(() => import("./pages/MockReading"));
+const Listening = lazy(() => import("./pages/MockListening"));
+const Writing = lazy(() => import("./pages/Mockwriting"));
+const Speaking = lazy(() => import("./pages/MockSpeaking"));
 const FullMocks = lazy(() => import("./pages/FullMocks"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -413,13 +413,7 @@ function App() {
 />
 <Route
   path="/ai-center"
-  element={
-    <PrivateRoute>
-      <PremiumGate>
-        <AIControlCenter />
-      </PremiumGate>
-    </PrivateRoute>
-  }
+  element={<AIControlCenter />}
 />
  <Route
   path="/history"

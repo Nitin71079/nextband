@@ -1,27 +1,23 @@
-import ReactMarkdown from "react-markdown";
-import PremiumGate
-from "../components/PremiumGate";
 import { useState } from "react";
-console.log(
-  "Groq Key:",
-  import.meta.env
-    .VITE_GROQ_API_KEY
-);
+import ReactMarkdown from "react-markdown";
+
+import PremiumGate from "../components/PremiumGate";
+
+import { askGroq } from "../services/aiService";
+import { PROMPTS } from "../agents/prompts";
+
 export default function AIAssistant() {
-  const [messages, setMessages] =
-    useState([
-      {
-        role: "assistant",
-        content:
-          "Hello! I'm your IELTS AI Coach. Ask me anything about Reading, Listening, Writing, Speaking, study plans, vocabulary, or band improvement.",
-      },
-    ]);
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content:
+        "👋 Hello! I'm your NextBand AI Coach. Ask me anything about Reading, Listening, Writing, Speaking, vocabulary, grammar, study plans, or IELTS band improvement.",
+    },
+  ]);
 
-  const [input, setInput] =
-    useState("");
+  const [input, setInput] = useState("");
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   const quickPrompts = [
     "How do I reach Band 7?",
@@ -33,273 +29,178 @@ export default function AIAssistant() {
   ];
 
   async function sendMessage() {
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  const userMessage = {
-    role: "user",
-    content: input,
-  };
+    const currentInput = input;
 
-  setMessages((prev) => [
-    ...prev,
-    userMessage,
-  ]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: currentInput,
+      },
+    ]);
 
-  const currentInput =
-    input;
+    setInput("");
+    setLoading(true);
 
-  setInput("");
-  setLoading(true);
+    try {
+      const aiReply = await askGroq(
+        currentInput,
+        PROMPTS.default
+      );
 
-  try {
-    const response =
-      await fetch(
-        "https://api.groq.com/openai/v1/chat/completions",
+      setMessages((prev) => [
+        ...prev,
         {
-          method: "POST",
+          role: "assistant",
+          content: aiReply,
+        },
+      ]);
+    } catch (error) {
+      console.error(error);
 
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            Authorization:
-              `Bearer ${
-                import.meta.env
-                  .VITE_GROQ_API_KEY
-              }`,
-          },
-
-          body: JSON.stringify({
-            model:
-              "llama-3.3-70b-versatile",
-messages: [
-  {
-    role: "system",
-    content: `
-You are NextBand AI Coach.
-
-You are an expert IELTS mentor.
-
-Rules:
-- Use clean formatting.
-- Use bullet points.
-- Use headings.
-- Keep responses concise.
-- Never exceed 200 words unless asked.
-- Give practical IELTS advice.
-- For study plans, create tables or day-by-day lists.
-- For score improvement, focus on actionable steps.
-- Use emojis sparingly.
-- Sound like a professional tutor.
-`,
-  },
-
-  {
-    role: "user",
-    content: `
-Question:
-${currentInput}
-
-Format your answer professionally.
-`,
-  },
-],
-
-            temperature: 0.5,
-          }),
-        }
-      );
-
-    const data =
-      await response.json();
-
-    console.log(
-      "GROQ RESPONSE:",
-      data
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        JSON.stringify(data)
-      );
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "❌ Unable to contact AI Coach. Please try again.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
     }
-
-    const aiReply =
-      data.choices[0]
-        .message.content;
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        role:
-          "assistant",
-        content:
-          aiReply,
-      },
-    ]);
-  } catch (error) {
-    console.error(error);
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        role:
-          "assistant",
-        content:
-          "Unable to contact AI Coach.",
-      },
-    ]);
   }
 
-  setLoading(false);
-}
-
   return (
-        <PremiumGate>
-
-    <div
-      style={{
-        minHeight: "100vh",
-        maxWidth: "1000px",
-        margin: "0 auto",
-        padding: "40px",
-      }}
-    >
-      <h1>
-        IELTS AI Coach
-      </h1>
-
-      <p>
-        Ask anything about IELTS
-        Reading, Listening,
-        Writing, Speaking,
-        vocabulary, band scores,
-        or study plans.
-      </p>
-
+    <PremiumGate>
       <div
         style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "10px",
-          marginTop: "20px",
-          marginBottom: "20px",
+          minHeight: "100vh",
+          maxWidth: "1000px",
+          margin: "0 auto",
+          padding: "40px",
         }}
       >
-        {quickPrompts.map(
-          (prompt) => (
+        <h1>NextBand AI Coach</h1>
+
+        <p
+          style={{
+            marginBottom: "25px",
+          }}
+        >
+          Ask anything about IELTS Reading,
+          Listening, Writing, Speaking,
+          Vocabulary, Grammar or Study Plans.
+        </p>
+
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            marginBottom: "25px",
+          }}
+        >
+          {quickPrompts.map((prompt) => (
             <button
               key={prompt}
-              onClick={() =>
-                setInput(
-                  prompt
-                )
-              }
+              onClick={() => setInput(prompt)}
               style={{
-                padding:
-                  "10px 15px",
-                borderRadius:
-                  "12px",
-                border:
-                  "1px solid #cbd5e1",
-                cursor:
-                  "pointer",
+                padding: "10px 16px",
+                borderRadius: "12px",
+                border: "1px solid #cbd5e1",
+                cursor: "pointer",
+                background: "#fff",
               }}
             >
               {prompt}
             </button>
-          )
-        )}
-      </div>
+          ))}
+        </div>
 
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: "20px",
-          padding: "20px",
-          height: "600px",
-          overflowY: "auto",
-          marginBottom: "20px",
-        }}
-      >
-        {messages.map(
-          (
-            message,
-            index
-          ) => (
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "20px",
+            padding: "20px",
+            height: "600px",
+            overflowY: "auto",
+            marginBottom: "20px",
+            boxShadow:
+              "0 8px 24px rgba(0,0,0,0.08)",
+          }}
+        >
+          {messages.map((message, index) => (
             <div
               key={index}
               style={{
-                marginBottom:
-                  "20px",
+                marginBottom: "24px",
               }}
             >
               <strong>
-                {message.role ===
-                "assistant"
-                  ? "AI Coach"
-                  : "You"}
+                {message.role === "assistant"
+                  ? "🤖 AI Coach"
+                  : "👤 You"}
               </strong>
 
-          <ReactMarkdown>
-  {message.content}
-</ReactMarkdown>
+              <div
+                style={{
+                  marginTop: "8px",
+                }}
+              >
+                <ReactMarkdown>
+                  {message.content}
+                </ReactMarkdown>
+              </div>
             </div>
-          )
-        )}
+          ))}
 
-        {loading && (
-          <p>
-            AI Coach is
-            thinking...
-          </p>
-        )}
-      </div>
+          {loading && (
+            <p>
+              🤖 AI Coach is thinking...
+            </p>
+          )}
+        </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-        }}
-      >
-        <input
-          value={input}
-          onChange={(e) =>
-            setInput(
-              e.target.value
-            )
-          }
-          placeholder="Ask an IELTS question..."
+        <div
           style={{
-            flex: 1,
-            padding: "15px",
-            borderRadius:
-              "12px",
+            display: "flex",
+            gap: "10px",
           }}
-          onKeyDown={(e) => {
-            if (
-              e.key ===
-              "Enter"
-            ) {
-              sendMessage();
-            }
-          }}
-        />
-
-        <button
-          className="primary-btn"
-          onClick={
-            sendMessage
-          }
-          disabled={loading}
         >
-          Send
-        </button>
-        
-      </div>
-      
-    </div>
-    </PremiumGate>
+          <input
+            value={input}
+            placeholder="Ask an IELTS question..."
+            onChange={(e) =>
+              setInput(e.target.value)
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                sendMessage();
+              }
+            }}
+            style={{
+              flex: 1,
+              padding: "15px",
+              borderRadius: "12px",
+              border: "1px solid #cbd5e1",
+              outline: "none",
+            }}
+          />
 
+          <button
+            className="primary-btn"
+            onClick={sendMessage}
+            disabled={loading}
+          >
+            {loading
+              ? "Thinking..."
+              : "Send"}
+          </button>
+        </div>
+      </div>
+    </PremiumGate>
   );
 }
