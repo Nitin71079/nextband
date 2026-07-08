@@ -70,7 +70,7 @@ export default function Navbar() {
           className="logo-link"
         >
           <span className="logo-icon">
-            K
+            
           </span>
 
           <span className="logo-text">

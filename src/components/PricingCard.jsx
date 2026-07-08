@@ -1,7 +1,9 @@
 import {
   startCheckout,
 } from "../services/billingService";
+import { useAuth } from "../context/AuthContext";
 
+const { user } = useAuth();
 export default function PricingCard({
   title,
   price,
@@ -93,8 +95,7 @@ export default function PricingCard({
   onClick={() => {
   if (title === "Free") return;
 
-  startCheckout(title);
-}}
+startCheckout(title, user.uid);}}
   style={{
     width: "100%",
     marginTop: "20px",
