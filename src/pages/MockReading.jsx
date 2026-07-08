@@ -9,8 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { useExam } from "../context/ExamContext";
 
 import { saveResult } from "../services/resultService";
-import { getIELTSBand } from "../services/bandCalculator";
-
+import { getIELTSBand } from "../services/BandCalculator";
 import academicTests from "../data/reading/academic/academicTests";
 import generalTests from "../data/reading/general/generalTests";
 
