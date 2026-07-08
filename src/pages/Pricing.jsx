@@ -15,7 +15,7 @@ export default function Pricing() {
           marginBottom: "40px",
         }}
       >
-        NextBand Premium
+  Knarrow Premium
       </h1>
 
       <div
@@ -29,11 +29,12 @@ export default function Pricing() {
         <PricingCard
           title="Free"
           price="0"
-          features={[
-            "1 Reading Test",
-            "1 Listening Test",
-            "Basic Results",
-          ]}
+         features={[
+  "Limited Reading Practice",
+  "Limited Listening Practice",
+  "Basic Score Reports",
+  "Community Access",
+]}
         />
 
         <PricingCard

@@ -92,7 +92,7 @@ export default function AIChatbot() {
           height: "70px",
           borderRadius: "50%",
           border: "none",
-          background: "#22d3ee",
+background: "#2563eb",
           color: "white",
           fontSize: "30px",
           cursor: "pointer",

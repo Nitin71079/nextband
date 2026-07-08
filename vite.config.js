@@ -18,16 +18,13 @@ export default defineConfig({
         "autoUpdate",
 
       manifest: {
-        name: "NextBand",
-
-        short_name:
-          "NextBand",
+name: "Knarrow",
+        short_name: "Knarrow",
 
         description:
-          "AI IELTS Preparation Platform",
+"AI-powered IELTS Preparation Platform with Writing, Speaking, Reading and Listening.",
 
-        theme_color:
-          "#22d3ee",
+       theme_color:"#2563eb",
 
         background_color:
           "#ffffff",

@@ -1,8 +1,8 @@
-import academicTest001 from "./academicTest001";
-import academicTest002 from "./academicTest002";
-import academicTest003 from "./academicTest003";
-import academicTest004 from "./academicTest004";
-import academicTest005 from "./academicTest005";
+import academicTest001 from "./academic/academicTest001";
+import academicTest002 from "./academic/academicTest002";
+import academicTest003 from "./academic/academicTest003";
+import academicTest004 from "./academic/academicTest004";
+import academicTest005 from "./academic/academicTest005";
 
 const readingTests = [
   academicTest001,

@@ -1,15 +1,10 @@
+import MockWriting from "./pages/MockWriting";
 const EvaluationHistory =
   lazy(() =>
-    import(
-      "./pages/EvaluationHistory"
-    )
-  );
-  import PaymentSuccess
-from "./pages/PaymentSuccess";
-
-import PaymentCancelled
-from "./pages/PaymentCancelled";
-import ExamHistory from "./pages/ExamHistory";
+import("./pages/EvaluationHistory") );
+import PaymentSuccess from "./pages/PaymentSuccess";
+import AdminTests from "./pages/AdminTests";
+import PaymentCancelled from "./pages/PaymentCancelled";
 import AIAssistant from "./pages/AIAssistant";
 import AudioGenerator from "./pages/AudioGenerator";
 import AccentLab from "./pages/AccentLab";
@@ -19,19 +14,12 @@ import ProgressAnalytics from "./pages/ProgressAnalytics";
 import ExamResults from "./pages/ExamResults";
 import FullAcademicMock from "./pages/FullAcademicMock";
 import FullGeneralMock from "./pages/FullGeneralMock";
-import {
-  Routes,
-  Route
-} from "react-router-dom";
-
+import { Routes, Route} from "react-router-dom";
+import Certificates from "./pages/Certificates";
 import MockListening from "./pages/MockListening";
-import MockWriting from "./pages/Mockwriting";
 import MockSpeaking from "./pages/MockSpeaking";
 import PerformanceDashboard from "./pages/PerformanceDashboard";
-import {
-  lazy,
-  Suspense
-} from "react";
+import {lazy, Suspense} from "react";
 import MockReading from "./pages/MockReading";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -40,9 +28,17 @@ import Loader from "./components/Loader";
 import PremiumGate from "./components/PremiumGate";
 import AdminRoute from "./components/AdminRoute";
 import PrivateRoute from "./components/PrivateRoute";
-
-
-
+import ReadingCenter from "./pages/ReadingCenter";
+import AcademicReadingCenter from "./pages/AcademicReadingCenter";
+import GeneralReadingCenter from "./pages/GeneralReadingCenter";
+import ListeningCenter from "./pages/ListeningCenter";
+import WritingCenter from "./pages/WritingCenter";
+import SpeakingCenter from "./pages/SpeakingCenter";
+import ExamHistory
+from "./pages/ExamHistory";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import AdminContent from "./pages/AdminContent";
 const ExpertProfile =
   lazy(() =>
     import(
@@ -60,7 +56,6 @@ const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Profile = lazy(() => import("./pages/Profile"));
 const StudyPlanner = lazy(() => import("./pages/StudyPlanner"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const Notifications = lazy(() => import("./pages/Notifications"));
@@ -71,10 +66,6 @@ const Insights = lazy(() => import("./pages/Insights"));
 const Streaks = lazy(() => import("./pages/Streaks"));
 const Referrals = lazy(() => import("./pages/Referrals"));
 const Support = lazy(() => import("./pages/Support"));
-const Reading = lazy(() => import("./pages/MockReading"));
-const Listening = lazy(() => import("./pages/MockListening"));
-const Writing = lazy(() => import("./pages/Mockwriting"));
-const Speaking = lazy(() => import("./pages/MockSpeaking"));
 const FullMocks = lazy(() => import("./pages/FullMocks"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -98,6 +89,37 @@ function App() {
             path="/register"
             element={<Register />}
           />
+          <Route
+  path="/mock/general-reading/:id"
+  element={<MockReading />}
+/>
+          <Route
+  path="/certificates"
+  element={
+    <PrivateRoute>
+      <Certificates />
+    </PrivateRoute>
+  }
+/>
+<Route
+
+path="/admin/content"
+
+element={<AdminContent/>}
+
+/>
+<Route
+  path="/admin/tests/:type"
+  element={<AdminTests />}
+/>
+          <Route
+  path="/settings"
+  element={
+    <PrivateRoute>
+      <Settings />
+    </PrivateRoute>
+  }
+/>
 <Route
   path="/ai-assistant"
   element={
@@ -107,7 +129,34 @@ function App() {
   }
 />
 
+<Route
 
+path="/history"
+
+element={<ExamHistory/>}
+/>
+<Route
+  path="/reading"
+  element={<ReadingCenter />}
+/>
+
+<Route
+  path="/reading/academic"
+  element={<AcademicReadingCenter />}
+/>
+
+<Route
+  path="/reading/general"
+  element={<GeneralReadingCenter />}
+/>
+
+<Route
+  path="/listening"
+  element={<ListeningCenter />}
+/>
+<Route path="/writing" element={<WritingCenter />} />
+
+<Route path="/speaking" element={<SpeakingCenter />} />
 <Route
   path="/payment-success"
   element={
@@ -288,27 +337,18 @@ function App() {
               </PrivateRoute>
             }
           />
+<Route path="/mock/reading/:id" element={<MockReading />} />
 
-          <Route
-            path="/reading"
-            element={
-                <Reading />
-            }
-          />
+<Route path="/mock/listening/:id" element={<MockListening />} />
+<Route
+  path="/mock/writing/:testId"
+  element={<MockWriting />}
+/>
 
-          <Route
-            path="/listening"
-            element={
-                <Listening />
-            }
-          />
+<Route path="/mock/speaking/:id" element={<MockSpeaking />} />
+        
+         
 
-          <Route
-            path="/writing"
-            element={
-                <Writing />
-            }
-          />
 <Route
   path="/mock/academic"
   element={
@@ -325,15 +365,7 @@ function App() {
       <FullGeneralMock />
   }
 />
-          <Route
-            path="/speaking"
-            element={
-              <PrivateRoute>
-                <Speaking />
-              </PrivateRoute>
-            }
-          />
-
+         
           <Route
             path="/leaderboard"
             element={
@@ -377,22 +409,8 @@ function App() {
               </PrivateRoute>
             }
           />
-    <Route
-  path="/mock/listening"
-  element={
-    <PremiumGate>
-      <MockListening />
-    </PremiumGate>
-  }
-/>
-<Route
-  path="/mock/writing"
-  element={
-    <PremiumGate>
-      <MockWriting />
-    </PremiumGate>
-  }
-/>
+ 
+
 <Route
   path="/performance"
   element={
@@ -403,23 +421,10 @@ function App() {
     </PrivateRoute>
   }
 />
-<Route
-  path="/mock/speaking"
-  element={
-    <PremiumGate>
-      <MockSpeaking />
-    </PremiumGate>
-  }
-/>
+
 <Route
   path="/ai-center"
   element={<AIControlCenter />}
-/>
- <Route
-  path="/history"
-  element={
-    <ExamHistory />
-  }
 />
 
 <Route
@@ -432,27 +437,19 @@ function App() {
     </PrivateRoute>
   }
 />
-     <Route
-  path="/mock/reading"
-  element={
-    <PremiumGate>
-      <MockReading />
-    </PremiumGate>
-  }
-/>
 
           <Route
             path="*"
             element={<NotFound />}
           />
-        </Routes>
-      </Suspense>
+           </Routes>
+  </Suspense>
 
-      <Footer />
+  <Footer />
 
-      <MobileNav />
-    </>
-  );
+  <MobileNav />
+</>
+);
 }
 
 export default App;

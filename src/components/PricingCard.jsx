@@ -38,6 +38,18 @@ export default function PricingCard({
   </div>
 )}
       <h2>{title}</h2>
+      {title === "Premium 3 Months" && (
+  <p
+    style={{
+      color: "#16a34a",
+      fontWeight: "bold",
+      marginTop: "-10px",
+      marginBottom: "20px",
+    }}
+  >
+    Save ₹98
+  </p>
+)}
 <h1
   style={{
     fontSize: "48px",
@@ -45,6 +57,20 @@ export default function PricingCard({
   }}
 >
   ₹{price}
+
+  <span
+    style={{
+      fontSize: "18px",
+      fontWeight: 400,
+      color: "#64748b",
+    }}
+  >
+    {title === "Premium Monthly"
+      ? "/month"
+      : title === "Premium 3 Months"
+      ? "/3 months"
+      : ""}
+  </span>
 </h1>
 
       <ul>
@@ -64,9 +90,11 @@ export default function PricingCard({
 
      <button
   className="primary-btn"
-  onClick={() =>
-    startCheckout(title)
-  }
+  onClick={() => {
+  if (title === "Free") return;
+
+  startCheckout(title);
+}}
   style={{
     width: "100%",
     marginTop: "20px",
@@ -76,8 +104,8 @@ export default function PricingCard({
   }}
 >
   {title === "Free"
-    ? "Current Plan"
-    : "Upgrade Now"}
+  ? "Get Started"
+  : "Upgrade Now"}
 </button>
     </div>
   );

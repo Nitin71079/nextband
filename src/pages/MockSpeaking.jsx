@@ -1,25 +1,27 @@
 import "../styles/exam/shared.css";
 
-import {
-  saveEvaluation,
-} from "../services/evaluationStorage";
-
-import {
-  useExam,
-} from "../context/ExamContext";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
-import speakingTest001 from "../data/speaking/speakingTest001";
+import speakingTests from "../data/speaking/tests";
 
 import {
   evaluateSpeakingGPT,
 } from "../services/evaluateSpeakingGPT";
 
 import {
-  trackAIUsage,
+  saveEvaluation,
+} from "../services/evaluationStorage";
+
+import {
   canUseAI,
+  trackAIUsage,
   getAIUsage,
 } from "../services/aiUsage";
+
+import {
+  useExam,
+} from "../context/ExamContext";
 
 import SpeakingReport from "../components/SpeakingReport";
 
@@ -33,467 +35,1150 @@ export default function MockSpeaking({
 
   onComplete,
 
-  testId,
-
 }) {
+
+  const { testId } = useParams();
+
   const {
+
     setSpeakingBand,
+
   } = useExam();
 
+  const test =
+
+    speakingTests.find(
+
+      t =>
+
+        t.id === Number(testId)
+
+    ) ||
+
+    speakingTests[0];
+
   const [
+
     currentPart,
+
     setCurrentPart,
+
   ] = useState(1);
 
   const [
+
     response,
+
     setResponse,
+
   ] = useState("");
 
   const [
+
     report,
+
     setReport,
+
   ] = useState(null);
 
   const [
+
     audioBlob,
+
     setAudioBlob,
+
   ] = useState(null);
 
   const [
+
     audioUrl,
+
     setAudioUrl,
+
   ] = useState("");
 
   const [
+
     transcript,
+
     setTranscript,
+
   ] = useState("");
 
   const [
-    transcribing,
-    setTranscribing,
+
+    evaluating,
+
+    setEvaluating,
+
   ] = useState(false);
 
-  const [
-    evaluating,
-    setEvaluating,
-  ] = useState(false);
+  /* -------------------------
+        RECORDING
+  ------------------------- */
 
   function handleRecording(blob) {
+
     setAudioBlob(blob);
 
-    const url =
-      URL.createObjectURL(blob);
+    setAudioUrl(
 
-    setAudioUrl(url);
-  }
+      URL.createObjectURL(blob)
 
-
- async function handleEvaluation() {
-    
-  if (!canUseAI()) {
-    alert(
-      "Free AI evaluation limit reached."
     );
-    return;
+
   }
 
-  const words =
-    response
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .length;
+  /* -------------------------
+        RESET
+  ------------------------- */
 
-  if (words < 15) {
-    alert(
-      "Speaking response is too short."
+  function resetSpeaking() {
+
+    setResponse("");
+
+    setTranscript("");
+
+    setAudioBlob(null);
+
+    setAudioUrl("");
+
+    setReport(null);
+
+  }
+
+  /* -------------------------
+        SAVE TRANSCRIPT
+  ------------------------- */
+
+  function saveDraft() {
+
+    localStorage.setItem(
+
+      "speakingDraft",
+
+      JSON.stringify({
+
+        response,
+
+        transcript,
+
+      })
+
     );
-    return;
+
+    alert("Draft Saved!");
+
   }
 
-  setEvaluating(true);
+  /* -------------------------
+        LOAD DRAFT
+  ------------------------- */
+
+useEffect(() => {
+
+  const draft =
+
+    localStorage.getItem(
+
+      "speakingDraft"
+
+    );
+
+  if (!draft) return;
 
   try {
-    const result =
-      await evaluateSpeakingGPT(
-        response
+
+    const data =
+
+      JSON.parse(draft);
+
+    setResponse(
+
+      data.response || ""
+
+    );
+
+    setTranscript(
+
+      data.transcript || ""
+
+    );
+
+  } catch {}
+
+}, []);
+
+  /* -------------------------
+        AI EVALUATION
+  ------------------------- */
+
+  async function handleEvaluation() {
+
+    if (!canUseAI()) {
+
+      alert(
+
+        "Free AI evaluation limit reached."
+
       );
-if (!result) {
-  throw new Error(
-    "No evaluation returned."
-  );
-}
 
-    setReport(result);
+      return;
 
-    if (result.success) {
+    }
+
+    const words =
+
+      response
+
+        .trim()
+
+        .split(/\s+/)
+
+        .filter(Boolean)
+
+        .length;
+
+    if (words < 15) {
+
+      alert(
+
+        "Speaking response is too short."
+
+      );
+
+      return;
+
+    }
+
+    setEvaluating(true);
+
+    try {
+
+      const result =
+
+        await evaluateSpeakingGPT(
+
+          response
+
+        );
+
+      if (!result)
+
+        throw new Error(
+
+          "No evaluation."
+
+        );
+
       trackAIUsage();
 
       saveEvaluation({
+
         type: "speaking",
+
         overallBand:
+
           result.overallBand || 6,
+
         report: result,
+
         createdAt:
+
           new Date().toISOString(),
+
       });
 
-      if (
-        result.overallBand
-      ) {
-        setSpeakingBand(
-          result.overallBand
-        );
-      }
-    }
-  } catch (error) {
-    console.error(
-      error
-    );
+      setReport(result);
 
-    alert(
-      "Speaking evaluation failed."
-    );
-  } finally {
-    setEvaluating(false);
+      if (
+
+        result.overallBand
+
+      ) {
+
+        setSpeakingBand(
+
+          result.overallBand
+
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+
+        "Evaluation failed."
+
+      );
+
+    } finally {
+
+      setEvaluating(false);
+
+    }
+
   }
-}
+
+  /* -------------------------
+        RETURN
+  ------------------------- */
 
   return (
     <div
-      style={{
-        minHeight: "100vh",
-        maxWidth: "1200px",
-        margin: "0 auto",
-        padding: "30px",
-      }}
-    >
-      <h1>
-        IELTS Speaking Test
-      </h1>
-
-      <p>
-        Complete all three parts
-        of the IELTS Speaking
-        exam.
-      </p>
-
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          marginTop: "20px",
-          marginBottom: "20px",
-        }}
-      >
-        <button
-          onClick={() =>
-            setCurrentPart(1)
-          }
-        >
-          Part 1
-        </button>
-
-        <button
-          onClick={() =>
-            setCurrentPart(2)
-          }
-        >
-          Part 2
-        </button>
-
-        <button
-          onClick={() =>
-            setCurrentPart(3)
-          }
-        >
-          Part 3
-        </button>
-      </div>
-
-      <div
-        style={{
-          background:
-            "#ffffff",
-          padding: "25px",
-          borderRadius:
-            "16px",
-          marginBottom:
-            "25px",
-        }}
-      >
-        {currentPart === 1 && (
-          <>
-            <h2>
-              {
-                speakingTest001
-                  .part1.title
-              }
-            </h2>
-
-            <ul>
-              {speakingTest001.part1.questions.map(
-                (
-                  question,
-                  index
-                ) => (
-                  <li
-                    key={index}
-                    style={{
-                      marginBottom:
-                        "10px",
-                    }}
-                  >
-                    {question}
-                  </li>
-                )
-              )}
-            </ul>
-          </>
-        )}
-
-        {currentPart === 2 && (
-          <>
-            <h2>
-              {
-                speakingTest001
-                  .part2.title
-              }
-            </h2>
-
-            <div
-              style={{
-                whiteSpace:
-                  "pre-wrap",
-                lineHeight:
-                  "1.8",
-              }}
-            >
-              {
-                speakingTest001
-                  .part2.cueCard
-              }
-            </div>
-          </>
-        )}
-
-        {currentPart === 3 && (
-          <>
-            <h2>
-              {
-                speakingTest001
-                  .part3.title
-              }
-            </h2>
-
-            <ul>
-              {speakingTest001.part3.questions.map(
-                (
-                  question,
-                  index
-                ) => (
-                  <li
-                    key={index}
-                    style={{
-                      marginBottom:
-                        "10px",
-                    }}
-                  >
-                    {question}
-                  </li>
-                )
-              )}
-            </ul>
-          </>
-        )}
-      </div>
-
-      <div
-        style={{
-          background:
-            "#ffffff",
-          padding: "25px",
-          borderRadius:
-            "16px",
-          marginBottom:
-            "25px",
-        }}
-      >
-        <h2>
-          Audio Recording
-        </h2>
-
-   <AudioRecorder
-  onRecordingComplete={
-    handleRecording
-  }
-  onTranscriptGenerated={
-    (transcript) => {
-      setTranscript(
-        transcript
-      );
-      setResponse(
-        transcript
-      );
-    }
-  }
-/>
-
-        <MicrophoneStatus
-          audioBlob={audioBlob}
-        />
-
-        <AudioPlayback
-          audioUrl={audioUrl}
-        />
-
-        {transcript && (
-          <div
-            style={{
-              marginTop:
-                "20px",
-              background:
-                "#f8fafc",
-              padding: "15px",
-              borderRadius:
-                "12px",
-            }}
-          >
-            <h3>
-              Transcript
-            </h3>
-
-            <p>
-              {transcript}
-            </p>
-          </div>
-        )}
-      </div>
-
-      <div
-        style={{
-          background:
-            "#ffffff",
-          padding: "25px",
-          borderRadius:
-            "16px",
-        }}
-      >
-        <h2>
-          Speaking Response
-        </h2>
-
-        <textarea
-          rows={10}
-          value={response}
-          onChange={(e) =>
-            setResponse(
-              e.target.value
-            )
-          }
-          placeholder="Type or generate your speaking response..."
-          style={{
-            width: "100%",
-            padding: "15px",
-            border:
-              "1px solid #cbd5e1",
-            borderRadius:
-              "10px",
-          }}
-        />
-<div
   style={{
-    marginTop: "15px",
-    fontWeight: "bold",
+    minHeight: "100vh",
+    background: "#f8fafc",
+    padding: "30px",
   }}
 >
-  AI Evaluations Used:
-  {" "}
-  {getAIUsage()}
-  /10
+
+{/* ===========================================
+                PREMIUM HEADER
+=========================================== */}
+
+<div
+style={{
+background:
+"linear-gradient(135deg,#22c55e,#16a34a)",
+borderRadius:"24px",
+padding:"30px 35px",
+color:"white",
+marginBottom:"30px",
+boxShadow:
+"0 20px 45px rgba(34,197,94,.25)",
+}}
+>
+
+<div
+style={{
+display:"flex",
+justifyContent:"space-between",
+alignItems:"center",
+flexWrap:"wrap",
+gap:"25px",
+}}
+>
+
+<div>
+
+<h1
+style={{
+margin:0,
+fontSize:"42px",
+}}
+>
+
+🎤 IELTS Speaking Test
+
+</h1>
+
+<p
+style={{
+marginTop:"10px",
+opacity:.95,
+}}
+>
+
+Complete all three parts and receive an AI band evaluation.
+
+</p>
+
 </div>
 
-{getAIUsage() >= 8 && (
-  <div
-    style={{
-      color: "#dc2626",
-      marginTop: "10px",
-      fontWeight: "bold",
-    }}
-  >
-    Approaching AI limit.
-    Upgrade for unlimited
-    evaluations.
-  </div>
+<div
+style={{
+display:"flex",
+gap:"18px",
+flexWrap:"wrap",
+}}
+>
+
+<div className="writing-stat">
+
+<span>
+
+🎯 Part
+
+</span>
+
+<strong>
+
+{currentPart}/3
+
+</strong>
+
+</div>
+
+<div className="writing-stat">
+
+<span>
+
+🤖 AI Used
+
+</span>
+
+<strong>
+
+{getAIUsage()}/10
+
+</strong>
+
+</div>
+
+<div className="writing-stat">
+
+<span>
+
+🎙 Status
+
+</span>
+
+<strong>
+
+{audioBlob ? "Recorded" : "Waiting"}
+
+</strong>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{/* ===========================================
+              PROGRESS BAR
+=========================================== */}
+
+<div
+style={{
+marginBottom:"30px",
+}}
+>
+
+<div
+style={{
+display:"flex",
+justifyContent:"space-between",
+fontWeight:"700",
+marginBottom:"10px",
+}}
+>
+
+<span>
+
+Interview Progress
+
+</span>
+
+<span>
+
+{currentPart} / 3
+
+</span>
+
+</div>
+
+<div
+style={{
+height:"12px",
+background:"#e2e8f0",
+borderRadius:"999px",
+overflow:"hidden",
+}}
+>
+
+<div
+style={{
+width:`${(currentPart/3)*100}%`,
+height:"100%",
+background:
+"linear-gradient(90deg,#22c55e,#16a34a)",
+transition:".35s",
+}}
+/>
+
+</div>
+
+</div>
+
+{/* ===========================================
+                PART SWITCHER
+=========================================== */}
+
+<div className="writing-tabs">
+
+<button
+className={
+currentPart===1
+?
+"writing-tab active"
+:
+"writing-tab"
+}
+onClick={()=>setCurrentPart(1)}
+>
+
+👋 Part 1
+
+</button>
+
+<button
+className={
+currentPart===2
+?
+"writing-tab active"
+:
+"writing-tab"
+}
+onClick={()=>setCurrentPart(2)}
+>
+
+📝 Part 2
+
+</button>
+
+<button
+className={
+currentPart===3
+?
+"writing-tab active"
+:
+"writing-tab"
+}
+onClick={()=>setCurrentPart(3)}
+>
+
+💬 Part 3
+
+</button>
+
+</div>
+
+{/* ===========================================
+             QUESTION CARD
+=========================================== */}
+
+<div
+style={{
+background:"white",
+padding:"30px",
+borderRadius:"22px",
+boxShadow:
+"0 12px 35px rgba(15,23,42,.08)",
+marginBottom:"30px",
+}}
+>
+
+{currentPart===1 && (
+
+<>
+
+<div className="question-header">
+
+<div>
+
+<h2>
+
+👋 {test.part1.title}
+
+</h2>
+
+<p>
+
+Answer naturally and confidently.
+
+</p>
+
+</div>
+
+<div className="task-badge">
+
+4 Questions
+
+</div>
+
+</div>
+
+<ul
+style={{
+marginTop:"25px",
+lineHeight:"2",
+fontSize:"18px",
+}}
+>
+
+{test.part1.questions.map(
+
+(question,index)=>(
+
+<li
+key={index}
+style={{
+marginBottom:"12px",
+}}
+>
+
+{question}
+
+</li>
+
+)
+
 )}
 
-        <button
-          className="primary-btn"
-          style={{
-            marginTop: "20px",
-          }}
-          onClick={
-            handleEvaluation
-          }
-          disabled={
-            evaluating
-          }
-        >
-          {evaluating
-            ? "Evaluating..."
-            : "Evaluate Speaking"}
-        </button>
+</ul>
+
+</>
+
+)}
+
+{currentPart===2 && (
+
+<>
+
+<div className="question-header">
+
+<div>
+
+<h2>
+
+📝 {test.part2.title}
+
+</h2>
+
+<p>
+
+You have one minute to prepare.
+
+</p>
+
+</div>
+
+<div className="task-badge">
+
+Cue Card
+
+</div>
+
+</div>
+
+<div
+className="question-box"
+style={{
+marginTop:"25px",
+whiteSpace:"pre-wrap",
+}}
+>
+
+{test.part2.cueCard}
+
+</div>
+
+</>
+
+)}
+
+{currentPart===3 && (
+
+<>
+
+<div className="question-header">
+
+<div>
+
+<h2>
+
+💬 {test.part3.title}
+
+</h2>
+
+<p>
+
+Discuss the topic in more detail.
+
+</p>
+
+</div>
+
+<div className="task-badge">
+
+Discussion
+
+</div>
+
+</div>
+
+<ul
+style={{
+marginTop:"25px",
+lineHeight:"2",
+fontSize:"18px",
+}}
+>
+
+{test.part3.questions.map(
+
+(question,index)=>(
+
+<li
+key={index}
+style={{
+marginBottom:"12px",
+}}
+>
+
+{question}
+
+</li>
+
+)
+
+)}
+
+</ul>
+
+</>
+
+)}
+
+</div>
+{/* ===========================================
+            RECORDING STUDIO
+=========================================== */}
+
+<div
+style={{
+display:"grid",
+gridTemplateColumns:"1fr 1fr",
+gap:"30px",
+marginBottom:"30px",
+}}
+>
+
+<div
+style={{
+background:"white",
+padding:"30px",
+borderRadius:"22px",
+boxShadow:
+"0 12px 35px rgba(15,23,42,.08)",
+}}
+>
+
+<div className="editor-header">
+
+<div>
+
+<h2>
+
+🎙 Recording Studio
+
+</h2>
+
+<p>
+
+Record your answer using your microphone.
+
+</p>
+
+</div>
+
+<div className="word-chip">
+
+{audioBlob ? "Ready" : "Waiting"}
+
+</div>
+
+</div>
+
+<AudioRecorder
+
+onRecordingComplete={
+handleRecording
+}
+
+onTranscriptGenerated={
+(text)=>{
+
+setTranscript(text);
+
+setResponse(text);
+
+}
+
+}
+
+/>
+
+<div
+style={{
+marginTop:"20px",
+}}
+>
+
+<MicrophoneStatus
+
+audioBlob={audioBlob}
+
+/>
+
+</div>
+
+<div
+style={{
+marginTop:"20px",
+}}
+>
+
+<AudioPlayback
+
+audioUrl={audioUrl}
+
+/>
+
+</div>
+
+</div>
+
+{/* =========================================== */}
+
+<div
+style={{
+background:"white",
+padding:"30px",
+borderRadius:"22px",
+boxShadow:
+"0 12px 35px rgba(15,23,42,.08)",
+}}
+>
+
+<div className="editor-header">
+
+<div>
+
+<h2>
+
+📝 AI Transcript
+
+</h2>
+
+<p>
+
+Generated automatically after recording.
+
+</p>
+
+</div>
+
+<div className="word-chip">
+
+{transcript
+? "Ready"
+: "Empty"}
+
+</div>
+
+</div>
+
+<div
+className="question-box"
+style={{
+minHeight:"280px",
+whiteSpace:"pre-wrap",
+}}
+>
+
+{transcript ||
+
+"No transcript available yet."}
+
+</div>
+
+</div>
+
+</div>
+
+{/* ===========================================
+            RESPONSE EDITOR
+=========================================== */}
+
+<div
+style={{
+background:"white",
+padding:"30px",
+borderRadius:"22px",
+boxShadow:
+"0 12px 35px rgba(15,23,42,.08)",
+marginBottom:"30px",
+}}
+>
+
+<div className="editor-header">
+
+<div>
+
+<h2>
+
+✍ Response Editor
+
+</h2>
+
+<p>
+
+Edit your transcript before AI evaluation.
+
+</p>
+
+</div>
+
+<div className="word-chip">
+
+{
+
+response
+
+.trim()
+
+.split(/\s+/)
+
+.filter(Boolean)
+
+.length
+
+}
+
+Words
+
+</div>
+
+</div>
+
+<textarea
+
+value={response}
+
+onChange={(e)=>
+
+setResponse(
+
+e.target.value
+
+)
+
+}
+
+className="writing-editor"
+
+placeholder="Type or edit your speaking response..."
+
+style={{
+
+height:"350px",
+
+}}
+
+/>
+
+<div className="editor-footer">
+
+<div>
+
+<strong>
+
+Minimum
+
+</strong>
+
+15 Words
+
+</div>
+
+<div>
+
+<strong>
+
+Recommended
+
+</strong>
+
+80–150
+
+</div>
+
+<div>
+
+<strong>
+
+Current
+
+</strong>
+
+{
+
+response
+
+.trim()
+
+.split(/\s+/)
+
+.filter(Boolean)
+
+.length
+
+}
+
+</div>
+
+</div>
+
+</div>
+
+{/* ===========================================
+              ACTION BAR
+=========================================== */}
+
+<div className="writing-toolbar">
+
+<div className="toolbar-left">
+
 <button
 
-onClick={() => {
+className="secondary-btn"
 
-setResponse("");
+onClick={saveDraft}
 
-setTranscript("");
+>
 
-setAudioBlob(null);
+💾 Save Draft
 
-setAudioUrl("");
+</button>
 
-setReport(null);
+<button
+
+className="secondary-btn"
+
+onClick={resetSpeaking}
+
+>
+
+🔄 Reset
+
+</button>
+
+</div>
+
+<div className="toolbar-right">
+
+<button
+
+className="primary-btn"
+
+onClick={handleEvaluation}
+
+disabled={evaluating}
+
+>
+
+{
+
+evaluating
+
+?
+
+"🤖 AI Evaluating..."
+
+:
+
+"🤖 Evaluate Speaking"
+
+}
+
+</button>
+
+</div>
+
+</div>
+{/* ===========================================
+                AI REPORT
+=========================================== */}
+
+{report && (
+
+<>
+
+<div className="report-card">
+
+<h2>
+
+🤖 AI Speaking Report
+
+</h2>
+
+<p>
+
+Detailed IELTS Speaking Band Analysis
+
+</p>
+
+<SpeakingReport
+
+report={report}
+
+/>
+
+</div>
+
+<div
+style={{
+marginTop:"30px",
+display:"flex",
+justifyContent:"center",
+}}
+>
+
+<button
+
+className="primary-btn"
+
+style={{
+padding:"16px 42px",
+fontSize:"18px",
+}}
+
+onClick={()=>{
+
+if(onComplete){
+
+onComplete(
+
+report.overallBand || 6
+
+);
+
+}
 
 }}
 
 >
 
-Reset Test
+Continue to Results →
 
 </button>
-        {report && (
-  <>
-    <SpeakingReport
-      report={report}
-    />
 
-    <div
-      style={{
-        marginTop: "20px",
-        textAlign: "center",
-      }}
-    >
-      <button
-        className="primary-btn"
-        onClick={() => {
-          if (onComplete) {
-            onComplete(
-              report.overallBand || 6
-            );
-          }
-        }}
-      >
-        Finish Exam & View Results →
-      </button>
-    </div>
-  </>
+</div>
+
+</>
+
 )}
+
 </div>
-</div>
-)
-};
+
+);
+
+}

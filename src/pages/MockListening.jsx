@@ -1,25 +1,16 @@
 import "../styles/exam/shared.css";
-import ReviewModal
-from "../components/ReviewModal";
-import QuestionNavigator
-from "../components/QuestionNavigator";
-import {
-  useExam,
-} from "../context/ExamContext";
+
 import { useEffect, useState } from "react";
 
-    import AudioPlayer from "../components/AudioPlayer";
+import { useExam } from "../context/ExamContext";
 
-    import listeningTests from "../data/listening/tests";
-    console.log(
-  "TEST 1 SECTIONS:",
-  listeningTests[0]?.sections
-);
+import { getIELTSListeningBand } from "../services/bandCalculator";
 
-console.log(
-  "TEST 2 SECTIONS:",
-  listeningTests[1]?.sections
-);
+import ReviewModal from "../components/ReviewModal";
+import QuestionNavigator from "../components/QuestionNavigator";
+import AudioPlayer from "../components/AudioPlayer";
+
+import listeningTests from "../data/listening/tests";
 
 export default function MockListening({
 
@@ -29,532 +20,543 @@ export default function MockListening({
 
   testId,
 
-})  {
-    const {
-  setListeningBand,
-} = useExam();
-   const [test, setTest] = useState(
+}) {
 
-  listeningTests[testId ?? 0]
+  const { setListeningBand } = useExam();
 
-);
-    console.log(
-  "SELECTED TEST:",
-  test
-);
-console.log(
-  "SECTIONS:",
-  test.sections
-);
-
-    const [answers, setAnswers] =
-    useState({});
-
-    const [submitted, setSubmitted] =
-    useState(false);
-    
-    const [
-  currentSection,
-  setCurrentSection
-] = useState(0);
-console.log(
-  "Current Section:",
-  currentSection
-);
-
-console.log(
-  "Current Section Data:",
-  test.sections?.[
-    currentSection
-  ]
-);
-
-const [
-  showReview,
-  setShowReview
-] = useState(false);
-    const [timeLeft, setTimeLeft] =
-    useState(
-    (test.duration || 30) * 60
-    );
-
-   useEffect(() => {
-  const timer =
-    setInterval(() => {
-      setTimeLeft(
-        (prev) => {
-          if (prev <= 1) {
-            clearInterval(
-              timer
-            );
-
-          {showReview && (
-  <ReviewModal
-    totalQuestions={
-      totalQuestions
-    }
-    answers={answers}
-    onClose={() =>
-      setShowReview(
-        false
-      )
-    }
-    onSubmit={() => {
-      setShowReview(
-        false
-      );
-
-      setSubmitted(
-        true
-      );
-    }}
-  />
-)}
-            return 0;
-          }
-
-          return prev - 1;
-        }
-      );
-    }, 1000);
-
-  return () =>
-    clearInterval(timer);
-}, []);
-useEffect(() => {
-  if (submitted) {
-    const score =
-      calculateScore();
-
-    const band = getBand(score);
-
-    console.log(
-  "SETTING LISTENING BAND:",
-  band
-);
-
-setListeningBand(
-  band
-);
-if (onComplete) {
-  onComplete(band);
-}
-  }
-}, [submitted]);
-
-    function updateAnswer(
-    questionId,
-    value
-    ) {
-    setAnswers((prev) => ({
-    ...prev,
-    [questionId]: value,
-    }));
-    }
-function calculateScore() {
-  let score = 0;
-
-  test.sections.forEach(
-    (section) => {
-      section.questions.forEach(
-        (question) => {
-          const userAnswer =
-            String(
-              answers[
-                question.id
-              ] || ""
-            )
-              .trim()
-              .toLowerCase();
-
-          const correctAnswer =
-            String(
-              question.answer
-            )
-              .trim()
-              .toLowerCase();
-
-          if (
-            userAnswer ===
-            correctAnswer
-          ) {
-            score++;
-          }
-        }
-      );
-    }
+  const [test, setTest] = useState(
+    listeningTests[testId ?? 0]
   );
 
-  return score;
-}
+  const [answers, setAnswers] =
+    useState({});
 
-    function getBand(score) {
-    if (score >= 39) return 9;
-    if (score >= 37) return 8.5;
-    if (score >= 35) return 8;
-    if (score >= 32) return 7.5;
-    if (score >= 30) return 7;
-    if (score >= 26) return 6.5;
-    if (score >= 23) return 6;
-    if (score >= 18) return 5.5;
+  const [submitted, setSubmitted] =
+    useState(false);
 
-    return 5;
-    
+  const [showReview, setShowReview] =
+    useState(false);
 
-    }
-console.log("CURRENT TEST:", test);
-console.log("CURRENT SECTIONS:", test?.sections);
+  const [currentSection, setCurrentSection] =
+    useState(0);
 
-const totalQuestions =
-  test?.sections?.reduce(
-    (
-      total,
-      section
-    ) =>
-      total +
-      section.questions.length,
-    0
-  ) || 0;
-
-    const answeredQuestions =
-    Object.keys(
-    answers
-    ).length;
-
-    const minutes =
-    Math.floor(timeLeft / 60);
-
-    const seconds =
-    timeLeft % 60;
-if (submitted) {
-  const score =
-    calculateScore();
-
-  const band =
-    getBand(score);
-
-
-    const result = {
-    testId: test.id,
-    testTitle:
-        test.title,
-    score,
-    band,
-    completedAt:
-        new Date().toISOString(),
-    };
-
-    const previous =
-    JSON.parse(
-        localStorage.getItem(
-        "listeningResults"
-        ) || "[]"
-    );
-
-    localStorage.setItem(
-    "listeningResults",
-    JSON.stringify([
-        ...previous,
-        result,
-    ])
-    );
-
-    return (
-    <div
-        style={{
-        padding: "40px",
-        maxWidth: "900px",
-        margin: "0 auto",
-        }}
-    >
-        <h1>
-        IELTS Listening Results
-        </h1>
-
-        <div
-        style={{
-            background:
-            "#fff",
-            padding: "25px",
-            borderRadius:
-            "16px",
-            marginTop: "20px",
-        }}
-        >
-        <h2>
-            Test:
-            {" "}
-            {test.title}
-        </h2>
-
-        <h2>
-            Score:
-            {" "}
-            {score}/
-            {totalQuestions}
-        </h2>
-
-        <h2>
-            Estimated Band:
-            {" "}
-            {band}
-        </h2>
-
-        <h3>
-            Answered:
-            {" "}
-            {
-            answeredQuestions
-            }
-            /
-            {
-            totalQuestions
-            }
-        </h3>
-        </div>
-<button
-  className="primary-btn"
-  style={{
-    marginTop: "20px",
-  }}
-  onClick={() => {
-
-    setAnswers({});
-
-    setSubmitted(false);
-
-    setCurrentSection(0);
-
-    setTimeLeft(
+  const [timeLeft, setTimeLeft] =
+    useState(
       (test.duration || 30) * 60
     );
 
-    if (mode === "practice") {
+  useEffect(() => {
 
-      setTest(
-        listeningTests[testId ?? 0]
+    const timer = setInterval(() => {
+
+      setTimeLeft((prev) => {
+
+        if (prev <= 1) {
+
+          clearInterval(timer);
+
+          setShowReview(true);
+
+          return 0;
+
+        }
+
+        return prev - 1;
+
+      });
+
+    }, 1000);
+
+    return () => clearInterval(timer);
+
+  }, []);
+
+  useEffect(() => {
+
+    if (timeLeft === 300) {
+
+      alert(
+        "Only 5 minutes remaining."
       );
 
     }
 
-  }}
->
-  Restart Test
-</button>
-    </div>
-    );
+  }, [timeLeft]);
+
+  useEffect(() => {
+
+    if (!submitted) return;
+
+    const score =
+      calculateScore();
+
+    const band =
+      getIELTSListeningBand(score);
+
+    setListeningBand(band);
+
+    if (onComplete) {
+
+      onComplete(band);
 
     }
 
-    return (
-    <div
-    style={{
-    minHeight:
-    "100vh",
-    padding: "30px",
-    maxWidth:
-    "1200px",
-    margin: "0 auto",
-    }}
-    >
-    <div
-    style={{
-    display: "flex",
-    justifyContent:
-    "space-between",
-    marginBottom:
-    "20px",
-    }}
-    > <div> <h1>
-    IELTS Listening Test </h1>
+  }, [submitted]);
 
-        <p>
-            {test.title}
-        </p>
-        </div>
+  function updateAnswer(
+    questionId,
+    value
+  ) {
 
-        <h2>
-        {minutes}:
-        {String(
-            seconds
-        ).padStart(
-            2,
-            "0"
-        )}
-        </h2>
-    </div>
-  {mode === "practice" && (
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
 
-  <select
-    value={test.id}
-    onChange={(e) => {
+  }
 
-      const selected =
-        listeningTests.find(
-          (t) =>
-            t.id === Number(
-              e.target.value
-            )
+  function calculateScore() {
+
+    let score = 0;
+
+    test.sections.forEach(
+      (section) => {
+
+        section.questions.forEach(
+          (question) => {
+
+            const userAnswer =
+              String(
+                answers[question.id] || ""
+              )
+                .trim()
+                .toLowerCase();
+
+            const correctAnswer =
+              String(question.answer)
+                .trim()
+                .toLowerCase();
+
+            if (
+              userAnswer === correctAnswer
+            ) {
+
+              score++;
+
+            }
+
+          }
         );
 
-      setTest(selected);
+      }
+    );
 
-      setAnswers({});
+    return score;
 
-      setSubmitted(false);
+  }
 
-      setCurrentSection(0);
+  const totalQuestions =
+    test.sections.reduce(
 
-      setTimeLeft(
-        (selected.duration || 30) * 60
+      (total, section) =>
+
+        total +
+        section.questions.length,
+
+      0
+
+    );
+
+  const answeredQuestions =
+    Object.keys(answers).length;
+
+  const minutes =
+    Math.floor(timeLeft / 60);
+
+  const seconds =
+    timeLeft % 60;
+
+  if (!test || !test.sections) {
+
+    return (
+
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+
+        <h2>
+          Loading Listening Test...
+        </h2>
+
+      </div>
+
+    );
+
+  }
+
+  if (submitted) {
+
+    const score =
+      calculateScore();
+
+    const band =
+      getIELTSListeningBand(score);
+
+    const result = {
+
+      testId: test.id,
+
+      testTitle: test.title,
+
+      score,
+
+      band,
+
+      completedAt:
+        new Date().toISOString(),
+
+    };
+
+    const previous =
+      JSON.parse(
+        localStorage.getItem(
+          "listeningResults"
+        ) || "[]"
       );
 
-    }}
-    style={{
-      padding: "10px",
-      marginBottom: "20px",
-    }}
-  >
+    localStorage.setItem(
 
-    {listeningTests.map((t) => (
+      "listeningResults",
 
-      <option
-        key={t.id}
-        value={t.id}
-      >
-        {t.title}
-      </option>
+      JSON.stringify([
+        ...previous,
+        result,
+      ])
 
-    ))}
+    );
+        return (
+      <>
+        {showReview && (
+          <ReviewModal
+            totalQuestions={totalQuestions}
+            answers={answers}
+            onClose={() =>
+              setShowReview(false)
+            }
+            onSubmit={() => {
+              setShowReview(false);
+              setSubmitted(true);
+            }}
+          />
+        )}
 
-  </select>
+        <div
+          style={{
+            padding: "40px",
+            maxWidth: "900px",
+            margin: "0 auto",
+          }}
+        >
+          <h1>IELTS Listening Results</h1>
 
-)}
-<QuestionNavigator
-  totalQuestions={
-    totalQuestions
+          <div
+            style={{
+              background: "#fff",
+              padding: "25px",
+              borderRadius: "16px",
+              marginTop: "20px",
+            }}
+          >
+            <h2>
+              Test: {test.title}
+            </h2>
+
+            <h2>
+              Score: {score}/
+              {totalQuestions}
+            </h2>
+
+            <h2>
+              Estimated Band: {band}
+            </h2>
+
+            <h3>
+              Answered:{" "}
+              {answeredQuestions}/
+              {totalQuestions}
+            </h3>
+          </div>
+
+          <button
+            className="primary-btn"
+            style={{
+              marginTop: "20px",
+            }}
+            onClick={() => {
+              setAnswers({});
+              setSubmitted(false);
+              setShowReview(false);
+              setCurrentSection(0);
+              setTimeLeft(
+                (test.duration || 30) *
+                  60
+              );
+
+              if (
+                mode === "practice"
+              ) {
+                setTest(
+                  listeningTests[
+                    testId ?? 0
+                  ]
+                );
+              }
+            }}
+          >
+            Restart Test
+          </button>
+        </div>
+      </>
+    );
   }
-  answers={answers}
-/>
- <AudioPlayer
-  audioUrl={
-    test.sections[
-      currentSection
-    ].audio
-  }
-/>
-
-
-
-
- {(() => {
-  const section =
-    test.sections[
-      currentSection
-    ];
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        padding: "20px",
-        borderRadius: "16px",
-        marginBottom: "20px",
-      }}
-    >
-      <h2>
-        {section.title}
-      </h2>
+    <>
+      {showReview && (
+        <ReviewModal
+          totalQuestions={
+            totalQuestions
+          }
+          answers={answers}
+          onClose={() =>
+            setShowReview(false)
+          }
+          onSubmit={() => {
+            setShowReview(false);
+            setSubmitted(true);
+          }}
+        />
+      )}
 
-      {section.questions.map(
-        (question) => (
-          <div
-            key={question.id}
+      <div
+        style={{
+          minHeight: "100vh",
+          padding: "30px",
+          maxWidth: "1200px",
+          margin: "0 auto",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            marginBottom: "20px",
+          }}
+        >
+          <div>
+            <h1>
+              IELTS Listening Test
+            </h1>
+
+            <p>{test.title}</p>
+          </div>
+
+          <h2>
+            {minutes}:
+            {String(seconds).padStart(
+              2,
+              "0"
+            )}
+          </h2>
+        </div>
+
+        {mode ===
+          "practice" && (
+          <select
+            value={test.id}
+            onChange={(e) => {
+              const selected =
+                listeningTests.find(
+                  (t) =>
+                    t.id ===
+                    Number(
+                      e.target.value
+                    )
+                );
+
+              setTest(selected);
+
+              setAnswers({});
+
+              setSubmitted(false);
+
+              setShowReview(false);
+
+              setCurrentSection(0);
+
+              setTimeLeft(
+                (selected.duration ||
+                  30) * 60
+              );
+            }}
             style={{
+              padding: "10px",
               marginBottom:
                 "20px",
             }}
           >
-            <p>
-              <strong>
-                {question.id}.
-              </strong>{" "}
-              {
-                question.question
-              }
-            </p>
+            {listeningTests.map(
+              (t) => (
+                <option
+                  key={t.id}
+                  value={t.id}
+                >
+                  {t.title}
+                </option>
+              )
+            )}
+          </select>
+        )}
 
-            <input
-              type="text"
-              value={
-                answers[
-                  question.id
-                ] || ""
-              }
-              onChange={(e) =>
-                updateAnswer(
-                  question.id,
-                  e.target.value
+        <QuestionNavigator
+          totalQuestions={
+            totalQuestions
+          }
+          answers={answers}
+        />
+
+        <AudioPlayer
+          audioUrl={
+            test.sections[
+              currentSection
+            ].audio
+          }
+        />
+
+        {(() => {
+          const section =
+            test.sections[
+              currentSection
+            ];
+
+          return (
+            <div
+              style={{
+                background:
+                  "#fff",
+                padding: "20px",
+                borderRadius:
+                  "16px",
+                marginTop: "20px",
+                marginBottom:
+                  "20px",
+              }}
+            >
+              <h2>
+                {section.title}
+              </h2>
+                            {section.questions.map(
+                (question) => (
+                  <div
+                    key={question.id}
+                    style={{
+                      marginBottom:
+                        "20px",
+                    }}
+                  >
+                    <p>
+                      <strong>
+                        {question.id}.
+                      </strong>{" "}
+                      {
+                        question.question
+                      }
+                    </p>
+
+                    <input
+                      type="text"
+                      value={
+                        answers[
+                          question.id
+                        ] || ""
+                      }
+                      onChange={(e) =>
+                        updateAnswer(
+                          question.id,
+                          e.target.value
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        padding:
+                          "10px",
+                        border:
+                          "1px solid #d1d5db",
+                        borderRadius:
+                          "8px",
+                      }}
+                    />
+                  </div>
+                )
+              )}
+            </div>
+          );
+        })()}
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            marginTop: "20px",
+          }}
+        >
+          <button
+            disabled={
+              currentSection === 0
+            }
+            onClick={() =>
+              setCurrentSection(
+                (prev) =>
+                  prev - 1
+              )
+            }
+          >
+            Previous
+          </button>
+
+          {currentSection <
+          test.sections.length -
+            1 ? (
+            <button
+              className="primary-btn"
+              onClick={() =>
+                setCurrentSection(
+                  (prev) =>
+                    prev + 1
                 )
               }
-              style={{
-                width: "100%",
-                padding:
-                  "10px",
-              }}
-            />
-          </div>
-        )
-      )}
-    </div>
+            >
+              Next Section →
+            </button>
+          ) : (
+            <button
+              className="primary-btn"
+              onClick={() =>
+                setShowReview(true)
+              }
+            >
+              Review & Submit →
+            </button>
+          )}
+        </div>
+      </div>
+    </>
   );
-})()}
-
- <div
-  style={{
-    display: "flex",
-    justifyContent:
-      "space-between",
-    marginTop: "20px",
-  }}
->
-  <button
-    disabled={
-      currentSection === 0
-    }
-    onClick={() =>
-      setCurrentSection(
-        currentSection - 1
-      )
-    }
-  >
-    Previous
-  </button>
-
-  {currentSection <
-  test.sections.length - 1 ? (
-    <button
-      className="primary-btn"
-      onClick={() =>
-        setCurrentSection(
-          currentSection + 1
-        )
-      }
-    >
-      Next Section
-    </button>
-  ) : (
-    <button
-      className="primary-btn"
-      onClick={() =>
-        setSubmitted(true)
-      }
-    >
-      Submit Test
-    </button>
-  )}
-</div>
-    </div>
-
-    );
-    }
+}

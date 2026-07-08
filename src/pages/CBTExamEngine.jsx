@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import MockReading from "./MockReading";
 import MockListening from "./MockListening";
-import MockWriting from "./Mockwriting";
+import MockWriting from "./MockWriting";
 import MockSpeaking from "./MockSpeaking";
 
 import { saveExamSession } from "../services/examSession";
@@ -117,28 +117,28 @@ export default function CBTExamEngine() {
         />
 
         <MockSpeaking
-          onComplete={(band) => {
- const overallBand =
-  session.overall ??
-  (
+         onComplete={(band) => {
+
+  const finalResults = {
+    ...results,
+    speaking: band,
+  };
+
+  const overall = (
     (
-      Number(session.reading || 0) +
-      Number(session.listening || 0) +
-      Number(session.writing || 0) +
-      Number(session.speaking || 0)
+      Number(finalResults.reading || 0) +
+      Number(finalResults.listening || 0) +
+      Number(finalResults.writing || 0) +
+      Number(finalResults.speaking || 0)
     ) / 4
   ).toFixed(1);
 
-const finalResults = {
-  ...results,
-  speaking: band,
-  overall,
-};
+  finishExam({
+    ...finalResults,
+    overall,
+  });
 
-            finishExam(
-              finalResults
-            );
-          }}
+}}
         />
       </>
     );

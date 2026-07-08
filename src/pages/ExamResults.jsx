@@ -13,8 +13,9 @@ import {
 import {
   generateForecast,
 } from "../services/forecastEngine";
-
+import { useNavigate } from "react-router-dom";
 export default function ExamResults() {
+  const navigate = useNavigate();
   const session =
     getExamSession();
 
@@ -73,18 +74,7 @@ export default function ExamResults() {
       session.speaking || 0
     ),
   };
-  <p
-  style={{
-    color: "#64748b",
-    marginTop: "10px",
-  }}
->
-  Completed:
-  {" "}
-  {new Date(
-    session.completedAt
-  ).toLocaleString()}
-</p>
+ 
 
   const strongestSkill =
     Object.keys(scores).reduce(
@@ -181,6 +171,18 @@ export default function ExamResults() {
         >
           {overallBand}
         </div>
+        <p
+  style={{
+    color: "#64748b",
+    marginTop: "12px",
+    fontWeight: 600,
+  }}
+>
+  Completed on{" "}
+  {new Date(
+    session.completedAt
+  ).toLocaleString()}
+</p>
       </div>
 
       <BandBreakdown
@@ -236,37 +238,65 @@ export default function ExamResults() {
             "0 10px 30px rgba(0,0,0,0.08)",
         }}
       >
-        <h2>
-          Section Scores
-        </h2>
+       <h2
+  style={{
+    marginBottom: "20px",
+  }}
+>
+  Section Scores
+</h2>
 
-        <p>
-          Reading:{" "}
-          {
-            session.reading
-          }
-        </p>
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns:
+      "repeat(auto-fit,minmax(220px,1fr))",
+    gap: "20px",
+  }}
+>
 
-        <p>
-          Listening:{" "}
-          {
-            session.listening
-          }
-        </p>
+  {[
+    {
+      title: "📖 Reading",
+      band: session.reading,
+    },
+    {
+      title: "🎧 Listening",
+      band: session.listening,
+    },
+    {
+      title: "✍️ Writing",
+      band: session.writing,
+    },
+    {
+      title: "🎤 Speaking",
+      band: session.speaking,
+    },
+  ].map((item) => (
+    <div
+      key={item.title}
+      style={{
+        background: "#f8fafc",
+        borderRadius: "18px",
+        padding: "25px",
+        textAlign: "center",
+      }}
+    >
+      <h3>{item.title}</h3>
 
-        <p>
-          Writing:{" "}
-          {
-            session.writing
-          }
-        </p>
+      <div
+        style={{
+          fontSize: "42px",
+          fontWeight: "800",
+          color: "#0891b2",
+        }}
+      >
+        {item.band}
+      </div>
+    </div>
+  ))}
 
-        <p>
-          Speaking:{" "}
-          {
-            session.speaking
-          }
-        </p>
+</div>
       </div>
 
       <div
@@ -361,10 +391,9 @@ export default function ExamResults() {
 >
   <button
     className="primary-btn"
-    onClick={() => {
-      window.location.href =
-        "/history";
-    }}
+onClick={() => {
+  navigate("/history");
+}}
   >
     View Exam History
   </button>
@@ -373,10 +402,9 @@ export default function ExamResults() {
   style={{
     marginLeft: "12px",
   }}
-  onClick={() => {
-    window.location.href =
-      "/cbt-exam";
-  }}
+ onClick={() => {
+  navigate("/cbt-exam/1");
+}}
 >
   Retake Exam
 </button>
