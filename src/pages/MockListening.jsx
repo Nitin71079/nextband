@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useExam } from "../context/ExamContext";
 
-import { getIELTSListeningBand } from "../services/bandCalculator";
+import { getIELTSListeningBand } from "../services/BandCalculator";
 
 import ReviewModal from "../components/ReviewModal";
 import QuestionNavigator from "../components/QuestionNavigator";

@@ -2,30 +2,75 @@ import MCQ from "./QuestionTypes/MCQ";
 import TFNG from "./QuestionTypes/TFNG";
 import MatchingHeadings from "./QuestionTypes/MatchingHeadings";
 import MatchingInformation from "./QuestionTypes/MatchingInformation";
-import TextInput from "./QuestionTypes/TextInput";
 import MatchingFeatures from "./QuestionTypes/MatchingFeatures";
 import MatchingSentenceEndings from "./QuestionTypes/MatchingSentenceEndings";
+import Classification from "./QuestionTypes/Classification";
 import TableCompletion from "./QuestionTypes/TableCompletion";
 import NoteCompletion from "./QuestionTypes/NoteCompletion";
 import DiagramLabel from "./QuestionTypes/DiagramLabel";
 import FlowChartCompletion from "./QuestionTypes/FlowChartCompletion";
-import Classification from "./QuestionTypes/Classification";
+import TextInput from "./QuestionTypes/TextInput";
+
+function UnsupportedQuestion({ type }) {
+  return (
+    <div
+      style={{
+        padding: 20,
+        borderRadius: 12,
+        border: "1px solid #fecaca",
+        background: "#fef2f2",
+        color: "#991b1b",
+      }}
+    >
+      <h3
+        style={{
+          marginBottom: 10,
+        }}
+      >
+        Unsupported Question Type
+      </h3>
+
+      <strong>{type || "Unknown"}</strong>
+
+      <p
+        style={{
+          marginTop: 10,
+          fontSize: 14,
+          lineHeight: 1.6,
+        }}
+      >
+        No renderer has been registered for this question type.
+      </p>
+    </div>
+  );
+}
 
 export default function QuestionRenderer({
   question,
   value,
   onChange,
 }) {
-  if (!question) {
-    return null;
-  }
+  if (!question) return null;
 
-  const type = String(question.type || "")
-    .trim()
-    .toLowerCase()
-    .replace(/_/g, "-");
+  const aliases = {
+    "diagram-labels": "diagram-label",
+    "flowchart-completion": "flow-chart-completion",
+  };
 
-  const textInputProps = {
+  const type = (
+    aliases[
+      String(question.type || "")
+        .trim()
+        .toLowerCase()
+        .replace(/_/g, "-")
+    ] ||
+    String(question.type || "")
+      .trim()
+      .toLowerCase()
+      .replace(/_/g, "-")
+  );
+
+  const commonProps = {
     question,
     value,
     onChange,
@@ -33,66 +78,32 @@ export default function QuestionRenderer({
 
   switch (type) {
     case "multiple-choice":
-      return (
-        <MCQ
-          question={question}
-          value={value}
-          onChange={onChange}
-        />
-      );
+      return <MCQ {...commonProps} />;
 
     case "true-false-not-given":
     case "yes-no-not-given":
-      return (
-        <TFNG
-          question={question}
-          value={value}
-          onChange={onChange}
-        />
-      );
+      return <TFNG {...commonProps} />;
 
     case "matching-headings":
-      return (
-        <MatchingHeadings
-          question={question}
-          value={value}
-          onChange={onChange}
-        />
-      );
+      return <MatchingHeadings {...commonProps} />;
 
     case "matching-information":
-      return (
-        <MatchingInformation
-          question={question}
-          value={value}
-          onChange={onChange}
-        />
-      );
+      return <MatchingInformation {...commonProps} />;
 
     case "matching-features":
-      return (
-        <MatchingFeatures
-          question={question}
-          value={value}
-          onChange={onChange}
-        />
-      );
+      return <MatchingFeatures {...commonProps} />;
 
     case "matching-sentence-endings":
       return (
         <MatchingSentenceEndings
-          question={question}
-          value={value}
-          onChange={onChange}
+          {...commonProps}
         />
       );
 
     case "classification":
       return (
         <Classification
-          question={question}
-          value={value}
-          onChange={onChange}
+          {...commonProps}
         />
       );
 
@@ -101,7 +112,7 @@ export default function QuestionRenderer({
     case "short-answer":
       return (
         <TextInput
-          {...textInputProps}
+          {...commonProps}
           placeholder="Type your answer"
         />
       );
@@ -109,68 +120,36 @@ export default function QuestionRenderer({
     case "table-completion":
       return (
         <TableCompletion
-          question={question}
-          value={value}
-          onChange={onChange}
+          {...commonProps}
         />
       );
 
     case "note-completion":
       return (
         <NoteCompletion
-          question={question}
-          value={value}
-          onChange={onChange}
+          {...commonProps}
         />
       );
 
     case "diagram-label":
-    case "diagram-labels":
       return (
         <DiagramLabel
-          question={question}
-          value={value}
-          onChange={onChange}
+          {...commonProps}
         />
       );
 
     case "flow-chart-completion":
-    case "flowchart-completion":
       return (
         <FlowChartCompletion
-          question={question}
-          value={value}
-          onChange={onChange}
+          {...commonProps}
         />
       );
 
     default:
       return (
-        <div
-          style={{
-            padding: 18,
-            borderRadius: 10,
-            background: "#fef2f2",
-            border: "1px solid #fecaca",
-            color: "#991b1b",
-          }}
-        >
-          <strong>Unsupported Question Type</strong>
-
-          <div style={{ marginTop: 8 }}>
-            {question.type || "Unknown"}
-          </div>
-
-          <div
-            style={{
-              marginTop: 10,
-              fontSize: 14,
-              opacity: 0.8,
-            }}
-          >
-            Add a renderer for this question type.
-          </div>
-        </div>
+        <UnsupportedQuestion
+          type={question.type}
+        />
       );
   }
 }
