@@ -207,14 +207,43 @@ export default function MockReading({
     setReadingBand(band);
 
     if (user) {
-      await saveResult({
-        userId: user.uid,
-        type: "reading",
-        score,
-        band,
-        totalQuestions,
-        answers,
-      });
+     await saveResult({
+  userId: user.uid,
+
+  type: "reading",
+
+  examType: "Academic",
+
+  testId: currentTest.id,
+
+  testTitle: currentTest.title,
+
+  score,
+
+  totalQuestions,
+
+  band,
+
+  accuracy:
+    (score / totalQuestions) * 100,
+
+  duration:
+    currentTest.duration,
+
+  timeUsed:
+    currentTest.duration * 60 - timeLeft,
+
+  answered:
+    answeredQuestions,
+
+  unanswered:
+    totalQuestions - answeredQuestions,
+
+  flagged:
+    flaggedQuestions.length,
+
+  completedAt: serverTimestamp(),
+});
     }
 
     onComplete?.(band);

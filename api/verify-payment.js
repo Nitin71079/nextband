@@ -45,16 +45,37 @@ export default async function handler(req, res) {
         error: "Invalid signature",
       });
     }
+const now = new Date();
+const expires = new Date(now);
 
-    await db.collection("users").doc(uid).set(
-      {
-        premium: true,
-        premiumPlan: plan,
-        premiumSince: admin.firestore.FieldValue.serverTimestamp(),
-        razorpayPaymentId: razorpay_payment_id,
-      },
-      { merge: true }
-    );
+switch (plan) {
+  case "Premium Monthly":
+    expires.setMonth(expires.getMonth() + 1);
+    break;
+
+  case "Premium 3 Months":
+    expires.setMonth(expires.getMonth() + 3);
+    break;
+
+  default:
+    expires.setMonth(expires.getMonth() + 1);
+}
+
+await db.collection("users").doc(uid).set(
+  {
+    premium: true,
+    premiumPlan: plan,
+    premiumSince:
+      admin.firestore.FieldValue.serverTimestamp(),
+
+    premiumExpires: admin.firestore.Timestamp.fromDate(
+      expires
+    ),
+
+    razorpayPaymentId: razorpay_payment_id,
+  },
+  { merge: true }
+);
 
     return res.json({
       success: true,

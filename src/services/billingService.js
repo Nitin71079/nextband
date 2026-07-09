@@ -1,38 +1,83 @@
-export async function startCheckout(plan, uid){
-    try {
-    const response = await fetch("/api/checkout", {
+import toast from "react-hot-toast";
+import { auth } from "../firebase";
+
+export async function createOrder(plan) {
+  const response = await fetch("/api/checkout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      plan,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || "Unable to create payment order."
+    );
+  }
+
+  return data;
+}
+
+export async function verifyPayment(data) {
+  const response = await fetch(
+    "/api/verify-payment",
+    {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ plan }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "Checkout failed");
+      body: JSON.stringify(data),
     }
+  );
 
-    const user = JSON.parse(localStorage.getItem("user"));
+  const result = await response.json();
 
-    const options = {
-      key: data.key,
-      amount: data.order.amount,
-      currency: data.order.currency,
-      order_id: data.order.id,
+  if (!response.ok) {
+    throw new Error(
+      result.error || "Payment verification failed."
+    );
+  }
 
-      name: "Knarrow",
+  return result;
+}
 
-      description: plan,
+export async function startCheckout(plan) {
+  const user = auth.currentUser;
 
-      handler: async function (payment) {
-        const verify = await fetch("/api/verify-payment", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+  if (!user) {
+    toast.error("Please login first.");
+    return;
+  }
+
+  const { order, key } =
+    await createOrder(plan);
+
+  const options = {
+    key,
+
+    order_id: order.id,
+
+    amount: order.amount,
+
+    currency: order.currency,
+
+    name: "Knarrow",
+
+    description: plan,
+
+    theme: {
+      color: "#2563eb",
+    },
+
+    handler: async function (payment) {
+      try {
+        const result =
+          await verifyPayment({
             uid: user.uid,
             plan,
 
@@ -44,30 +89,44 @@ export async function startCheckout(plan, uid){
 
             razorpay_signature:
               payment.razorpay_signature,
-          }),
-        });
-
-        const result = await verify.json();
+          });
 
         if (result.success) {
-          alert("🎉 Premium Activated!");
+          toast.success(
+            "🎉 Premium Activated!"
+          );
 
-          window.location.href = "/dashboard";
+          setTimeout(() => {
+            window.location.reload();
+          }, 1200);
         } else {
-          alert("Payment verification failed.");
+          toast.error(
+            "Payment verification failed."
+          );
         }
+      } catch (err) {
+        console.error(err);
+
+        toast.error(
+          err.message ||
+            "Verification failed."
+        );
+      }
+    },
+
+    modal: {
+      ondismiss() {
+        toast("Payment cancelled.");
       },
+    },
 
-      theme: {
-        color: "#06b6d4",
-      },
-    };
+    prefill: {
+      email: user.email,
+    },
+  };
 
-    const razorpay = new window.Razorpay(options);
+  const razorpay =
+    new window.Razorpay(options);
 
-    razorpay.open();
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
+  razorpay.open();
 }

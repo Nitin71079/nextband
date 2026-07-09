@@ -1,55 +1,77 @@
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function PremiumGate({
   children,
 }) {
-
   const {
+    user,
     premium,
+    premiumExpires,
     loading,
   } = useAuth();
 
-  // ===================================
+  // ============================
   // DEVELOPMENT ONLY
-  // Change to false before production
-  // ===================================
-  const DEV_BYPASS = true;
+  // MUST BE FALSE BEFORE DEPLOY
+  // ============================
+  const DEV_BYPASS =
+    import.meta.env.DEV;
 
-  if (loading && !DEV_BYPASS) {
+  if (DEV_BYPASS) {
+    return children;
+  }
+
+  if (loading) {
     return (
       <div
         style={{
-          padding: "40px",
-          textAlign: "center",
+          minHeight: "70vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontSize: "18px",
+          fontWeight: 600,
         }}
       >
-        Loading...
+        Checking Subscription...
       </div>
     );
   }
 
-  if (!premium && !DEV_BYPASS) {
+  if (!user) {
     return (
-      <div
-        style={{
-          padding: "40px",
-          textAlign: "center",
-        }}
-      >
-        <h2>
-          🔒 Premium Feature
-        </h2>
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
+  }
 
-        <p>
-          Upgrade to
-          NextBand Premium
-          to continue.
-        </p>
+  let activePremium = premium;
 
-        <a href="/pricing">
-          Upgrade Now
-        </a>
-      </div>
+  if (
+    premium &&
+    premiumExpires
+  ) {
+    const expiry =
+      premiumExpires.toDate
+        ? premiumExpires.toDate()
+        : new Date(
+            premiumExpires
+          );
+
+    if (expiry < new Date()) {
+      activePremium = false;
+    }
+  }
+
+  if (!activePremium) {
+    return (
+      <Navigate
+        to="/pricing"
+        replace
+      />
     );
   }
 

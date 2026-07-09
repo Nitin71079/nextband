@@ -37,9 +37,11 @@ export default async function handler(req, res) {
       key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: "Unable to create order",
-    });
-  }
+  console.error("Checkout Error:", err);
+
+  return res.status(500).json({
+    error: err.message,
+    stack: err.stack,
+  });
+}
 }

@@ -24,8 +24,7 @@ const AuthContext = createContext();
 export function AuthProvider({
   children,
 }) {
-  const [user, setUser] =
-    useState(null);
+  const [user, setUser] = useState(null);
 
   const [loading, setLoading] =
     useState(true);
@@ -33,70 +32,107 @@ export function AuthProvider({
   const [premium, setPremium] =
     useState(false);
 
+  const [premiumPlan, setPremiumPlan] =
+    useState("");
+
+  const [
+    premiumExpires,
+    setPremiumExpires,
+  ] = useState(null);
+
   const [admin, setAdmin] =
     useState(false);
 
-    const [name, setName] =
-  useState("");
+  const [name, setName] =
+    useState("");
+
+  function resetUserData() {
+    setPremium(false);
+    setPremiumPlan("");
+    setPremiumExpires(null);
+    setAdmin(false);
+    setName("");
+  }
 
   useEffect(() => {
     const unsubscribe =
       onAuthStateChanged(
         auth,
         async (currentUser) => {
+          setLoading(true);
+
           setUser(currentUser);
 
-          if (currentUser) {
-            try {
-              const userRef = doc(
-                db,
-                "users",
-                currentUser.uid
-              );
+          if (!currentUser) {
+            resetUserData();
+            setLoading(false);
+            return;
+          }
 
-              const userSnap =
-                await getDoc(
-                  userRef
-                );
+          try {
+            const userRef = doc(
+              db,
+              "users",
+              currentUser.uid
+            );
 
-              if (
-                userSnap.exists()
-              ) {
-                const data =
-                  userSnap.data();
+            const userSnap =
+              await getDoc(userRef);
 
-                  setName(
-  data.name || ""
-);
-
-                setPremium(
-                  data.premium ||
-                    false
-                );
-
-                setAdmin(
-                  data.admin ||
-                    false
-                );
-              } else {
-               setPremium(false);
-setAdmin(false);
-setName("");
-              }
-            } catch (error) {
-              console.error(
-                "Error loading user:",
-                error
-              );
-
-           setPremium(false);
-setAdmin(false);
-setName("");
+            if (!userSnap.exists()) {
+              resetUserData();
+              setLoading(false);
+              return;
             }
-          } else {
-        setPremium(false);
-setAdmin(false);
-setName("");
+
+            const data =
+              userSnap.data();
+
+            setName(
+              data.name || ""
+            );
+
+            setAdmin(
+              data.admin || false
+            );
+
+            setPremiumPlan(
+              data.premiumPlan || ""
+            );
+
+            setPremiumExpires(
+              data.premiumExpires || null
+            );
+
+            let premiumActive =
+              data.premium || false;
+
+            if (
+              premiumActive &&
+              data.premiumExpires
+            ) {
+              const expiry =
+                data.premiumExpires.toDate
+                  ? data.premiumExpires.toDate()
+                  : new Date(
+                      data.premiumExpires
+                    );
+
+              if (expiry < new Date()) {
+                premiumActive = false;
+              }
+            }
+
+            setPremium(
+              premiumActive
+            );
+          } catch (error) {
+            console.error(
+              "Error loading user:",
+              error
+            );
+
+            resetUserData();
           }
 
           setLoading(false);
@@ -109,12 +145,14 @@ setName("");
   return (
     <AuthContext.Provider
       value={{
-  user,
-  loading,
-  premium,
-  admin,
-  name,
-}}
+        user,
+        loading,
+        premium,
+        premiumPlan,
+        premiumExpires,
+        admin,
+        name,
+      }}
     >
       {children}
     </AuthContext.Provider>
