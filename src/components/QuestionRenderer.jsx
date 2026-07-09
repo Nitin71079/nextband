@@ -1,15 +1,15 @@
-import MCQ from "./QuestionTypes/MCQ";
-import TFNG from "./QuestionTypes/TFNG";
-import MatchingHeadings from "./QuestionTypes/MatchingHeadings";
-import MatchingInformation from "./QuestionTypes/MatchingInformation";
-import TextInput from "./QuestionTypes/TextInput";
-import MatchingFeatures from "./QuestionTypes/MatchingFeatures";
-import MatchingSentenceEndings from "./QuestionTypes/MatchingSentenceEndings";
-import TableCompletion from "./QuestionTypes/TableCompletion";
-import NoteCompletion from "./QuestionTypes/NoteCompletion";
-import DiagramLabel from "./QuestionTypes/DiagramLabel";
-import FlowChartCompletion from "./QuestionTypes/FlowChartCompletion";
-import Classification from "./QuestionTypes/Classification";
+import MCQ from "./questionTypes/MCQ";
+import TFNG from "./questionTypes/TFNG";
+import MatchingHeadings from "./questionTypes/MatchingHeadings";
+import MatchingInformation from "./questionTypes/MatchingInformation";
+import TextInput from "./questionTypes/TextInput";
+import MatchingFeatures from "./questionTypes/MatchingFeatures";
+import MatchingSentenceEndings from "./questionTypes/MatchingSentenceEndings";
+import TableCompletion from "./questionTypes/TableCompletion";
+import NoteCompletion from "./questionTypes/NoteCompletion";
+import DiagramLabel from "./questionTypes/DiagramLabel";
+import FlowChartCompletion from "./questionTypes/FlowChartCompletion";
+import Classification from "./questionTypes/Classification";
 function UnsupportedQuestion({ type }) {
   return (
     <div
