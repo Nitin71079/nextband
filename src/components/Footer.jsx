@@ -40,7 +40,7 @@ export default function Footer() {
                   "#22d3ee"
               }}
             >
-              NextBand
+              Knarrow
             </h2>
 
             <p
@@ -168,11 +168,11 @@ export default function Footer() {
               }}
             >
               <div>
-                hello@nextband.ai
+                hello@knarrow.ai
               </div>
 
               <div>
-                support@nextband.ai
+                support@knarrow.ai
               </div>
 
               <div>
@@ -202,7 +202,7 @@ export default function Footer() {
             opacity: 0.7
           }}
         >
-          © 2026 NextBand.
+          © 2026 Knarrow.
           All rights reserved.
         </div>
       </div>

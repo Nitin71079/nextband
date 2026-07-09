@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
 import {
   BookOpen,
   Headphones,
@@ -8,157 +10,190 @@ import {
   CalendarDays,
   BarChart3,
   Rocket,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 
 export default function QuickActions() {
-
   const quickActions = [
-
     {
       title: "Reading",
       subtitle: "Practice Passages",
-      icon: <BookOpen size={28} />,
+      description: "Academic IELTS Reading",
+      icon: BookOpen,
       path: "/reading",
-      color: "#3b82f6",
+      color: "blue",
       badge: "120 Questions",
     },
-
     {
       title: "Listening",
       subtitle: "Audio Tests",
-      icon: <Headphones size={28} />,
+      description: "Official IELTS Format",
+      icon: Headphones,
       path: "/listening",
-      color: "#8b5cf6",
+      color: "purple",
       badge: "30 Tests",
     },
-
     {
       title: "Writing",
       subtitle: "AI Evaluation",
-      icon: <PenSquare size={28} />,
+      description: "Instant Band Score",
+      icon: PenSquare,
       path: "/writing",
-      color: "#f59e0b",
+      color: "orange",
       badge: "AI Powered",
     },
-
     {
       title: "Speaking",
       subtitle: "AI Speaking",
-      icon: <Mic size={28} />,
+      description: "Real-time Feedback",
+      icon: Mic,
       path: "/speaking",
-      color: "#22c55e",
+      color: "green",
       badge: "Live AI",
     },
-
     {
       title: "AI Center",
       subtitle: "Coach + Assistant",
-      icon: <BrainCircuit size={28} />,
+      description: "Study Smarter",
+      icon: BrainCircuit,
       path: "/ai-center",
-      color: "#06b6d4",
+      color: "cyan",
       badge: "Premium",
     },
-
     {
       title: "Planner",
       subtitle: "Study Schedule",
-      icon: <CalendarDays size={28} />,
+      description: "Daily Goals",
+      icon: CalendarDays,
       path: "/planner",
-      color: "#ec4899",
+      color: "pink",
       badge: "Daily",
     },
-
     {
       title: "Analytics",
       subtitle: "Track Progress",
-      icon: <BarChart3 size={28} />,
+      description: "Performance Insights",
+      icon: BarChart3,
       path: "/analytics",
-      color: "#14b8a6",
+      color: "teal",
       badge: "Insights",
     },
-
     {
       title: "Full Mock",
       subtitle: "Complete IELTS",
-      icon: <Rocket size={28} />,
+      description: "Exam Simulation",
+      icon: Rocket,
       path: "/full-mocks",
-      color: "#ef4444",
+      color: "red",
       badge: "2h 45m",
     },
-
   ];
 
   return (
-
-    <section className="dashboard-section">
-
+    <motion.section
+      className="dashboard-section"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="section-header">
-
         <div>
+          <span className="badge">
+            <Sparkles size={14} />
+            AI Learning Hub
+          </span>
 
-          <h2>
-
-            Quick Actions
-
-          </h2>
+          <h2>Quick Actions</h2>
 
           <p>
-
-            Jump directly into any IELTS module.
-
+            Jump into any IELTS module with one click.
           </p>
-
         </div>
-
       </div>
 
       <div className="quick-grid">
+        {quickActions.map((item, index) => {
+          const Icon = item.icon;
 
-        {quickActions.map((item) => (
-
-          <Link
-            key={item.title}
-            to={item.path}
-            className="quick-card"
-          >
-
-            <div
-              className="quick-icon"
-              style={{
-                background: item.color,
-              }}
+          return (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
             >
+              <Link
+                to={item.path}
+                className={`quick-card ${item.color}`}
+              >
+                <div className="quick-top">
+                  <div
+                    className={`quick-icon ${item.color}`}
+                  >
+                    <Icon size={28} />
+                  </div>
 
-              {item.icon}
+                  <span className="quick-badge">
+                    {item.badge}
+                  </span>
+                </div>
 
-            </div>
+                <div className="quick-body">
+                  <h3>{item.title}</h3>
 
+                  <p>{item.subtitle}</p>
+
+                  <small>
+                    {item.description}
+                  </small>
+                </div>
+
+                <div className="quick-footer">
+                  <span>Open Module</span>
+
+                  <ArrowRight size={18} />
+                </div>
+              </Link>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <motion.div
+        className="quick-bottom-banner"
+        initial={{ opacity: 0, y: 25 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 }}
+      >
+        <div className="quick-banner-left">
+          <BrainCircuit size={28} />
+
+          <div>
             <h3>
-
-              {item.title}
-
+              AI Coach Recommendation
             </h3>
 
             <p>
-
-              {item.subtitle}
-
+              Complete one Listening practice today
+              to increase your predicted IELTS
+              score.
             </p>
+          </div>
+        </div>
 
-            <span className="quick-badge">
+        <Link
+          to="/ai-center"
+          className="quick-banner-btn"
+        >
+          Open AI Coach
 
-              {item.badge}
-
-            </span>
-
-          </Link>
-
-        ))}
-
-      </div>
-
-    </section>
-
+          <ArrowRight size={18} />
+        </Link>
+      </motion.div>
+    </motion.section>
   );
-
-}
+} 
