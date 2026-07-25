@@ -154,18 +154,17 @@ color:white;
 color:#22d3ee;
 
 }
-
 .hero-left p{
 
-font-size:24px;
+    max-width:640px;
 
-line-height:1.7;
+    font-size:20px;
 
-color:#94a3b8;
+    line-height:1.9;
 
-max-width:760px;
+    color:#64748b;
 
-margin-bottom:42px;
+    margin:28px 0 42px;
 
 }
 .hero-buttons{

@@ -1,0 +1,41 @@
+.matching-renderer{
+    margin-top:40px;
+}
+
+.matching-layout{
+    display:grid;
+    grid-template-columns:1fr 2fr;
+    gap:30px;
+}
+
+.matching-options,
+.matching-questions{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    padding:25px;
+}
+
+.matching-option{
+    display:flex;
+    gap:12px;
+    margin-bottom:14px;
+}
+
+.matching-question{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.matching-item{
+    display:flex;
+    gap:10px;
+}
+
+.matching-question select{
+    width:100px;
+    padding:10px;
+    border-radius:8px;
+}

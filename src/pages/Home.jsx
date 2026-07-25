@@ -1,7 +1,7 @@
 import Hero from "../components/home/Hero";
 import Stats from "../components/home/Stats";
 import Features from "../components/home/Features";
-import WhyNextBand from "../components/home/WhyNextBand";
+import WhyKnarrow from "../components/home/WhyKnarrow";
 import DashboardPreview from "../components/home/DashboardPreview";
 import Testimonials from "../components/home/Testimonials";
 import PricingPreview from "../components/home/PricingPreview";
@@ -14,12 +14,11 @@ export default function Home() {
       <Hero />
       <Stats />
       <Features />
-      <WhyNextBand />
+      <WhyKnarrow />
       <DashboardPreview />
       <Testimonials />
       <PricingPreview />
       <CTA />
-      <Footer />
     </>
   );
 }

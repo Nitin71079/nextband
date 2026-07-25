@@ -2,62 +2,46 @@ import {
   createContext,
   useContext,
   useEffect,
-  useState
+  useState,
 } from "react";
 
-const ThemeContext =
-  createContext();
+const ThemeContext = createContext();
 
-export function ThemeProvider({
-  children
-}) {
-  const [darkMode,
-    setDarkMode] =
-    useState(false);
+export function ThemeProvider({ children }) {
+  const [darkMode, setDarkMode] = useState(false);
 
+  // Load saved theme
   useEffect(() => {
-    const saved =
-      localStorage.getItem(
-        "darkMode"
-      );
+    const saved = localStorage.getItem("darkMode");
 
-    if (saved) {
-      setDarkMode(
-        JSON.parse(saved)
-      );
+    if (saved !== null) {
+      setDarkMode(JSON.parse(saved));
     }
   }, []);
 
+  // Apply theme
   useEffect(() => {
     localStorage.setItem(
       "darkMode",
-      JSON.stringify(
-        darkMode
-      )
+      JSON.stringify(darkMode)
     );
 
-    document.body.style.background =
-      darkMode
-        ? "#0f172a"
-        : "#f8fafc";
-
-    document.body.style.color =
-      darkMode
-        ? "white"
-        : "#0f172a";
+    // Add theme attribute to <html>
+    document.documentElement.setAttribute(
+      "data-theme",
+      darkMode ? "dark" : "light"
+    );
   }, [darkMode]);
 
   function toggleTheme() {
-    setDarkMode(
-      !darkMode
-    );
+    setDarkMode((prev) => !prev);
   }
 
   return (
     <ThemeContext.Provider
       value={{
         darkMode,
-        toggleTheme
+        toggleTheme,
       }}
     >
       {children}
@@ -66,7 +50,5 @@ export function ThemeProvider({
 }
 
 export function useTheme() {
-  return useContext(
-    ThemeContext
-  );
+  return useContext(ThemeContext);
 }

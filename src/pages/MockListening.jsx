@@ -1,562 +1,716 @@
-import "../styles/exam/shared.css";
-
-import { useEffect, useState } from "react";
-
-import { useExam } from "../context/ExamContext";
-
-import { getIELTSListeningBand } from "../services/BandCalculator";
-
-import ReviewModal from "../components/ReviewModal";
-import QuestionNavigator from "../components/QuestionNavigator";
-import AudioPlayer from "../components/AudioPlayer";
+import { useEffect, useMemo, useState } from "react";
 
 import listeningTests from "../data/listening/tests";
+import "../styles/listening/listening.css";
+import ListeningHeader from "../components/listening/ListeningHeader";
+import ListeningTimer from "../components/listening/ListeningTimer";
+import AudioPlayer from "../components/listening/AudioPlayer";
+import SectionRenderer from "../components/listening/SectionRenderer";
+import QuestionPalette from "../components/listening/renderers/QuestionPalette";
+import ListeningReview from "../components/listening/ListeningReview";
+import ResultsPanel from "../components/listening/ResultsPanel";
 
+import useQuestionNavigation from "../hooks/useQuestionNavigation";
+import useScrollSpy from "../hooks/useScrollSpy";
+import useAutosave from "../hooks/useAutosave";
+import useRestoreListening from "../hooks/useRestoreListening";
+
+import "../styles/listening/listening.css";
 export default function MockListening({
 
-  mode = "practice",
+    testId = 0,
 
-  onComplete,
-
-  testId,
+    mode = "practice",
 
 }) {
 
-  const { setListeningBand } = useExam();
+    // -----------------------------
+    // Load Test
+    // -----------------------------
 
-  const [test, setTest] = useState(
-    listeningTests[testId ?? 0]
-  );
+    const test = listeningTests[testId];
 
-  const [answers, setAnswers] =
-    useState({});
+    if (!test) {
 
-  const [submitted, setSubmitted] =
-    useState(false);
+        return <h2>Listening Test Not Found</h2>;
 
-  const [showReview, setShowReview] =
-    useState(false);
+    }
 
-  const [currentSection, setCurrentSection] =
-    useState(0);
+    // -----------------------------
+    // Restore Progress
+    // -----------------------------
 
-  const [timeLeft, setTimeLeft] =
-    useState(
-      (test.duration || 30) * 60
+    const savedProgress = useRestoreListening(
+
+        test.id
+
     );
 
-  useEffect(() => {
+    // -----------------------------
+    // States
+    // -----------------------------
 
-    const timer = setInterval(() => {
+    const [answers, setAnswers] = useState(
 
-      setTimeLeft((prev) => {
+        savedProgress?.answers || {}
 
-        if (prev <= 1) {
+    );
 
-          clearInterval(timer);
+    const [currentSection, setCurrentSection] = useState(
 
-          setShowReview(true);
+        savedProgress?.currentSection || 0
 
-          return 0;
+    );
+
+    const [flagged, setFlagged] = useState(
+
+        savedProgress?.flagged || []
+
+    );
+
+    const [submitted, setSubmitted] = useState(false);
+
+    const [showReview, setShowReview] = useState(false);
+
+    const [timeLeft, setTimeLeft] = useState(
+
+        savedProgress?.timeLeft ||
+
+        test.duration * 60
+
+    );
+
+    // -----------------------------
+    // Navigation Hook
+    // -----------------------------
+
+    const {
+
+        currentQuestion,
+
+        goToQuestion,
+
+        setCurrentQuestion,
+
+    } = useQuestionNavigation();
+
+    useEffect(() => {
+
+        if (savedProgress?.currentQuestion) {
+
+            setCurrentQuestion(
+
+                savedProgress.currentQuestion
+
+            );
 
         }
 
-        return prev - 1;
+    }, []);
 
-      });
+    useScrollSpy(
 
-    }, 1000);
+        setCurrentQuestion
 
-    return () => clearInterval(timer);
+    );
 
-  }, []);
+    // -----------------------------
+    // Autosave
+    // -----------------------------
 
-  useEffect(() => {
+    useAutosave({
 
-    if (timeLeft === 300) {
+        testId: test.id,
 
-      alert(
-        "Only 5 minutes remaining."
-      );
+        answers,
 
+        currentSection,
+
+        currentQuestion,
+
+        timeLeft,
+
+    });
+
+    // -----------------------------
+    // Current Section
+    // -----------------------------
+
+    const currentSectionData =
+
+        test.sections[currentSection];
+
+    // -----------------------------
+    // Count Questions
+    // -----------------------------
+
+    const totalQuestions = useMemo(() => {
+  let total = 0;
+
+  test.sections.forEach((section) => {
+    // Section 1
+    if (section.form) {
+      total += section.form.length;
     }
 
-  }, [timeLeft]);
+    // Sections 2–4
+    section.groups?.forEach((group) => {
+      switch (group.type) {
+        case "mcq":
+        case "matching":
+        case "map":
+          total += group.questions.length;
+          break;
 
-  useEffect(() => {
+        case "notes":
+          total += group.notes.filter(
+            (item) => item.type === "blank"
+          ).length;
+          break;
 
-    if (!submitted) return;
+        case "table":
+          total += group.rows.length;
+          break;
 
-    const score =
-      calculateScore();
+        case "flowchart":
+          total += group.steps.filter(
+            (step) => step.type === "blank"
+          ).length;
+          break;
 
-    const band =
-      getIELTSListeningBand(score);
-
-    setListeningBand(band);
-
-    if (onComplete) {
-
-      onComplete(band);
-
-    }
-
-  }, [submitted]);
-
-  function updateAnswer(
-    questionId,
-    value
-  ) {
-
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }));
-
-  }
-
-  function calculateScore() {
-
-    let score = 0;
-
-    test.sections.forEach(
-      (section) => {
-
-        section.questions.forEach(
-          (question) => {
-
-            const userAnswer =
-              String(
-                answers[question.id] || ""
-              )
-                .trim()
-                .toLowerCase();
-
-            const correctAnswer =
-              String(question.answer)
-                .trim()
-                .toLowerCase();
-
-            if (
-              userAnswer === correctAnswer
-            ) {
-
-              score++;
-
-            }
-
-          }
-        );
-
+        default:
+          break;
       }
-    );
+    });
+  });
 
-    return score;
+  return total;
+}, [test]);
 
-  }
+    // -----------------------------
+    // Progress
+    // -----------------------------
 
-  const totalQuestions =
-    test.sections.reduce(
+    const answeredQuestions =
 
-      (total, section) =>
+        Object.keys(answers).length;
 
-        total +
-        section.questions.length,
+    const minutes =
 
-      0
+        Math.floor(timeLeft / 60);
 
-    );
+    const seconds =
 
-  const answeredQuestions =
-    Object.keys(answers).length;
+        String(timeLeft % 60)
 
-  const minutes =
-    Math.floor(timeLeft / 60);
+            .padStart(2, "0");
 
-  const seconds =
-    timeLeft % 60;
+    // -----------------------------
+    // Timer
+    // -----------------------------
 
-  if (!test || !test.sections) {
+    useEffect(() => {
 
-    return (
+        if (submitted) return;
 
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+        const timer = setInterval(() => {
 
-        <h2>
-          Loading Listening Test...
-        </h2>
+            setTimeLeft(prev => {
 
-      </div>
+                if (prev <= 1) {
 
-    );
+                    clearInterval(timer);
 
-  }
+                    setShowReview(true);
 
-  if (submitted) {
+                    return 0;
 
-    const score =
-      calculateScore();
+                }
 
-    const band =
-      getIELTSListeningBand(score);
+                return prev - 1;
 
-    const result = {
+            });
 
-      testId: test.id,
+        }, 1000);
 
-      testTitle: test.title,
+        return () => clearInterval(timer);
 
-      score,
+    }, [submitted]);
+        // -----------------------------
+    // Update Answer
+    // -----------------------------
 
-      band,
+    const updateAnswer = (questionId, value) => {
 
-      completedAt:
-        new Date().toISOString(),
+        setAnswers(prev => ({
+
+            ...prev,
+
+            [questionId]: value,
+
+        }));
 
     };
 
-    const previous =
-      JSON.parse(
-        localStorage.getItem(
-          "listeningResults"
-        ) || "[]"
-      );
+    // -----------------------------
+    // Flag / Unflag Question
+    // -----------------------------
 
-    localStorage.setItem(
+    const toggleFlag = (questionId) => {
 
-      "listeningResults",
+        setFlagged(prev =>
 
-      JSON.stringify([
-        ...previous,
-        result,
-      ])
+            prev.includes(questionId)
 
-    );
-        return (
-      <>
-        {showReview && (
-          <ReviewModal
-            totalQuestions={totalQuestions}
-            answers={answers}
-            onClose={() =>
-              setShowReview(false)
-            }
-            onSubmit={() => {
-              setShowReview(false);
-              setSubmitted(true);
-            }}
-          />
-        )}
+                ? prev.filter(id => id !== questionId)
 
-        <div
-          style={{
-            padding: "40px",
-            maxWidth: "900px",
-            margin: "0 auto",
-          }}
-        >
-          <h1>IELTS Listening Results</h1>
+                : [...prev, questionId]
 
-          <div
-            style={{
-              background: "#fff",
-              padding: "25px",
-              borderRadius: "16px",
-              marginTop: "20px",
-            }}
-          >
-            <h2>
-              Test: {test.title}
-            </h2>
+        );
 
-            <h2>
-              Score: {score}/
-              {totalQuestions}
-            </h2>
+    };
 
-            <h2>
-              Estimated Band: {band}
-            </h2>
+    // -----------------------------
+    // Calculate Raw Score
+    // -----------------------------
 
-            <h3>
-              Answered:{" "}
-              {answeredQuestions}/
-              {totalQuestions}
-            </h3>
-          </div>
+    const calculateScore = () => {
 
-          <button
-            className="primary-btn"
-            style={{
-              marginTop: "20px",
-            }}
-            onClick={() => {
-              setAnswers({});
-              setSubmitted(false);
-              setShowReview(false);
-              setCurrentSection(0);
-              setTimeLeft(
-                (test.duration || 30) *
-                  60
-              );
+        let score = 0;
 
-              if (
-                mode === "practice"
-              ) {
-                setTest(
-                  listeningTests[
-                    testId ?? 0
-                  ]
-                );
-              }
-            }}
-          >
-            Restart Test
-          </button>
-        </div>
-      </>
-    );
-  }
+        test.sections.forEach(section => {
 
-  return (
-    <>
-      {showReview && (
-        <ReviewModal
-          totalQuestions={
-            totalQuestions
-          }
-          answers={answers}
-          onClose={() =>
-            setShowReview(false)
-          }
-          onSubmit={() => {
-            setShowReview(false);
-            setSubmitted(true);
-          }}
-        />
-      )}
+            // -------- Section 1 --------
 
-      <div
-        style={{
-          minHeight: "100vh",
-          padding: "30px",
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent:
-              "space-between",
-            marginBottom: "20px",
-          }}
-        >
-          <div>
-            <h1>
-              IELTS Listening Test
-            </h1>
+            if (section.form) {
 
-            <p>{test.title}</p>
-          </div>
+                section.form.forEach(item => {
 
-          <h2>
-            {minutes}:
-            {String(seconds).padStart(
-              2,
-              "0"
-            )}
-          </h2>
-        </div>
+                    const user =
 
-        {mode ===
-          "practice" && (
-          <select
-            value={test.id}
-            onChange={(e) => {
-              const selected =
-                listeningTests.find(
-                  (t) =>
-                    t.id ===
-                    Number(
-                      e.target.value
-                    )
-                );
+                        String(
 
-              setTest(selected);
+                            answers[item.id] || ""
 
-              setAnswers({});
-
-              setSubmitted(false);
-
-              setShowReview(false);
-
-              setCurrentSection(0);
-
-              setTimeLeft(
-                (selected.duration ||
-                  30) * 60
-              );
-            }}
-            style={{
-              padding: "10px",
-              marginBottom:
-                "20px",
-            }}
-          >
-            {listeningTests.map(
-              (t) => (
-                <option
-                  key={t.id}
-                  value={t.id}
-                >
-                  {t.title}
-                </option>
-              )
-            )}
-          </select>
-        )}
-
-        <QuestionNavigator
-          totalQuestions={
-            totalQuestions
-          }
-          answers={answers}
-        />
-
-        <AudioPlayer
-          audioUrl={
-            test.sections[
-              currentSection
-            ].audio
-          }
-        />
-
-        {(() => {
-          const section =
-            test.sections[
-              currentSection
-            ];
-
-          return (
-            <div
-              style={{
-                background:
-                  "#fff",
-                padding: "20px",
-                borderRadius:
-                  "16px",
-                marginTop: "20px",
-                marginBottom:
-                  "20px",
-              }}
-            >
-              <h2>
-                {section.title}
-              </h2>
-                            {section.questions.map(
-                (question) => (
-                  <div
-                    key={question.id}
-                    style={{
-                      marginBottom:
-                        "20px",
-                    }}
-                  >
-                    <p>
-                      <strong>
-                        {question.id}.
-                      </strong>{" "}
-                      {
-                        question.question
-                      }
-                    </p>
-
-                    <input
-                      type="text"
-                      value={
-                        answers[
-                          question.id
-                        ] || ""
-                      }
-                      onChange={(e) =>
-                        updateAnswer(
-                          question.id,
-                          e.target.value
                         )
-                      }
-                      style={{
-                        width: "100%",
-                        padding:
-                          "10px",
-                        border:
-                          "1px solid #d1d5db",
-                        borderRadius:
-                          "8px",
-                      }}
+
+                        .trim()
+
+                        .toLowerCase();
+
+                    const correct =
+
+                        String(item.answer)
+
+                        .trim()
+
+                        .toLowerCase();
+
+                    if (user === correct) {
+
+                        score++;
+
+                    }
+
+                });
+
+            }
+
+            // -------- Sections 2–4 --------
+
+            if (section.groups) {
+
+                section.groups.forEach(group => {
+
+                    // MCQ / Matching / Map
+
+                    if (group.questions) {
+
+                        group.questions.forEach(question => {
+
+                            const user =
+
+                                String(
+
+                                    answers[question.id] || ""
+
+                                )
+
+                                .trim()
+
+                                .toLowerCase();
+
+                            const correct =
+
+                                String(question.answer)
+
+                                .trim()
+
+                                .toLowerCase();
+
+                            if (user === correct) {
+
+                                score++;
+
+                            }
+
+                        });
+
+                    }
+
+                    // Notes Completion
+
+                    if (group.notes) {
+
+                        group.notes.forEach(item => {
+
+                            if (item.type !== "blank") return;
+
+                            const user =
+
+                                String(
+
+                                    answers[item.id] || ""
+
+                                )
+
+                                .trim()
+
+                                .toLowerCase();
+
+                            const correct =
+
+                                String(item.answer)
+
+                                .trim()
+
+                                .toLowerCase();
+
+                            if (user === correct) {
+
+                                score++;
+
+                            }
+
+                        });
+
+                    }
+
+                });
+
+            }
+
+        });
+
+        return score;
+
+    };
+
+    // -----------------------------
+    // Previous Section
+    // -----------------------------
+
+    const previousSection = () => {
+
+        if (currentSection > 0) {
+
+            setCurrentSection(prev => prev - 1);
+
+        }
+
+    };
+
+    // -----------------------------
+    // Next Section
+    // -----------------------------
+
+    const nextSection = () => {
+
+        if (
+
+            currentSection <
+
+            test.sections.length - 1
+
+        ) {
+
+            setCurrentSection(prev => prev + 1);
+
+        }
+
+    };
+
+    // -----------------------------
+    // Submit Test
+    // -----------------------------
+
+    const submitTest = () => {
+
+        localStorage.removeItem(
+
+            `listening-${test.id}`
+
+        );
+
+        setSubmitted(true);
+
+    };
+
+    // -----------------------------
+    // Review Screen
+    // -----------------------------
+
+    if (showReview) {
+
+        return (
+
+            <ListeningReview
+
+                sections={test.sections}
+
+                answers={answers}
+
+                flagged={flagged}
+
+                goToQuestion={goToQuestion}
+
+                onReturn={() =>
+
+                    setShowReview(false)
+
+                }
+
+                onSubmit={submitTest}
+
+            />
+
+        );
+
+    }
+
+    // -----------------------------
+    // Results Screen
+    // -----------------------------
+
+    if (submitted) {
+
+        return (
+
+            <ResultsPanel
+
+                test={test}
+
+                answers={answers}
+
+                score={calculateScore()}
+
+            />
+
+        );
+
+    }
+        return (
+
+        <div className="listening-page">
+
+            <ListeningHeader
+
+                title={test.title}
+
+                section={currentSection + 1}
+
+                totalSections={test.sections.length}
+
+            />
+
+            <ListeningTimer
+
+                minutes={minutes}
+
+                seconds={seconds}
+
+            />
+
+           <AudioPlayer
+    audioUrl={test.audio}
+    startTime={currentSectionData.audioStart}
+    endTime={currentSectionData.audioEnd}
+/>
+
+            <div className="listening-layout">
+
+                {/* ---------------- LEFT PANEL ---------------- */}
+
+                <div className="left-panel">
+
+                    <SectionRenderer
+
+                        section={currentSectionData}
+
+                        answers={answers}
+
+                        updateAnswer={updateAnswer}
+
+                        toggleFlag={toggleFlag}
+
+                        flagged={flagged}
+
                     />
-                  </div>
-                )
-              )}
+
+                </div>
+
+                {/* ---------------- RIGHT PANEL ---------------- */}
+
+                <div className="right-panel">
+
+                    <QuestionPalette
+
+                        sections={test.sections}
+
+                        answers={answers}
+
+                        flagged={flagged}
+
+                        currentQuestion={currentQuestion}
+
+                        onSelectQuestion={goToQuestion}
+
+                    />
+
+                    <div className="progress-card">
+
+                        <h3>
+
+                            Progress
+
+                        </h3>
+
+                        <h1>
+
+                            {answeredQuestions} / {totalQuestions}
+
+                        </h1>
+
+                        <progress
+
+                            value={answeredQuestions}
+
+                            max={totalQuestions}
+
+                            style={{
+
+                                width: "100%",
+
+                                height: "12px",
+
+                                marginTop: "15px",
+
+                            }}
+
+                        />
+
+                        <p
+
+                            style={{
+
+                                marginTop: "10px",
+
+                                color: "#666",
+
+                            }}
+
+                        >
+
+                            {
+
+                                totalQuestions
+
+                                    ? Math.round(
+
+                                          answeredQuestions /
+
+                                              totalQuestions *
+
+                                              100
+
+                                      )
+
+                                    : 0
+
+                            }
+
+                            % Complete
+
+                        </p>
+
+                    </div>
+
+                </div>
+
             </div>
-          );
-        })()}
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent:
-              "space-between",
-            marginTop: "20px",
-          }}
-        >
-          <button
-            disabled={
-              currentSection === 0
-            }
-            onClick={() =>
-              setCurrentSection(
-                (prev) =>
-                  prev - 1
-              )
-            }
-          >
-            Previous
-          </button>
+            {/* ---------------- NAVIGATION ---------------- */}
 
-          {currentSection <
-          test.sections.length -
-            1 ? (
-            <button
-              className="primary-btn"
-              onClick={() =>
-                setCurrentSection(
-                  (prev) =>
-                    prev + 1
-                )
-              }
-            >
-              Next Section →
-            </button>
-          ) : (
-            <button
-              className="primary-btn"
-              onClick={() =>
-                setShowReview(true)
-              }
-            >
-              Review & Submit →
-            </button>
-          )}
+            <div className="navigation-bar">
+
+                <button
+
+                    onClick={previousSection}
+
+                    disabled={currentSection === 0}
+
+                >
+
+                    ← Previous Section
+
+                </button>
+
+                {
+
+                    currentSection <
+
+                    test.sections.length - 1
+
+                    ? (
+
+                        <button
+
+                            className="primary-btn"
+
+                            onClick={nextSection}
+
+                        >
+
+                            Next Section →
+
+                        </button>
+
+                    ) : (
+
+                        <button
+
+                            className="primary-btn"
+
+                            onClick={() =>
+
+                                setShowReview(true)
+
+                            }
+
+                        >
+
+                            Review Answers
+
+                        </button>
+
+                    )
+
+                }
+
+            </div>
+
         </div>
-      </div>
-    </>
-  );
+
+    );
+
 }

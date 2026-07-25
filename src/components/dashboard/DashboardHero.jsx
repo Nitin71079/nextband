@@ -13,8 +13,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import "../../styles/dashboard.css";
-
 export default function DashboardHero({
   firstName,
   analytics = {},
@@ -127,12 +125,12 @@ export default function DashboardHero({
 
       <div className="hero-glow" />
 
-      <div className="hero-grid">
+      <div className="dashboard-hero-content">
 
         {/* ================= LEFT ================= */}
 
         <motion.div
-          className="hero-left"
+className="dashboard-hero-left"
           initial={{
             opacity: 0,
             x: -30,
@@ -196,11 +194,11 @@ export default function DashboardHero({
 
           </p>
 
-          <div className="hero-actions">
+          <div className="hero-buttons">
 
             <Link
               to={continuePath}
-              className="hero-btn-primary"
+className="hero-primary"
             >
 
               Continue Learning
@@ -211,7 +209,7 @@ export default function DashboardHero({
 
             <Link
               to="/planner"
-              className="hero-btn-secondary"
+className="hero-secondary"
             >
 
               Study Planner
@@ -289,7 +287,7 @@ export default function DashboardHero({
                 {/* ================= RIGHT SIDE ================= */}
 
         <motion.div
-          className="hero-right"
+className="dashboard-hero-right"
           initial={{
             opacity: 0,
             x: 30,

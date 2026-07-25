@@ -1,0 +1,22 @@
+.table-renderer{
+    margin-top:40px;
+}
+
+.table-renderer table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+}
+
+.table-renderer td,
+.table-renderer th{
+    border:1px solid #e5e7eb;
+    padding:14px;
+}
+
+.table-renderer input{
+    width:100%;
+    border:none;
+    border-bottom:2px solid #cbd5e1;
+    padding:8px;
+}

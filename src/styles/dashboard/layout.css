@@ -1,0 +1,595 @@
+/*==============================================================
+  KNARROW
+  PART 2 — DASHBOARD LAYOUT
+==============================================================*/
+
+/*==============================================================
+PAGE
+==============================================================*/
+
+.dashboard-page{
+
+    width:min(100%,var(--dashboard-width));
+
+    margin-inline:auto;
+
+    padding:
+
+        var(--space-9)
+
+        var(--space-7)
+
+        var(--space-11);
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:var(--section-gap);
+
+    position:relative;
+
+}
+
+
+
+/*==============================================================
+BACKGROUND
+==============================================================*/
+
+.dashboard-page::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:-2;
+
+    background:
+
+        radial-gradient(
+            circle at 0% 0%,
+            rgba(37,99,235,.05),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(139,92,246,.05),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 100% 100%,
+            rgba(6,182,212,.04),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            180deg,
+            #fbfcff,
+            #f6f8fc
+        );
+
+}
+
+
+
+/*==============================================================
+GRID
+==============================================================*/
+
+.dashboard-grid{
+
+    display:grid;
+
+    grid-template-columns:
+
+        minmax(0,1fr)
+
+        minmax(360px,430px);
+
+    gap:32px;
+
+}
+
+
+
+/*==============================================================
+SECTIONS
+==============================================================*/
+
+.dashboard-section{
+
+    width:100%;
+
+    animation:dashboardFade .55s ease;
+
+}
+
+
+
+.dashboard-section>*{
+
+    width:100%;
+
+}
+
+
+
+/*==============================================================
+HEADERS
+==============================================================*/
+
+.section-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-end;
+
+    gap:24px;
+
+    margin-bottom:28px;
+
+}
+
+
+
+.section-header h2{
+
+    font-size:clamp(2rem,3vw,2.6rem);
+
+    font-weight:900;
+
+    letter-spacing:-1px;
+
+    color:var(--text);
+
+}
+
+
+
+.section-header p{
+
+    margin-top:8px;
+
+    color:var(--text-muted);
+
+    line-height:1.7;
+
+    max-width:620px;
+
+}
+
+
+
+/*==============================================================
+CARD SYSTEM
+==============================================================*/
+
+.dashboard-card,
+
+.hero-progress-card,
+
+.hero-ai-card,
+
+.prediction-card,
+
+.continue-card,
+
+.quick-card,
+
+.goal-card,
+
+.skills-card,
+
+.ai-card,
+
+.stat-card,
+
+.activity-card,
+
+.ai-status-card,
+
+.premium-banner{
+
+    width:100%;
+
+    border-radius:32px;
+
+    overflow:hidden;
+
+}
+
+
+
+/*==============================================================
+GLOBAL CARD STYLE
+==============================================================*/
+
+.hero-progress-card,
+
+.hero-ai-card,
+
+.continue-card,
+
+.quick-card,
+
+.goal-card,
+
+.skills-card,
+
+.ai-card,
+
+.stat-card,
+
+.activity-card,
+
+.ai-status-card,
+
+.premium-banner{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow-sm);
+
+}
+
+
+
+/*==============================================================
+HOVER
+==============================================================*/
+
+.hero-progress-card:hover,
+
+.hero-ai-card:hover,
+
+.continue-card:hover,
+
+.quick-card:hover,
+
+.goal-card:hover,
+
+.skills-card:hover,
+
+.ai-card:hover,
+
+.stat-card:hover,
+
+.activity-card:hover,
+
+.ai-status-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:var(--shadow-lg);
+
+    transition:var(--transition);
+
+}
+
+
+
+/*==============================================================
+ROW LAYOUTS
+==============================================================*/
+
+.two-column{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:28px;
+
+}
+
+
+
+.three-column{
+
+    display:grid;
+
+    grid-template-columns:
+
+        repeat(3,1fr);
+
+    gap:28px;
+
+}
+
+
+
+.four-column{
+
+    display:grid;
+
+    grid-template-columns:
+
+        repeat(4,1fr);
+
+    gap:28px;
+
+}
+
+
+
+/*==============================================================
+SECTION PAIRS
+
+Performance + Skills
+
+Goal + AI
+
+Recent + Premium
+
+==============================================================*/
+
+.dashboard-pair{
+
+    display:grid;
+
+    grid-template-columns:
+
+        1fr 1fr;
+
+    gap:30px;
+
+}
+
+
+
+/*==============================================================
+FULL WIDTH
+==============================================================*/
+
+.dashboard-full{
+
+    grid-column:1/-1;
+
+}
+
+
+
+/*==============================================================
+CONTENT LIMIT
+==============================================================*/
+
+.dashboard-limit{
+
+    max-width:var(--content-width);
+
+}
+
+
+
+/*==============================================================
+DIVIDERS
+==============================================================*/
+
+.dashboard-divider{
+
+    width:100%;
+
+    height:1px;
+
+    background:var(--divider);
+
+}
+
+
+
+/*==============================================================
+ANIMATION
+==============================================================*/
+
+@keyframes dashboardFade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+}
+
+
+
+/*==============================================================
+DESKTOP
+==============================================================*/
+
+@media (max-width:1400px){
+
+.dashboard-page{
+
+    padding:40px;
+
+}
+
+}
+
+
+
+/*==============================================================
+LAPTOP
+==============================================================*/
+
+@media (max-width:1200px){
+
+.dashboard-page{
+
+    padding:36px;
+
+}
+
+.dashboard-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+.dashboard-pair{
+
+    grid-template-columns:1fr;
+
+}
+
+.four-column{
+
+    grid-template-columns:
+
+        repeat(2,1fr);
+
+}
+
+.three-column{
+
+    grid-template-columns:
+
+        repeat(2,1fr);
+
+}
+
+}
+
+
+
+/*==============================================================
+TABLET
+==============================================================*/
+
+@media (max-width:992px){
+
+.dashboard-page{
+
+    padding:28px;
+
+}
+
+.two-column,
+
+.three-column,
+
+.four-column{
+
+    grid-template-columns:1fr;
+
+}
+
+.section-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+}
+
+.section-header h2{
+
+    font-size:2rem;
+
+}
+
+}
+
+
+
+/*==============================================================
+MOBILE
+==============================================================*/
+
+@media (max-width:768px){
+
+.dashboard-page{
+
+    padding:20px;
+
+    gap:36px;
+
+}
+
+.dashboard-section{
+
+    margin:0;
+
+}
+
+.section-header{
+
+    margin-bottom:20px;
+
+}
+
+.section-header h2{
+
+    font-size:1.75rem;
+
+}
+
+.section-header p{
+
+    font-size:.95rem;
+
+}
+
+}
+
+
+
+/*==============================================================
+SMALL PHONE
+==============================================================*/
+
+@media (max-width:480px){
+
+.dashboard-page{
+
+    padding:16px;
+
+}
+
+.section-header h2{
+
+    font-size:1.5rem;
+
+}
+
+}
+.dashboard-page{
+
+    max-width:1600px;
+
+    margin:0 auto;
+
+    padding:40px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:32px;
+
+    background:#f8fafc;
+
+    min-height:100vh;
+}

@@ -22,7 +22,7 @@ import PerformanceDashboard from "./pages/PerformanceDashboard";
 import {lazy, Suspense} from "react";
 import MockReading from "./pages/MockReading";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Footer from "./components/home/Footer";
 import MobileNav from "./components/MobileNav";
 import Loader from "./components/Loader";
 import PremiumGate from "./components/PremiumGate";

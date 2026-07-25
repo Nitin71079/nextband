@@ -1,0 +1,26 @@
+.diagram-renderer{
+    margin-top:40px;
+}
+
+.diagram-image{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    overflow:hidden;
+    margin-bottom:25px;
+}
+
+.diagram-image img{
+    width:100%;
+}
+
+.diagram-answer{
+    margin-bottom:18px;
+}
+
+.diagram-answer input{
+    width:220px;
+    border:none;
+    border-bottom:2px solid #cbd5e1;
+    padding:8px;
+}

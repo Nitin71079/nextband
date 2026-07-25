@@ -1,0 +1,15 @@
+.timer-card{
+    position:fixed;
+    top:25px;
+    right:30px;
+    background:#2563eb;
+    color:#fff;
+    padding:15px 28px;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(37,99,235,.25);
+    z-index:999;
+}
+
+.timer-card h2{
+    margin:0;
+}

@@ -1,5 +1,12 @@
 import "./PricingPreview.css";
-import { Check, Crown } from "lucide-react";
+import { motion } from "framer-motion";
+
+import {
+  Check,
+  Crown,
+  Sparkles,
+} from "lucide-react";
+
 import { Link } from "react-router-dom";
 
 export default function PricingPreview() {
@@ -7,63 +14,99 @@ export default function PricingPreview() {
   const plans = [
 
     {
-      title: "Free",
-      price: "₹0",
-      popular: false,
-      features: [
-        "Reading Test",
-        "Listening Test",
+      title:"Free",
+
+      price:"₹0",
+
+      subtitle:"Perfect for getting started",
+
+      popular:false,
+
+      features:[
+        "Reading Practice",
+        "Listening Practice",
         "Basic Dashboard",
-        "Limited AI"
-      ]
+        "Limited AI Evaluation",
+      ],
     },
 
     {
-      title: "Premium Monthly",
-      price: "₹299",
-      popular: false,
-      features: [
+      title:"Premium Monthly",
+
+      price:"₹299",
+
+      subtitle:"For serious IELTS preparation",
+
+      popular:false,
+
+      features:[
         "Unlimited Mock Tests",
-        "AI Writing",
-        "AI Speaking",
+        "AI Writing Evaluation",
+        "AI Speaking Evaluation",
         "AI Coach",
-        "Analytics"
-      ]
+        "Advanced Analytics",
+      ],
     },
 
     {
-      title: "Premium 3 Months",
-      price: "₹799",
-      popular: true,
-      features: [
-        "Everything Included",
-        "Best Value",
-        "Priority Updates",
+      title:"Premium 3 Months",
+
+      price:"₹799",
+
+      subtitle:"Best value for most students",
+
+      popular:true,
+
+      features:[
+        "Everything in Premium",
         "Unlimited AI",
-        "Premium Support"
-      ]
-    }
+        "Priority Features",
+        "Premium Support",
+        "Best Savings",
+      ],
+    },
 
   ];
 
   return (
-
-    <section className="pricing-preview">
+        <motion.section
+      className="pricing-preview"
+      initial={{
+        opacity: 0,
+      }}
+      whileInView={{
+        opacity: 1,
+      }}
+      viewport={{
+        once: true,
+      }}
+      transition={{
+        duration: 0.6,
+      }}
+    >
 
       <div className="pricing-header">
 
-        <span>PREMIUM</span>
+        <span>
+
+          <Sparkles size={15} />
+
+          PREMIUM PLANS
+
+        </span>
 
         <h2>
 
-          Choose Your Plan
+          Choose The Perfect
+          Plan For Your IELTS Journey
 
         </h2>
 
         <p>
 
-          Unlock AI-powered IELTS preparation and
-          maximize your band score.
+          Start for free and upgrade whenever you're
+          ready to unlock AI-powered learning,
+          unlimited practice, and advanced analytics.
 
         </p>
 
@@ -71,22 +114,40 @@ export default function PricingPreview() {
 
       <div className="pricing-grid">
 
-        {plans.map(plan=>(
+        {plans.map((plan, index) => (
 
-          <div
+          <motion.div
             key={plan.title}
             className={
               plan.popular
                 ? "pricing-card popular"
                 : "pricing-card"
             }
+            initial={{
+              opacity: 0,
+              y: 30,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+            }}
+            viewport={{
+              once: true,
+            }}
+            transition={{
+              delay: index * 0.12,
+            }}
+            whileHover={{
+              y: -10,
+              scale: 1.02,
+            }}
           >
 
             {plan.popular && (
 
               <div className="popular-badge">
 
-                <Crown size={18}/>
+                <Crown size={18} />
 
                 Most Popular
 
@@ -94,22 +155,48 @@ export default function PricingPreview() {
 
             )}
 
-            <h3>{plan.title}</h3>
+            <h3>
 
-            <h1>{plan.price}</h1>
+              {plan.title}
+
+            </h3>
+
+            <p className="plan-subtitle">
+
+              {plan.subtitle}
+
+            </p>
+
+            <h1>
+
+              {plan.price}
+
+            </h1>
+
+            <small>
+
+              / plan
+
+            </small>
 
             <div className="pricing-features">
-
-              {plan.features.map(feature=>(
+                            {plan.features.map((feature) => (
 
                 <div
                   className="pricing-item"
                   key={feature}
                 >
 
-                  <Check size={18}/>
+                  <Check
+                    size={18}
+                    className="pricing-check"
+                  />
 
-                  {feature}
+                  <span>
+
+                    {feature}
+
+                  </span>
 
                 </div>
 
@@ -117,23 +204,33 @@ export default function PricingPreview() {
 
             </div>
 
-            <Link to="/pricing">
+            <Link
+              to="/pricing"
+            >
 
-              <button className="pricing-btn">
+              <button
+                className={
+                  plan.popular
+                    ? "pricing-btn premium-btn"
+                    : "pricing-btn"
+                }
+              >
 
-                View Plan
+                {plan.popular
+                  ? "Get Premium"
+                  : "View Plan"}
 
               </button>
 
             </Link>
 
-          </div>
+          </motion.div>
 
         ))}
 
       </div>
 
-    </section>
+    </motion.section>
 
   );
 

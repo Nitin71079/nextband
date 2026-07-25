@@ -1,0 +1,201 @@
+.mcq-renderer{
+
+    max-width:900px;
+
+    margin:auto;
+
+}
+
+.mcq-header{
+
+    margin-bottom:35px;
+
+}
+
+.mcq-header h2{
+
+    font-size:28px;
+
+    margin-bottom:10px;
+
+}
+
+.mcq-header p{
+
+    color:#64748b;
+
+    line-height:1.6;
+
+}
+
+.mcq-card{
+
+    background:white;
+
+    border:1px solid #e2e8f0;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    margin-bottom:24px;
+
+    transition:.25s;
+
+}
+
+.mcq-card:hover{
+
+    box-shadow:
+
+        0 12px 30px rgba(0,0,0,.06);
+
+}
+
+.mcq-card-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    align-items:flex-start;
+
+    margin-bottom:22px;
+
+}
+
+.mcq-card-header h3{
+
+    font-size:20px;
+
+    font-weight:600;
+
+    line-height:1.6;
+
+    margin:0;
+
+}
+
+.question-id{
+
+    color:#2563eb;
+
+    margin-right:8px;
+
+}
+
+.mcq-options{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+.mcq-option{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:18px;
+
+    border:2px solid #e5e7eb;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.mcq-option:hover{
+
+    border-color:#2563eb;
+
+    background:#eff6ff;
+
+}
+
+.mcq-option.selected{
+
+    background:#dbeafe;
+
+    border-color:#2563eb;
+
+}
+
+.mcq-option input{
+
+    transform:scale(1.25);
+
+}
+
+.letter{
+
+    width:34px;
+
+    height:34px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:700;
+
+}
+
+.text{
+
+    flex:1;
+
+    font-size:17px;
+
+}
+
+.flag-btn{
+
+    border:none;
+
+    background:#f8fafc;
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.flag-btn:hover{
+
+    background:#fde68a;
+
+}
+
+.flag-btn.flagged{
+
+    background:#f59e0b;
+
+    color:white;
+
+}

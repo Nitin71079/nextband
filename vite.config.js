@@ -1,42 +1,38 @@
-import {
-  defineConfig
-} from "vite";
-
-import react
-from "@vitejs/plugin-react";
-
-import {
-  VitePWA
-} from "vite-plugin-pwa";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   plugins: [
     react(),
 
     VitePWA({
-      registerType:
-        "autoUpdate",
+      registerType: "autoUpdate",
 
       manifest: {
-name: "Knarrow",
+        name: "Knarrow",
         short_name: "Knarrow",
 
         description:
-"AI-powered IELTS Preparation Platform with Writing, Speaking, Reading and Listening.",
+          "AI-powered IELTS Preparation Platform with Writing, Speaking, Reading and Listening.",
 
-       theme_color:"#2563eb",
-
-        background_color:
-          "#ffffff",
-
-        display:
-          "standalone"
-      }
-    })
+        theme_color: "#2563eb",
+        background_color: "#ffffff",
+        display: "standalone",
+      },
+    }),
   ],
 
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+      },
+    },
+  },
+
   build: {
-    chunkSizeWarningLimit:
-      1000
-  }
+    chunkSizeWarningLimit: 1000,
+  },
 });

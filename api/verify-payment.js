@@ -1,91 +1,40 @@
-import crypto from "crypto";
-import admin from "firebase-admin";
+console.log("===== VERIFY PAYMENT =====");
+console.log("UID:", uid);
+console.log("Plan:", plan);
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    }),
+const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+const expectedSignature = crypto
+  .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+  .update(body)
+  .digest("hex");
+
+console.log("Expected:", expectedSignature);
+console.log("Received:", razorpay_signature);
+
+if (expectedSignature !== razorpay_signature) {
+  console.log("❌ Signature mismatch");
+  return res.status(400).json({
+    success: false,
+    error: "Invalid signature",
   });
 }
 
-const db = admin.firestore();
-
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Method not allowed",
-    });
-  }
-
-  try {
-    const {
-      uid,
-      plan,
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = req.body;
-
-    const expectedSignature = crypto
-      .createHmac(
-        "sha256",
-        process.env.RAZORPAY_KEY_SECRET
-      )
-      .update(
-        `${razorpay_order_id}|${razorpay_payment_id}`
-      )
-      .digest("hex");
-
-    if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid signature",
-      });
-    }
-const now = new Date();
-const expires = new Date(now);
-
-switch (plan) {
-  case "Premium Monthly":
-    expires.setMonth(expires.getMonth() + 1);
-    break;
-
-  case "Premium 3 Months":
-    expires.setMonth(expires.getMonth() + 3);
-    break;
-
-  default:
-    expires.setMonth(expires.getMonth() + 1);
-}
+console.log("✅ Signature verified");
+console.log("Writing to Firestore...");
 
 await db.collection("users").doc(uid).set(
   {
     premium: true,
-    premiumPlan: plan,
-    premiumSince:
-      admin.firestore.FieldValue.serverTimestamp(),
-
-    premiumExpires: admin.firestore.Timestamp.fromDate(
-      expires
-    ),
-
-    razorpayPaymentId: razorpay_payment_id,
+    plan,
+    paymentId: razorpay_payment_id,
+    orderId: razorpay_order_id,
+    activatedAt: FieldValue.serverTimestamp(),
+    expiresAt,
   },
   { merge: true }
 );
 
-    return res.json({
-      success: true,
-    });
-  } catch (err) {
-    console.error(err);
+console.log("✅ Firestore write successful");
 
-    return res.status(500).json({
-      success: false,
-      error: err.message,
-    });
-  }
-}
+return res.json({ success: true });

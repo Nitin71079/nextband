@@ -7,20 +7,22 @@ export async function createOrder(plan) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      plan,
-    }),
+    body: JSON.stringify({ plan }),
   });
 
-  const data = await response.json();
+  // 👇 Show the raw response
+  const text = await response.text();
+
+  console.log("Status:", response.status);
+  console.log("Response:", text);
 
   if (!response.ok) {
     throw new Error(
-      data.error || "Unable to create payment order."
+      `Checkout failed (${response.status}): ${text}`
     );
   }
 
-  return data;
+  return JSON.parse(text);
 }
 
 export async function verifyPayment(data) {
@@ -96,9 +98,9 @@ export async function startCheckout(plan) {
             "🎉 Premium Activated!"
           );
 
-          setTimeout(() => {
-            window.location.reload();
-          }, 1200);
+         toast.success(
+    "🎉 Premium Activated!"
+);
         } else {
           toast.error(
             "Payment verification failed."

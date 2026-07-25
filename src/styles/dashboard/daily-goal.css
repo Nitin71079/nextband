@@ -1,0 +1,631 @@
+/* ==========================================================
+   DAILY GOAL — PART 1
+   Layout & Container
+========================================================== */
+
+.goal-card{
+    position:relative;
+    overflow:hidden;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:40px;
+
+    padding:34px;
+
+    border-radius:30px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.98),
+            rgba(248,250,252,.98)
+        );
+
+    border:1px solid rgba(226,232,240,.85);
+
+    box-shadow:
+        0 18px 45px rgba(15,23,42,.06);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+.goal-card:hover{
+    transform:translateY(-6px);
+
+    box-shadow:
+        0 30px 70px rgba(15,23,42,.10);
+}
+
+/* Top Accent */
+
+.goal-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #60a5fa,
+            #8b5cf6
+        );
+}
+
+/* Left Side */
+
+.goal-left{
+    flex:1;
+}
+
+.goal-left span{
+
+    display:inline-block;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:rgba(37,99,235,.08);
+
+    color:#2563eb;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+}
+
+.goal-left h2{
+
+    margin:18px 0 10px;
+
+    font-size:34px;
+
+    font-weight:800;
+
+    color:var(--text);
+}
+
+.goal-left p{
+
+    color:var(--text-muted);
+
+    font-size:16px;
+
+    margin-bottom:26px;
+}
+/* ==========================================================
+   DAILY GOAL — PART 2
+   Progress Bar + Right Side
+========================================================== */
+
+.goal-progress{
+
+    position:relative;
+
+    width:100%;
+
+    height:14px;
+
+    overflow:hidden;
+
+    border-radius:999px;
+
+    background:#e5e7eb;
+
+    margin-bottom:16px;
+}
+
+.goal-progress-fill{
+
+    position:relative;
+
+    height:100%;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #3b82f6,
+            #60a5fa
+        );
+
+    transition:width .8s ease;
+}
+
+/* Animated Shine */
+
+.goal-progress-fill::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.45),
+            transparent
+        );
+
+    animation:goalShine 2.5s linear infinite;
+}
+
+.goal-left small{
+
+    display:block;
+
+    color:var(--text-muted);
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+/* ============================
+   RIGHT SIDE
+============================ */
+
+.goal-right{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:24px;
+
+    flex-shrink:0;
+}
+
+/* Goal Icon */
+
+.goal-icon{
+
+    width:96px;
+
+    height:96px;
+
+    border-radius:28px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #60a5fa
+        );
+
+    box-shadow:
+        0 20px 45px rgba(37,99,235,.25);
+
+    transition:all .35s ease;
+}
+
+.goal-card:hover .goal-icon{
+
+    transform:
+        translateY(-4px)
+        scale(1.05);
+
+    box-shadow:
+        0 28px 60px rgba(37,99,235,.30);
+}
+
+.goal-icon svg{
+
+    width:46px;
+
+    height:46px;
+}
+
+@keyframes goalShine{
+
+    from{
+
+        transform:translateX(-100%);
+    }
+
+    to{
+
+        transform:translateX(250%);
+    }
+}
+/* ==========================================================
+   DAILY GOAL — PART 3
+   CTA Button + Responsive
+========================================================== */
+
+.goal-btn{
+
+    position:relative;
+
+    overflow:hidden;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+    min-width:210px;
+
+    padding:18px 28px;
+
+    border:none;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6,
+            #60a5fa
+        );
+
+    box-shadow:
+        0 18px 40px rgba(37,99,235,.25);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+.goal-btn:hover{
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 26px 60px rgba(37,99,235,.30);
+}
+
+.goal-btn svg{
+
+    transition:.3s;
+}
+
+.goal-btn:hover svg:last-child{
+
+    transform:
+        translateX(5px);
+}
+
+/* Button Shine */
+
+.goal-btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:-120%;
+
+    width:70%;
+
+    height:100%;
+
+    transform:skewX(-25deg);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.45),
+            transparent
+        );
+}
+
+.goal-btn:hover::before{
+
+    animation:goalButtonShine .8s linear;
+}
+
+@keyframes goalButtonShine{
+
+    to{
+
+        left:170%;
+    }
+}
+
+/* ============================
+   Responsive
+============================ */
+
+@media (max-width:900px){
+
+    .goal-card{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:32px;
+    }
+
+    .goal-right{
+
+        width:100%;
+
+        align-items:stretch;
+    }
+
+    .goal-btn{
+
+        width:100%;
+    }
+
+    .goal-icon{
+
+        align-self:center;
+    }
+}
+
+@media (max-width:600px){
+
+    .goal-card{
+
+        padding:24px;
+
+        border-radius:24px;
+    }
+
+    .goal-left h2{
+
+        font-size:28px;
+    }
+
+    .goal-left p{
+
+        font-size:15px;
+    }
+
+    .goal-icon{
+
+        width:80px;
+
+        height:80px;
+    }
+
+    .goal-icon svg{
+
+        width:38px;
+
+        height:38px;
+    }
+
+    .goal-btn{
+
+        min-width:100%;
+
+        padding:16px 22px;
+    }
+}
+/* ==========================================================
+   DAILY GOAL — PART 3
+   CTA Button + Responsive
+========================================================== */
+
+.goal-btn{
+
+    position:relative;
+
+    overflow:hidden;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+    min-width:210px;
+
+    padding:18px 28px;
+
+    border:none;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6,
+            #60a5fa
+        );
+
+    box-shadow:
+        0 18px 40px rgba(37,99,235,.25);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+.goal-btn:hover{
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 26px 60px rgba(37,99,235,.30);
+}
+
+.goal-btn svg{
+
+    transition:.3s;
+}
+
+.goal-btn:hover svg:last-child{
+
+    transform:
+        translateX(5px);
+}
+
+/* Button Shine */
+
+.goal-btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:-120%;
+
+    width:70%;
+
+    height:100%;
+
+    transform:skewX(-25deg);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.45),
+            transparent
+        );
+}
+
+.goal-btn:hover::before{
+
+    animation:goalButtonShine .8s linear;
+}
+
+@keyframes goalButtonShine{
+
+    to{
+
+        left:170%;
+    }
+}
+
+/* ============================
+   Responsive
+============================ */
+
+@media (max-width:900px){
+
+    .goal-card{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:32px;
+    }
+
+    .goal-right{
+
+        width:100%;
+
+        align-items:stretch;
+    }
+
+    .goal-btn{
+
+        width:100%;
+    }
+
+    .goal-icon{
+
+        align-self:center;
+    }
+}
+
+@media (max-width:600px){
+
+    .goal-card{
+
+        padding:24px;
+
+        border-radius:24px;
+    }
+
+    .goal-left h2{
+
+        font-size:28px;
+    }
+
+    .goal-left p{
+
+        font-size:15px;
+    }
+
+    .goal-icon{
+
+        width:80px;
+
+        height:80px;
+    }
+
+    .goal-icon svg{
+
+        width:38px;
+
+        height:38px;
+    }
+
+    .goal-btn{
+
+        min-width:100%;
+
+        padding:16px 22px;
+    }
+}

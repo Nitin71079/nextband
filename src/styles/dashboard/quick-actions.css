@@ -1,0 +1,1512 @@
+/* ==========================================================
+   QUICK ACTIONS
+   PART 1
+   Layout + Grid
+==========================================================*/
+
+
+/* ==========================================================
+   SECTION
+==========================================================*/
+
+.dashboard-section{
+
+    position:relative;
+
+    margin-top:52px;
+
+    animation:
+        heroFadeUp
+        .7s ease both;
+}
+
+
+/* ==========================================================
+   HEADER
+==========================================================*/
+
+.dashboard-section .section-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-end;
+
+    margin-bottom:34px;
+}
+
+
+.dashboard-section .section-header h2{
+
+    margin-top:14px;
+
+    font-size:36px;
+
+    font-weight:800;
+
+    letter-spacing:-1px;
+
+    color:var(--text);
+}
+
+
+.dashboard-section .section-header p{
+
+    margin-top:10px;
+
+    font-size:16px;
+
+    line-height:1.8;
+
+    color:var(--text-muted);
+
+    max-width:620px;
+}
+
+
+/* ==========================================================
+   BADGE
+==========================================================*/
+
+.dashboard-section .badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:10px 18px;
+
+    border-radius:999px;
+
+    background:
+        rgba(37,99,235,.08);
+
+    border:
+        1px solid rgba(37,99,235,.12);
+
+    color:var(--primary);
+
+    font-size:13px;
+
+    font-weight:700;
+
+    backdrop-filter:blur(14px);
+}
+
+
+.dashboard-section .badge svg{
+
+    width:16px;
+
+    height:16px;
+}
+
+
+/* ==========================================================
+   GRID
+==========================================================*/
+
+.quick-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:26px;
+}
+
+
+/* ==========================================================
+   CARD
+==========================================================*/
+
+.quick-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    min-height:260px;
+
+    padding:28px;
+
+    border-radius:28px;
+
+    text-decoration:none;
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(255,255,255,.98),
+
+            rgba(248,250,252,.98)
+
+        );
+
+    border:
+
+        1px solid rgba(226,232,240,.85);
+
+    box-shadow:
+
+        0 16px 45px rgba(15,23,42,.05);
+
+    transition:
+
+        transform .35s ease,
+
+        box-shadow .35s ease;
+}
+
+
+.quick-card:hover{
+
+    transform:
+
+        translateY(-10px);
+
+    box-shadow:
+
+        0 30px 75px rgba(15,23,42,.12);
+}
+
+
+/* ==========================================================
+   TOP ACCENT
+==========================================================*/
+
+.quick-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+
+    top:0;
+
+    width:100%;
+
+    height:5px;
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            #2563eb,
+
+            #60a5fa
+
+        );
+
+}
+
+
+/* ==========================================================
+   BACKGROUND GLOW
+==========================================================*/
+
+.quick-card::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:240px;
+
+    height:240px;
+
+    right:-80px;
+
+    top:-80px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+
+            rgba(37,99,235,.08),
+
+            transparent 70%
+
+        );
+
+    opacity:.65;
+
+    pointer-events:none;
+
+    transition:.4s;
+}
+
+
+.quick-card:hover::after{
+
+    transform:scale(1.25);
+
+    opacity:1;
+}
+
+
+/* ==========================================================
+   CARD CONTENT
+==========================================================*/
+
+.quick-top,
+.quick-body,
+.quick-footer{
+
+    position:relative;
+
+    z-index:2;
+}
+
+
+/* ==========================================================
+   TOP
+==========================================================*/
+
+.quick-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    margin-bottom:28px;
+}
+/* ==========================================================
+   QUICK ACTIONS
+   PART 2
+   Icons + Typography + Color System
+==========================================================*/
+
+
+/* ==========================================================
+   ICON
+==========================================================*/
+
+.quick-icon{
+
+    position:relative;
+
+    width:72px;
+
+    height:72px;
+
+    border-radius:22px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#fff;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 18px 40px rgba(15,23,42,.12);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+
+.quick-card:hover .quick-icon{
+
+    transform:
+        translateY(-6px)
+        rotate(-6deg)
+        scale(1.06);
+
+    box-shadow:
+        0 26px 55px rgba(15,23,42,.18);
+}
+
+
+/* floating shine */
+
+.quick-icon::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-40%;
+
+    left:-120%;
+
+    width:80%;
+
+    height:180%;
+
+    transform:rotate(25deg);
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            transparent,
+
+            rgba(255,255,255,.55),
+
+            transparent
+
+        );
+
+}
+
+.quick-card:hover .quick-icon::before{
+
+    animation:
+        quickIconShine
+        .9s linear;
+}
+
+
+/* ==========================================================
+   ICON COLORS
+==========================================================*/
+
+.quick-icon.blue{
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #60a5fa
+        );
+}
+
+.quick-icon.purple{
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #a855f7
+        );
+}
+
+.quick-icon.orange{
+
+    background:
+        linear-gradient(
+            135deg,
+            #ea580c,
+            #fb923c
+        );
+}
+
+.quick-icon.green{
+
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #4ade80
+        );
+}
+
+.quick-icon.cyan{
+
+    background:
+        linear-gradient(
+            135deg,
+            #0891b2,
+            #22d3ee
+        );
+}
+
+.quick-icon.pink{
+
+    background:
+        linear-gradient(
+            135deg,
+            #db2777,
+            #f472b6
+        );
+}
+
+.quick-icon.teal{
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #2dd4bf
+        );
+}
+
+.quick-icon.red{
+
+    background:
+        linear-gradient(
+            135deg,
+            #dc2626,
+            #f87171
+        );
+}
+
+
+/* ==========================================================
+   BADGE
+==========================================================*/
+
+.quick-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:
+        rgba(37,99,235,.08);
+
+    border:
+        1px solid rgba(37,99,235,.10);
+
+    color:var(--primary);
+
+    font-size:12px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+}
+
+.quick-card:hover .quick-badge{
+
+    background:
+        rgba(37,99,235,.12);
+}
+
+
+/* ==========================================================
+   BODY
+==========================================================*/
+
+.quick-body{
+
+    flex:1;
+}
+
+
+.quick-body h3{
+
+    margin:0;
+
+    font-size:30px;
+
+    font-weight:800;
+
+    letter-spacing:-1px;
+
+    color:var(--text);
+}
+
+
+.quick-body p{
+
+    margin-top:12px;
+
+    color:var(--primary);
+
+    font-size:16px;
+
+    font-weight:700;
+}
+
+
+.quick-body small{
+
+    display:block;
+
+    margin-top:14px;
+
+    color:var(--text-muted);
+
+    line-height:1.8;
+
+    font-size:14px;
+}
+
+
+/* ==========================================================
+   FOOTER
+==========================================================*/
+
+.quick-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:28px;
+
+    padding-top:22px;
+
+    border-top:
+        1px solid rgba(226,232,240,.85);
+
+    color:var(--text);
+
+    font-size:15px;
+
+    font-weight:700;
+}
+
+
+.quick-footer svg{
+
+    transition:
+        transform .3s ease;
+}
+
+
+.quick-card:hover
+.quick-footer svg{
+
+    transform:
+        translateX(6px);
+}
+
+
+/* ==========================================================
+   ENTRANCE
+==========================================================*/
+
+.quick-card{
+
+    animation:
+        heroFadeUp
+        .7s ease both;
+}
+
+
+/* ==========================================================
+   ANIMATION
+==========================================================*/
+
+@keyframes quickIconShine{
+
+    to{
+
+        left:180%;
+    }
+
+}
+/* ==========================================================
+   QUICK ACTIONS
+   PART 3
+   Premium Hover Effects + Card Personalities
+==========================================================*/
+
+
+/* ==========================================================
+   CARD TRANSITIONS
+==========================================================*/
+
+.quick-card{
+
+    isolation:isolate;
+
+    backdrop-filter:blur(18px);
+
+    -webkit-backdrop-filter:blur(18px);
+}
+
+
+.quick-card *{
+
+    transition:
+
+        background-color .25s ease,
+
+        color .25s ease,
+
+        border-color .25s ease,
+
+        transform .35s ease,
+
+        box-shadow .35s ease;
+}
+
+
+/* ==========================================================
+   PREMIUM GRADIENT OVERLAY
+==========================================================*/
+
+.quick-card .gradient-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:0;
+
+    z-index:1;
+
+    pointer-events:none;
+
+    transition:.45s ease;
+}
+
+
+.quick-card:hover .gradient-overlay{
+
+    opacity:1;
+}
+
+
+/* ==========================================================
+   COLOR THEMES
+==========================================================*/
+
+.quick-card.blue::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #60a5fa
+        );
+}
+
+.quick-card.purple::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #7c3aed,
+            #a855f7
+        );
+}
+
+.quick-card.orange::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #ea580c,
+            #fb923c
+        );
+}
+
+.quick-card.green::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #16a34a,
+            #4ade80
+        );
+}
+
+.quick-card.cyan::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #0891b2,
+            #22d3ee
+        );
+}
+
+.quick-card.pink::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #db2777,
+            #f472b6
+        );
+}
+
+.quick-card.teal::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #0f766e,
+            #2dd4bf
+        );
+}
+
+.quick-card.red::before{
+
+    background:
+        linear-gradient(
+            90deg,
+            #dc2626,
+            #f87171
+        );
+}
+
+
+/* ==========================================================
+   HOVER PERSONALITY
+==========================================================*/
+
+.quick-card.blue:hover{
+
+    box-shadow:
+        0 35px 70px rgba(37,99,235,.16);
+}
+
+.quick-card.purple:hover{
+
+    box-shadow:
+        0 35px 70px rgba(124,58,237,.16);
+}
+
+.quick-card.orange:hover{
+
+    box-shadow:
+        0 35px 70px rgba(234,88,12,.16);
+}
+
+.quick-card.green:hover{
+
+    box-shadow:
+        0 35px 70px rgba(22,163,74,.16);
+}
+
+.quick-card.cyan:hover{
+
+    box-shadow:
+        0 35px 70px rgba(8,145,178,.16);
+}
+
+.quick-card.pink:hover{
+
+    box-shadow:
+        0 35px 70px rgba(219,39,119,.16);
+}
+
+.quick-card.teal:hover{
+
+    box-shadow:
+        0 35px 70px rgba(15,118,110,.16);
+}
+
+.quick-card.red:hover{
+
+    box-shadow:
+        0 35px 70px rgba(220,38,38,.16);
+}
+
+
+/* ==========================================================
+   ICON GLOW
+==========================================================*/
+
+.quick-icon::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-40%;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+
+            rgba(255,255,255,.28),
+
+            transparent 70%
+
+        );
+
+    opacity:0;
+
+    transition:.35s ease;
+}
+
+
+.quick-card:hover
+.quick-icon::after{
+
+    opacity:1;
+
+    transform:scale(1.2);
+}
+
+
+/* ==========================================================
+   TITLE EFFECT
+==========================================================*/
+
+.quick-card:hover
+.quick-body h3{
+
+    transform:
+
+        translateX(4px);
+
+    color:#1d4ed8;
+}
+
+
+.quick-card:hover
+.quick-body p{
+
+    letter-spacing:.3px;
+}
+
+
+.quick-card:hover
+.quick-body small{
+
+    color:var(--text);
+}
+
+
+/* ==========================================================
+   BADGE EFFECT
+==========================================================*/
+
+.quick-card:hover
+.quick-badge{
+
+    transform:
+
+        translateY(-2px);
+
+    box-shadow:
+
+        0 8px 20px rgba(37,99,235,.12);
+}
+
+
+/* ==========================================================
+   FOOTER
+==========================================================*/
+
+.quick-card:hover
+.quick-footer{
+
+    border-color:
+
+        rgba(37,99,235,.16);
+}
+
+
+/* ==========================================================
+   FLOATING LIGHT
+==========================================================*/
+
+.quick-card::after{
+
+    animation:
+
+        quickFloat
+
+        8s ease-in-out infinite;
+}
+
+
+/* ==========================================================
+   SCALE EFFECT
+==========================================================*/
+
+.quick-card:hover .quick-top{
+
+    transform:
+
+        translateY(-2px);
+}
+
+
+.quick-card:hover .quick-body{
+
+    transform:
+
+        translateY(-4px);
+}
+
+
+.quick-card:hover .quick-footer{
+
+    transform:
+
+        translateY(-2px);
+}
+
+
+/* ==========================================================
+   PREMIUM SHADOW
+==========================================================*/
+
+.quick-card{
+
+    box-shadow:
+
+        0 10px 30px rgba(15,23,42,.05),
+
+        0 24px 60px rgba(15,23,42,.04);
+}
+
+
+/* ==========================================================
+   MICRO BORDER
+==========================================================*/
+
+.quick-card{
+
+    border:
+
+        1px solid rgba(226,232,240,.82);
+}
+
+
+/* ==========================================================
+   ANIMATIONS
+==========================================================*/
+
+@keyframes quickFloat{
+
+    0%{
+
+        transform:
+
+            translateY(0)
+
+            scale(1);
+
+    }
+
+    50%{
+
+        transform:
+
+            translateY(-12px)
+
+            scale(1.15);
+
+    }
+
+    100%{
+
+        transform:
+
+            translateY(0)
+
+            scale(1);
+
+    }
+
+}
+/* ==========================================================
+   QUICK ACTIONS
+   PART 4
+   AI Banner + Responsive + Final Polish
+==========================================================*/
+
+
+/* ==========================================================
+   AI COACH BANNER
+==========================================================*/
+
+.quick-bottom-banner{
+
+    position:relative;
+
+    overflow:hidden;
+
+    margin-top:38px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:32px;
+
+    padding:34px;
+
+    border-radius:30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(37,99,235,.05),
+            rgba(99,102,241,.05),
+            rgba(255,255,255,.98)
+        );
+
+    border:
+        1px solid rgba(226,232,240,.85);
+
+    box-shadow:
+        0 20px 55px rgba(15,23,42,.06);
+
+    backdrop-filter:blur(20px);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+
+.quick-bottom-banner:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:
+        0 32px 70px rgba(15,23,42,.10);
+}
+
+
+/* ==========================================================
+   BACKGROUND GLOW
+==========================================================*/
+
+.quick-bottom-banner::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:420px;
+    height:420px;
+
+    right:-160px;
+    top:-160px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            rgba(37,99,235,.12),
+            transparent 70%
+        );
+
+    pointer-events:none;
+}
+
+
+/* ==========================================================
+   LEFT SIDE
+==========================================================*/
+
+.quick-banner-left{
+
+    position:relative;
+
+    z-index:2;
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:22px;
+
+    flex:1;
+}
+
+
+.quick-banner-left>svg{
+
+    width:68px;
+    height:68px;
+
+    flex-shrink:0;
+
+    padding:18px;
+
+    border-radius:22px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #6366f1
+        );
+
+    box-shadow:
+        0 18px 45px rgba(37,99,235,.22);
+}
+
+
+.quick-banner-left h3{
+
+    margin:0;
+
+    font-size:28px;
+
+    font-weight:800;
+
+    letter-spacing:-.6px;
+
+    color:var(--text);
+}
+
+
+.quick-banner-left p{
+
+    margin-top:12px;
+
+    color:var(--text-muted);
+
+    font-size:16px;
+
+    line-height:1.8;
+
+    max-width:560px;
+}
+
+
+/* ==========================================================
+   CTA BUTTON
+==========================================================*/
+
+.quick-banner-btn{
+
+    position:relative;
+
+    overflow:hidden;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+    flex-shrink:0;
+
+    min-width:230px;
+
+    padding:18px 30px;
+
+    border-radius:18px;
+
+    text-decoration:none;
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6,
+            #60a5fa
+        );
+
+    box-shadow:
+        0 18px 45px rgba(37,99,235,.24);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+
+.quick-banner-btn:hover{
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 30px 65px rgba(37,99,235,.32);
+}
+
+
+.quick-banner-btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-120%;
+
+    width:70%;
+    height:100%;
+
+    transform:skewX(-25deg);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.55),
+            transparent
+        );
+}
+
+
+.quick-banner-btn:hover::before{
+
+    animation:
+        bannerShine
+        .9s linear;
+}
+
+
+.quick-banner-btn svg{
+
+    transition:
+        transform .3s ease;
+}
+
+
+.quick-banner-btn:hover svg{
+
+    transform:
+        translateX(5px);
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY
+==========================================================*/
+
+.quick-card:focus-visible,
+.quick-banner-btn:focus-visible{
+
+    outline:3px solid rgba(37,99,235,.30);
+
+    outline-offset:5px;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+==========================================================*/
+
+@media (max-width:1400px){
+
+    .quick-grid{
+
+        grid-template-columns:
+            repeat(3,1fr);
+    }
+
+}
+
+
+@media (max-width:1100px){
+
+    .quick-grid{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .quick-bottom-banner{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+    }
+
+    .quick-banner-btn{
+
+        width:100%;
+    }
+
+}
+
+
+@media (max-width:768px){
+
+    .quick-grid{
+
+        grid-template-columns:1fr;
+
+        gap:20px;
+    }
+
+    .quick-card{
+
+        min-height:auto;
+
+        padding:24px;
+    }
+
+    .quick-body h3{
+
+        font-size:26px;
+    }
+
+    .quick-banner-left{
+
+        flex-direction:column;
+    }
+
+    .quick-banner-left>svg{
+
+        width:60px;
+        height:60px;
+
+        padding:15px;
+    }
+
+    .quick-banner-left h3{
+
+        font-size:24px;
+    }
+
+    .quick-bottom-banner{
+
+        padding:26px;
+
+        border-radius:24px;
+    }
+
+}
+
+
+@media (max-width:480px){
+
+    .dashboard-section{
+
+        margin-top:40px;
+    }
+
+    .dashboard-section .section-header h2{
+
+        font-size:28px;
+    }
+
+    .dashboard-section .section-header p{
+
+        font-size:15px;
+    }
+
+    .quick-card{
+
+        border-radius:22px;
+
+        padding:20px;
+    }
+
+    .quick-icon{
+
+        width:62px;
+        height:62px;
+
+        border-radius:18px;
+    }
+
+    .quick-body h3{
+
+        font-size:24px;
+    }
+
+    .quick-body p{
+
+        font-size:15px;
+    }
+
+    .quick-body small{
+
+        font-size:13px;
+    }
+
+    .quick-banner-left h3{
+
+        font-size:22px;
+    }
+
+    .quick-banner-left p{
+
+        font-size:15px;
+    }
+
+    .quick-banner-btn{
+
+        min-width:100%;
+
+        padding:16px;
+    }
+
+}
+
+
+/* ==========================================================
+   REDUCED MOTION
+==========================================================*/
+
+@media (prefers-reduced-motion:reduce){
+
+    .quick-card,
+    .quick-bottom-banner,
+    .quick-banner-btn,
+    .quick-card *{
+
+        animation:none !important;
+
+        transition:none !important;
+
+        transform:none !important;
+    }
+
+}
+
+
+/* ==========================================================
+   ENTRANCE
+==========================================================*/
+
+.quick-bottom-banner{
+
+    animation:
+        heroFadeUp
+        .9s ease both;
+}
+
+
+/* ==========================================================
+   ANIMATION
+==========================================================*/
+
+@keyframes bannerShine{
+
+    to{
+
+        left:180%;
+    }
+
+}

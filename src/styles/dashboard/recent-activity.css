@@ -1,0 +1,716 @@
+/* ==========================================================
+   RECENT ACTIVITY — PART 1
+========================================================== */
+
+.activity-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:34px;
+
+    border-radius:30px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.98),
+            rgba(248,250,252,.98)
+        );
+
+    border:1px solid rgba(226,232,240,.85);
+
+    box-shadow:
+        0 18px 45px rgba(15,23,42,.06);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+.activity-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:
+        0 30px 70px rgba(15,23,42,.10);
+}
+
+.activity-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #60a5fa,
+            #8b5cf6
+        );
+}
+
+.activity-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:32px;
+}
+
+.activity-header h2{
+
+    font-size:28px;
+
+    font-weight:800;
+
+    color:var(--text);
+}
+
+.activity-header p{
+
+    margin-top:6px;
+
+    color:var(--text-muted);
+
+    font-size:15px;
+}
+
+.activity-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+/* ==========================================================
+   RECENT ACTIVITY — PART 2
+   Timeline Items
+========================================================== */
+
+.activity-item{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:22px;
+
+    padding:22px;
+
+    border-radius:22px;
+
+    background:#fff;
+
+    border:1px solid rgba(226,232,240,.85);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.activity-item:hover{
+
+    transform:translateX(8px);
+
+    border-color:rgba(37,99,235,.20);
+
+    box-shadow:
+        0 20px 45px rgba(15,23,42,.08);
+}
+
+/* ===========================
+   Activity Icon
+=========================== */
+
+.activity-icon{
+
+    width:64px;
+
+    height:64px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border-radius:18px;
+
+    color:#fff;
+
+    font-size:22px;
+
+    font-weight:700;
+}
+
+/* Different Colors */
+
+.activity-item.reading .activity-icon{
+
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+}
+
+.activity-item.listening .activity-icon{
+
+    background:linear-gradient(135deg,#06b6d4,#67e8f9);
+}
+
+.activity-item.writing .activity-icon{
+
+    background:linear-gradient(135deg,#f97316,#fb923c);
+}
+
+.activity-item.speaking .activity-icon{
+
+    background:linear-gradient(135deg,#22c55e,#4ade80);
+}
+
+.activity-item.ai .activity-icon{
+
+    background:linear-gradient(135deg,#8b5cf6,#a78bfa);
+}
+
+/* ===========================
+   Content
+=========================== */
+
+.activity-content{
+
+    flex:1;
+}
+
+.activity-content h3{
+
+    font-size:18px;
+
+    font-weight:800;
+
+    color:var(--text);
+
+    margin-bottom:6px;
+}
+
+.activity-content p{
+
+    color:var(--text-muted);
+
+    font-size:15px;
+
+    line-height:1.7;
+}
+
+/* ===========================
+   Time Badge
+=========================== */
+
+.activity-time{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:rgba(37,99,235,.08);
+
+    color:#2563eb;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+}
+/* ==========================================================
+   RECENT ACTIVITY — PART 3
+   Premium Timeline
+========================================================== */
+
+/* Vertical Timeline */
+
+.activity-list{
+
+    position:relative;
+}
+
+.activity-list::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:31px;
+
+    top:0;
+    bottom:0;
+
+    width:2px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(37,99,235,.18),
+            rgba(96,165,250,.12),
+            transparent
+        );
+}
+
+/* Activity Item */
+
+.activity-item{
+
+    position:relative;
+
+    margin-left:22px;
+}
+
+/* Timeline Dot */
+
+.activity-item::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:-33px;
+
+    top:38px;
+
+    width:12px;
+    height:12px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    border:4px solid white;
+
+    box-shadow:
+        0 0 0 4px rgba(37,99,235,.10);
+}
+
+/* Glow */
+
+.activity-item::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(37,99,235,.03),
+            transparent
+        );
+
+    opacity:0;
+
+    transition:.35s;
+}
+
+.activity-item:hover::after{
+
+    opacity:1;
+}
+
+/* Floating Icon */
+
+.activity-icon{
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+.activity-item:hover .activity-icon{
+
+    transform:
+        rotate(-8deg)
+        scale(1.08);
+
+    box-shadow:
+        0 18px 45px rgba(37,99,235,.25);
+}
+
+/* Title */
+
+.activity-content h3{
+
+    transition:.3s;
+}
+
+.activity-item:hover h3{
+
+    color:#2563eb;
+}
+
+/* Time Badge */
+
+.activity-time{
+
+    transition:.3s;
+}
+
+.activity-item:hover .activity-time{
+
+    background:#2563eb;
+
+    color:#fff;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width:768px){
+
+    .activity-card{
+
+        padding:24px;
+    }
+
+    .activity-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:10px;
+    }
+
+    .activity-item{
+
+        margin-left:12px;
+
+        gap:16px;
+
+        padding:18px;
+    }
+
+    .activity-list::before{
+
+        left:22px;
+    }
+
+    .activity-item::before{
+
+        left:-22px;
+
+        top:34px;
+    }
+
+    .activity-icon{
+
+        width:52px;
+        height:52px;
+
+        border-radius:16px;
+    }
+
+    .activity-content h3{
+
+        font-size:16px;
+    }
+
+    .activity-content p{
+
+        font-size:14px;
+    }
+
+    .activity-time{
+
+        font-size:12px;
+
+        padding:6px 12px;
+    }
+}
+
+/* ===========================
+   Animations
+=========================== */
+
+@keyframes activityFadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(20px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+.activity-item{
+
+    animation:
+        activityFadeUp .6s ease both;
+}
+
+.activity-item:nth-child(1){ animation-delay:.05s; }
+.activity-item:nth-child(2){ animation-delay:.15s; }
+.activity-item:nth-child(3){ animation-delay:.25s; }
+.activity-item:nth-child(4){ animation-delay:.35s; }
+.activity-item:nth-child(5){ animation-delay:.45s; }
+.activity-item:nth-child(6){ animation-delay:.55s; }
+/* ==========================================================
+   RECENT ACTIVITY — PART 4
+   Premium Polish
+========================================================== */
+
+/* Floating Glow */
+
+.activity-card::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:-140px;
+    right:-140px;
+
+    width:320px;
+    height:320px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            rgba(37,99,235,.10),
+            transparent 72%
+        );
+
+    filter:blur(10px);
+
+    pointer-events:none;
+}
+
+/* Decorative Floating Dots */
+
+.activity-decoration{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    pointer-events:none;
+}
+
+.activity-decoration.one{
+
+    width:12px;
+    height:12px;
+
+    top:40px;
+    right:42px;
+
+    background:#60a5fa;
+
+    opacity:.35;
+
+    animation:activityFloat 6s ease-in-out infinite;
+}
+
+.activity-decoration.two{
+
+    width:8px;
+    height:8px;
+
+    bottom:38px;
+    left:46%;
+
+    background:#8b5cf6;
+
+    opacity:.30;
+
+    animation:activityFloat 8s ease-in-out infinite;
+    animation-delay:2s;
+}
+
+/* Ripple on Hover */
+
+.activity-item{
+
+    overflow:hidden;
+}
+
+.activity-item .activity-ripple{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(37,99,235,.08),
+            transparent 70%
+        );
+
+    opacity:0;
+
+    transform:scale(.85);
+
+    transition:
+        opacity .35s ease,
+        transform .35s ease;
+}
+
+.activity-item:hover .activity-ripple{
+
+    opacity:1;
+
+    transform:scale(1.1);
+}
+
+/* Live Status Indicator */
+
+.activity-icon::after{
+
+    content:"";
+
+    position:absolute;
+
+    right:-2px;
+    top:-2px;
+
+    width:12px;
+    height:12px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    border:2px solid #fff;
+
+    box-shadow:
+        0 0 12px rgba(34,197,94,.45);
+}
+
+/* View All Button */
+
+.activity-view-all{
+
+    margin-top:28px;
+
+    display:flex;
+
+    justify-content:center;
+}
+
+.activity-view-all button{
+
+    padding:14px 24px;
+
+    border:none;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+    color:#2563eb;
+
+    background:rgba(37,99,235,.08);
+
+    transition:.3s;
+}
+
+.activity-view-all button:hover{
+
+    background:#2563eb;
+
+    color:#fff;
+
+    transform:translateY(-3px);
+}
+
+/* Accessibility */
+
+.activity-item:focus-within{
+
+    outline:3px solid rgba(37,99,235,.18);
+
+    outline-offset:3px;
+}
+
+/* Reduced Motion */
+
+@media (prefers-reduced-motion: reduce){
+
+    .activity-item,
+    .activity-icon,
+    .activity-decoration{
+
+        animation:none !important;
+
+        transition:none !important;
+    }
+}
+
+/* Floating Animation */
+
+@keyframes activityFloat{
+
+    0%{
+
+        transform:
+            translateY(0)
+            scale(1);
+
+        opacity:.30;
+    }
+
+    50%{
+
+        transform:
+            translateY(-10px)
+            scale(1.15);
+
+        opacity:.60;
+    }
+
+    100%{
+
+        transform:
+            translateY(0)
+            scale(1);
+
+        opacity:.30;
+    }
+}

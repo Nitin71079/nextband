@@ -11,7 +11,8 @@ import {
 
 import {
   doc,
-  getDoc,
+  onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 
 import {
@@ -24,7 +25,8 @@ const AuthContext = createContext();
 export function AuthProvider({
   children,
 }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] =
+    useState(null);
 
   const [loading, setLoading] =
     useState(true);
@@ -55,91 +57,132 @@ export function AuthProvider({
   }
 
   useEffect(() => {
-    const unsubscribe =
+    let unsubscribeUserDoc = null;
+
+    const unsubscribeAuth =
       onAuthStateChanged(
         auth,
-        async (currentUser) => {
+        (currentUser) => {
           setLoading(true);
 
           setUser(currentUser);
 
           if (!currentUser) {
             resetUserData();
+
+            if (unsubscribeUserDoc) {
+              unsubscribeUserDoc();
+            }
+
             setLoading(false);
+
             return;
           }
 
-          try {
-            const userRef = doc(
-              db,
-              "users",
-              currentUser.uid
-            );
+          const userRef = doc(
+            db,
+            "users",
+            currentUser.uid
+          );
 
-            const userSnap =
-              await getDoc(userRef);
+          unsubscribeUserDoc =
+            onSnapshot(
+              userRef,
+              async (snap) => {
+                if (!snap.exists()) {
+                  resetUserData();
+                  setLoading(false);
+                  return;
+                }
 
-            if (!userSnap.exists()) {
-              resetUserData();
-              setLoading(false);
-              return;
-            }
+                const data =
+                  snap.data();
 
-            const data =
-              userSnap.data();
+                setName(
+                  data.name || ""
+                );
 
-            setName(
-              data.name || ""
-            );
+                setAdmin(
+                  data.admin || false
+                );
 
-            setAdmin(
-              data.admin || false
-            );
+                setPremiumPlan(
+                  data.premiumPlan ||
+                    ""
+                );
 
-            setPremiumPlan(
-              data.premiumPlan || ""
-            );
+                setPremiumExpires(
+                  data.premiumExpires ||
+                    null
+                );
 
-            setPremiumExpires(
-              data.premiumExpires || null
-            );
+                let premiumActive =
+                  data.premium ||
+                  false;
 
-            let premiumActive =
-              data.premium || false;
+                if (
+                  premiumActive &&
+                  data.premiumExpires
+                ) {
+                  const expiry =
+                    data
+                      .premiumExpires
+                      .toDate
+                      ? data.premiumExpires.toDate()
+                      : new Date(
+                          data.premiumExpires
+                        );
 
-            if (
-              premiumActive &&
-              data.premiumExpires
-            ) {
-              const expiry =
-                data.premiumExpires.toDate
-                  ? data.premiumExpires.toDate()
-                  : new Date(
-                      data.premiumExpires
-                    );
+                  if (
+                    expiry.getTime() <
+                    Date.now()
+                  ) {
+                    premiumActive =
+                      false;
 
-              if (expiry < new Date()) {
-                premiumActive = false;
+                    try {
+                      await updateDoc(
+                        userRef,
+                        {
+                          premium: false,
+                        }
+                      );
+                    } catch (
+                      error
+                    ) {
+                      console.error(
+                        error
+                      );
+                    }
+                  }
+                }
+
+                setPremium(
+                  premiumActive
+                );
+
+                setLoading(false);
+              },
+              (error) => {
+                console.error(
+                  error
+                );
+
+                resetUserData();
+
+                setLoading(false);
               }
-            }
-
-            setPremium(
-              premiumActive
             );
-          } catch (error) {
-            console.error(
-              "Error loading user:",
-              error
-            );
-
-            resetUserData();
-          }
-
-          setLoading(false);
         }
       );
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAuth();
+
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+      }
+    };
   }, []);
 
   return (

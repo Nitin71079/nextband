@@ -1,0 +1,37 @@
+.notes-renderer{
+    margin-top:40px;
+}
+
+.notes-card{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    padding:30px;
+}
+
+.notes-heading{
+    margin:25px 0 12px;
+    color:#2563eb;
+}
+
+.notes-text{
+    line-height:1.8;
+    color:#475569;
+}
+
+.notes-blank{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:18px 0;
+}
+
+.blank-number{
+    width:35px;
+    font-weight:700;
+}
+
+.notes-blank input{
+    width:220px;
+    padding:10px;
+}

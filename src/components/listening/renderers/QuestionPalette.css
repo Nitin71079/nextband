@@ -1,0 +1,40 @@
+.question-palette{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    border:1px solid #ddd;
+}
+
+.palette-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    margin-top:20px;
+}
+
+.palette-number{
+    height:42px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#f1f5f9;
+    font-weight:600;
+}
+
+.palette-number:hover{
+    background:#dbeafe;
+}
+
+.palette-number.answered{
+    background:#22c55e;
+    color:white;
+}
+
+.palette-number.flagged{
+    border:3px solid orange;
+}
+
+.palette-number.current{
+    background:#2563eb;
+    color:white;
+}

@@ -1,0 +1,1655 @@
+/* =========================================================
+   KNARROW PRICING PAGE
+   PART 1
+   Foundation + Hero
+========================================================= */
+
+:root{
+
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --secondary:#7c3aed;
+
+    --success:#16a34a;
+    --warning:#f59e0b;
+
+    --text:#0f172a;
+    --text-light:#64748b;
+
+    --bg:#f8fafc;
+
+    --card:#ffffff;
+
+    --border:#e2e8f0;
+
+    --shadow-sm:
+        0 10px 30px rgba(15,23,42,.05);
+
+    --shadow:
+        0 20px 60px rgba(15,23,42,.08);
+
+    --shadow-hover:
+        0 30px 80px rgba(37,99,235,.16);
+
+    --radius:28px;
+
+    --transition:.35s ease;
+
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.pricing-page{
+
+    position:relative;
+
+    overflow:hidden;
+
+    min-height:100vh;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+
+    position:relative;
+
+    z-index:2;
+
+    max-width:1150px;
+
+    margin:auto;
+
+    padding:
+
+        120px
+
+        20px
+
+        90px;
+
+    text-align:center;
+
+}
+
+/* =========================================================
+   PILL
+========================================================= */
+
+.hero-pill{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:
+
+        12px 22px;
+
+    border-radius:999px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    color:var(--primary);
+
+    font-weight:700;
+
+    box-shadow:var(--shadow-sm);
+
+    margin-bottom:32px;
+
+    transition:var(--transition);
+
+}
+
+.hero-pill:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.hero h1{
+
+    max-width:900px;
+
+    margin:auto;
+
+    font-size:72px;
+
+    font-weight:900;
+
+    line-height:1.05;
+
+    letter-spacing:-2px;
+
+}
+
+.hero h1 span{
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--secondary)
+
+        );
+
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+}
+
+/* =========================================================
+   SUBTITLE
+========================================================= */
+
+.hero p{
+
+    max-width:760px;
+
+    margin:
+
+        32px auto 0;
+
+    color:var(--text-light);
+
+    font-size:22px;
+
+    line-height:1.8;
+
+}
+
+/* =========================================================
+   BUTTON GROUP
+========================================================= */
+
+.hero-buttons{
+
+    margin-top:50px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.primary-hero-btn{
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:
+
+        18px
+
+        36px;
+
+    border-radius:18px;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--primary-dark)
+
+        );
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    transition:var(--transition);
+
+    box-shadow:
+
+        0 18px 45px rgba(37,99,235,.28);
+
+}
+
+.primary-hero-btn:hover{
+
+    transform:
+
+        translateY(-4px);
+
+    box-shadow:
+
+        0 25px 60px rgba(37,99,235,.35);
+
+}
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.secondary-hero-btn{
+
+    border:1px solid var(--border);
+
+    background:white;
+
+    cursor:pointer;
+
+    padding:
+
+        18px
+
+        36px;
+
+    border-radius:18px;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    transition:var(--transition);
+
+}
+
+.secondary-hero-btn:hover{
+
+    transform:
+
+        translateY(-4px);
+
+    border-color:var(--primary);
+
+}
+
+/* =========================================================
+   RATING
+========================================================= */
+
+.hero-rating{
+
+    margin-top:45px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:14px;
+
+    flex-wrap:wrap;
+
+    color:var(--warning);
+
+    font-size:18px;
+
+}
+
+.hero-rating span{
+
+    color:var(--text-light);
+
+    font-size:16px;
+
+}
+
+/* =========================================================
+   SECTION SPACING
+========================================================= */
+
+section{
+
+    position:relative;
+
+    z-index:2;
+
+}
+/* =========================================================
+   PART 2
+   Pricing Grid
+========================================================= */
+
+.pricing-grid{
+
+    max-width:1280px;
+
+    margin:40px auto 120px;
+
+    padding:0 20px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(340px,1fr));
+
+    gap:34px;
+
+    align-items:stretch;
+
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.pricing-card{
+
+    position:relative;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:flex-start;
+
+    background:var(--card);
+
+    border-radius:var(--radius);
+
+    padding:44px;
+
+    border:1px solid var(--border);
+
+    overflow:hidden;
+
+    transition:all .4s ease;
+
+    box-shadow:var(--shadow);
+
+    isolation:isolate;
+
+}
+
+/* =========================================================
+   Animated Background Glow
+========================================================= */
+
+.pricing-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        radial-gradient(
+
+            circle at top,
+
+            rgba(37,99,235,.08),
+
+            transparent 60%
+
+        );
+
+    opacity:0;
+
+    transition:.45s;
+
+    z-index:-1;
+
+}
+
+.pricing-card:hover::before{
+
+    opacity:1;
+
+}
+
+/* =========================================================
+   Top Border Animation
+========================================================= */
+
+.pricing-card::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+
+    top:0;
+
+    width:100%;
+
+    height:4px;
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            var(--primary),
+
+            var(--secondary),
+
+            #06b6d4
+
+        );
+
+    transform:scaleX(0);
+
+    transform-origin:left;
+
+    transition:.45s;
+
+}
+
+.pricing-card:hover::after{
+
+    transform:scaleX(1);
+
+}
+
+/* =========================================================
+   Hover
+========================================================= */
+
+.pricing-card:hover{
+
+    transform:
+
+        translateY(-12px);
+
+    box-shadow:var(--shadow-hover);
+
+}
+
+/* =========================================================
+   POPULAR PLAN
+========================================================= */
+
+.pricing-card.popular{
+
+    border:2px solid var(--primary);
+
+    transform:scale(1.04);
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            #ffffff,
+
+            #fbfdff
+
+        );
+
+}
+
+.pricing-card.popular:hover{
+
+    transform:
+
+        scale(1.055)
+
+        translateY(-10px);
+
+}
+
+/* =========================================================
+   Current Plan
+========================================================= */
+
+.current-plan{
+
+    border:2px solid var(--success);
+
+}
+
+.current-plan::after{
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            #22c55e,
+
+            #16a34a
+
+        );
+
+    transform:scaleX(1);
+
+}
+
+/* =========================================================
+   Ribbon
+========================================================= */
+
+.popular-badge{
+
+    position:absolute;
+
+    top:22px;
+
+    right:-58px;
+
+    width:220px;
+
+    text-align:center;
+
+    padding:10px;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--secondary)
+
+        );
+
+    color:white;
+
+    font-size:12px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+    transform:rotate(40deg);
+
+    box-shadow:
+
+        0 10px 25px rgba(37,99,235,.25);
+
+}
+
+/* =========================================================
+   Active Badge
+========================================================= */
+
+.active-badge{
+
+    position:absolute;
+
+    left:22px;
+
+    top:22px;
+
+    padding:9px 18px;
+
+    border-radius:999px;
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    font-size:13px;
+
+    font-weight:700;
+
+}
+
+/* =========================================================
+   Card Header
+========================================================= */
+
+.card-header{
+
+    margin-top:34px;
+
+}
+
+.card-header h2{
+
+    font-size:34px;
+
+    font-weight:800;
+
+    margin-bottom:10px;
+
+    letter-spacing:-1px;
+
+}
+
+/* =========================================================
+   Save Badge
+========================================================= */
+
+.save-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    background:#ecfdf5;
+
+    color:#15803d;
+
+    border-radius:999px;
+
+    padding:8px 16px;
+
+    font-size:14px;
+
+    font-weight:700;
+
+}
+/* =========================================================
+   PART 3
+   Price + Features + CTA
+========================================================= */
+
+/* =========================
+   PRICE
+========================= */
+
+.price-section{
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:8px;
+
+    margin:
+
+        34px 0;
+
+}
+
+.currency{
+
+    font-size:34px;
+
+    font-weight:700;
+
+    color:var(--text);
+
+    margin-bottom:12px;
+
+}
+
+.price{
+
+    font-size:84px;
+
+    font-weight:900;
+
+    line-height:.9;
+
+    letter-spacing:-4px;
+
+    color:var(--text);
+
+    transition:.35s;
+
+}
+
+.pricing-card:hover .price{
+
+    color:var(--primary);
+
+}
+
+.period{
+
+    font-size:18px;
+
+    color:var(--text-light);
+
+    margin-bottom:14px;
+
+}
+
+/* =========================
+   EXPIRY
+========================= */
+
+.expiry{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:28px;
+
+    color:var(--primary);
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+/* =========================
+   FEATURE LIST
+========================= */
+
+.feature-list{
+
+    list-style:none;
+
+    padding:0;
+
+    margin:0;
+
+    flex:1;
+
+}
+
+.feature-item{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:16px;
+
+    padding:12px 0;
+
+    color:#334155;
+
+    font-size:16px;
+
+    transition:.25s;
+
+}
+
+.feature-item:hover{
+
+    transform:translateX(6px);
+
+}
+
+.tick{
+
+    width:28px;
+
+    height:28px;
+
+    min-width:28px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            rgba(37,99,235,.12),
+
+            rgba(124,58,237,.08)
+
+        );
+
+    color:var(--primary);
+
+    font-size:15px;
+
+    font-weight:800;
+
+}
+
+/* =========================
+   CTA BUTTON
+========================= */
+
+.pricing-btn{
+
+    position:relative;
+
+    overflow:hidden;
+
+    margin-top:42px;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:18px;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+}
+
+/* PRIMARY */
+
+.pricing-btn.primary{
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--primary-dark)
+
+        );
+
+    color:white;
+
+}
+
+/* SHINE EFFECT */
+
+.pricing-btn.primary::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:-120%;
+
+    width:60%;
+
+    height:100%;
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            transparent,
+
+            rgba(255,255,255,.35),
+
+            transparent
+
+        );
+
+    transform:skewX(-22deg);
+
+}
+
+.pricing-btn.primary:hover::before{
+
+    animation:shine .8s linear;
+
+}
+
+@keyframes shine{
+
+0%{
+
+left:-120%;
+
+}
+
+100%{
+
+left:180%;
+
+}
+
+}
+
+/* PRIMARY HOVER */
+
+.pricing-btn.primary:hover{
+
+    transform:
+
+        translateY(-3px);
+
+    box-shadow:
+
+        0 20px 45px rgba(37,99,235,.28);
+
+}
+
+/* SECONDARY */
+
+.pricing-btn.secondary{
+
+    background:#f8fafc;
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+}
+
+.pricing-btn.secondary:hover{
+
+    background:white;
+
+    border-color:var(--primary);
+
+}
+
+/* DISABLED */
+
+.pricing-btn:disabled{
+
+    cursor:not-allowed;
+
+    opacity:.75;
+
+    transform:none !important;
+
+}
+
+/* =========================
+   SECURE PAYMENT
+========================= */
+
+.secure-text{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-top:20px;
+
+    color:#94a3b8;
+
+    font-size:13px;
+
+}
+
+/* =========================
+   HOVER MICRO EFFECT
+========================= */
+
+.pricing-card:hover .tick{
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--secondary)
+
+        );
+
+    color:white;
+
+    transform:rotate(360deg);
+
+    transition:.45s;
+
+}
+
+.pricing-card:hover .feature-item{
+
+    color:var(--text);
+
+}
+
+/* =========================
+   FREE PLAN STYLE
+========================= */
+
+.pricing-card:first-child{
+
+    opacity:.96;
+
+}
+
+.pricing-card:first-child .pricing-btn{
+
+    background:#f1f5f9;
+
+    color:var(--text);
+
+}
+
+.pricing-card:first-child .pricing-btn:hover{
+
+    background:#e2e8f0;
+
+}
+
+/* =========================
+   PREMIUM PLAN EMPHASIS
+========================= */
+
+.pricing-card.popular .price{
+
+    color:var(--primary);
+
+}
+
+.pricing-card.popular .pricing-btn{
+
+    font-size:18px;
+
+}
+
+.pricing-card.popular{
+
+    z-index:5;
+
+}
+/* =========================================================
+   PART 4
+   COMPARISON TABLE
+========================================================= */
+
+.comparison-section{
+
+    max-width:1250px;
+
+    margin:140px auto;
+
+    padding:0 20px;
+
+}
+
+.comparison-header{
+
+    text-align:center;
+
+    margin-bottom:60px;
+
+}
+
+.comparison-header h2{
+
+    font-size:52px;
+
+    font-weight:900;
+
+    letter-spacing:-2px;
+
+    margin-bottom:18px;
+
+}
+
+.comparison-header p{
+
+    color:var(--text-light);
+
+    font-size:20px;
+
+}
+
+.comparison-table{
+
+    background:white;
+
+    border-radius:26px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+}
+
+.comparison-row{
+
+    display:grid;
+
+    grid-template-columns:
+
+        2fr
+
+        1fr
+
+        1fr;
+
+    align-items:center;
+
+}
+
+.comparison-row>div{
+
+    padding:24px;
+
+    border-bottom:1px solid #eef2f7;
+
+}
+
+.comparison-head{
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            #2563eb,
+
+            #1d4ed8
+
+        );
+
+    color:white;
+
+    font-weight:700;
+
+}
+
+.comparison-row:nth-child(even){
+
+    background:#fafcff;
+
+}
+
+.comparison-row:hover{
+
+    background:#f4f8ff;
+
+}
+
+.yes{
+
+    color:#16a34a;
+
+    font-weight:700;
+
+}
+
+.no{
+
+    color:#cbd5e1;
+
+    font-weight:700;
+
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+.comparison-table{
+
+overflow-x:auto;
+
+}
+
+.comparison-row{
+
+min-width:760px;
+
+}
+
+}
+/* =========================================================
+   PART 5
+   FINAL CTA
+========================================================= */
+
+.final-cta{
+
+    margin:140px auto;
+
+    padding:0 20px;
+
+    max-width:1200px;
+
+}
+
+.cta-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:36px;
+
+    padding:80px 50px;
+
+    text-align:center;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            #2563eb,
+
+            #1d4ed8,
+
+            #4338ca
+
+        );
+
+    color:white;
+
+    box-shadow:
+
+        0 35px 80px rgba(37,99,235,.30);
+
+}
+
+.cta-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:600px;
+
+    height:600px;
+
+    border-radius:50%;
+
+    background:
+
+        rgba(255,255,255,.08);
+
+    top:-260px;
+
+    right:-180px;
+
+}
+
+.cta-card::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:450px;
+
+    height:450px;
+
+    border-radius:50%;
+
+    background:
+
+        rgba(255,255,255,.05);
+
+    bottom:-220px;
+
+    left:-120px;
+
+}
+
+.cta-badge{
+
+    position:relative;
+
+    z-index:2;
+
+    display:inline-block;
+
+    background:
+
+        rgba(255,255,255,.14);
+
+    border:
+
+        1px solid rgba(255,255,255,.18);
+
+    padding:10px 20px;
+
+    border-radius:999px;
+
+    font-weight:700;
+
+    margin-bottom:28px;
+
+}
+
+.cta-card h2{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:58px;
+
+    line-height:1.1;
+
+    font-weight:900;
+
+    margin-bottom:28px;
+
+}
+
+.cta-card h2 span{
+
+    color:#fde047;
+
+}
+
+.cta-card p{
+
+    position:relative;
+
+    z-index:2;
+
+    max-width:760px;
+
+    margin:auto;
+
+    font-size:20px;
+
+    line-height:1.8;
+
+    opacity:.95;
+
+}
+
+.cta-button{
+
+    position:relative;
+
+    z-index:2;
+
+    margin-top:45px;
+
+    padding:
+
+        18px 40px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:white;
+
+    color:#2563eb;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+}
+
+.cta-button:hover{
+
+    transform:
+
+        translateY(-4px);
+
+    box-shadow:
+
+        0 20px 50px rgba(255,255,255,.22);
+
+}
+
+.cta-trust{
+
+    position:relative;
+
+    z-index:2;
+
+    margin-top:40px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:35px;
+
+    flex-wrap:wrap;
+
+    font-weight:600;
+
+    opacity:.92;
+
+}
+
+.cta-trust span{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.cta-card{
+
+padding:50px 25px;
+
+}
+
+.cta-card h2{
+
+font-size:38px;
+
+}
+
+.cta-card p{
+
+font-size:17px;
+
+}
+
+.cta-button{
+
+width:100%;
+
+}
+
+.cta-trust{
+
+flex-direction:column;
+
+gap:16px;
+
+}
+
+}
+/* ==========================
+   STATS
+========================== */
+
+.stats-section{
+
+    max-width:1200px;
+
+    margin:30px auto 100px;
+
+    padding:0 20px;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:24px;
+
+}
+
+.stat-card{
+
+    background:white;
+
+    padding:35px;
+
+    border-radius:24px;
+
+    text-align:center;
+
+    box-shadow:var(--shadow);
+
+    transition:.35s;
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+.stat-card h2{
+
+    font-size:48px;
+
+    color:var(--primary);
+
+    margin-bottom:12px;
+
+}
+
+.stat-card p{
+
+    color:var(--text-light);
+
+}
+.mobile-upgrade{
+
+display:none;
+
+}
+
+@media(max-width:768px){
+
+.mobile-upgrade{
+
+display:flex;
+
+position:fixed;
+
+bottom:20px;
+
+left:20px;
+
+right:20px;
+
+z-index:999;
+
+}
+
+.mobile-upgrade button{
+
+width:100%;
+
+padding:18px;
+
+border:none;
+
+border-radius:18px;
+
+background:linear-gradient(
+135deg,
+#2563eb,
+#1d4ed8
+);
+
+color:white;
+
+font-size:18px;
+
+font-weight:700;
+
+box-shadow:
+0 20px 40px rgba(37,99,235,.35);
+
+}
+
+}
+.pricing-footer{
+
+max-width:1200px;
+
+margin:auto;
+
+padding:60px 20px;
+
+display:flex;
+
+justify-content:space-between;
+
+flex-wrap:wrap;
+
+color:#94a3b8;
+
+border-top:1px solid #e5e7eb;
+
+}
+
+.pricing-footer div{
+
+display:flex;
+
+gap:25px;
+
+}
+
+.pricing-footer span{
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.pricing-footer span:hover{
+
+color:var(--primary);
+
+}

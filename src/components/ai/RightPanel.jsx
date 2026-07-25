@@ -128,8 +128,10 @@ export default function RightPanel() {
 
           <strong>
 
-            18 Days
+🔥 Study Streak
 
+18 Days
++3 This Week
           </strong>
 
         </div>

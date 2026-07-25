@@ -1,100 +1,173 @@
+import "./QuestionPalette.css";
+import "../../../styles/listening/QuestionPalette.css";
+
 export default function QuestionPalette({
-  questions = [],
+  sections = [],
   answers = {},
-  flaggedQuestions = [],
-  onQuestionClick,
-  currentQuestionId = null,
+  flagged = [],
+  currentQuestion = null,
+  onSelectQuestion,
 }) {
-  if (!Array.isArray(questions) || questions.length === 0) {
-    return null;
-  }
+
+  const questions = [];
+
+  sections.forEach((section) => {
+
+    // -------- Section 1 --------
+    if (section.form) {
+      section.form.forEach((item) => {
+        questions.push({
+          id: item.id,
+        });
+      });
+    }
+
+    // -------- Sections 2–4 --------
+    section.groups?.forEach((group) => {
+
+      // MCQ / Matching / Map
+      if (group.questions) {
+        group.questions.forEach((question) => {
+          questions.push({
+            id: question.id,
+          });
+        });
+      }
+
+      // Notes
+      if (group.notes) {
+        group.notes.forEach((item) => {
+          if (item.type === "blank") {
+            questions.push({
+              id: item.id,
+            });
+          }
+        });
+      }
+
+      // Table
+      if (group.rows) {
+        group.rows.forEach((row) => {
+
+          // New row format
+          if (Array.isArray(row)) {
+
+            row.forEach((cell) => {
+              if (cell.id) {
+                questions.push({
+                  id: cell.id,
+                });
+              }
+            });
+
+          }
+
+          // Old row format
+          else if (row.question) {
+
+            questions.push({
+              id: row.question.id,
+            });
+
+          }
+
+        });
+      }
+
+      // Flowchart
+      if (group.steps) {
+        group.steps.forEach((step) => {
+          if (step.type === "blank") {
+            questions.push({
+              id: step.id,
+            });
+          }
+        });
+      }
+
+    });
+
+  });
+
+  questions.sort((a, b) => a.id - b.id);
 
   return (
-    <div style={{ marginBottom: "25px" }}>
-      {/* Legend */}
 
-      <div
-        style={{
-          display: "flex",
-          gap: "18px",
-          flexWrap: "wrap",
-          marginBottom: "18px",
-          fontSize: "14px",
-          color: "#475569",
-        }}
-      >
-        <span>⚪ Unanswered</span>
-        <span>🟢 Answered</span>
-        <span>🟠 Flagged</span>
-        <span>🔵 Current</span>
-      </div>
+    <div className="question-palette">
 
-      {/* Palette */}
+      <h3>Questions</h3>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fill, minmax(42px,1fr))",
-          gap: "10px",
-        }}
-      >
+      <div className="palette-grid">
+
         {questions.map((question) => {
+
           const answered =
-            answers[question.id] !== undefined;
+            answers[question.id] !== undefined &&
+            answers[question.id] !== "";
 
-          const flagged =
-            flaggedQuestions.includes(question.id);
+          const isFlagged =
+            flagged.includes(question.id);
 
-          const current =
-            currentQuestionId === question.id;
+          const isCurrent =
+            currentQuestion === question.id;
 
-          let background = "#e2e8f0";
-          let color = "#1e293b";
+          let className = "palette-number";
 
-          if (answered) {
-            background = "#22c55e";
-            color = "#fff";
-          }
+          if (answered) className += " answered";
 
-          if (flagged) {
-            background = "#f59e0b";
-            color = "#fff";
-          }
+          if (isFlagged) className += " flagged";
 
-          if (current) {
-            background = "#2563eb";
-            color = "#fff";
-          }
+          if (isCurrent) className += " current";
+console.log("Section 4 groups:", sections[3]?.groups);
 
+console.log("Group count:", sections[3]?.groups?.length);
+
+console.log(
+  sections[3]?.groups?.map(group => ({
+    id: group.id,
+    type: group.type
+  }))
+);
           return (
+
             <button
               key={question.id}
+              className={className}
               onClick={() =>
-                onQuestionClick?.(question.id)
+                onSelectQuestion(question.id)
               }
               title={`Question ${question.id}`}
-              style={{
-                width: 42,
-                height: 42,
-                border: "none",
-                borderRadius: "10px",
-                background,
-                color,
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "0.2s",
-                boxShadow:
-                  current
-                    ? "0 0 0 3px rgba(37,99,235,.25)"
-                    : "0 2px 6px rgba(0,0,0,.08)",
-              }}
             >
               {question.id}
             </button>
+
           );
+
         })}
+
       </div>
+
+      <div className="palette-legend">
+
+        <div>
+          <span className="legend-box current"></span>
+          Current
+        </div>
+
+        <div>
+          <span className="legend-box answered"></span>
+          Answered
+        </div>
+
+        <div>
+          <span className="legend-box flagged"></span>
+          Flagged
+        </div>
+
+      </div>
+
     </div>
+
   );
+
 }

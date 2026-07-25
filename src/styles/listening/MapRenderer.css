@@ -1,0 +1,57 @@
+.map-renderer{
+    margin-top:40px;
+}
+
+.map-container{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:30px;
+}
+
+.map-image-container{
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid #e5e7eb;
+}
+
+.listening-map{
+    width:100%;
+    display:block;
+}
+
+.map-sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+.map-options,
+.map-questions{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    padding:20px;
+}
+
+.map-option{
+    display:flex;
+    gap:12px;
+    margin:12px 0;
+}
+
+.map-question{
+    margin-bottom:18px;
+}
+
+.map-question-header{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+}
+
+.map-question select{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+}

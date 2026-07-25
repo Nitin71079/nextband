@@ -1,0 +1,75 @@
+.form-renderer{
+    margin-top:20px;
+}
+
+.ielts-paper{
+    max-width:850px;
+    margin:auto;
+}
+
+.question-header{
+    margin-bottom:35px;
+}
+
+.question-header h2{
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.question-header p{
+    color:#64748b;
+    margin-bottom:8px;
+}
+
+.question-header strong{
+    color:#2563eb;
+}
+
+.ielts-form-card{
+    background:#fff;
+    border-radius:18px;
+    border:1px solid #e2e8f0;
+    padding:35px;
+}
+
+.form-title{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.ielts-form-row{
+    display:flex;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.question-number{
+    width:40px;
+    color:#2563eb;
+    font-weight:700;
+}
+
+.field-label{
+    width:250px;
+}
+
+.answer-line{
+    flex:1;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.answer-line input{
+    flex:1;
+    border:none;
+    border-bottom:2px solid #cbd5e1;
+    background:transparent;
+    padding:8px;
+    font-size:16px;
+}
+
+.answer-line input:focus{
+    border-color:#2563eb;
+    outline:none;
+}

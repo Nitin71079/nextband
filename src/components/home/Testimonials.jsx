@@ -1,102 +1,168 @@
 import "./Testimonials.css";
-import { Star } from "lucide-react";
+import { motion } from "framer-motion";
+
+import {
+  Star,
+  Sparkles,
+  Quote,
+} from "lucide-react";
 
 export default function Testimonials() {
 
   const reviews = [
 
     {
-      name: "Sarah Johnson",
-      country: "United Kingdom",
-      band: "Overall Band 8.0",
+      name:"Sarah Johnson",
+      country:"United Kingdom",
+      band:"Band 8.0",
       review:
-        "The AI writing feedback was incredibly accurate. It helped me improve my essays in just a few weeks.",
+        "The AI writing feedback was incredibly accurate. It helped me improve my essays within a few weeks.",
     },
 
     {
-      name: "Rahul Sharma",
-      country: "India",
-      band: "Overall Band 7.5",
+      name:"Rahul Sharma",
+      country:"India",
+      band:"Band 7.5",
       review:
-        "The mock tests felt exactly like the real IELTS CBT exam. The dashboard kept me motivated every day.",
+        "The mock tests felt almost identical to the real IELTS CBT exam. The dashboard kept me motivated every single day.",
     },
 
     {
-      name: "Emily Carter",
-      country: "Australia",
-      band: "Overall Band 8.5",
+      name:"Emily Carter",
+      country:"Australia",
+      band:"Band 8.5",
       review:
-        "Speaking AI was my favorite feature. The instant feedback improved my confidence dramatically.",
+        "The AI Speaking feedback completely changed my confidence. I finally knew exactly what to improve.",
     },
 
   ];
 
   return (
-
-    <section className="testimonials">
+        <motion.section
+      className="testimonials"
+      initial={{
+        opacity: 0,
+      }}
+      whileInView={{
+        opacity: 1,
+      }}
+      viewport={{
+        once: true,
+      }}
+      transition={{
+        duration: 0.6,
+      }}
+    >
 
       <div className="testimonials-header">
 
-        <span>SUCCESS STORIES</span>
+        <span>
+
+          <Sparkles size={15} />
+
+          STUDENT SUCCESS STORIES
+
+        </span>
 
         <h2>
-          Loved by IELTS Students
+
+          Trusted by Future
+          IELTS Achievers
+
         </h2>
 
         <p>
-          Thousands of learners trust NextBand to
-          prepare for their IELTS journey.
+
+          Discover how students improve their IELTS
+          preparation with AI-powered feedback,
+          realistic CBT practice, and personalized
+          study guidance on Knarrow.
+
         </p>
 
       </div>
 
       <div className="testimonial-grid">
 
-        {reviews.map((review) => (
+        {reviews.map((review, index) => (
 
-          <div
-            className="testimonial-card"
+          <motion.div
             key={review.name}
+            className="testimonial-card"
+            initial={{
+              opacity: 0,
+              y: 30,
+            }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+            }}
+            viewport={{
+              once: true,
+            }}
+            transition={{
+              delay: index * 0.12,
+            }}
+            whileHover={{
+              y: -10,
+              scale: 1.02,
+            }}
           >
 
             <div className="stars">
 
-              {[1,2,3,4,5].map((star)=>(
+              {[...Array(5)].map((_, star) => (
 
                 <Star
                   key={star}
                   size={18}
-                  fill="#f59e0b"
-                  color="#f59e0b"
+                  fill="#fbbf24"
+                  color="#fbbf24"
                 />
 
               ))}
 
             </div>
 
+            <Quote
+              size={28}
+              color="#2563eb"
+              style={{
+                marginBottom: "18px",
+                opacity: 0.7,
+              }}
+            />
+
             <p className="review">
 
               "{review.review}"
 
             </p>
+                        <div className="review-footer">
 
-            <div className="review-footer">
+              <div className="review-user">
 
-              <div className="avatar">
+                <div className="avatar">
 
-                {review.name.charAt(0)}
+                  {review.name.charAt(0)}
 
-              </div>
+                </div>
 
-              <div>
+                <div>
 
-                <h4>{review.name}</h4>
+                  <h4>
 
-                <span>
+                    {review.name}
 
-                  {review.country}
+                  </h4>
 
-                </span>
+                  <span>
+
+                    {review.country}
+
+                  </span>
+
+                </div>
 
               </div>
 
@@ -108,13 +174,13 @@ export default function Testimonials() {
 
             </div>
 
-          </div>
+          </motion.div>
 
         ))}
 
       </div>
 
-    </section>
+    </motion.section>
 
   );
 

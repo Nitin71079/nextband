@@ -16,8 +16,7 @@ import PremiumBanner from "../components/dashboard/PremiumBanner";
 
 import { trackEvent } from "../utils/analytics";
 
-import "../styles/dashboard.css";
-
+import "../styles/dashboard/dashboard.css";
 export default function Dashboard() {
   const {
     user,

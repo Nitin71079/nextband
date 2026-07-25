@@ -1,0 +1,16 @@
+@import "./variables.css";
+@import "./animations.css";
+@import "./layout.css";
+
+@import "./hero.css";
+@import "./continue-learning.css";
+@import "./quick-actions.css";
+@import "./performance.css";
+@import "./skills.css";
+@import "./ai-recommendation.css";
+@import "./ai-status.css";
+
+@import "./responsive.css";
+@import "./daily-goal.css";
+@import "./recent-activity.css";
+@import "./premium-banner.css";

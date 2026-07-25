@@ -1,4 +1,5 @@
 import "./Features.css";
+import { motion } from "framer-motion";
 
 import {
   BookOpen,
@@ -7,77 +8,109 @@ import {
   Mic,
   BrainCircuit,
   BarChart3,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 
 export default function Features() {
+
   const features = [
+
     {
-      icon: <BookOpen size={34} />,
+      icon: BookOpen,
       title: "Reading",
       description:
-        "Real IELTS CBT reading tests with timer, passages, answers and detailed performance reports.",
-      color: "#3b82f6",
+        "Real IELTS CBT reading tests with timers, passages, answer review and detailed analytics.",
+      color:"#2563eb",
+      badge:"120 Questions",
     },
 
     {
-      icon: <Headphones size={34} />,
+      icon: Headphones,
       title: "Listening",
       description:
-        "Authentic listening tests with synchronized audio and automatic scoring.",
-      color: "#8b5cf6",
+        "Practice authentic listening tests with synchronized audio and automatic scoring.",
+      color:"#8b5cf6",
+      badge:"30 Tests",
     },
 
     {
-      icon: <PenSquare size={34} />,
-      title: "Writing",
+      icon: PenSquare,
+      title:"Writing",
       description:
-        "AI evaluates your essays like an IELTS examiner with detailed feedback.",
-      color: "#f59e0b",
+        "Receive AI evaluation based on IELTS band descriptors with detailed feedback.",
+      color:"#f59e0b",
+      badge:"AI Powered",
     },
 
     {
-      icon: <Mic size={34} />,
-      title: "Speaking",
+      icon: Mic,
+      title:"Speaking",
       description:
-        "Practice speaking with AI and receive fluency, grammar and pronunciation analysis.",
-      color: "#22c55e",
+        "Practice with AI and improve pronunciation, fluency and grammar naturally.",
+      color:"#22c55e",
+      badge:"Live AI",
     },
 
     {
-      icon: <BrainCircuit size={34} />,
-      title: "AI Coach",
+      icon: BrainCircuit,
+      title:"AI Coach",
       description:
         "Personalized study plans, recommendations and instant IELTS assistance.",
-      color: "#06b6d4",
+      color:"#06b6d4",
+      badge:"24/7 Coach",
     },
 
     {
-      icon: <BarChart3 size={34} />,
-      title: "Analytics",
+      icon: BarChart3,
+      title:"Analytics",
       description:
-        "Track your progress with detailed performance analytics and predicted IELTS band.",
-      color: "#ef4444",
+        "Track progress with detailed performance reports and predicted IELTS bands.",
+      color:"#ef4444",
+      badge:"Insights",
     },
+
   ];
 
   return (
-    <section className="features">
+        <motion.section
+      className="features"
+      initial={{
+        opacity: 0,
+      }}
+      whileInView={{
+        opacity: 1,
+      }}
+      viewport={{
+        once: true,
+      }}
+      transition={{
+        duration: 0.6,
+      }}
+    >
 
       <div className="features-header">
 
-        <span>WHY NEXTBAND</span>
+        <span>
+
+          <Sparkles size={15} />
+
+WHY STUDENTS CHOOSE KNARROW
+        </span>
 
         <h2>
 
-          Everything You Need
-          To Score Higher
+         Everything Required to
+Master Every IELTS Module
 
         </h2>
 
         <p>
 
-          A complete AI-powered IELTS preparation platform
-          built to help you achieve your dream band score.
+          Practice every IELTS module using
+          realistic CBT exams, AI evaluation,
+          personalized coaching and powerful
+          analytics—all in one platform.
 
         </p>
 
@@ -85,32 +118,85 @@ export default function Features() {
 
       <div className="features-grid">
 
-        {features.map((feature) => (
+        {features.map((feature, index) => {
 
-          <div
-            key={feature.title}
-            className="feature-card"
-          >
+          const Icon = feature.icon;
 
-            <div
-              className="feature-icon"
-              style={{
-                background: feature.color,
+          return (
+
+            <motion.div
+              key={feature.title}
+              className="feature-card"
+              initial={{
+                opacity: 0,
+                y: 30,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              viewport={{
+                once: true,
+              }}
+              transition={{
+                delay: index * 0.08,
+              }}
+              whileHover={{
+                y: -10,
+                scale: 1.02,
               }}
             >
-              {feature.icon}
-            </div>
 
-            <h3>{feature.title}</h3>
+              <div
+className="feature-icon"
+style={{
+background:`linear-gradient(135deg, ${feature.color}, ${feature.color}dd)`
+}}
+>
 
-            <p>{feature.description}</p>
+                <Icon size={32} />
 
-          </div>
+              </div>
 
-        ))}
+              <h3>
+
+                {feature.title}
+
+              </h3>
+
+              <p>
+
+                {feature.description}
+
+              </p>
+                            <div className="feature-footer">
+
+                <span className="feature-badge">
+
+                  {feature.badge}
+
+                </span>
+
+                <div className="feature-link">
+
+                  Learn More
+
+                  <ArrowRight size={18} />
+
+                </div>
+
+              </div>
+
+            </motion.div>
+
+          );
+
+        })}
 
       </div>
 
-    </section>
+    </motion.section>
+
   );
+
 }
