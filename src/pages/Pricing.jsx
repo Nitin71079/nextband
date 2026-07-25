@@ -1,8 +1,7 @@
 import AuroraBackground from "../components/AuroraBackground";
 import PricingCard from "../components/PricingCard";
 
-import "../styles/Pricing.css";
-
+import "../styles/pricing.css";
 export default function Pricing() {
   return (
     <div className="pricing-page">

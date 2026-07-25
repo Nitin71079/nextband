@@ -1,4 +1,4 @@
-import TextInput from "./TextInput.jsx";
+import TextInput from "./TextInput";
 export default function FlowChartCompletion(props) {
   return (
     <div>
