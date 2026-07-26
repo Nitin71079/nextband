@@ -1632,3 +1632,106 @@
     }
 
 }
+
+/* ==========================================================
+   NAVBAR RESPONSIVE — MOBILE BREAKPOINTS
+========================================================== */
+
+@media (max-width: 1024px) {
+  .kn-navbar {
+    padding: 14px 24px;
+  }
+  .kn-navbar.scrolled {
+    padding: 12px 24px;
+  }
+  .kn-desktop-nav {
+    gap: 4px;
+  }
+  .kn-nav-link {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  .kn-user-info {
+    display: none;
+  }
+  .kn-chevron {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .kn-navbar {
+    padding: 12px 18px;
+  }
+  /* Show hamburger, hide desktop nav */
+  .kn-mobile-toggle {
+    display: flex;
+  }
+  .kn-desktop-nav {
+    display: none;
+  }
+  /* Hide profile button text on mobile — just show avatar */
+  .kn-profile-btn {
+    padding: 6px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    gap: 0;
+  }
+  .kn-profile-btn .kn-user-info,
+  .kn-profile-btn .kn-chevron {
+    display: none;
+  }
+  .kn-profile-menu {
+    width: 290px;
+    right: -10px;
+  }
+  .kn-logo-text small {
+    display: none;
+  }
+  .kn-logo-text span {
+    font-size: 19px;
+  }
+  .kn-logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kn-navbar {
+    padding: 10px 14px;
+  }
+  .kn-icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .kn-mobile-toggle {
+    width: 40px;
+    height: 40px;
+  }
+  .kn-right {
+    gap: 8px;
+  }
+}
+
+/* ── Pricing upgrade pill ── */
+.kn-upgrade-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .4px;
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: kn-pill-pulse 2.5s ease-in-out infinite;
+}
+@keyframes kn-pill-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,.4); }
+  50%       { box-shadow: 0 0 0 5px rgba(37,99,235,0); }
+}

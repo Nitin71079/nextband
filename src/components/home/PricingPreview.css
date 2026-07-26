@@ -8,7 +8,7 @@
 
     overflow:hidden;
 
-    padding:140px 40px;
+    padding:80px 40px;
 
     background:
         linear-gradient(
@@ -95,7 +95,7 @@
 
     text-align:center;
 
-    margin-bottom:80px;
+    margin-bottom:48px;
 
 }
 
@@ -127,7 +127,7 @@
 
 .pricing-header h2{
 
-    font-size:clamp(42px,6vw,64px);
+    font-size:clamp(30px,4vw,46px);
 
     line-height:1.1;
 
@@ -141,9 +141,9 @@
 
 .pricing-header p{
 
-    font-size:20px;
+    font-size:17px;
 
-    line-height:1.9;
+    line-height:1.8;
 
     color:#64748b;
 
@@ -343,9 +343,7 @@
    CONTENT
 =========================================================== */
 
-.pricing-card h3{
-
-    font-size:30px;
+.pricing-card h3{font-size:24px;
 
     font-weight:800;
 
@@ -517,7 +515,7 @@
 
     .pricing-preview{
 
-        padding:90px 24px;
+        padding:60px 24px;
 
     }
 
@@ -545,7 +543,7 @@
 
     .pricing-preview{
 
-        padding:70px 18px;
+        padding:48px 18px;
 
     }
 

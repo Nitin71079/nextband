@@ -1,5 +1,5 @@
 /* ===========================================================
-NEXTBAND AI WORKSPACE
+Knarrow AI WORKSPACE
 APPLE × CURSOR × CHATGPT
 ===========================================================*/
 
@@ -1896,4 +1896,147 @@ padding:40px;
 
 overflow-x:hidden;
 
+}
+
+/* ===========================================================
+   AI WORKSPACE — RESPONSIVE
+=========================================================== */
+
+@media (max-width: 1200px) {
+  .workspace {
+    grid-template-columns: 240px 1fr 300px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  .sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 16px 20px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    gap: 12px;
+  }
+  .sidebar-logo {
+    margin-bottom: 0;
+    flex: 1;
+  }
+  .sidebar-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sidebar-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    gap: 8px;
+  }
+  .sidebar-btn:hover {
+    transform: translateY(-2px);
+  }
+  .premium-card,
+  .user-card {
+    display: none;
+  }
+  .right-panel {
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,.08);
+    padding: 22px;
+  }
+  .workspace-main {
+    padding: 28px 22px;
+  }
+  .ai-orb-section {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .orb-container {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto;
+  }
+  .orb-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    padding: 12px 16px;
+  }
+  .sidebar-logo h2 {
+    font-size: 18px;
+  }
+  .sidebar-btn span {
+    display: none;
+  }
+  .sidebar-btn {
+    padding: 10px;
+    border-radius: 14px;
+  }
+  .workspace-main {
+    padding: 18px 16px;
+  }
+  .orb-panel h1 {
+    font-size: 36px;
+  }
+  .orb-panel p {
+    font-size: 15px;
+  }
+  .orb-container {
+    width: 220px;
+    height: 220px;
+  }
+  .orb-core {
+    width: 100px;
+    height: 100px;
+  }
+  .orb-inner {
+    width: 74px;
+    height: 74px;
+  }
+  .ring-1 { width: 130px; height: 130px; }
+  .ring-2 { width: 175px; height: 175px; }
+  .ring-3 { width: 215px; height: 215px; }
+  .orb-metrics {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .chat-wrapper {
+    height: 500px;
+    min-height: 400px;
+  }
+  .chat-body {
+    padding: 18px 16px;
+  }
+  .message-bubble {
+    max-width: 88%;
+    font-size: 14px;
+    padding: 14px 18px;
+  }
+  .chat-input {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+  .chat-input input {
+    font-size: 14px;
+    padding: 13px 16px;
+  }
+  .right-panel {
+    padding: 16px;
+    gap: 16px;
+  }
+  .right-card {
+    padding: 18px;
+  }
+  .prediction-card h1 {
+    font-size: 52px;
+  }
 }

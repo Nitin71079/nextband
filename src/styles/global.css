@@ -91,6 +91,7 @@
 html{
 
     scroll-behavior:smooth;
+    overflow-x:hidden;
 
 }
 
@@ -355,6 +356,20 @@ button:hover{
 
     }
 
+}
+
+/* ===========================================================
+   MOBILE NAV — only visible on small screens
+=========================================================== */
+
+.mobile-nav {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-nav {
+    display: flex !important;
+  }
 }
 
 /* ===========================================================

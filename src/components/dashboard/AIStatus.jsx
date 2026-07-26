@@ -35,7 +35,7 @@ export default function AIStatus({
 
           <h2>
 
-            NextBand Intelligence
+            Knarrow Intelligence
 
           </h2>
 

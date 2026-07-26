@@ -8,7 +8,7 @@
 
     overflow:hidden;
 
-    padding:140px 40px;
+    padding:80px 40px;
 
      background:
         linear-gradient(
@@ -87,7 +87,7 @@
 
     text-align:center;
 
-    margin-bottom:80px;
+    margin-bottom:48px;
 
 }
 
@@ -120,8 +120,7 @@
 
 .features-header h2{
 
-    font-size:
-        clamp(42px,6vw,64px);
+    font-size:clamp(30px,4vw,46px);
 
     font-weight:900;
 
@@ -135,9 +134,9 @@
 
 .features-header p{
 
-    font-size:20px;
+    font-size:17px;
 
-    line-height:1.9;
+    line-height:1.8;
 
     color:#64748b;
 
@@ -302,9 +301,7 @@
 
 }
 
-.feature-card h3{
-
-    font-size:30px;
+.feature-card h3{font-size:24px;
 
     font-weight:800;
 
@@ -525,13 +522,13 @@
 
     .features{
 
-        padding:90px 24px;
+        padding:60px 24px;
 
     }
 
     .features-header{
 
-        margin-bottom:60px;
+        margin-bottom:36px;
 
     }
 
@@ -561,7 +558,7 @@
 
     .features{
 
-        padding:70px 18px;
+        padding:48px 18px;
 
     }
 

@@ -149,7 +149,7 @@ export async function routeRequest({
         intent: AGENTS.GENERAL,
         result: {
           message:
-            "I'm your NextBand AI assistant. I can help with IELTS Writing, Speaking, Reading, Listening, Grammar, Vocabulary, and Study Plans.",
+            "I'm your Knarrow AI assistant. I can help with IELTS Writing, Speaking, Reading, Listening, Grammar, Vocabulary, and Study Plans.",
         },
       };
   }

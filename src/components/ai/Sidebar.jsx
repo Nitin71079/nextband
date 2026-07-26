@@ -101,7 +101,7 @@ export default function Sidebar() {
 
             <h2>
 
-              NextBand
+              Knarrow
 
             </h2>
 

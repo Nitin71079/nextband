@@ -51,7 +51,7 @@ export default function InputBar({
         value={value}
         disabled={loading}
         maxLength={MAX_LENGTH}
-        placeholder="Ask NextBand AI anything..."
+        placeholder="Ask Knarrow AI anything..."
         onFocus={() =>
           setFocused(true)
         }

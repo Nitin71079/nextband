@@ -199,3 +199,49 @@
     color:white;
 
 }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media(max-width:768px){
+    .mcq-renderer{
+        max-width:100%;
+    }
+    .mcq-header h2{
+        font-size:20px;
+    }
+    .mcq-card{
+        padding:18px;
+        border-radius:14px;
+    }
+    .mcq-card-header{
+        flex-direction:column;
+        gap:10px;
+    }
+    .mcq-card-header h3{
+        font-size:16px;
+    }
+    .mcq-option{
+        padding:14px;
+        gap:12px;
+    }
+    .text{
+        font-size:15px;
+    }
+    .letter{
+        width:28px;
+        height:28px;
+        flex-shrink:0;
+    }
+}
+
+@media(max-width:480px){
+    .mcq-option{
+        padding:12px;
+    }
+    .flag-btn{
+        width:36px;
+        height:36px;
+    }
+}

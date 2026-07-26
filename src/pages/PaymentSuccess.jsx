@@ -13,7 +13,7 @@ export default function PaymentSuccess() {
       <h1>🎉 Payment Successful</h1>
 
       <p>
-        Welcome to NextBand Premium.
+        Welcome to Knarrow Premium.
       </p>
 
       <p>

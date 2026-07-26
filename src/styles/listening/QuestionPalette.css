@@ -85,3 +85,51 @@
 .legend-box.flagged {
     background: #f59e0b;
 }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 900px) {
+  .question-palette {
+    width: 100%;
+    position: static;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .question-palette {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .question-palette h3 {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+
+  .palette-number {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+
+  .palette-number {
+    width: 100%;
+    height: 34px;
+  }
+}

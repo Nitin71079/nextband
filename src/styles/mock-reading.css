@@ -1,0 +1,305 @@
+/* ==========================================================
+   MOCK READING — RESPONSIVE LAYOUT
+========================================================== */
+
+.mock-reading-page {
+  min-height: 100vh;
+  padding: 30px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+/* ── Selector bar ─────────────────────────────────────── */
+.mock-reading-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.mock-reading-select {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--card, #fff);
+  color: var(--text, #0f172a);
+  font-size: 15px;
+  min-width: 0;
+  flex: 1;
+  max-width: 420px;
+  cursor: pointer;
+}
+
+.mock-reading-meta {
+  display: flex;
+  gap: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ── Mobile tab switcher (hidden on desktop) ─────────── */
+.mock-reading-tabs {
+  display: none;
+  gap: 0;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+.mock-tab-btn {
+  flex: 1;
+  padding: 13px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--card, #fff);
+  color: var(--text-secondary, #64748b);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mock-tab-btn.active {
+  background: var(--primary, #2563eb);
+  color: #fff;
+}
+
+/* ── Two-panel layout ────────────────────────────────── */
+.mock-reading-layout {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 30px;
+  margin-top: 25px;
+}
+
+.mock-reading-passage,
+.mock-reading-questions {
+  background: var(--card, #fff);
+  border-radius: 18px;
+  padding: 30px;
+  overflow-y: auto;
+  height: calc(100vh - 210px);
+  border: 1px solid var(--border, #e5e7eb);
+  min-width: 0;
+}
+
+.mock-reading-questions {
+  padding: 25px;
+}
+
+/* ── Passage content ─────────────────────────────────── */
+.mock-passage-title {
+  margin-bottom: 25px;
+  font-size: 26px;
+  line-height: 1.3;
+}
+
+.mock-passage-subtitle {
+  margin-bottom: 25px;
+  font-weight: 600;
+  color: #555;
+}
+
+.mock-passage-para {
+  white-space: pre-wrap;
+  line-height: 2;
+  font-size: 17px;
+  text-align: justify;
+  margin-bottom: 26px;
+}
+
+.mock-passage-section {
+  margin-bottom: 40px;
+}
+
+.mock-passage-section-title {
+  margin-bottom: 15px;
+  color: var(--primary, #2563eb);
+}
+
+/* ── Question items ──────────────────────────────────── */
+.mock-question-item {
+  margin-top: 35px;
+  margin-bottom: 45px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+
+.mock-question-instruction {
+  color: var(--primary, #2563eb);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.mock-question-text {
+  margin-bottom: 18px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.mock-flag-btn {
+  margin-top: 18px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--surface, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Passage nav + stats ─────────────────────────────── */
+.mock-passage-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.mock-exam-stats {
+  margin-top: 35px;
+  background: var(--surface, #f8fafc);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ── Tab show/hide (used only on mobile) ─────────────── */
+.tab-visible { display: block; }
+.tab-hidden  { display: block; } /* both visible on desktop */
+
+/* ==========================================================
+   RESPONSIVE — TABLET (≤ 1024px)
+========================================================== */
+
+@media (max-width: 1024px) {
+  .mock-reading-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   Switch to single-panel tab layout
+========================================================== */
+
+@media (max-width: 768px) {
+  .mock-reading-page {
+    padding: 16px;
+  }
+
+  .mock-reading-selector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .mock-reading-select {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .mock-reading-meta {
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  /* Show the tab switcher */
+  .mock-reading-tabs {
+    display: flex;
+  }
+
+  /* Stack layout, but only one panel visible via tab */
+  .mock-reading-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 0;
+  }
+
+  /* Tab panel visibility controlled by JS class */
+  .tab-visible {
+    display: block;
+  }
+
+  .tab-hidden {
+    display: none;
+  }
+
+  .mock-reading-passage,
+  .mock-reading-questions {
+    height: auto;
+    min-height: calc(100vh - 280px);
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .mock-passage-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .mock-passage-para {
+    font-size: 15px;
+    line-height: 1.9;
+  }
+
+  .mock-question-text {
+    font-size: 15px;
+  }
+
+  .mock-question-item {
+    margin-top: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+  }
+
+  .mock-passage-nav {
+    flex-direction: column;
+  }
+
+  .mock-passage-nav button {
+    width: 100%;
+  }
+
+  .mock-exam-stats {
+    font-size: 13px;
+    gap: 8px;
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE — SMALL PHONE (≤ 480px)
+========================================================== */
+
+@media (max-width: 480px) {
+  .mock-reading-page {
+    padding: 12px;
+  }
+
+  .mock-reading-passage,
+  .mock-reading-questions {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .mock-passage-title {
+    font-size: 18px;
+  }
+
+  .mock-passage-para {
+    font-size: 14px;
+  }
+
+  .mock-tab-btn {
+    padding: 11px 10px;
+    font-size: 13px;
+  }
+}

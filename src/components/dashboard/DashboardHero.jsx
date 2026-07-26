@@ -71,6 +71,18 @@ export default function DashboardHero({
 
   const confidence = 92;
 
+  /* ---------------- AI Insight ---------------- */
+
+  const insightTitle =
+    analytics.recommendation?.title ?? "Improve Grammar Accuracy";
+
+  const insightDescription =
+    analytics.recommendation?.description ??
+    "Based on your recent performance, improving grammar accuracy and sentence variety could increase your estimated score.";
+
+  const insightGain =
+    analytics.recommendation?.estimatedGain ?? "+0.5 Band";
+
   const remainingBand = Math.max(
     0,
     Number(
@@ -444,54 +456,48 @@ className="dashboard-hero-right"
           {/* AI Insight */}
 
           <motion.div
-            className="hero-ai-card"
+            className="hero-ai-insight"
             whileHover={{
-              y: -4,
+              y: -6,
             }}
           >
 
-            <div className="ai-card-header">
+            <div className="ai-insight-icon">
 
-              <BrainCircuit size={20} />
-
-              <span>
-
-                Today's AI Insight
-
-              </span>
+              <BrainCircuit size={28} />
 
             </div>
 
-            <h3>
+            <div className="ai-insight-content">
 
-              Improve Grammar Accuracy
+              <small>Today's AI Insight</small>
 
-            </h3>
+              <h3>
 
-            <p>
+                {insightTitle}
 
-              Based on your recent performance, improving grammar accuracy and sentence variety could increase your estimated score by
+              </h3>
 
-              <strong>
+              <p>
 
-                {" "}+0.5 Band
+                {insightDescription}
 
-              </strong>
+              </p>
 
-              .
+              <Link
+                to="/ai-center"
+                className="ai-improvement"
+              >
 
-            </p>
+                <Sparkles size={15} />
 
-            <Link
-              to="/ai-center"
-              className="ai-link"
-            >
+                {insightGain} Potential
 
-              Open AI Coach
+                <ChevronRight size={16} />
 
-              <ChevronRight size={18} />
+              </Link>
 
-            </Link>
+            </div>
 
           </motion.div>
 

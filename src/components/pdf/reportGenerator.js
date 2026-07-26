@@ -19,7 +19,7 @@ export async function generateEssayReport(
     );
 
   page.drawText(
-    "NextBand AI Essay Report",
+    "Knarrow AI Essay Report",
     {
       x: 50,
       y: 790,
@@ -85,7 +85,7 @@ export async function generateEssayReport(
   link.href = url;
 
   link.download =
-    "nextband-report.pdf";
+    "Knarrow-report.pdf";
 
   link.click();
 

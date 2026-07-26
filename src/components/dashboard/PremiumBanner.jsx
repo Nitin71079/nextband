@@ -31,7 +31,7 @@ export default function PremiumBanner() {
 
             <Sparkles size={16} />
 
-            NEXTBAND PREMIUM
+            Knarrow PREMIUM
 
           </div>
 

@@ -38,7 +38,7 @@ export default function Terms() {
               "30px"
           }}
         >
-          Welcome to NextBand.
+          Welcome to Knarrow.
           By accessing or using
           our IELTS preparation
           platform, you agree to
@@ -54,7 +54,7 @@ export default function Terms() {
             title:
               "Platform Usage",
             content:
-              "Users agree to use NextBand responsibly and only for lawful educational purposes. Misuse of the platform may result in restricted access."
+              "Users agree to use Knarrow responsibly and only for lawful educational purposes. Misuse of the platform may result in restricted access."
           },
 
           {
@@ -68,7 +68,7 @@ export default function Terms() {
             title:
               "Educational Content",
             content:
-              "NextBand provides practice materials, mock tests, estimated evaluations, and educational analytics intended for learning purposes only."
+              "Knarrow provides practice materials, mock tests, estimated evaluations, and educational analytics intended for learning purposes only."
           },
 
           {
@@ -82,7 +82,7 @@ export default function Terms() {
             title:
               "Intellectual Property",
             content:
-              "All platform branding, interface elements, designs, and educational materials belong to NextBand unless otherwise stated."
+              "All platform branding, interface elements, designs, and educational materials belong to Knarrow unless otherwise stated."
           },
 
           {
@@ -96,7 +96,7 @@ export default function Terms() {
             title:
               "Limitation of Liability",
             content:
-              "NextBand shall not be held liable for educational outcomes, exam performance, technical interruptions, or indirect damages resulting from platform usage."
+              "Knarrow shall not be held liable for educational outcomes, exam performance, technical interruptions, or indirect damages resulting from platform usage."
           },
 
           {
@@ -180,7 +180,7 @@ export default function Terms() {
             }}
           >
             By continuing to use
-            NextBand, you confirm
+            Knarrow, you confirm
             that you understand
             and agree to these
             Terms & Conditions.

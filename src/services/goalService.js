@@ -2,7 +2,7 @@ export function saveGoals(
   goals
 ) {
   localStorage.setItem(
-    "nextbandGoals",
+    "knarrowGoals",
     JSON.stringify(goals)
   );
 }
@@ -10,7 +10,7 @@ export function saveGoals(
 export function getGoals() {
   return JSON.parse(
     localStorage.getItem(
-      "nextbandGoals"
+      "knarrowGoals"
     ) || "{}"
   );
 }

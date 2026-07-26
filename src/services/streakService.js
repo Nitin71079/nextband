@@ -1,5 +1,5 @@
 const STREAK_KEY =
-  "nextband_streak";
+  "knarrow_streak";
 
 export function updateStreak() {
   const today =

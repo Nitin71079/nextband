@@ -10,6 +10,7 @@ import QuestionPalette from "../components/listening/renderers/QuestionPalette";
 import ListeningReview from "../components/listening/ListeningReview";
 import ResultsPanel from "../components/listening/ResultsPanel";
 
+import { calculateListeningBand } from "../utils/listeningBandCalculator";
 import useQuestionNavigation from "../hooks/useQuestionNavigation";
 import useScrollSpy from "../hooks/useScrollSpy";
 import useAutosave from "../hooks/useAutosave";
@@ -21,6 +22,8 @@ export default function MockListening({
     testId = 0,
 
     mode = "practice",
+
+    onComplete,
 
 }) {
 
@@ -448,11 +451,18 @@ export default function MockListening({
 
         localStorage.removeItem(
 
-            `listening-${test.id}`
+            `knarrow_listening-${test.id}`
 
         );
 
+        const score = calculateScore();
+        const band = calculateListeningBand(score);
+
         setSubmitted(true);
+
+        if (onComplete) {
+            onComplete(band);
+        }
 
     };
 

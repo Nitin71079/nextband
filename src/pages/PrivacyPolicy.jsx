@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
               "30px"
           }}
         >
-          At NextBand, we value
+          At Knarrow, we value
           your privacy and are
           committed to protecting
           your personal
@@ -77,7 +77,7 @@ export default function PrivacyPolicy() {
             title:
               "Third-Party Services",
             content:
-              "NextBand may use trusted third-party services such as Firebase, Vercel, analytics providers, and future advertising systems to enhance platform functionality."
+              "Knarrow may use trusted third-party services such as Firebase, Vercel, analytics providers, and future advertising systems to enhance platform functionality."
           },
 
           {
@@ -170,7 +170,7 @@ export default function PrivacyPolicy() {
             If you have questions
             regarding this Privacy
             Policy, please contact
-            the NextBand support
+            the Knarrow support
             team through the
             platform contact page.
           </p>

@@ -1,8 +1,8 @@
 const STORAGE_KEY =
-  "nextband_exam";
+  "knarrow_exam";
 
 const HISTORY_KEY =
-  "nextband_history";
+  "knarrow_history";
 
 export function saveExamSession(
   session

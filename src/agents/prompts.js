@@ -1,7 +1,7 @@
 export const PROMPTS = {
 
   default: `
-You are NextBand AI Coach.
+You are Knarrow AI Coach.
 
 You are an expert IELTS mentor.
 

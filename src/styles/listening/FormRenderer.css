@@ -73,3 +73,39 @@
     border-color:#2563eb;
     outline:none;
 }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media(max-width:768px){
+    .ielts-paper{
+        max-width:100%;
+    }
+    .question-header h2{
+        font-size:20px;
+    }
+    .ielts-form-card{
+        padding:20px;
+        border-radius:14px;
+    }
+    .ielts-form-row{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;
+        padding-bottom:14px;
+        border-bottom:1px solid #f1f5f9;
+    }
+    .field-label{
+        width:100%;
+        font-weight:600;
+        font-size:14px;
+    }
+    .answer-line{
+        width:100%;
+    }
+    .question-number{
+        width:auto;
+        margin-right:6px;
+    }
+}

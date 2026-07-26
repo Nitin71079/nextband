@@ -8,7 +8,7 @@
 
     overflow:hidden;
 
-    padding:120px 40px;
+    padding:72px 40px;
 
     background:
 
@@ -104,7 +104,7 @@
 
     text-align:center;
 
-    margin-bottom:70px;
+    margin-bottom:44px;
 
 }
 
@@ -136,15 +136,15 @@
 
 .stats-header h2{
 
-    margin:26px 0;
+    margin:20px 0;
 
-    font-size:clamp(54px,7vw,82px);
+    font-size:clamp(36px,5vw,56px);
 
-    line-height:1.05;
+    line-height:1.1;
 
     font-weight:900;
 
-    letter-spacing:-2px;
+    letter-spacing:-1.5px;
 
     color:#0f172a;
 
@@ -152,13 +152,13 @@
 
 .stats-header p{
 
-    max-width:720px;
+    max-width:680px;
 
     margin:auto;
 
     color:#64748b;
 
-    font-size:21px;
+    font-size:18px;
 
     line-height:1.8;
 
@@ -712,7 +712,7 @@
 
 .stats-header{
 
-    margin-bottom:60px;
+    margin-bottom:36px;
 
 }
 
@@ -772,7 +772,7 @@
 
 .stats-section{
 
-    padding:70px 20px;
+    padding:48px 20px;
 
 }
 

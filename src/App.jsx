@@ -22,9 +22,10 @@ import PerformanceDashboard from "./pages/PerformanceDashboard";
 import {lazy, Suspense} from "react";
 import MockReading from "./pages/MockReading";
 import Navbar from "./components/Navbar";
-import Footer from "./components/home/Footer";
 import MobileNav from "./components/MobileNav";
+import Footer from "./components/home/Footer";
 import Loader from "./components/Loader";
+import ScrollToTop from "./components/ScrollToTop";
 import PremiumGate from "./components/PremiumGate";
 import AdminRoute from "./components/AdminRoute";
 import PrivateRoute from "./components/PrivateRoute";
@@ -77,6 +78,7 @@ function App() {
   
   return (
     <>
+      <ScrollToTop />
       <Navbar />
 
       <Suspense fallback={<Loader />}>
@@ -446,7 +448,6 @@ element={<ExamHistory/>}
   </Suspense>
 
   <Footer />
-
   <MobileNav />
 </>
 );

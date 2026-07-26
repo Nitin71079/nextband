@@ -37,3 +37,30 @@
 .answer-card.wrong{
     border-left-color:#ef4444;
 }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media(max-width:768px){
+    .results-page{
+        padding:20px 16px;
+    }
+    .score-card{
+        padding:24px 18px;
+        border-radius:14px;
+    }
+    .score-card h2{
+        font-size:44px;
+    }
+    .answer-card{
+        padding:18px;
+        border-radius:12px;
+    }
+}
+
+@media(max-width:480px){
+    .score-card h2{
+        font-size:36px;
+    }
+}

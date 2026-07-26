@@ -22,17 +22,15 @@ import {
 import WritingReport from "../components/WritingReport";
 
 export default function MockWriting({
-
   onComplete,
-
+  forcedTestId,
 }) {
-
-  const { testId } = useParams();
+  const { testId: paramTestId } = useParams();
+  const resolvedTestId = forcedTestId !== undefined ? forcedTestId : Number(paramTestId);
 
   const test =
     writingTests.find(
-      (t) =>
-        t.id === Number(testId)
+      (t) => t.id === resolvedTestId
     ) || writingTests[0];
 
   const [

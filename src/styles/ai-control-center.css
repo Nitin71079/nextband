@@ -1,5 +1,5 @@
 /* ==========================================================
-   NEXTBAND AI CONTROL CENTER
+   Knarrow AI CONTROL CENTER
 ========================================================== */
 
 .ai-page{
@@ -2012,4 +2012,268 @@ flex-shrink:0;
 
 font-size:15px;
 
+}
+
+/* ==========================================================
+   AI CONTROL CENTER — RESPONSIVE
+========================================================== */
+
+@media (max-width: 1200px) {
+  .ai-hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 40px;
+  }
+  .hero-right {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .ai-intelligence-grid {
+    grid-template-columns: 1fr;
+  }
+  .timeline-grid {
+    grid-template-columns: 1fr;
+  }
+  .mission-grid {
+    grid-template-columns: 1fr;
+  }
+  .premium-ai {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 44px 36px;
+  }
+  .model-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .ai-orb-section {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .brain-stats {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ai-page {
+    padding: 28px 20px;
+  }
+  .ai-page section {
+    margin-bottom: 72px;
+  }
+  .hero-left h1 {
+    font-size: 60px;
+    letter-spacing: -2px;
+  }
+  .ai-page .section-title h2 {
+    font-size: 34px;
+  }
+  .orb-container {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto;
+  }
+  .orb-core {
+    width: 130px;
+    height: 130px;
+  }
+  .orb-core svg {
+    width: 54px;
+    height: 54px;
+  }
+  .orb-glow,
+  .ring-3 {
+    width: 270px;
+    height: 270px;
+  }
+  .ring-2 {
+    width: 224px;
+    height: 224px;
+  }
+  .ring-1 {
+    width: 174px;
+    height: 174px;
+  }
+  .orb-info h2 {
+    font-size: 38px;
+  }
+  .brain-stats h3 {
+    font-size: 30px;
+  }
+  .brain-stats {
+    flex-wrap: wrap;
+    gap: 22px;
+  }
+  .prediction-card h1 {
+    font-size: 54px;
+  }
+  .premium-ai h2 {
+    font-size: 38px;
+  }
+  .model-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ai-page {
+    padding: 20px 16px;
+  }
+  .ai-page section {
+    margin-bottom: 52px;
+  }
+  .hero-left h1 {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+  .hero-left p {
+    font-size: 16px;
+    margin: 18px 0 28px;
+  }
+  .hero-btn {
+    padding: 14px 22px;
+    font-size: 15px;
+  }
+  .hero-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .hero-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .hero-badge {
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+  .hero-metric {
+    padding: 18px;
+  }
+  .hero-metric h2 {
+    font-size: 26px;
+  }
+  .ai-page .section-title h2 {
+    font-size: 28px;
+  }
+  .ai-page .section-title p {
+    font-size: 15px;
+  }
+  .ai-workspace-header h2 {
+    font-size: 28px;
+  }
+  .ai-workspace-card {
+    padding: 24px;
+  }
+  .ai-workspace-card h3 {
+    font-size: 21px;
+  }
+  .ai-workspace-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+  }
+  .orb-container {
+    width: 220px;
+    height: 220px;
+  }
+  .orb-core {
+    width: 105px;
+    height: 105px;
+  }
+  .orb-core svg {
+    width: 44px;
+    height: 44px;
+  }
+  .ring-3 { width: 214px; height: 214px; }
+  .ring-2 { width: 174px; height: 174px; }
+  .ring-1 { width: 134px; height: 134px; }
+  .orb-glow { width: 200px; height: 200px; }
+  .orb-info h2 {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .orb-info p {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+  .brain-stats {
+    gap: 18px;
+  }
+  .brain-stats h3 {
+    font-size: 26px;
+  }
+  .prediction-card h1 {
+    font-size: 44px;
+  }
+  .timeline-card {
+    padding: 24px;
+  }
+  .timeline-card h3 {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+  .timeline-content h4 {
+    font-size: 17px;
+  }
+  .mission-card h2 {
+    font-size: 26px;
+  }
+  .premium-ai {
+    padding: 32px 22px;
+  }
+  .premium-ai h2 {
+    font-size: 28px;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+  }
+  .premium-ai p {
+    font-size: 16px;
+  }
+  .model-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .model-card {
+    padding: 18px 14px;
+  }
+  .model-card h3 {
+    font-size: 18px;
+  }
+  .future-card {
+    padding: 26px;
+  }
+  .future-card h3 {
+    font-size: 22px;
+  }
+  .future-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+  }
+  .recommendation-header h3 {
+    font-size: 22px;
+  }
+  .live-card h2 {
+    font-size: 32px;
+  }
+  .chat-message .bubble {
+    max-width: 88%;
+    font-size: 14px;
+    padding: 14px 18px;
+  }
+  .chat-message .avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-left h1 {
+    font-size: 34px;
+  }
+  .model-grid {
+    grid-template-columns: 1fr;
+  }
 }

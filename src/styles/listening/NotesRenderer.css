@@ -35,3 +35,21 @@
     width:220px;
     padding:10px;
 }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media(max-width:768px){
+    .notes-card{
+        padding:18px;
+        border-radius:14px;
+    }
+    .notes-blank{
+        flex-wrap:wrap;
+        gap:8px;
+    }
+    .notes-blank input{
+        width:100%;
+    }
+}

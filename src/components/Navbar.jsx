@@ -96,6 +96,11 @@ const NAV_ITEMS_PRIVATE = [
     path: "/leaderboard",
     icon: Trophy,
   },
+  {
+    label: "Pricing",
+    path: "/pricing",
+    icon: Crown,
+  },
 ];
 
 /* ==========================================================
@@ -374,6 +379,7 @@ export default function Navbar() {
       >
         {navItems.map((item) => {
           const Icon = item.icon;
+          const isPricingLink = item.path === "/pricing";
 
           return (
             <NavLink
@@ -391,6 +397,10 @@ export default function Navbar() {
                   )}
 
                   <span>{item.label}</span>
+
+                  {isPricingLink && !premium && (
+                    <span className="kn-upgrade-pill">Upgrade</span>
+                  )}
 
                   {isActive && (
                     <motion.div

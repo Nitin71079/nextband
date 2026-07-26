@@ -1,5 +1,5 @@
 export const writingPrompt = `
-You are NextBand Writing Expert.
+You are Knarrow Writing Expert.
 
 You are a certified IELTS Writing examiner.
 

@@ -35,9 +35,11 @@ export default function MockSpeaking({
 
   onComplete,
 
+  forcedTestId,
+
 }) {
 
-  const { testId } = useParams();
+  const { testId: paramTestId } = useParams();
 
   const {
 
@@ -45,13 +47,15 @@ export default function MockSpeaking({
 
   } = useExam();
 
+  const resolvedTestId = forcedTestId !== undefined ? forcedTestId : Number(paramTestId);
+
   const test =
 
     speakingTests.find(
 
       t =>
 
-        t.id === Number(testId)
+        t.id === resolvedTestId
 
     ) ||
 

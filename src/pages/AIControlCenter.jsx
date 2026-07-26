@@ -1,35 +1,30 @@
 import { useNavigate } from "react-router-dom";
 
 import {
-  Sparkles,
-  BrainCircuit,
-  PenSquare,
-  Mic,
-  BookOpen,
-  Headphones,
-  CalendarDays,
-  BarChart3,
-  ArrowRight,
-  Bot,
-  Cpu,
-  Activity,
-  Target,
-  Zap,
+  Sparkles, BrainCircuit, PenSquare, Mic, BookOpen, Headphones,
+  CalendarDays, BarChart3, ArrowRight, Bot, Cpu, Activity, Target, Zap,
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
+import { useLiveData } from "../hooks/useLiveData";
 
 import "../styles/ai-control-center.css";
+
 export default function AIControlCenter() {
-
   const navigate = useNavigate();
-
   const { name, user } = useAuth();
+  const { analytics } = useLiveData();
 
-  const firstName =
-    name ||
-    user?.email?.split("@")[0] ||
-    "Student";
+  const firstName = name || user?.email?.split("@")[0] || "Student";
+
+  const band       = analytics?.averageBand    || "—";
+  const confidence = analytics?.ai?.confidence || 0;
+  const weakSkill  = analytics?.ai?.weakestSkill || "Writing";
+  const reading    = analytics?.reading    || 0;
+  const listening  = analytics?.listening  || 0;
+  const writing    = analytics?.writing    || 0;
+  const speaking   = analytics?.speaking   || 0;
+  const totalTests = analytics?.testsCompleted || 0;
 
   const tools = [
 
@@ -105,7 +100,7 @@ export default function AIControlCenter() {
 
             <Sparkles size={16} />
 
-            NEXTBAND AI
+            KNARROW AI
 
           </span>
 
@@ -160,61 +155,27 @@ export default function AIControlCenter() {
         <div className="hero-right">
 
           <div className="hero-metric">
-
             <BrainCircuit size={28} />
-
             <div>
-
-              <h2>7.5</h2>
-
-              <span>
-
-                Predicted Band
-
-              </span>
-
+              <h2>{band || "—"}</h2>
+              <span>Predicted Band</span>
             </div>
-
           </div>
 
           <div className="hero-metric">
-
             <Activity size={28} />
-
             <div>
-
-              <h2>94%</h2>
-
-              <span>
-
-                Confidence
-
-              </span>
-
+              <h2>{confidence ? `${confidence}%` : "—"}</h2>
+              <span>Confidence</span>
             </div>
-
           </div>
 
           <div className="hero-metric">
-
             <Target size={28} />
-
             <div>
-
-              <h2>
-
-                Writing
-
-              </h2>
-
-              <span>
-
-                Today's Focus
-
-              </span>
-
+              <h2>{weakSkill.replace(" Accuracy","")}</h2>
+              <span>Focus Area</span>
             </div>
-
           </div>
 
         </div>
@@ -261,7 +222,7 @@ export default function AIControlCenter() {
 
           <h2>
 
-            NextBand Intelligence
+            Knarrow Intelligence
 
           </h2>
 
@@ -277,43 +238,18 @@ export default function AIControlCenter() {
           </p>
 
           <div className="brain-stats">
-
             <div>
-
-              <h3>147</h3>
-
-              <span>
-
-                AI Evaluations
-
-              </span>
-
+              <h3>{totalTests}</h3>
+              <span>Tests Completed</span>
             </div>
-
             <div>
-
-              <h3>24 hrs</h3>
-
-              <span>
-
-                Study Time
-
-              </span>
-
+              <h3>{band || "—"}</h3>
+              <span>Current Band</span>
             </div>
-
             <div>
-
-              <h3>+0.8</h3>
-
-              <span>
-
-                Band Growth
-
-              </span>
-
+              <h3>{analytics?.studyStreak ?? 0}d</h3>
+              <span>Study Streak</span>
             </div>
-
           </div>
 
         </div>
@@ -423,115 +359,49 @@ className="ai-workspace-icon"
 
           <div className="prediction-card">
 
-            <span>
-
-              CURRENT BAND
-
-            </span>
-
-            <h1>
-
-              7.5
-
-            </h1>
-
-            <p>
-
-              AI Confidence
-
-            </p>
+            <span>CURRENT BAND</span>
+            <h1>{band || "—"}</h1>
+            <p>AI Confidence</p>
 
             <div className="confidence-bar">
-
               <div
                 className="confidence-fill"
-                style={{
-                  width:"94%"
-                }}
+                style={{ width: `${confidence}%` }}
               />
-
             </div>
 
-            <h3>
-
-              94%
-
-            </h3>
+            <h3>{confidence}%</h3>
 
           </div>
 
           {/* RIGHT */}
 
-<div className="ai-recommendation-card">
+          <div className="ai-recommendation-card">
             <div className="recommendation-header">
-
               <BrainCircuit size={32}/>
-
-              <h3>
-
-                Today's Recommendation
-
-              </h3>
-
+              <h3>Today's Recommendation</h3>
             </div>
 
             <div className="recommendation-item">
-
-              <span>
-
-                Grammar Accuracy
-
-              </span>
-
-              <strong>
-
-                HIGH PRIORITY
-
-              </strong>
-
+              <span>{weakSkill}</span>
+              <strong>HIGH PRIORITY</strong>
             </div>
 
             <div className="recommendation-item">
-
-              <span>
-
-                Vocabulary Range
-
-              </span>
-
-              <strong>
-
-                MEDIUM
-
-              </strong>
-
+              <span>Vocabulary Range</span>
+              <strong>MEDIUM</strong>
             </div>
 
             <div className="recommendation-item">
-
-              <span>
-
-                Speaking Fluency
-
-              </span>
-
-              <strong>
-
-                GOOD
-
-              </strong>
-
+              <span>Speaking Fluency</span>
+              <strong>GOOD</strong>
             </div>
 
             <button
               className="improve-button"
-              onClick={()=>
-                navigate("/planner")
-              }
+              onClick={() => navigate("/planner")}
             >
-
               Generate Study Plan
-
             </button>
 
           </div>
@@ -884,109 +754,22 @@ className="ai-workspace-icon"
 
         <div className="skill-analysis">
 
-          <div className="analysis-item">
-
-            <div>
-
-              Reading
-
+          {[
+            { label: "Reading",   value: reading,   width: reading   ? (reading   / 9 * 100).toFixed(0) : 0 },
+            { label: "Listening", value: listening, width: listening ? (listening / 9 * 100).toFixed(0) : 0 },
+            { label: "Writing",   value: writing,   width: writing   ? (writing   / 9 * 100).toFixed(0) : 0 },
+            { label: "Speaking",  value: speaking,  width: speaking  ? (speaking  / 9 * 100).toFixed(0) : 0 },
+          ].map(({ label, value, width }) => (
+            <div key={label}>
+              <div className="analysis-item">
+                <div>{label}</div>
+                <strong>{value || "—"}</strong>
+              </div>
+              <div className="analysis-bar">
+                <div style={{ width: `${width}%` }} />
+              </div>
             </div>
-
-            <strong>
-
-              7.5
-
-            </strong>
-
-          </div>
-
-          <div className="analysis-bar">
-
-            <div
-              style={{
-                width:"75%"
-              }}
-            />
-
-          </div>
-
-          <div className="analysis-item">
-
-            <div>
-
-              Listening
-
-            </div>
-
-            <strong>
-
-              8.0
-
-            </strong>
-
-          </div>
-
-          <div className="analysis-bar">
-
-            <div
-              style={{
-                width:"82%"
-              }}
-            />
-
-          </div>
-
-          <div className="analysis-item">
-
-            <div>
-
-              Writing
-
-            </div>
-
-            <strong>
-
-              6.5
-
-            </strong>
-
-          </div>
-
-          <div className="analysis-bar">
-
-            <div
-              style={{
-                width:"65%"
-              }}
-            />
-
-          </div>
-
-          <div className="analysis-item">
-
-            <div>
-
-              Speaking
-
-            </div>
-
-            <strong>
-
-              6.5
-
-            </strong>
-
-          </div>
-
-          <div className="analysis-bar">
-
-            <div
-              style={{
-                width:"66%"
-              }}
-            />
-
-          </div>
+          ))}
 
         </div>
 

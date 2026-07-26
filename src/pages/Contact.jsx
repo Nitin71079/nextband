@@ -70,7 +70,7 @@ export default function Contact() {
                 "20px"
             }}
           >
-            Contact NextBand
+            Contact Knarrow
           </h1>
 
           <p
@@ -319,7 +319,7 @@ export default function Contact() {
                 >
                   Thank you for
                   contacting
-                  NextBand. We’ll
+                  Knarrow. We’ll
                   respond as soon
                   as possible.
                 </p>
@@ -409,7 +409,7 @@ export default function Contact() {
                 collaborations, or
                 business
                 opportunities with
-                NextBand? Reach
+                Knarrow? Reach
                 out through the
                 contact form.
               </p>
@@ -435,7 +435,7 @@ export default function Contact() {
                     "20px"
                 }}
               >
-                NextBand Vision
+                Knarrow Vision
               </h2>
 
               <p

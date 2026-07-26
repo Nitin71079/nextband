@@ -97,10 +97,6 @@ export async function startCheckout(plan) {
           toast.success(
             "🎉 Premium Activated!"
           );
-
-         toast.success(
-    "🎉 Premium Activated!"
-);
         } else {
           toast.error(
             "Payment verification failed."

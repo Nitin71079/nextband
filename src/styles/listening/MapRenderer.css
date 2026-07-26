@@ -55,3 +55,37 @@
     padding:10px;
     border-radius:8px;
 }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media(max-width:900px){
+    .map-container{
+        grid-template-columns:1fr;
+    }
+    .map-sidebar{
+        flex-direction:row;
+        flex-wrap:wrap;
+    }
+    .map-options,
+    .map-questions{
+        flex:1;
+        min-width:0;
+    }
+}
+
+@media(max-width:600px){
+    .map-sidebar{
+        flex-direction:column;
+    }
+    .map-question-header{
+        flex-direction:column;
+        gap:6px;
+    }
+    .map-options,
+    .map-questions{
+        padding:14px;
+        border-radius:12px;
+    }
+}

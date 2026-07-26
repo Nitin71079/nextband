@@ -4,7 +4,7 @@
 
     overflow:hidden;
 
-    padding:140px 40px;
+    padding:80px 40px;
 
     background:
 
@@ -92,7 +92,7 @@
 
     text-align:center;
 
-    margin-bottom:80px;
+    margin-bottom:48px;
 
 }
 
@@ -126,9 +126,7 @@
 
 .why-header h2{
 
-    font-size:
-
-        clamp(42px,6vw,64px);
+    font-size:clamp(30px,4vw,46px);
 
     line-height:1.1;
 
@@ -214,7 +212,7 @@
 
 }
 
-.comparison-card h3{
+.comparison-card h3 {
 
     font-size:32px;
 
@@ -260,7 +258,7 @@
 
     .why{
 
-        padding:90px 24px;
+        padding:60px 24px;
 
     }
 
@@ -288,7 +286,7 @@
 
     .why{
 
-        padding:70px 18px;
+        padding:48px 18px;
 
     }
 
@@ -312,7 +310,7 @@
 
     }
 
-    .comparison-card h3{
+    .comparison-card h3 {
 
         font-size:26px;
 

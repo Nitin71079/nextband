@@ -79,7 +79,7 @@ export default function AIOrb() {
       {/* Status */}
 
       <h2 className="mt-6 text-lg font-semibold">
-        NextBand AI
+        Knarrow AI
       </h2>
 
       <p className="text-slate-400 text-sm mt-2">

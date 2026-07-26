@@ -1,6 +1,6 @@
 
 const STORAGE_KEY =
-  "nextband_results";
+  "knarrow_results";
 
 export function getResults() {
   const raw =

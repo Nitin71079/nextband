@@ -1,5 +1,5 @@
 const KEY =
-  "nextband_evaluations";
+  "knarrow_evaluations";
 
 export function saveEvaluation(
   evaluation

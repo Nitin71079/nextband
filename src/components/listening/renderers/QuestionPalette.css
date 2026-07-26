@@ -38,3 +38,31 @@
     background:#2563eb;
     color:white;
 }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 768px) {
+  .question-palette {
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+  }
+
+  .palette-number {
+    height: 34px;
+    font-size: 12px;
+    border-radius: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}

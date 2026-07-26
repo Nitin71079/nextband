@@ -1,7 +1,5 @@
-
-import CBTExamEngine
-from "./CBTExamEngine";
+import CBTExamEngine from "./CBTExamEngine";
 
 export default function FullGeneralMock() {
-  return <CBTExamEngine />;
+  return <CBTExamEngine examType="general" />;
 }

@@ -48,7 +48,7 @@ export default function ChatWindow() {
 
           <h2 className="text-3xl font-bold">
 
-            Welcome to NextBand AI
+            Welcome to Knarrow AI
 
           </h2>
 

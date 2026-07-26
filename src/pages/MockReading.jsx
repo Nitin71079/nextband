@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   useLocation,
   useNavigate,
@@ -22,14 +22,19 @@ import ExamProgressBar from "../components/ExamProgressBar";
 import scoreReading from "../utils/scoreReading";
 
 import "../styles/exam/shared.css";
+import "../styles/mock-reading.css";
 
 export default function MockReading({
   mode = "practice",
   onComplete,
+  forcedTestId,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams();
+  const { id: paramId } = useParams();
+
+  // In CBT mode, forcedTestId overrides URL param
+  const id = forcedTestId !== undefined ? String(forcedTestId) : paramId;
 
   const { user } = useAuth();
   const { setReadingBand } = useExam();
@@ -65,6 +70,9 @@ export default function MockReading({
     useState(
       (currentTest?.duration || 60) * 60
     );
+
+  // Mobile: which panel is visible ("passage" | "questions")
+  const [mobileTab, setMobileTab] = useState("passage");
 
   const questionRefs = useRef({});
 
@@ -165,7 +173,7 @@ export default function MockReading({
 
   useEffect(() => {
     if (currentTest) {
-      document.title = `${currentTest.title} | NextBand`;
+      document.title = `${currentTest.title} | Knarrow`;
     }
   }, [currentTest]);
 
@@ -555,30 +563,15 @@ if (reviewMode) {
     </div>
   );
 }return (
-  <div
-    style={{
-      minHeight: "100vh",
-      padding: "30px",
-      maxWidth: "1500px",
-      margin: "0 auto",
-    }}
-  >
+  <div className="mock-reading-page">
     {/* =====================================
         TEST SELECTOR
     ===================================== */}
 
     {mode === "practice" && (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "20px",
-          marginBottom: "25px",
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="mock-reading-selector">
         <select
+          className="mock-reading-select"
           value={String(currentTest.id)}
           onChange={(e) => {
             const selectedId = e.target.value;
@@ -588,11 +581,6 @@ if (reviewMode) {
                 ? `/mock/general-reading/${selectedId}`
                 : `/mock/reading/${selectedId}`
             );
-          }}
-          style={{
-            padding: "12px 18px",
-            borderRadius: "10px",
-            minWidth: "320px",
           }}
         >
           {readingTests.map((test) => (
@@ -605,13 +593,7 @@ if (reviewMode) {
           ))}
         </select>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "20px",
-            fontWeight: 600,
-          }}
-        >
+        <div className="mock-reading-meta">
           <span>
             Passage {passageIndex + 1} /{" "}
             {currentTest.passages.length}
@@ -636,115 +618,86 @@ if (reviewMode) {
       total={totalQuestions}
     />
 
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1.35fr 1fr",
-        gap: "30px",
-        marginTop: "25px",
-      }}
-    >
-      {/* ================= PASSAGE ================= */}
-
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: "18px",
-          padding: "30px",
-          overflowY: "auto",
-          height: "calc(100vh - 210px)",
-        }}
+    {/* Mobile tab switcher */}
+    <div className="mock-reading-tabs" role="tablist">
+      <button
+        role="tab"
+        aria-selected={mobileTab === "passage"}
+        className={`mock-tab-btn${mobileTab === "passage" ? " active" : ""}`}
+        onClick={() => setMobileTab("passage")}
       >
-      <h2
-  style={{
-    marginBottom: "25px",
-    fontSize: "28px",
-  }}
->
-  {currentPassage.title}
-</h2>
-
-{currentPassage.subtitle && (
-  <p
-    style={{
-      marginBottom: "25px",
-      fontWeight: 600,
-      color: "#555",
-    }}
-  >
-    {currentPassage.subtitle}
-  </p>
-)}
-
-{currentPassage.content ? (
-  currentPassage.content
-    .trim()
-    .split("\n\n")
-    .map((paragraph, index) => (
-      <p
-        key={index}
-        style={{
-          whiteSpace: "pre-wrap",
-          lineHeight: "2",
-          fontSize: "17px",
-          textAlign: "justify",
-          marginBottom: "26px",
-        }}
+        📄 Passage
+      </button>
+      <button
+        role="tab"
+        aria-selected={mobileTab === "questions"}
+        className={`mock-tab-btn${mobileTab === "questions" ? " active" : ""}`}
+        onClick={() => setMobileTab("questions")}
       >
-        {paragraph}
-      </p>
-    ))
-) : Array.isArray(currentPassage.texts) ? (
-  currentPassage.texts.map((text) => (
-    <div
-      key={text.id}
-      style={{ marginBottom: "40px" }}
-    >
-      <h3
-        style={{
-          marginBottom: "15px",
-          color: "#2563eb",
-        }}
-      >
-        {text.id}. {text.title}
-      </h3>
-
-      {text.content
-        .trim()
-        .split("\n\n")
-        .map((paragraph, index) => (
-          <p
-            key={`${text.id}-${index}`}
-            style={{
-              whiteSpace: "pre-wrap",
-              lineHeight: "2",
-              fontSize: "17px",
-              textAlign: "justify",
-              marginBottom: "22px",
-            }}
-          >
-            {paragraph}
-          </p>
-        ))}
+        ❓ Questions
+      </button>
     </div>
-  ))
-) : (
-  <p style={{ color: "red" }}>
-    Passage data is missing.
-  </p>
-)}
+
+    <div className="mock-reading-layout">
+      {/* ================= PASSAGE ================= */}
+      <div
+        className={`mock-reading-passage${mobileTab === "passage" ? " tab-visible" : " tab-hidden"}`}
+      >
+        <h2 className="mock-passage-title">
+          {currentPassage.title}
+        </h2>
+
+        {currentPassage.subtitle && (
+          <p className="mock-passage-subtitle">
+            {currentPassage.subtitle}
+          </p>
+        )}
+
+        {currentPassage.content ? (
+          currentPassage.content
+            .trim()
+            .split("\n\n")
+            .map((paragraph, index) => (
+              <p
+                key={index}
+                className="mock-passage-para"
+              >
+                {paragraph}
+              </p>
+            ))
+        ) : Array.isArray(currentPassage.texts) ? (
+          currentPassage.texts.map((text) => (
+            <div
+              key={text.id}
+              className="mock-passage-section"
+            >
+              <h3 className="mock-passage-section-title">
+                {text.id}. {text.title}
+              </h3>
+
+              {text.content
+                .trim()
+                .split("\n\n")
+                .map((paragraph, index) => (
+                  <p
+                    key={`${text.id}-${index}`}
+                    className="mock-passage-para"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+            </div>
+          ))
+        ) : (
+          <p style={{ color: "red" }}>
+            Passage data is missing.
+          </p>
+        )}
       </div>
 
       {/* ================= QUESTIONS ================= */}
-
       <div
-        style={{
-          background: "#fff",
-          borderRadius: "18px",
-          padding: "25px",
-          overflowY: "auto",
-          height: "calc(100vh - 210px)",
-        }}
+        className={`mock-reading-questions${mobileTab === "questions" ? " tab-visible" : " tab-hidden"}`}
       >
         <QuestionPalette
           questions={currentQuestions}
@@ -755,6 +708,7 @@ if (reviewMode) {
               behavior: "smooth",
               block: "start",
             });
+            setMobileTab("questions");
           }}
         />
 
@@ -764,31 +718,15 @@ if (reviewMode) {
             ref={(el) =>
               (questionRefs.current[question.id] = el)
             }
-            style={{
-              marginTop: "35px",
-              marginBottom: "45px",
-              paddingBottom: "30px",
-              borderBottom:
-                "1px solid #e5e7eb",
-            }}
+            className="mock-question-item"
           >
             {question.instruction && (
-              <p
-                style={{
-                  color: "#2563eb",
-                  fontWeight: 600,
-                  marginBottom: "14px",
-                }}
-              >
+              <p className="mock-question-instruction">
                 {question.instruction}
               </p>
             )}
 
-            <h3
-              style={{
-                marginBottom: "18px",
-              }}
-            >
+            <h3 className="mock-question-text">
               {question.id}.{" "}
               {question.question}
             </h3>
@@ -800,12 +738,7 @@ if (reviewMode) {
             />
 
             <button
-              style={{
-                marginTop: "18px",
-                padding: "8px 14px",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
+              className="mock-flag-btn"
               onClick={() =>
                 toggleFlag(question.id)
               }
@@ -816,20 +749,13 @@ if (reviewMode) {
                 ? "🚩 Remove Flag"
                 : "🚩 Flag Question"}
             </button>
-                    </div>
+          </div>
         ))}
+
         {/* =====================================
             PASSAGE NAVIGATION
         ===================================== */}
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "12px",
-            marginTop: "30px",
-          }}
-        >
+        <div className="mock-passage-nav">
           <button
             disabled={passageIndex === 0}
             onClick={() =>
@@ -861,20 +787,7 @@ if (reviewMode) {
         {/* =====================================
             EXAM STATS
         ===================================== */}
-
-        <div
-          style={{
-            marginTop: "35px",
-            background: "#f8fafc",
-            borderRadius: "14px",
-            padding: "18px",
-            display: "flex",
-            justifyContent: "space-between",
-            fontWeight: 600,
-            flexWrap: "wrap",
-            gap: "12px",
-          }}
-        >
+        <div className="mock-exam-stats">
           <span>
             Answered: {answeredQuestions}/{totalQuestions}
           </span>

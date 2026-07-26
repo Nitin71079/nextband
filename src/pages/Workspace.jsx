@@ -37,7 +37,7 @@ export default function Workspace() {
           <div>
 
             <h1 className="text-3xl font-bold">
-              NextBand AI
+              Knarrow AI
             </h1>
 
             <p className="text-slate-400 mt-1">

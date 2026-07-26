@@ -72,7 +72,7 @@ export default function EssayHistory() {
         <p className="mt-3 text-slate-400">
 
           View every IELTS essay you've evaluated
-          with NextBand AI.
+          with Knarrow AI.
 
         </p>
 

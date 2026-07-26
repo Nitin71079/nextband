@@ -9,3 +9,10 @@
 .audio-card audio{
     width:100%;
 }
+
+@media(max-width:768px){
+    .audio-card{
+        padding:14px;
+        border-radius:12px;
+    }
+}
