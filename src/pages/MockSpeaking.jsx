@@ -1,6 +1,6 @@
 import "../styles/exam/shared.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import speakingTests from "../data/speaking/tests";
@@ -179,39 +179,39 @@ export default function MockSpeaking({
         LOAD DRAFT
   ------------------------- */
 
-useEffect(() => {
+  useEffect(() => {
 
-  const draft =
+    const draft =
 
-    localStorage.getItem(
+      localStorage.getItem(
 
-      "speakingDraft"
+        "speakingDraft"
 
-    );
+      );
 
-  if (!draft) return;
+    if (!draft) return;
 
-  try {
+    try {
 
-    const data =
+      const data =
 
-      JSON.parse(draft);
+        JSON.parse(draft);
 
-    setResponse(
+      setResponse(
 
-      data.response || ""
+        data.response || ""
 
-    );
+      );
 
-    setTranscript(
+      setTranscript(
 
-      data.transcript || ""
+        data.transcript || ""
 
-    );
+      );
 
-  } catch {}
+    } catch {}
 
-}, []);
+  }, []);
 
   /* -------------------------
         AI EVALUATION
