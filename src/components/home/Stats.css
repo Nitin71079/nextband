@@ -1,1027 +1,288 @@
-/* ===========================================================
-   STATS SECTION
-=========================================================== */
+/* ============================================================
+   PLATFORM STATS — BILLION DOLLAR EDITION
+============================================================ */
+
+.stats-section {
+  position: relative;
+  overflow: hidden;
+  padding: 120px 48px;
+  background: #060d1f;
+  isolation: isolate;
+}
+
+/* Ambient glows */
+.stats-section::before {
+  content: "";
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(37,99,235,.18), transparent 65%);
+  top: -300px;
+  right: -200px;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.stats-section::after {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(6,182,212,.12), transparent 65%);
+  bottom: -240px;
+  left: -180px;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* Grid lines overlay */
+.stats-section > * { position: relative; z-index: 2; }
+
+/* ── HEADER ── */
+.stats-header {
+  max-width: 860px;
+  margin: 0 auto 72px;
+  text-align: center;
+}
+
+.stats-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  background: rgba(37,99,235,.15);
+  border: 1px solid rgba(37,99,235,.3);
+  color: #60a5fa;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.stats-header h2 {
+  font-size: clamp(40px, 5.5vw, 72px);
+  font-weight: 900;
+  letter-spacing: -2.5px;
+  line-height: 1.0;
+  color: #ffffff;
+  margin: 0 0 24px;
+}
+
+.stats-header p {
+  max-width: 660px;
+  margin: 0 auto;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+/* ── TRUST PILLS ── */
+.stats-trust {
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.stats-trust span {
+  padding: 9px 20px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 999px;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color .3s, background .3s, transform .3s;
+}
 
-.stats-section{
-
-    position:relative;
-
-    overflow:hidden;
-
-    padding:72px 40px;
-
-    background:
-
-        radial-gradient(
-            circle at top right,
-            rgba(37,99,235,.08),
-            transparent 35%
-        ),
-
-        radial-gradient(
-            circle at bottom left,
-            rgba(6,182,212,.08),
-            transparent 35%
-        ),
-
-        linear-gradient(
-            180deg,
-            #fbfdff,
-            #f5f9ff
-        );
-
-}
-
-/* ===========================================================
-   GLOW
-=========================================================== */
-
-.stats-section::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:520px;
-
-    height:520px;
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            rgba(37,99,235,.12),
-            transparent 70%
-        );
-
-    top:-220px;
-
-    right:-220px;
-
-    filter:blur(40px);
-
-}
-
-.stats-section::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:420px;
-
-    height:420px;
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            rgba(6,182,212,.10),
-            transparent 70%
-        );
-
-    bottom:-160px;
-
-    left:-160px;
-
-    filter:blur(40px);
-
-}
-
-/* ===========================================================
-   HEADER
-=========================================================== */
-
-.stats-header{
-
-    position:relative;
-
-    z-index:2;
-
-    max-width:900px;
-
-    margin:auto;
-
-    text-align:center;
-
-    margin-bottom:44px;
-
-}
-
-.stats-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    padding:10px 18px;
-
-    border-radius:999px;
-
-    background:rgba(37,99,235,.08);
-
-    color:#2563eb;
-
-    font-size:13px;
-
-    font-weight:700;
-
-    letter-spacing:1px;
-
-    text-transform:uppercase;
-
-}
-
-.stats-header h2{
-
-    margin:20px 0;
-
-    font-size:clamp(36px,5vw,56px);
-
-    line-height:1.1;
-
-    font-weight:900;
-
-    letter-spacing:-1.5px;
-
-    color:#0f172a;
-
-}
-
-.stats-header p{
-
-    max-width:680px;
-
-    margin:auto;
-
-    color:#64748b;
-
-    font-size:18px;
-
-    line-height:1.8;
-
-}
-
-/* ===========================================================
-   TRUST STRIP
-=========================================================== */
-
-.stats-trust{
-
-    margin-top:34px;
-
-    display:flex;
-
-    justify-content:center;
-
-    flex-wrap:wrap;
-
-    gap:16px;
-
-}
-
-.stats-trust span{
-
-    padding:10px 18px;
-
-    background:white;
-
-    border-radius:999px;
-
-    border:1px solid #e2e8f0;
-
-    box-shadow:
-
-        0 10px 30px
-
-        rgba(15,23,42,.05);
-
-    color:#334155;
-
-    font-size:14px;
-
-    font-weight:600;
-
-}
-
-/* ===========================================================
-   GRID
-=========================================================== */
-
-.stats-container{
-
-    position:relative;
-
-    z-index:2;
-
-    max-width:1300px;
-
-    margin:auto;
-
-    display:grid;
-
-    grid-template-columns:
-
-        repeat(
-
-            auto-fit,
-
-            minmax(280px,1fr)
-
-        );
-
-    gap:30px;
-
-}
-/* ===========================================================
-   STAT CARD
-=========================================================== */
-
-.stat-card{
-
-    position:relative;
-
-    overflow:hidden;
-
-    isolation:isolate;
-
-        will-change: transform;
-
-    padding:42px;
-
-    border-radius:30px;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,.96),
-            rgba(248,250,252,.92)
-        );
-
-    backdrop-filter:blur(18px);
-
-    -webkit-backdrop-filter:blur(18px);
-
-    border:1px solid rgba(226,232,240,.95);
-
-    box-shadow:
-
-        0 18px 45px rgba(15,23,42,.06),
-
-        inset 0 1px 0 rgba(255,255,255,.65);
-
-    transition:
-        transform .35s ease,
-        box-shadow .35s ease,
-        border-color .35s ease,
-        background .35s ease;
-
-}
-
-/* ===========================================================
-   GLOW
-=========================================================== */
-
-.stat-card::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-
-        linear-gradient(
-
-            135deg,
-
-            rgba(37,99,235,.05),
-
-            transparent 45%,
-
-            rgba(6,182,212,.05)
-
-        );
-
-    opacity:0;
-
-    transition:.35s;
-
-}
-
-.stat-card::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:220px;
-
-    height:220px;
-
-    border-radius:50%;
-
-    background:
-
-        radial-gradient(
-
-            rgba(37,99,235,.14),
-
-            transparent 70%
-
-        );
-
-    top:-120px;
-
-    right:-120px;
-
-    opacity:0;
-
-    transition:.45s;
-
-}
-
-/* ===========================================================
-   ICON
-=========================================================== */
-
-.stat-icon{
-
-    width:86px;
-
-    height:86px;
-
-    border-radius:26px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    will-change: transform;
-
-    color:white;
-
-    margin-bottom:32px;
-
-    position:relative;
-
-    overflow:hidden;
-
-    box-shadow:
-
-        0 24px 50px rgba(15,23,42,.16);
-
-}
-
-.stat-icon::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-
-        linear-gradient(
-
-            rgba(255,255,255,.35),
-
-            transparent
-
-        );
-
-}
-
-.stat-icon svg{
-
-    position:relative;
-
-    z-index:2;
-
-}
-
-/* ===========================================================
-   NUMBER
-=========================================================== */
-
-.stat-card h2{
-
-    font-size:64px;
-
-    font-weight:900;
-
-    letter-spacing:-2px;
-
-    line-height:1;
-
-    color:#0f172a;
-
-    margin-bottom:16px;
-
-    transition:.35s;
-
-}
-
-/* ===========================================================
-   TITLE
-=========================================================== */
-
-.stat-card h3{
-
-    font-size:30px;
-
-    font-weight:800;
-
-    color:#0f172a;
-
-    margin-bottom:10px;
-
-}
-
-/* ===========================================================
-   DESCRIPTION
-=========================================================== */
-
-.stat-card p{
-
-    color:#64748b;
-
-    font-size:16px;
-
-    line-height:1.8;
-
-}
-
-/* ===========================================================
-   DIVIDER
-=========================================================== */
-
-
-
-/* ===========================================================
-   PREMIUM BORDER
-=========================================================== */
-
-/* ===========================================================
-   PREMIUM HOVER
-=========================================================== */
-
-.stat-card:hover{
-
-    cursor:pointer;
-
-    transform:
-        translateY(-14px)
-        scale(1.02);
-
-    border-color:
-        rgba(37,99,235,.22);
-
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff,
-            #fbfdff,
-            #f5f9ff
-        );
-
-    box-shadow:
-
-        0 40px 90px
-        rgba(37,99,235,.16),
-
-        0 18px 40px
-        rgba(15,23,42,.08);
-
-}
-
-.stat-card:hover::before{
-
-    opacity:1;
-
-}
-
-.stat-card:hover::after{
-
-    opacity:1;
-
-}
-
-/* ===========================================================
-   ICON ANIMATION
-=========================================================== */
-
-.stat-card:hover .stat-icon{
-
-    transform:
-        rotate(-8deg)
-        scale(1.08);
-
-    box-shadow:
-
-        0 28px 60px
-        rgba(37,99,235,.28);
-
-}
-
-.stat-card:hover .stat-icon svg{
-
-    transform:scale(1.08);
-
-}
-
-/* ===========================================================
-   NUMBER
-=========================================================== */
-
-.stat-card:hover h2{
-
-    color:#2563eb;
-
-}
-
-.stat-card:hover h3{
-
-    color:#2563eb;
-
-}
-
-.stat-card:hover p{
-
-    color:#475569;
-
-}
-
-/* ===========================================================
-   SHIMMER
-=========================================================== */
-
-.stat-card .shine{
-
-    position:absolute;
-
-    inset:0;
-
-    overflow:hidden;
-
-    pointer-events:none;
-
-}
-
-.stat-card .shine::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:0;
-
-    left:-140%;
-
-    width:60%;
-
-    height:100%;
-
-    background:
-
-        linear-gradient(
-
-            90deg,
-
-            transparent,
-
-            rgba(255,255,255,.55),
-
-            transparent
-
-        );
-
-    transform:skewX(-25deg);
-
-}
-
-.stat-card:hover .shine::before{
-
-    animation:shine 1.2s ease;
-
-}
-
-@keyframes shine{
-
-    from{
-
-        left:-140%;
-
-    }
-
-    to{
-
-        left:180%;
-
-    }
-
-}
-
-/* ===========================================================
-   FLOAT
-=========================================================== */
-
-@keyframes floatCard{
-
-    0%{
-
-        transform:translateY(0);
-
-    }
-
-    50%{
-
-        transform:translateY(-6px);
-
-    }
-
-    100%{
-
-        transform:translateY(0);
-
-    }
-
-}
-
-
-.stats-trust span{
-
-    transition:
-        transform .3s,
-        box-shadow .3s,
-        border-color .3s;
-
-}
-
-.stats-trust span:hover{
-
-    transform:
-        translateY(-4px);
-
-    border-color:
-        rgba(37,99,235,.20);
-
-    box-shadow:
-
-        0 18px 40px
-        rgba(37,99,235,.10);
-
-}
-
-/* ===========================================================
-   SMOOTH UI
-=========================================================== */
-
-.stats-section *{
-
-    transition:
-
-        color .3s,
-
-        background .3s,
-
-        transform .3s,
-
-        border-color .3s,
-
-        box-shadow .3s;
-
-}
-/* ===========================================================
-   TABLET
-=========================================================== */
-
-@media (max-width:1100px){
-
-.stats-section{
-
-    padding:90px 30px;
-
-}
-
-.stats-header{
-
-    margin-bottom:36px;
-
-}
-
-.stats-header h2{
-
-    font-size:clamp(46px,7vw,64px);
-
-}
-
-.stats-header p{
-
-    font-size:19px;
-
-}
-
-.stats-container{
-
-    grid-template-columns:repeat(2,1fr);
-
-    gap:24px;
-
-}
-
-.stat-card{
-
-    padding:36px;
-
-}
-
-.stat-card h2{
-
-    font-size:54px;
-
-}
-
-.stat-card h3{
-
-    font-size:26px;
-
-}
-
-.stat-icon{
-
-    width:76px;
-
-    height:76px;
-
-}
-
-}
-
-/* ===========================================================
-   MOBILE
-=========================================================== */
-
-@media (max-width:768px){
-
-.stats-section{
-
-    padding:48px 20px;
-
-}
-
-.stats-header{
-
-    margin-bottom:50px;
-
-}
-
-.stats-header h2{
-
-    font-size:42px;
-
-    line-height:1.1;
-
-}
-
-.stats-header p{
-
-    font-size:17px;
-
-    line-height:1.8;
-
-}
-
-.stats-trust{
-
-    gap:12px;
-
-}
-
-.stats-trust span{
-
-    font-size:13px;
-
-    padding:9px 14px;
-
-}
-
-.stats-container{
-
-    grid-template-columns:1fr;
-
-}
-
-.stat-card{
-
-    padding:32px;
-
-    border-radius:24px;
-
-}
-
-.stat-card h2{
-
-    font-size:48px;
-
-}
-
-.stat-card h3{
-
-    font-size:24px;
-
-}
-
-.stat-icon{
-
-    width:72px;
-
-    height:72px;
-
-    border-radius:22px;
-
-}
-
-}
-
-/* ===========================================================
-   SMALL PHONES
-=========================================================== */
-
-@media (max-width:480px){
-
-.stats-section{
-
-    padding:60px 16px;
-
-}
-
-.stats-header h2{
-
-    font-size:34px;
-
-}
-
-.stats-header p{
-
-    font-size:16px;
-
-}
-
-.stats-badge{
-
-    font-size:12px;
-
-    padding:8px 14px;
-
-}
-
-.stats-trust{
-
-    justify-content:flex-start;
-
-}
-
-.stats-trust span{
-
-    font-size:12px;
-
-    padding:8px 12px;
-
-}
-
-.stat-card{
-
-    padding:26px;
-
-}
-
-.stat-card h2{
-
-    font-size:42px;
-
-}
-
-.stat-card h3{
-
-    font-size:22px;
-
-}
-
-.stat-card p{
-
-    font-size:15px;
-
-}
-
-.stat-icon{
-
-    width:64px;
-
-    height:64px;
-
-    border-radius:20px;
-
-}
-
-}
-
-/* ===========================================================
-   LARGE DESKTOPS
-=========================================================== */
-
-@media (min-width:1600px){
-
-.stats-container{
-
-    max-width:1450px;
-
-}
-
-.stats-header h2{
-
-    font-size:88px;
-
-}
-
-.stat-card{
-
-    padding:50px;
-
-}
-
-.stat-card h2{
-
-    font-size:72px;
-
-}
-
-}
-
-/* ===========================================================
-   ACCESSIBILITY
-=========================================================== */
-
-@media (prefers-reduced-motion:reduce){
-
-*{
-
-    animation:none !important;
-
-    transition:none !important;
-
-}
-
-}
-
-/* ===========================================================
-   PREMIUM FINISH
-=========================================================== */
-
-.stats-section{
-
-    isolation:isolate;
-
-}
-
-.stats-container{
-
-    align-items:stretch;
-
-}
-
-.stat-card{
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:flex-start;
-
-    min-height:320px;
-
-}
-
-.stat-card p{
-
-    margin-top:auto;
-
-}
-
-.stat-card:hover{
-
-    z-index:5;
-
-}
-
-.stats-section *{
-
-    box-sizing:border-box;
-
-}
+.stats-trust span:hover {
+  transform: translateY(-3px);
+  border-color: rgba(37,99,235,.5);
+  background: rgba(37,99,235,.1);
+  color: #93c5fd;
+}
+
+/* ── GRID ── */
+.stats-container {
+  max-width: 1340px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* ── CARD ── */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  will-change: transform;
+  padding: 44px 40px;
+  border-radius: 28px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 8px 40px rgba(0,0,0,.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 300px;
+  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease, background .35s ease;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(37,99,235,.08), transparent 55%, rgba(6,182,212,.06));
+  opacity: 0;
+  transition: opacity .35s;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(37,99,235,.2), transparent 70%);
+  top: -130px;
+  right: -130px;
+  opacity: 0;
+  transition: opacity .45s;
+}
+
+.stat-card:hover {
+  transform: translateY(-12px) scale(1.015);
+  border-color: rgba(37,99,235,.4);
+  background: rgba(255,255,255,.07);
+  box-shadow: 0 30px 80px rgba(37,99,235,.2), 0 10px 40px rgba(0,0,0,.4);
+}
+
+.stat-card:hover::before { opacity: 1; }
+.stat-card:hover::after  { opacity: 1; }
+
+/* ── ICON ── */
+.stat-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  color: white;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,.35);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.stat-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(255,255,255,.25), transparent);
+}
+
+.stat-icon svg { position: relative; z-index: 2; }
+
+.stat-card:hover .stat-icon {
+  transform: rotate(-8deg) scale(1.1);
+  box-shadow: 0 28px 60px rgba(37,99,235,.35);
+}
+
+/* ── NUMBER ── */
+.stat-card h2 {
+  font-size: clamp(48px, 4vw, 64px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: #ffffff;
+  margin-bottom: 14px;
+  transition: color .3s;
+}
+
+.stat-card:hover h2 { color: #93c5fd; }
+
+/* ── TITLE ── */
+.stat-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 10px;
+  transition: color .3s;
+}
+
+.stat-card:hover h3 { color: #ffffff; }
+
+/* ── DESCRIPTION ── */
+.stat-card p {
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-top: auto;
+  transition: color .3s;
+}
+
+.stat-card:hover p { color: #94a3b8; }
+
+/* ── SHINE ── */
+.stat-card .shine {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.stat-card .shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -140%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  transform: skewX(-25deg);
+}
+
+.stat-card:hover .shine::before { animation: shine 1.2s ease; }
+
+@keyframes shine {
+  from { left: -140%; }
+  to   { left: 180%; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .stats-section    { padding: 96px 32px; }
+  .stats-container  { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .stats-section    { padding: 72px 20px; }
+  .stats-header h2  { font-size: 42px; letter-spacing: -1.5px; }
+  .stats-container  { grid-template-columns: 1fr; }
+  .stat-card        { padding: 34px 28px; }
+  .stat-card h2     { font-size: 52px; }
+}
+
+@media (max-width: 480px) {
+  .stats-section    { padding: 56px 16px; }
+  .stats-header h2  { font-size: 34px; }
+  .stats-badge      { font-size: 10px; }
+  .stat-card        { padding: 28px 22px; }
+  .stat-card h2     { font-size: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+.stats-section * { box-sizing: border-box; }
