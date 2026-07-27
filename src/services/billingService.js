@@ -70,7 +70,9 @@ export async function startCheckout(plan) {
 
     name: "Knarrow",
 
-    description: plan,
+    description: plan === "Premium Monthly"
+      ? "Unlimited mocks · AI Writing & Speaking · Study Planner · Analytics · Accent Lab"
+      : "Everything in Monthly · Unlimited AI · Accent Lab · Priority features · Save ₹98",
 
     theme: {
       color: "#2563eb",
