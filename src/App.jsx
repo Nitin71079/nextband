@@ -71,6 +71,10 @@ const FullMocks = lazy(() => import("./pages/FullMocks"));
 const GamesZone = lazy(() => import("./pages/GamesZone"));
 const VocabBattle = lazy(() => import("./pages/VocabBattle"));
 const ReadingRace = lazy(() => import("./pages/ReadingRace"));
+const WordChain = lazy(() => import("./pages/WordChain"));
+const SentenceFixer = lazy(() => import("./pages/SentenceFixer"));
+const BandBlitz = lazy(() => import("./pages/BandBlitz"));
+const SynonymSprint = lazy(() => import("./pages/SynonymSprint"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -455,6 +459,42 @@ element={<ExamHistory/>}
   element={
     <PrivateRoute>
       <ReadingRace />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/word-chain"
+  element={
+    <PrivateRoute>
+      <WordChain />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/sentence-fixer"
+  element={
+    <PrivateRoute>
+      <SentenceFixer />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/band-blitz"
+  element={
+    <PrivateRoute>
+      <BandBlitz />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/synonym-sprint"
+  element={
+    <PrivateRoute>
+      <SynonymSprint />
     </PrivateRoute>
   }
 />

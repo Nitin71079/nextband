@@ -10,6 +10,7 @@ import { READING_RACE_PASSAGES } from "../data/readingRacePassages";
 import { BookOpen, Copy, ArrowLeft, Zap, Timer } from "lucide-react";
 import useMatchmaking from "../hooks/useMatchmaking";
 import { getBotName, simulateBotReadingRace } from "../utils/botEngine";
+import { saveGameResult, addStudyTime } from "../services/gameStatsService";
 
 function genCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -478,6 +479,17 @@ function ResultsScreen({ roomData, user, code, navigate }) {
   const iWon = myScore > oppScore;
   const tied = myScore === oppScore;
 
+  // Persist game result once
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    const outcome = tied ? "tie" : iWon ? "win" : "loss";
+    saveGameResult(user.uid, "reading-race", outcome);
+    // Reading Race is 3 minutes max
+    addStudyTime(user.uid, 3);
+  }, []);
+
   async function leaveRoom() {
     if (roomData.host === user.uid) {
       await deleteDoc(doc(db, "readingRooms", code));
@@ -517,6 +529,43 @@ function ResultsScreen({ roomData, user, code, navigate }) {
           <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>
             Back to Games Zone
           </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Bot Race Finished Screen (extracted for useEffect stats) ─────────────────
+function BotRaceFinishedScreen({ user, myScore, botScore, botName, passageTitle, navigate, iWon, tied }) {
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    const outcome = tied ? "tie" : iWon ? "win" : "loss";
+    saveGameResult(user.uid, "reading-race", outcome);
+    addStudyTime(user.uid, 3);
+  }, []);
+
+  return (
+    <div style={S.center}>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ ...S.card, textAlign: "center" }}>
+        <div style={{ fontSize: "52px", marginBottom: "14px" }}>{tied ? "🤝" : iWon ? "🏆" : "📖"}</div>
+        <h1 style={{ ...S.heading, fontSize: "24px", marginBottom: "6px" }}>
+          {tied ? "It's a Tie!" : iWon ? "You Beat the Bot!" : "Bot Wins!"}
+        </h1>
+        <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "4px" }}>vs {botName} · {passageTitle}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", margin: "20px 0" }}>
+          {[{ name: "You", score: myScore }, { name: botName, score: botScore }].map(p => (
+            <div key={p.name} style={{ padding: "16px", borderRadius: "14px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }}>
+              <p style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>{p.name}</p>
+              <p style={{ fontSize: "34px", fontWeight: 900, color: "#60a5fa" }}>{p.score}</p>
+              <p style={{ color: "#475569", fontSize: "11px" }}>pts</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <button onClick={() => navigate("/games/reading-race")} style={S.primaryBtn}>Play Again</button>
+          <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Games Zone</button>
         </div>
       </motion.div>
     </div>
@@ -601,28 +650,16 @@ function BotRaceScreen({ user, navigate }) {
     const iWon = myScore > botScore;
     const tied = myScore === botScore;
     return (
-      <div style={S.center}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ ...S.card, textAlign: "center" }}>
-          <div style={{ fontSize: "52px", marginBottom: "14px" }}>{tied ? "🤝" : iWon ? "🏆" : "📖"}</div>
-          <h1 style={{ ...S.heading, fontSize: "24px", marginBottom: "6px" }}>
-            {tied ? "It's a Tie!" : iWon ? "You Beat the Bot!" : "Bot Wins!"}
-          </h1>
-          <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "4px" }}>vs {botName} · {passage.title}</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", margin: "20px 0" }}>
-            {[{ name: "You", score: myScore }, { name: botName, score: botScore }].map(p => (
-              <div key={p.name} style={{ padding: "16px", borderRadius: "14px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }}>
-                <p style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>{p.name}</p>
-                <p style={{ fontSize: "34px", fontWeight: 900, color: "#60a5fa" }}>{p.score}</p>
-                <p style={{ color: "#475569", fontSize: "11px" }}>pts</p>
-              </div>
-            ))}
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <button onClick={() => navigate("/games/reading-race")} style={S.primaryBtn}>Play Again</button>
-            <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Games Zone</button>
-          </div>
-        </motion.div>
-      </div>
+      <BotRaceFinishedScreen
+        user={user}
+        myScore={myScore}
+        botScore={botScore}
+        botName={botName}
+        passageTitle={passage.title}
+        navigate={navigate}
+        iWon={iWon}
+        tied={tied}
+      />
     );
   }
 

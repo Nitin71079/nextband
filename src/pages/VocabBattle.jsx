@@ -10,6 +10,7 @@ import { VOCAB_QUESTIONS } from "../data/vocabularyQuestions";
 import { Swords, Copy, ArrowLeft, Trophy, Timer, Zap, Users } from "lucide-react";
 import useMatchmaking from "../hooks/useMatchmaking";
 import { getBotName, scheduleBotAnswer } from "../utils/botEngine";
+import { saveGameResult, addStudyTime } from "../services/gameStatsService";
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -408,6 +409,17 @@ function ResultsScreen({ roomData, user, code, navigate }) {
   const iWon = myScore > oppScore;
   const tied = myScore === oppScore;
 
+  // Persist game result once when results screen mounts
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    const outcome = tied ? "tie" : iWon ? "win" : "loss";
+    saveGameResult(user.uid, "vocab-battle", outcome);
+    // ~2.5 minutes average for a 10-question vocab battle
+    addStudyTime(user.uid, 3);
+  }, []);
+
   async function leaveRoom() {
     if (roomData.host === user.uid) {
       await deleteDoc(doc(db, "vocabRooms", code));
@@ -445,6 +457,43 @@ function ResultsScreen({ roomData, user, code, navigate }) {
         <div style={{ display: "flex", gap: "12px", flexDirection: "column" }}>
           <button onClick={leaveRoom} style={S.primaryBtn}>Play Again</button>
           <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Back to Games Zone</button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Bot Game Finished Screen (extracted so we can use useEffect for stats) ────
+function BotFinishedScreen({ user, myScore, botScore, botName, navigate, iWon, tied }) {
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    const outcome = tied ? "tie" : iWon ? "win" : "loss";
+    saveGameResult(user.uid, "vocab-battle", outcome);
+    addStudyTime(user.uid, 3);
+  }, []);
+
+  return (
+    <div style={S.center}>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ ...S.card, textAlign: "center" }}>
+        <div style={{ fontSize: "52px", marginBottom: "14px" }}>{tied ? "🤝" : iWon ? "🏆" : "😤"}</div>
+        <h1 style={{ ...S.heading, fontSize: "26px", marginBottom: "6px" }}>
+          {tied ? "Tie!" : iWon ? "You Beat the Bot!" : "Bot Wins!"}
+        </h1>
+        <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "4px" }}>vs {botName}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", margin: "24px 0" }}>
+          {[{ name: "You", score: myScore }, { name: botName, score: botScore }].map(p => (
+            <div key={p.name} style={{ padding: "18px", borderRadius: "14px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }}>
+              <p style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>{p.name}</p>
+              <p style={{ fontSize: "36px", fontWeight: 900, color: "#60a5fa" }}>{p.score}</p>
+              <p style={{ color: "#475569", fontSize: "11px" }}>/ {TOTAL_QUESTIONS}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <button onClick={() => navigate("/games/vocab-battle")} style={S.primaryBtn}>Play Again</button>
+          <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Games Zone</button>
         </div>
       </motion.div>
     </div>
@@ -519,28 +568,15 @@ function BotGameScreen({ user, navigate }) {
     const iWon = myScore > botScore;
     const tied = myScore === botScore;
     return (
-      <div style={S.center}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ ...S.card, textAlign: "center" }}>
-          <div style={{ fontSize: "52px", marginBottom: "14px" }}>{tied ? "🤝" : iWon ? "🏆" : "😤"}</div>
-          <h1 style={{ ...S.heading, fontSize: "26px", marginBottom: "6px" }}>
-            {tied ? "Tie!" : iWon ? "You Beat the Bot!" : "Bot Wins!"}
-          </h1>
-          <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "4px" }}>vs {botName}</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", margin: "24px 0" }}>
-            {[{ name: "You", score: myScore }, { name: botName, score: botScore }].map(p => (
-              <div key={p.name} style={{ padding: "18px", borderRadius: "14px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }}>
-                <p style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>{p.name}</p>
-                <p style={{ fontSize: "36px", fontWeight: 900, color: "#60a5fa" }}>{p.score}</p>
-                <p style={{ color: "#475569", fontSize: "11px" }}>/ {TOTAL_QUESTIONS}</p>
-              </div>
-            ))}
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <button onClick={() => navigate("/games/vocab-battle")} style={S.primaryBtn}>Play Again</button>
-            <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Games Zone</button>
-          </div>
-        </motion.div>
-      </div>
+      <BotFinishedScreen
+        user={user}
+        myScore={myScore}
+        botScore={botScore}
+        botName={botName}
+        navigate={navigate}
+        iWon={iWon}
+        tied={tied}
+      />
     );
   }
 

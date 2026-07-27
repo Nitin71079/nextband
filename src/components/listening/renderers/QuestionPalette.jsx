@@ -28,12 +28,14 @@ export default function QuestionPalette({
 
             section.groups.forEach(group=>{
 
+                // MCQ / Matching / Map
                 if(group.questions){
 
                     group.questions.forEach(q=>questions.push(q));
 
                 }
 
+                // Notes completion blanks
                 if(group.notes){
 
                     group.notes.forEach(item=>{
@@ -41,6 +43,40 @@ export default function QuestionPalette({
                         if(item.type==="blank"){
 
                             questions.push(item);
+
+                        }
+
+                    });
+
+                }
+
+                // Table rows – each row that contains a blank cell (object with id)
+                if(group.rows){
+
+                    group.rows.forEach(row=>{
+
+                        row.forEach(cell=>{
+
+                            if(cell.id !== undefined && cell.type === undefined){
+
+                                questions.push(cell);
+
+                            }
+
+                        });
+
+                    });
+
+                }
+
+                // Flowchart blank steps
+                if(group.steps){
+
+                    group.steps.forEach(step=>{
+
+                        if(step.type==="blank"){
+
+                            questions.push(step);
 
                         }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import "../../styles/listening/AudioPlayer.css";
 export default function AudioPlayer({
     audioUrl,
@@ -8,16 +8,10 @@ export default function AudioPlayer({
 
     const audioRef = useRef(null);
 
-    // Jump to the correct section when section changes
-    useEffect(() => {
-
-        if (!audioRef.current) return;
-
-        audioRef.current.currentTime = startTime;
-
-    }, [startTime]);
-
-    // Stop playback at the end of the section
+    // Stop playback at the end of the current section.
+    // Do NOT seek when the section prop changes – the audio should
+    // keep playing uninterrupted as the student navigates between
+    // section question panels.
     const handleTimeUpdate = () => {
 
         if (!audioRef.current) return;
