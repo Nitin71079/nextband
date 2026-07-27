@@ -5,7 +5,7 @@
 .features {
   position: relative;
   overflow: hidden;
-  padding: 120px 48px;
+  padding: 72px 48px;
   background: #ffffff;
   isolation: isolate;
 }
@@ -233,13 +233,13 @@
 }
 
 @media (max-width: 900px) {
-  .features { padding: 88px 32px; }
+  .features { padding: 52px 32px; }
   .features-header { margin-bottom: 48px; }
   .features-header h2 { font-size: 44px; }
 }
 
 @media (max-width: 640px) {
-  .features { padding: 64px 18px; }
+  .features { padding: 40px 18px; }
   .features-grid { grid-template-columns: 1fr; gap: 20px; }
   .features-header h2 { font-size: 34px; letter-spacing: -1px; }
   .features-header p  { font-size: 16px; }

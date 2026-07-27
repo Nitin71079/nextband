@@ -5,7 +5,7 @@
 .dashboard-preview-section {
   position: relative;
   overflow: hidden;
-  padding: 120px 48px;
+  padding: 72px 48px;
   background: #f8faff;
   isolation: isolate;
 }
@@ -345,12 +345,12 @@
 }
 
 @media (max-width: 900px) {
-  .dashboard-preview-section { padding: 88px 32px; }
+  .dashboard-preview-section { padding: 52px 32px; }
   .dashboard-preview-header h2 { font-size: 44px; }
 }
 
 @media (max-width: 768px) {
-  .dashboard-preview-section { padding: 64px 20px; }
+  .dashboard-preview-section { padding: 40px 20px; }
   .dashboard-preview-header h2 { font-size: 38px; }
   .dashboard-preview-header p  { font-size: 16px; }
   .dashboard-grid { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
@@ -359,7 +359,7 @@
 }
 
 @media (max-width: 480px) {
-  .dashboard-preview-section { padding: 56px 14px; }
+  .dashboard-preview-section { padding: 36px 14px; }
   .dashboard-preview-header h2 { font-size: 30px; }
   .dashboard-window { border-radius: 18px; }
 }

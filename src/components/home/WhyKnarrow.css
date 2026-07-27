@@ -5,7 +5,7 @@
 .why {
   position: relative;
   overflow: hidden;
-  padding: 120px 48px;
+  padding: 72px 48px;
   background: #060d1f;
   isolation: isolate;
 }
@@ -154,13 +154,13 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  .why       { padding: 88px 32px; }
+  .why       { padding: 52px 32px; }
   .comparison { grid-template-columns: 1fr; gap: 24px; }
   .why-header h2 { font-size: 44px; }
 }
 
 @media (max-width: 600px) {
-  .why       { padding: 64px 18px; }
+  .why       { padding: 40px 18px; }
   .why-header h2 { font-size: 34px; letter-spacing: -1px; }
   .why-header p  { font-size: 16px; }
   .comparison-card { padding: 30px 26px; border-radius: 22px; }

@@ -5,7 +5,7 @@
 .testimonials {
   position: relative;
   overflow: hidden;
-  padding: 120px 48px;
+  padding: 72px 48px;
   background: #060d1f;
   isolation: isolate;
 }
@@ -230,12 +230,12 @@
 }
 
 @media (max-width: 900px) {
-  .testimonials { padding: 88px 32px; }
+  .testimonials { padding: 52px 32px; }
   .testimonials-header h2 { font-size: 44px; }
 }
 
 @media (max-width: 640px) {
-  .testimonials { padding: 64px 18px; }
+  .testimonials { padding: 40px 18px; }
   .testimonial-grid { grid-template-columns: 1fr; gap: 20px; }
   .testimonials-header h2 { font-size: 34px; letter-spacing: -1px; }
   .testimonials-header p  { font-size: 16px; }

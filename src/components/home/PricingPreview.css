@@ -5,7 +5,7 @@
 .pricing-preview {
   position: relative;
   overflow: hidden;
-  padding: 120px 48px;
+  padding: 72px 48px;
   background: #ffffff;
   isolation: isolate;
 }
@@ -258,12 +258,12 @@
 }
 
 @media (max-width: 900px) {
-  .pricing-preview { padding: 88px 32px; }
+  .pricing-preview { padding: 52px 32px; }
   .pricing-header h2 { font-size: 44px; }
 }
 
 @media (max-width: 640px) {
-  .pricing-preview { padding: 64px 18px; }
+  .pricing-preview { padding: 40px 18px; }
   .pricing-header h2 { font-size: 34px; letter-spacing: -1px; }
   .pricing-header p  { font-size: 16px; }
   .pricing-grid { max-width: 100%; }

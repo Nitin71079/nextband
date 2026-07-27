@@ -5,7 +5,7 @@
 .stats-section {
   position: relative;
   overflow: hidden;
-  padding: 120px 48px;
+  padding: 72px 48px;
   background: #060d1f;
   isolation: isolate;
 }
@@ -261,12 +261,12 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1100px) {
-  .stats-section    { padding: 96px 32px; }
+  .stats-section    { padding: 56px 32px; }
   .stats-container  { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
-  .stats-section    { padding: 72px 20px; }
+  .stats-section    { padding: 48px 20px; }
   .stats-header h2  { font-size: 42px; letter-spacing: -1.5px; }
   .stats-container  { grid-template-columns: 1fr; }
   .stat-card        { padding: 34px 28px; }
@@ -274,7 +274,7 @@
 }
 
 @media (max-width: 480px) {
-  .stats-section    { padding: 56px 16px; }
+  .stats-section    { padding: 40px 16px; }
   .stats-header h2  { font-size: 34px; }
   .stats-badge      { font-size: 10px; }
   .stat-card        { padding: 28px 22px; }
