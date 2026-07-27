@@ -7,65 +7,66 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { Link } from "react-router-dom";
 
 export default function PricingPreview() {
 
   const plans = [
-
     {
-      title:"Free",
-
-      price:"₹0",
-
-      subtitle:"Perfect for getting started",
-
-      popular:false,
-
-      features:[
-        "Reading Practice",
-        "Listening Practice",
-        "Basic Dashboard",
-        "Limited AI Evaluation",
+      title: "Free",
+      price: "₹0",
+      subtitle: "Explore the platform at no cost",
+      popular: false,
+      features: [
+        "Reading Practice (limited tests)",
+        "Listening Practice (limited tests)",
+        "Basic Dashboard & Progress Tracking",
+        "Mock Tests — Reading & Listening",
+        "Exam History & Results",
+        "Leaderboard Access",
+        "Community Forum",
+        "3 AI Evaluations / month",
       ],
     },
-
     {
-      title:"Premium Monthly",
-
-      price:"₹299",
-
-      subtitle:"For serious IELTS preparation",
-
-      popular:false,
-
-      features:[
-        "Unlimited Mock Tests",
-        "AI Writing Evaluation",
-        "AI Speaking Evaluation",
-        "AI Coach",
-        "Advanced Analytics",
+      title: "Premium Monthly",
+      price: "₹299",
+      subtitle: "Full access for serious IELTS prep",
+      popular: false,
+      features: [
+        "Unlimited Reading & Listening Mocks",
+        "Full Academic & General Mock Tests",
+        "AI Writing Evaluation (band scores + feedback)",
+        "AI Speaking Evaluation (fluency, grammar, pronunciation)",
+        "AI Study Planner — personalized weekly plan",
+        "AI Assistant — 24/7 IELTS coach",
+        "AI Control Center & Audio Generator",
+        "Accent Lab — pronunciation training",
+        "Advanced Performance Analytics",
+        "Progress Analytics & Predicted Band",
+        "Evaluation History",
+        "Certificates on band achievement",
+        "Streaks, Achievements & Referrals",
+        "Mentors & Live Classes access",
       ],
     },
-
     {
-      title:"Premium 3 Months",
-
-      price:"₹799",
-
-      subtitle:"Best value for most students",
-
-      popular:true,
-
-      features:[
-        "Everything in Premium",
-        "Unlimited AI",
-        "Priority Features",
+      title: "Premium 3 Months",
+      price: "₹799",
+      subtitle: "Best value — save 11% vs monthly",
+      popular: true,
+      features: [
+        "Everything in Premium Monthly",
+        "Unlimited AI Evaluations — Writing & Speaking",
+        "Priority access to new features",
+        "Full Mock Test Suite (Academic + General)",
+        "AI Study Planner + AI Assistant",
+        "Accent Lab & Audio Generator",
+        "Advanced Analytics & Performance Dashboard",
+        "Certificates, Streaks & Achievements",
+        "Mentors, Live Classes & Community",
         "Premium Support",
-        "Best Savings",
       ],
     },
-
   ];
 
   return (
@@ -204,25 +205,7 @@ export default function PricingPreview() {
 
             </div>
 
-            <Link
-              to="/pricing"
-            >
 
-              <button
-                className={
-                  plan.popular
-                    ? "pricing-btn premium-btn"
-                    : "pricing-btn"
-                }
-              >
-
-                {plan.popular
-                  ? "Get Premium"
-                  : "View Plan"}
-
-              </button>
-
-            </Link>
 
           </motion.div>
 
