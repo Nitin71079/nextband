@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../../context/AuthContext";
 
 import {
   ArrowRight,
@@ -20,6 +21,8 @@ import {
 import "./Hero.css";
 
 export default function Hero() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const heroStats = [
     {
       value: "120+",
@@ -199,7 +202,7 @@ export default function Hero() {
             }}
           >
 
-            <Link to="/register">
+            <Link to={user ? "/dashboard" : "/register"}>
 
               <motion.button
                 className="hero-primary-btn"
@@ -212,7 +215,7 @@ export default function Hero() {
                 }}
               >
 
-                Start Learning Free
+                {user ? "Go to Dashboard" : "Start Learning Free"}
 
                 <ArrowRight size={18} />
 
