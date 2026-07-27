@@ -7,7 +7,9 @@ import {
 import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { VOCAB_QUESTIONS } from "../data/vocabularyQuestions";
-import { Swords, Copy, ArrowLeft, Trophy, Timer, Zap } from "lucide-react";
+import { Swords, Copy, ArrowLeft, Trophy, Timer, Zap, Users } from "lucide-react";
+import useMatchmaking from "../hooks/useMatchmaking";
+import { getBotName, scheduleBotAnswer } from "../utils/botEngine";
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -31,11 +33,41 @@ const QUESTION_TIME = 15;
 const TOTAL_QUESTIONS = 10;
 
 // ── Lobby (create or join) ───────────────────────────────────────────────────
-function Lobby({ user, onRoom }) {
-  const [tab, setTab] = useState("create");
+function Lobby({ user, onRoom, onBot }) {
+  const [tab, setTab] = useState("quick");
   const [joinCode, setJoinCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+
+  const { matchmaking, countdown, startMatchmaking, cancelMatchmaking } = useMatchmaking({
+    user,
+    gameType: "vocab-battle",
+    onMatched: async (result) => {
+      if (result.botMode) {
+        onBot();
+        return;
+      }
+      // We're the creator — make the room
+      const code = genCode();
+      const questions = pickQuestions(TOTAL_QUESTIONS);
+      const myName = user.displayName || user.email?.split("@")[0] || "Player 1";
+      await setDoc(doc(db, "vocabRooms", code), {
+        code,
+        host: user.uid,
+        hostName: myName,
+        guest: result.opponentId,
+        guestName: result.opponentName,
+        status: "playing",
+        questions,
+        currentQ: 0,
+        scores: { [user.uid]: 0, [result.opponentId]: 0 },
+        answers: {},
+        qStartedAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
+      });
+      onRoom(code, "host");
+    },
+  });
 
   async function createRoom() {
     setLoading(true); setErr("");
@@ -45,8 +77,7 @@ function Lobby({ user, onRoom }) {
       code,
       host: user.uid,
       hostName: user.displayName || user.email?.split("@")[0] || "Player 1",
-      guest: null,
-      guestName: null,
+      guest: null, guestName: null,
       status: "waiting",
       questions,
       currentQ: 0,
@@ -70,9 +101,7 @@ function Lobby({ user, onRoom }) {
     if (data.host === user.uid) { setErr("You created this room!"); setLoading(false); return; }
     const guestName = user.displayName || user.email?.split("@")[0] || "Player 2";
     await updateDoc(doc(db, "vocabRooms", code), {
-      guest: user.uid,
-      guestName,
-      [`scores.${user.uid}`]: 0,
+      guest: user.uid, guestName, [`scores.${user.uid}`]: 0,
     });
     setLoading(false);
     onRoom(code, "guest");
@@ -81,47 +110,68 @@ function Lobby({ user, onRoom }) {
   return (
     <div style={S.center}>
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} style={S.card}>
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <div style={{ fontSize: "48px", marginBottom: "12px" }}>⚔️</div>
-          <h1 style={{ ...S.heading, fontSize: "28px" }}>Vocabulary Battle</h1>
-          <p style={{ color: "#94a3b8", fontSize: "14px", marginTop: "8px" }}>
-            1v1 real-time IELTS vocabulary duel
-          </p>
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
+          <div style={{ fontSize: "44px", marginBottom: "10px" }}>⚔️</div>
+          <h1 style={{ ...S.heading, fontSize: "26px" }}>Vocabulary Battle</h1>
+          <p style={{ color: "#94a3b8", fontSize: "13px", marginTop: "6px" }}>1v1 real-time IELTS vocabulary duel</p>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "28px" }}>
-          {["create", "join"].map((t) => (
+        <div style={{ display: "flex", gap: "6px", marginBottom: "24px" }}>
+          {["quick", "create", "join"].map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
-              flex: 1, padding: "12px", borderRadius: "12px", border: "none",
-              fontWeight: 700, fontSize: "14px", cursor: "pointer",
+              flex: 1, padding: "10px 6px", borderRadius: "10px", border: "none",
+              fontWeight: 700, fontSize: "12px", cursor: "pointer",
               background: tab === t ? "linear-gradient(135deg,#2563eb,#06b6d4)" : "rgba(255,255,255,.06)",
               color: tab === t ? "white" : "#64748b",
-              transition: "all .2s",
             }}>
-              {t === "create" ? "Create Room" : "Join Room"}
+              {t === "quick" ? "⚡ Quick Match" : t === "create" ? "🎮 Create" : "🔗 Join"}
             </button>
           ))}
         </div>
 
-        {tab === "create" ? (
-          <div>
+        {tab === "quick" && (
+          <div style={{ textAlign: "center" }}>
             <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "20px", lineHeight: 1.7 }}>
-              Create a private room and share the code with your opponent. The game starts when they join.
+              Get matched with a random player instantly. If no one is online within <strong style={{ color: "#60a5fa" }}>8 seconds</strong>, you'll play against our AI bot.
+            </p>
+            {!matchmaking ? (
+              <button onClick={startMatchmaking} style={{ ...S.primaryBtn, background: "linear-gradient(135deg,#7c3aed,#2563eb)" }}>
+                ⚡ Find Match
+              </button>
+            ) : (
+              <div>
+                <div style={{ fontSize: "48px", fontWeight: 900, color: "#60a5fa", marginBottom: "8px", fontVariantNumeric: "tabular-nums" }}>{countdown}</div>
+                <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "16px" }}>Searching for an opponent…</p>
+                <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "16px" }}>
+                  {[0,1,2].map(i => (
+                    <motion.div key={i} animate={{ opacity: [0.3,1,0.3] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.3 }}
+                      style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#2563eb" }} />
+                  ))}
+                </div>
+                <button onClick={cancelMatchmaking} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === "create" && (
+          <div>
+            <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "18px", lineHeight: 1.7 }}>
+              Create a private room and share the code with your opponent.
             </p>
             <button onClick={createRoom} disabled={loading} style={S.primaryBtn}>
               {loading ? "Creating…" : "🎮 Create Room"}
             </button>
           </div>
-        ) : (
+        )}
+
+        {tab === "join" && (
           <div>
-            <input
-              value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
-              placeholder="Enter 6-letter room code"
-              maxLength={6}
-              style={S.input}
-              onKeyDown={e => e.key === "Enter" && joinRoom()}
-            />
+            <input value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
+              placeholder="Enter 6-letter code" maxLength={6} style={S.input}
+              onKeyDown={e => e.key === "Enter" && joinRoom()} />
             {err && <p style={{ color: "#f87171", fontSize: "12px", marginTop: "8px" }}>{err}</p>}
             <button onClick={joinRoom} disabled={loading} style={{ ...S.primaryBtn, marginTop: "16px" }}>
               {loading ? "Joining…" : "🚀 Join Room"}
@@ -401,6 +451,162 @@ function ResultsScreen({ roomData, user, code, navigate }) {
   );
 }
 
+// ── Bot Game ──────────────────────────────────────────────────────────────────
+function BotGameScreen({ user, navigate }) {
+  const questions = useRef(pickQuestions(TOTAL_QUESTIONS)).current;
+  const botName = useRef(getBotName()).current;
+  const [qIdx, setQIdx] = useState(0);
+  const [myScore, setMyScore] = useState(0);
+  const [botScore, setBotScore] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const [botAnswered, setBotAnswered] = useState(false);
+  const [botAnswer, setBotAnswer] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
+  const [finished, setFinished] = useState(false);
+  const cancelBotRef = useRef(null);
+  const timerRef = useRef(null);
+
+  const q = questions[qIdx];
+
+  useEffect(() => {
+    setSelected(null); setFeedback(null); setBotAnswered(false); setBotAnswer(null);
+    setTimeLeft(QUESTION_TIME);
+
+    // Bot schedules its answer
+    cancelBotRef.current = scheduleBotAnswer(q, qIdx, (ans) => {
+      setBotAnswer(ans);
+      setBotAnswered(true);
+      if (ans === q.answer) setBotScore(prev => prev + 1);
+    });
+
+    // Timer
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(timerRef.current); advanceQuestion(); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      cancelBotRef.current?.();
+      clearInterval(timerRef.current);
+    };
+  }, [qIdx]);
+
+  function advanceQuestion() {
+    clearInterval(timerRef.current);
+    cancelBotRef.current?.();
+    setTimeout(() => {
+      if (qIdx + 1 >= TOTAL_QUESTIONS) { setFinished(true); }
+      else { setQIdx(i => i + 1); }
+    }, 900);
+  }
+
+  function handleAnswer(optionIdx) {
+    if (selected !== null) return;
+    clearInterval(timerRef.current);
+    cancelBotRef.current?.();
+    setSelected(optionIdx);
+    const correct = q.answer === optionIdx;
+    setFeedback(correct ? "correct" : "wrong");
+    if (correct) setMyScore(s => s + 1);
+    advanceQuestion();
+  }
+
+  if (finished) {
+    const iWon = myScore > botScore;
+    const tied = myScore === botScore;
+    return (
+      <div style={S.center}>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ ...S.card, textAlign: "center" }}>
+          <div style={{ fontSize: "52px", marginBottom: "14px" }}>{tied ? "🤝" : iWon ? "🏆" : "😤"}</div>
+          <h1 style={{ ...S.heading, fontSize: "26px", marginBottom: "6px" }}>
+            {tied ? "Tie!" : iWon ? "You Beat the Bot!" : "Bot Wins!"}
+          </h1>
+          <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "4px" }}>vs {botName}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", margin: "24px 0" }}>
+            {[{ name: "You", score: myScore }, { name: botName, score: botScore }].map(p => (
+              <div key={p.name} style={{ padding: "18px", borderRadius: "14px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }}>
+                <p style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>{p.name}</p>
+                <p style={{ fontSize: "36px", fontWeight: 900, color: "#60a5fa" }}>{p.score}</p>
+                <p style={{ color: "#475569", fontSize: "11px" }}>/ {TOTAL_QUESTIONS}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <button onClick={() => navigate("/games/vocab-battle")} style={S.primaryBtn}>Play Again</button>
+            <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Games Zone</button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const timerPct = (timeLeft / QUESTION_TIME) * 100;
+  const timerColor = timeLeft > 8 ? "#22c55e" : timeLeft > 4 ? "#f59e0b" : "#ef4444";
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#060d1f", padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: "100%", maxWidth: "640px", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "12px", alignItems: "center", marginBottom: "24px" }}>
+        <div style={{ ...S.scoreCard, textAlign: "left" }}>
+          <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>You</span>
+          <span style={{ fontSize: "28px", fontWeight: 900, color: "#60a5fa" }}>{myScore}</span>
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "12px", color: "#475569", fontWeight: 700 }}>Q {qIdx + 1}/{TOTAL_QUESTIONS}</div>
+          <div style={{ ...S.timerCircle, borderColor: timerColor, color: timerColor }}>{timeLeft}</div>
+        </div>
+        <div style={{ ...S.scoreCard, textAlign: "right" }}>
+          <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>{botName}</span>
+          <span style={{ fontSize: "28px", fontWeight: 900, color: "#f472b6" }}>{botScore}</span>
+          {botAnswered && <span style={{ fontSize: "10px", color: botAnswer === q.answer ? "#4ade80" : "#f87171" }}>{botAnswer === q.answer ? "✓" : "✗"}</span>}
+        </div>
+      </div>
+
+      <div style={{ width: "100%", maxWidth: "640px", height: "4px", background: "rgba(255,255,255,.08)", borderRadius: "999px", marginBottom: "24px", overflow: "hidden" }}>
+        <motion.div animate={{ width: `${timerPct}%` }} transition={{ duration: 0.8, ease: "linear" }} style={{ height: "100%", background: timerColor, borderRadius: "999px" }} />
+      </div>
+
+      <motion.div key={qIdx} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
+        style={{ width: "100%", maxWidth: "640px", background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)", borderRadius: "24px", padding: "28px", marginBottom: "18px", textAlign: "center" }}>
+        <p style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", marginBottom: "10px" }}>What does this word mean?</p>
+        <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, color: "#ffffff", letterSpacing: "-1px" }}>{q.word}</h2>
+        <p style={{ color: "#475569", fontSize: "11px", marginTop: "8px" }}>🤖 vs AI Bot • {botAnswered ? "Bot answered" : "Bot thinking…"}</p>
+      </motion.div>
+
+      <div style={{ width: "100%", maxWidth: "640px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+        {q.options.map((opt, i) => {
+          let bg = "rgba(255,255,255,.05)";
+          let border = "1px solid rgba(255,255,255,.08)";
+          let color = "#e2e8f0";
+          if (selected !== null) {
+            if (i === q.answer) { bg = "rgba(34,197,94,.15)"; border = "1px solid #22c55e"; color = "#4ade80"; }
+            else if (i === selected) { bg = "rgba(239,68,68,.15)"; border = "1px solid #ef4444"; color = "#f87171"; }
+          }
+          return (
+            <motion.button key={i} whileHover={selected === null ? { scale: 1.02 } : {}} whileTap={selected === null ? { scale: 0.97 } : {}}
+              onClick={() => handleAnswer(i)}
+              style={{ padding: "14px 12px", borderRadius: "14px", border, background: bg, color, fontSize: "13px", fontWeight: 600, cursor: selected === null ? "pointer" : "default", textAlign: "left", lineHeight: 1.5 }}>
+              <span style={{ display: "inline-block", width: "20px", height: "20px", borderRadius: "5px", background: "rgba(255,255,255,.08)", textAlign: "center", lineHeight: "20px", fontSize: "10px", fontWeight: 800, marginRight: "8px" }}>
+                {["A","B","C","D"][i]}
+              </span>
+              {opt}
+            </motion.button>
+          );
+        })}
+      </div>
+      {feedback && (
+        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+          style={{ marginTop: "16px", fontSize: "15px", fontWeight: 700, color: feedback === "correct" ? "#4ade80" : "#f87171" }}>
+          {feedback === "correct" ? "✓ Correct! +1 point" : `✗ Wrong — answer was: "${q.options[q.answer]}"`}
+        </motion.p>
+      )}
+    </div>
+  );
+}
+
 // ── Styles ────────────────────────────────────────────────────────────────────
 const S = {
   center: {
@@ -493,7 +699,7 @@ const S = {
 export default function VocabBattle() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [phase, setPhase] = useState("lobby"); // lobby | waiting | playing | finished
+  const [phase, setPhase] = useState("lobby"); // lobby | waiting | playing | finished | bot
   const [roomCode, setRoomCode] = useState(null);
   const [role, setRole] = useState(null);
   const [roomData, setRoomData] = useState(null);
@@ -520,12 +726,15 @@ export default function VocabBattle() {
     setPhase("waiting");
   }
 
+  function handleBot() {
+    setPhase("bot");
+  }
+
   if (authLoading) return <div style={{ ...S.center }}><p style={{ color: "#94a3b8" }}>Loading…</p></div>;
   if (!user) return <div style={S.center}><p style={{ color: "#94a3b8" }}>Please sign in to play.</p></div>;
 
   return (
     <>
-      {/* Back button */}
       {phase === "lobby" && (
         <motion.button
           onClick={() => navigate("/games")}
@@ -539,7 +748,7 @@ export default function VocabBattle() {
       <AnimatePresence mode="wait">
         {phase === "lobby" && (
           <motion.div key="lobby" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Lobby user={user} onRoom={handleRoom} />
+            <Lobby user={user} onRoom={handleRoom} onBot={handleBot} />
           </motion.div>
         )}
 
@@ -558,6 +767,12 @@ export default function VocabBattle() {
         {phase === "finished" && roomData && (
           <motion.div key="finished" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <ResultsScreen roomData={roomData} user={user} code={roomCode} navigate={navigate} />
+          </motion.div>
+        )}
+
+        {phase === "bot" && (
+          <motion.div key="bot" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <BotGameScreen user={user} navigate={navigate} />
           </motion.div>
         )}
       </AnimatePresence>

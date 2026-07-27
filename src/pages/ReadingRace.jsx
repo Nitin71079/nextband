@@ -8,6 +8,8 @@ import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { READING_RACE_PASSAGES } from "../data/readingRacePassages";
 import { BookOpen, Copy, ArrowLeft, Zap, Timer } from "lucide-react";
+import useMatchmaking from "../hooks/useMatchmaking";
+import { getBotName, simulateBotReadingRace } from "../utils/botEngine";
 
 function genCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -60,11 +62,37 @@ const S = {
 };
 
 // ── Lobby ─────────────────────────────────────────────────────────────────────
-function Lobby({ user, onRoom }) {
-  const [tab, setTab] = useState("create");
+function Lobby({ user, onRoom, onBot }) {
+  const [tab, setTab] = useState("quick");
   const [joinCode, setJoinCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+
+  const { matchmaking, countdown, startMatchmaking, cancelMatchmaking } = useMatchmaking({
+    user,
+    gameType: "reading-race",
+    onMatched: async (result) => {
+      if (result.botMode) { onBot(); return; }
+      const code = genCode();
+      const passage = pickPassage();
+      const myName = user.displayName || user.email?.split("@")[0] || "Player 1";
+      await setDoc(doc(db, "readingRooms", code), {
+        code,
+        host: user.uid, hostName: myName,
+        guest: result.opponentId, guestName: result.opponentName,
+        status: "playing",
+        passage,
+        currentQ: 0,
+        scores: { [user.uid]: 0, [result.opponentId]: 0 },
+        progress: { [user.uid]: 0, [result.opponentId]: 0 },
+        answers: {}, firstCorrect: {},
+        timeLeft: RACE_TIME,
+        raceStartedAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
+      });
+      onRoom(code, "host");
+    },
+  });
 
   async function createRoom() {
     setLoading(true); setErr("");
@@ -75,15 +103,12 @@ function Lobby({ user, onRoom }) {
       host: user.uid,
       hostName: user.displayName || user.email?.split("@")[0] || "Player 1",
       guest: null, guestName: null,
-      status: "waiting",
-      passage,
+      status: "waiting", passage,
       currentQ: 0,
       scores: { [user.uid]: 0 },
       progress: { [user.uid]: 0 },
-      answers: {},
-      firstCorrect: {},
-      timeLeft: RACE_TIME,
-      raceStartedAt: null,
+      answers: {}, firstCorrect: {},
+      timeLeft: RACE_TIME, raceStartedAt: null,
       createdAt: serverTimestamp(),
     });
     setLoading(false);
@@ -102,8 +127,7 @@ function Lobby({ user, onRoom }) {
     const guestName = user.displayName || user.email?.split("@")[0] || "Player 2";
     await updateDoc(doc(db, "readingRooms", code), {
       guest: user.uid, guestName,
-      [`scores.${user.uid}`]: 0,
-      [`progress.${user.uid}`]: 0,
+      [`scores.${user.uid}`]: 0, [`progress.${user.uid}`]: 0,
     });
     setLoading(false);
     onRoom(code, "guest");
@@ -112,35 +136,64 @@ function Lobby({ user, onRoom }) {
   return (
     <div style={S.center}>
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} style={S.card}>
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <div style={{ fontSize: "48px", marginBottom: "12px" }}>📖</div>
-          <h1 style={{ ...S.heading, fontSize: "26px" }}>Reading Race</h1>
-          <p style={{ color: "#94a3b8", fontSize: "13px", marginTop: "8px" }}>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+          <div style={{ fontSize: "44px", marginBottom: "10px" }}>📖</div>
+          <h1 style={{ ...S.heading, fontSize: "24px" }}>Reading Race</h1>
+          <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "6px" }}>
             1v1 — same passage, 5 questions, 3 minutes. Speed + accuracy wins.
           </p>
         </div>
-        <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
-          {["create", "join"].map(t => (
+
+        <div style={{ display: "flex", gap: "6px", marginBottom: "22px" }}>
+          {["quick", "create", "join"].map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
-              flex: 1, padding: "11px", borderRadius: "12px", border: "none",
-              fontWeight: 700, fontSize: "13px", cursor: "pointer",
-              background: tab === t ? "linear-gradient(135deg,#2563eb,#06b6d4)" : "rgba(255,255,255,.06)",
+              flex: 1, padding: "10px 6px", borderRadius: "10px", border: "none",
+              fontWeight: 700, fontSize: "12px", cursor: "pointer",
+              background: tab === t ? "linear-gradient(135deg,#22c55e,#06b6d4)" : "rgba(255,255,255,.06)",
               color: tab === t ? "white" : "#64748b",
             }}>
-              {t === "create" ? "Create Room" : "Join Room"}
+              {t === "quick" ? "⚡ Quick Match" : t === "create" ? "📖 Create" : "🔗 Join"}
             </button>
           ))}
         </div>
-        {tab === "create" ? (
-          <div>
+
+        {tab === "quick" && (
+          <div style={{ textAlign: "center" }}>
             <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "20px", lineHeight: 1.7 }}>
-              A passage is randomly selected. Share the room code with your opponent — race starts when they join.
+              Get matched with a random player instantly. If no one is online within <strong style={{ color: "#4ade80" }}>8 seconds</strong>, you'll race against our AI bot.
+            </p>
+            {!matchmaking ? (
+              <button onClick={startMatchmaking} style={{ ...S.primaryBtn, background: "linear-gradient(135deg,#22c55e,#06b6d4)" }}>
+                ⚡ Find Match
+              </button>
+            ) : (
+              <div>
+                <div style={{ fontSize: "48px", fontWeight: 900, color: "#4ade80", marginBottom: "8px", fontVariantNumeric: "tabular-nums" }}>{countdown}</div>
+                <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "16px" }}>Searching for an opponent…</p>
+                <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "16px" }}>
+                  {[0,1,2].map(i => (
+                    <motion.div key={i} animate={{ opacity: [0.3,1,0.3] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.3 }}
+                      style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#22c55e" }} />
+                  ))}
+                </div>
+                <button onClick={cancelMatchmaking} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Cancel</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === "create" && (
+          <div>
+            <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "18px", lineHeight: 1.7 }}>
+              A passage is randomly selected. Share the room code with your opponent.
             </p>
             <button onClick={createRoom} disabled={loading} style={S.primaryBtn}>
               {loading ? "Creating…" : "📖 Create Room"}
             </button>
           </div>
-        ) : (
+        )}
+
+        {tab === "join" && (
           <div>
             <input value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
               placeholder="Enter room code" maxLength={6} style={S.input}
@@ -470,6 +523,180 @@ function ResultsScreen({ roomData, user, code, navigate }) {
   );
 }
 
+// ── Bot Race Screen ───────────────────────────────────────────────────────────
+function BotRaceScreen({ user, navigate }) {
+  const passage = useRef(pickPassage()).current;
+  const botName = useRef(getBotName()).current;
+  const botPlan = useRef(simulateBotReadingRace(passage.questions)).current;
+
+  const [qIdx, setQIdx] = useState(0);
+  const [myScore, setMyScore] = useState(0);
+  const [botScore, setBotScore] = useState(0);
+  const [myProgress, setMyProgress] = useState(0);
+  const [botProgress, setBotProgress] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(RACE_TIME);
+  const [finished, setFinished] = useState(false);
+  const timerRef = useRef(null);
+  const botTimersRef = useRef([]);
+
+  // Main race timer
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(timerRef.current); setFinished(true); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timerRef.current);
+  }, []);
+
+  // Schedule all bot answers upfront
+  useEffect(() => {
+    botPlan.forEach(plan => {
+      const t = setTimeout(() => {
+        setBotProgress(prev => {
+          const next = prev + 1;
+          if (plan.answer === passage.questions[plan.questionIndex]?.answer) {
+            setBotScore(s => s + 2);
+          }
+          if (next >= TOTAL_QUESTIONS) setFinished(true);
+          return next;
+        });
+      }, plan.delay);
+      botTimersRef.current.push(t);
+    });
+    return () => botTimersRef.current.forEach(clearTimeout);
+  }, []);
+
+  // Reset question state on advance
+  useEffect(() => {
+    setSelected(null);
+    setFeedback(null);
+  }, [qIdx]);
+
+  function handleAnswer(optionIdx) {
+    if (selected !== null) return;
+    setSelected(optionIdx);
+    const q = passage.questions[qIdx];
+    const correct = q.answer === optionIdx;
+    setFeedback(correct ? "correct" : "wrong");
+    const gain = correct ? 2 : 0;
+    setMyScore(s => s + gain);
+    const next = qIdx + 1;
+    setMyProgress(next);
+    setTimeout(() => {
+      if (next >= TOTAL_QUESTIONS) setFinished(true);
+      else setQIdx(next);
+    }, 900);
+  }
+
+  const q = passage.questions[qIdx];
+  const mins = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const secs = String(timeLeft % 60).padStart(2, "0");
+  const timerColor = timeLeft > 60 ? "#22c55e" : timeLeft > 30 ? "#f59e0b" : "#ef4444";
+
+  if (finished) {
+    const iWon = myScore > botScore;
+    const tied = myScore === botScore;
+    return (
+      <div style={S.center}>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ ...S.card, textAlign: "center" }}>
+          <div style={{ fontSize: "52px", marginBottom: "14px" }}>{tied ? "🤝" : iWon ? "🏆" : "📖"}</div>
+          <h1 style={{ ...S.heading, fontSize: "24px", marginBottom: "6px" }}>
+            {tied ? "It's a Tie!" : iWon ? "You Beat the Bot!" : "Bot Wins!"}
+          </h1>
+          <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "4px" }}>vs {botName} · {passage.title}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", margin: "20px 0" }}>
+            {[{ name: "You", score: myScore }, { name: botName, score: botScore }].map(p => (
+              <div key={p.name} style={{ padding: "16px", borderRadius: "14px", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.08)" }}>
+                <p style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>{p.name}</p>
+                <p style={{ fontSize: "34px", fontWeight: 900, color: "#60a5fa" }}>{p.score}</p>
+                <p style={{ color: "#475569", fontSize: "11px" }}>pts</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <button onClick={() => navigate("/games/reading-race")} style={S.primaryBtn}>Play Again</button>
+            <button onClick={() => navigate("/games")} style={{ ...S.primaryBtn, background: "rgba(255,255,255,.06)", color: "#94a3b8" }}>Games Zone</button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ ...S.page, display: "grid", gridTemplateColumns: "1fr 420px", minHeight: "100vh" }}>
+      <div style={{ padding: "24px 28px 24px 24px", overflowY: "auto", borderRight: "1px solid rgba(255,255,255,.06)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <h2 style={{ color: "#f1f5f9", fontWeight: 800, fontSize: "17px", margin: 0 }}>{passage.title}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "10px", background: "rgba(255,255,255,.05)", border: `1px solid ${timerColor}40` }}>
+            <Timer size={13} color={timerColor} />
+            <span style={{ fontWeight: 800, fontSize: "17px", color: timerColor, fontVariantNumeric: "tabular-nums" }}>{mins}:{secs}</span>
+          </div>
+        </div>
+        <div style={{ marginBottom: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+          {[{ name: "You", progress: myProgress, score: myScore, color: "#2563eb" }, { name: botName, progress: botProgress, score: botScore, color: "#f472b6" }].map(p => (
+            <div key={p.name} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, width: "80px", flexShrink: 0 }}>{p.name}</span>
+              <div style={{ flex: 1, height: "6px", background: "rgba(255,255,255,.08)", borderRadius: "999px", overflow: "hidden" }}>
+                <motion.div animate={{ width: `${(p.progress / TOTAL_QUESTIONS) * 100}%` }} transition={{ duration: 0.4 }}
+                  style={{ height: "100%", background: p.color, borderRadius: "999px" }} />
+              </div>
+              <span style={{ color: p.color, fontWeight: 800, fontSize: "13px", width: "32px", textAlign: "right" }}>{p.score}pt</span>
+            </div>
+          ))}
+        </div>
+        <p style={{ color: "#475569", fontSize: "11px", marginBottom: "12px" }}>🤖 Playing vs {botName}</p>
+        <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.07)", borderRadius: "14px", padding: "20px" }}>
+          {passage.passage.split("\n\n").map((para, i) => (
+            <p key={i} style={{ color: "#cbd5e1", fontSize: "14px", lineHeight: 1.85, marginBottom: i < passage.passage.split("\n\n").length - 1 ? "16px" : 0 }}>{para}</p>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "24px", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+        <div style={{ marginBottom: "14px" }}>
+          <span style={{ color: "#64748b", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px" }}>
+            Question {qIdx + 1} of {TOTAL_QUESTIONS}
+          </span>
+        </div>
+        <motion.div key={qIdx} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+          style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)", borderRadius: "16px", padding: "20px", marginBottom: "14px" }}>
+          <p style={{ color: "#f1f5f9", fontSize: "14px", lineHeight: 1.7, margin: 0, fontWeight: 600 }}>{q.question}</p>
+        </motion.div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "9px", flex: 1 }}>
+          {q.options.map((opt, i) => {
+            let bg = "rgba(255,255,255,.04)", border = "1px solid rgba(255,255,255,.08)", color = "#cbd5e1";
+            if (selected !== null) {
+              if (i === q.answer) { bg = "rgba(34,197,94,.15)"; border = "1px solid #22c55e"; color = "#4ade80"; }
+              else if (i === selected) { bg = "rgba(239,68,68,.15)"; border = "1px solid #ef4444"; color = "#f87171"; }
+            }
+            return (
+              <motion.button key={i} whileHover={selected === null ? { scale: 1.015 } : {}} whileTap={selected === null ? { scale: 0.98 } : {}}
+                onClick={() => handleAnswer(i)}
+                style={{ padding: "12px 14px", borderRadius: "12px", border, background: bg, color, fontSize: "13px", fontWeight: 500, cursor: selected === null ? "pointer" : "default", textAlign: "left", lineHeight: 1.5, display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                <span style={{ display: "inline-flex", width: "20px", height: "20px", borderRadius: "5px", background: "rgba(255,255,255,.08)", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: 800, flexShrink: 0, marginTop: "1px" }}>
+                  {["A","B","C","D"][i]}
+                </span>
+                {opt}
+              </motion.button>
+            );
+          })}
+        </div>
+        {feedback && (
+          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            style={{ marginTop: "12px", padding: "10px 14px", borderRadius: "10px", background: feedback === "correct" ? "rgba(34,197,94,.1)" : "rgba(239,68,68,.1)", border: `1px solid ${feedback === "correct" ? "#22c55e40" : "#ef444440"}` }}>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: "12px", color: feedback === "correct" ? "#4ade80" : "#f87171" }}>
+              {feedback === "correct" ? "✓ Correct! +2pts" : `✗ Answer: "${q.options[q.answer]}"`}
+            </p>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function ReadingRace() {
   const { user, loading: authLoading } = useAuth();
@@ -495,6 +722,7 @@ export default function ReadingRace() {
   }, [roomCode]);
 
   function handleRoom(code, r) { setRoomCode(code); setRole(r); setPhase("waiting"); }
+  function handleBot() { setPhase("bot"); }
 
   if (authLoading) return <div style={S.center}><p style={{ color: "#94a3b8" }}>Loading…</p></div>;
   if (!user) return <div style={S.center}><p style={{ color: "#94a3b8" }}>Please sign in to play.</p></div>;
@@ -511,7 +739,7 @@ export default function ReadingRace() {
       <AnimatePresence mode="wait">
         {phase === "lobby" && (
           <motion.div key="lobby" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Lobby user={user} onRoom={handleRoom} />
+            <Lobby user={user} onRoom={handleRoom} onBot={handleBot} />
           </motion.div>
         )}
         {phase === "waiting" && roomData && (
@@ -527,6 +755,11 @@ export default function ReadingRace() {
         {phase === "finished" && roomData && (
           <motion.div key="finished" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <ResultsScreen roomData={roomData} user={user} code={roomCode} navigate={navigate} />
+          </motion.div>
+        )}
+        {phase === "bot" && (
+          <motion.div key="bot" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <BotRaceScreen user={user} navigate={navigate} />
           </motion.div>
         )}
       </AnimatePresence>

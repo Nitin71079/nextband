@@ -114,6 +114,13 @@ service cloud.firestore {
         && resource.data.host == request.auth.uid;
     }
 
+    // MATCHMAKING QUEUE
+    match /matchmakingQueue/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if isSignedIn();
+    }
+
     // MENTOR REQUESTS
     match /mentorRequests/{requestId} {
       allow create:
