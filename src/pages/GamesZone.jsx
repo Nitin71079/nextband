@@ -87,6 +87,20 @@ const games = [
     tags: ["Solo", "Vocabulary", "Paraphrasing"],
     color: "#7c3aed",
   },
+  {
+    id: "grammar-gladiator",
+    icon: "⚔️🔤",
+    title: "Grammar Gladiator",
+    subtitle: "1v1 Multiplayer",
+    description:
+      "Both players get the same broken IELTS sentence. Race to pick the corrected version — tense, agreement, prepositions and more. First to answer correctly scores, with a speed bonus.",
+    badge: "LIVE",
+    badgeColor: "#f43f5e",
+    available: true,
+    path: "/games/grammar-gladiator",
+    tags: ["Multiplayer", "Grammar", "Real-time"],
+    color: "#f43f5e",
+  },
 ];
 
 export default function GamesZone() {

@@ -75,6 +75,7 @@ const WordChain = lazy(() => import("./pages/WordChain"));
 const SentenceFixer = lazy(() => import("./pages/SentenceFixer"));
 const BandBlitz = lazy(() => import("./pages/BandBlitz"));
 const SynonymSprint = lazy(() => import("./pages/SynonymSprint"));
+const GrammarGladiator = lazy(() => import("./pages/GrammarGladiator"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -495,6 +496,15 @@ element={<ExamHistory/>}
   element={
     <PrivateRoute>
       <SynonymSprint />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/grammar-gladiator"
+  element={
+    <PrivateRoute>
+      <GrammarGladiator />
     </PrivateRoute>
   }
 />

@@ -1,0 +1,248 @@
+/**
+ * Grammar Gladiator — 1v1 multiplayer IELTS grammar fix game.
+ * Each question shows a flawed IELTS-style sentence.
+ * Players race to pick the ONE corrected version from 4 options.
+ * answer: 0-indexed correct option index.
+ */
+export const GRAMMAR_QUESTIONS = [
+  {
+    broken: "The number of students who studies abroad have increased significantly.",
+    options: [
+      "The number of students who study abroad has increased significantly.",
+      "The number of students who studies abroad has increased significantly.",
+      "The number of students who study abroad have increased significantly.",
+      "The numbers of students who study abroad has increased significantly.",
+    ],
+    answer: 0,
+    error: "Subject–verb agreement",
+    tip: "'The number of…' takes a singular verb (has, not have).",
+  },
+  {
+    broken: "Many people believes that exercise is more important than diet.",
+    options: [
+      "Many people believe that exercise is more important than diet.",
+      "Many people believes that exercise are more important than diet.",
+      "Many peoples believe that exercise is more important than diet.",
+      "Many people believe that exercise are more important than diet.",
+    ],
+    answer: 0,
+    error: "Subject–verb agreement",
+    tip: "'Many people' is plural — use 'believe', not 'believes'.",
+  },
+  {
+    broken: "The government should to invest more money in public transport.",
+    options: [
+      "The government should invest more money in public transport.",
+      "The government should investing more money in public transport.",
+      "The government should to investing more money in public transport.",
+      "The government should invested more money in public transport.",
+    ],
+    answer: 0,
+    error: "Modal + bare infinitive",
+    tip: "Modal verbs (should, must, can) are always followed by the bare infinitive.",
+  },
+  {
+    broken: "Despite of the challenges, she managed to complete her degree.",
+    options: [
+      "Despite the challenges, she managed to complete her degree.",
+      "Despite of the challenges, she has managed to complete her degree.",
+      "In spite the challenges, she managed to complete her degree.",
+      "Although of the challenges, she managed to complete her degree.",
+    ],
+    answer: 0,
+    error: "Preposition error",
+    tip: "'Despite' is never followed by 'of'. Use 'despite + noun' or 'in spite of + noun'.",
+  },
+  {
+    broken: "He gave me an advice that changed my career completely.",
+    options: [
+      "He gave me advice that changed my career completely.",
+      "He gave me an advices that changed my career completely.",
+      "He gave me the advice that changed my career completely.",
+      "He gave me some advices that changed my career completely.",
+    ],
+    answer: 0,
+    error: "Uncountable noun",
+    tip: "'Advice' is uncountable — it cannot be used with 'an' or pluralised.",
+  },
+  {
+    broken: "The data shows that more and more people is choosing to work remotely.",
+    options: [
+      "The data show that more and more people are choosing to work remotely.",
+      "The data shows that more and more people are choosing to work remotely.",
+      "The datas show that more and more people is choosing to work remotely.",
+      "The data is showing that more and more people are choosing to work remotely.",
+    ],
+    answer: 0,
+    error: "Noun agreement",
+    tip: "'Data' is plural (datum → data). Use 'show' and 'are'.",
+  },
+  {
+    broken: "Not only she passed the exam, but she also received a scholarship.",
+    options: [
+      "Not only did she pass the exam, but she also received a scholarship.",
+      "Not only she did pass the exam, but she also received a scholarship.",
+      "Not only passed she the exam, but she also received a scholarship.",
+      "Not only she has passed the exam, but also she received a scholarship.",
+    ],
+    answer: 0,
+    error: "Inversion after negative adverbial",
+    tip: "After 'Not only' at the start of a sentence, invert subject and auxiliary: 'Not only did she…'",
+  },
+  {
+    broken: "The pollution in the city has raised dramatically over the past decade.",
+    options: [
+      "The pollution in the city has risen dramatically over the past decade.",
+      "The pollution in the city has raised drastically over the past decade.",
+      "The pollution in the city rose dramatically over the past decade.",
+      "The pollution in the city has been raised dramatically over the past decade.",
+    ],
+    answer: 0,
+    error: "Transitive vs intransitive verb",
+    tip: "'Rise' (rose/risen) is intransitive. 'Raise' requires an object — you raise something.",
+  },
+  {
+    broken: "Each of the students have submitted their assignment on time.",
+    options: [
+      "Each of the students has submitted their assignment on time.",
+      "Each of the students have submitted his assignment on time.",
+      "Every of the students has submitted their assignment on time.",
+      "Each of the student has submitted their assignment on time.",
+    ],
+    answer: 0,
+    error: "Subject–verb agreement",
+    tip: "'Each of the students' is grammatically singular — use 'has'.",
+  },
+  {
+    broken: "The committee are making its decision after a long debate.",
+    options: [
+      "The committee made its decision after a long debate.",
+      "The committee is making their decision after a long debate.",
+      "The committee made their decision after a long debate.",
+      "The committee are making their decision after a long debate.",
+    ],
+    answer: 0,
+    error: "Collective noun + tense",
+    tip: "In academic writing 'committee' is treated as singular ('made its decision').",
+  },
+  {
+    broken: "By the time she arrived, the meeting already finished.",
+    options: [
+      "By the time she arrived, the meeting had already finished.",
+      "By the time she arrived, the meeting already has finished.",
+      "By the time she arrives, the meeting had already finished.",
+      "By the time she arrived, the meeting was already finishing.",
+    ],
+    answer: 0,
+    error: "Past perfect",
+    tip: "When one past action happened before another, use the past perfect: 'had finished'.",
+  },
+  {
+    broken: "The researches conducted by the team was published last year.",
+    options: [
+      "The research conducted by the team was published last year.",
+      "The research conducted by the team were published last year.",
+      "The researches conducted by the team were published last year.",
+      "The research conducting by the team was published last year.",
+    ],
+    answer: 0,
+    error: "Uncountable noun + agreement",
+    tip: "'Research' is uncountable — no plural form. Use 'was' (singular).",
+  },
+  {
+    broken: "She is used to work long hours at her previous job.",
+    options: [
+      "She is used to working long hours at her previous job.",
+      "She used to working long hours at her previous job.",
+      "She is used to work long hours at her previous job.",
+      "She was used to worked long hours at her previous job.",
+    ],
+    answer: 0,
+    error: "Gerund after 'used to'",
+    tip: "'Be used to' + gerund (working). 'Used to' + bare infinitive (work) has a different meaning.",
+  },
+  {
+    broken: "The economy grew of 4 percent last quarter.",
+    options: [
+      "The economy grew by 4 percent last quarter.",
+      "The economy grew at 4 percent last quarter.",
+      "The economy grew with 4 percent last quarter.",
+      "The economy grew in 4 percent last quarter.",
+    ],
+    answer: 0,
+    error: "Preposition after change verb",
+    tip: "Use 'by' to express a change in quantity: 'increased/decreased/grew by X%'.",
+  },
+  {
+    broken: "There has been a significant raise in the number of applicants.",
+    options: [
+      "There has been a significant rise in the number of applicants.",
+      "There has been a significant raise of the number of applicants.",
+      "There have been a significant rise in the number of applicants.",
+      "There has been a significant rising in the number of applicants.",
+    ],
+    answer: 0,
+    error: "Noun choice",
+    tip: "'Rise' is the noun (a rise in). 'Raise' as a noun is informal (pay raise).",
+  },
+  {
+    broken: "The majority of the population do not has access to clean water.",
+    options: [
+      "The majority of the population does not have access to clean water.",
+      "The majority of the population do not have access to clean water.",
+      "The majority of the population does not has access to clean water.",
+      "A majority of the population do not have access to clean water.",
+    ],
+    answer: 0,
+    error: "Agreement + auxiliary",
+    tip: "'The majority' is treated as singular in formal writing. 'Does not have' is correct.",
+  },
+  {
+    broken: "If he would study harder, he would get a better band score.",
+    options: [
+      "If he studied harder, he would get a better band score.",
+      "If he would studied harder, he would get a better band score.",
+      "If he studies harder, he would get a better band score.",
+      "If he had studied harder, he would get a better band score.",
+    ],
+    answer: 0,
+    error: "Conditional structure",
+    tip: "In second conditionals, the 'if' clause uses simple past, not 'would': 'If he studied…'",
+  },
+  {
+    broken: "The children were very bore during the long lecture.",
+    options: [
+      "The children were very bored during the long lecture.",
+      "The children were very boring during the long lecture.",
+      "The children were very bore in the long lecture.",
+      "The children felt very bore during the long lecture.",
+    ],
+    answer: 0,
+    error: "Participial adjective",
+    tip: "'Bored' (past participle) describes the feeling. 'Boring' describes what causes the feeling.",
+  },
+  {
+    broken: "According to the graph, the sale of electric vehicles raised between 2020 and 2023.",
+    options: [
+      "According to the graph, the sale of electric vehicles rose between 2020 and 2023.",
+      "According to the graph, the sales of electric vehicles raised between 2020 and 2023.",
+      "According to the graph, the sale of electric vehicles has raised between 2020 and 2023.",
+      "According to the graph, the sale of electric vehicle rose between 2020 and 2023.",
+    ],
+    answer: 0,
+    error: "Rise vs raise",
+    tip: "'Rise' is intransitive (no object). Sales rose; you don't raise sales without an agent.",
+  },
+  {
+    broken: "She has been living in London since three years.",
+    options: [
+      "She has been living in London for three years.",
+      "She has been living in London since three years ago.",
+      "She lived in London since three years.",
+      "She is living in London for three years.",
+    ],
+    answer: 0,
+    error: "For vs since",
+    tip: "'Since' precedes a point in time (since 2020). 'For' precedes a duration (for three years).",
+  },
+];
