@@ -32,6 +32,17 @@ service cloud.firestore {
            == request.auth.uid;
     }
 
+    // RESULTS (used by notifications, analytics)
+    match /results/{docId} {
+      allow create:
+        if isSignedIn();
+
+      allow read, update, delete:
+        if isSignedIn()
+        && resource.data.userId
+           == request.auth.uid;
+    }
+
     // NOTIFICATIONS
     match /notifications/{docId} {
       allow read, write:
