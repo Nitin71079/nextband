@@ -62,7 +62,7 @@ function PostCard({ p, idx }) {
 }
 
 export default function Community() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [post, setPost] = useState("");
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +72,11 @@ export default function Community() {
   const [aiTip, setAiTip] = useState("");
   const [tipStreaming, setTipStreaming] = useState(false);
 
-  useEffect(() => { fetchPosts(); }, []);
+  // Wait for auth to resolve before fetching — avoids permission-denied on cold load
+  useEffect(() => {
+    if (authLoading) return;
+    fetchPosts();
+  }, [authLoading]);
 
   async function fetchPosts() {
     try {
