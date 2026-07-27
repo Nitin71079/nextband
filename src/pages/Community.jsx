@@ -45,8 +45,8 @@ function PostCard({ p, idx }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35, delay: idx * .04 }}
-      style={{ ...T.glass, padding: "20px 22px", position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", left: 0, top: 0, width: "3px", height: "100%", background: "linear-gradient(180deg,#4f46e5,#2563eb)" }} />
+      style={{ ...T.glass, padding: "20px 22px", position: "relative" }}>
+      <div style={{ position: "absolute", left: 0, top: 0, width: "3px", height: "100%", background: "linear-gradient(180deg,#4f46e5,#2563eb)", borderRadius: "3px 0 0 3px" }} />
       <div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "12px" }}>
         <Avatar name={name} size={36} />
         <div>
@@ -56,7 +56,7 @@ function PostCard({ p, idx }) {
           </div>
         </div>
       </div>
-      <p style={{ color: "var(--text)", lineHeight: 1.8, fontSize: ".9rem", paddingLeft: "2px" }}>{p.content}</p>
+      <p style={{ color: "var(--text)", lineHeight: 1.8, fontSize: ".92rem", paddingLeft: "2px", margin: 0, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>{p.content}</p>
     </motion.div>
   );
 }
