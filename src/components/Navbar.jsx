@@ -38,6 +38,7 @@ import {
   Crown,
   Bell,
   Sparkles,
+  Gamepad2,
 } from "lucide-react";
 
 import "../styles/navbar.css";
@@ -96,6 +97,11 @@ const NAV_ITEMS_PRIVATE = [
     label: "Leaderboard",
     path: "/leaderboard",
     icon: Trophy,
+  },
+  {
+    label: "Games",
+    path: "/games",
+    icon: Gamepad2,
   },
   {
     label: "Pricing",

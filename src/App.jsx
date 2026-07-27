@@ -68,6 +68,8 @@ const Streaks = lazy(() => import("./pages/Streaks"));
 const Referrals = lazy(() => import("./pages/Referrals"));
 const Support = lazy(() => import("./pages/Support"));
 const FullMocks = lazy(() => import("./pages/FullMocks"));
+const GamesZone = lazy(() => import("./pages/GamesZone"));
+const VocabBattle = lazy(() => import("./pages/VocabBattle"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -427,6 +429,24 @@ element={<ExamHistory/>}
 <Route
   path="/ai-center"
   element={<AIControlCenter />}
+/>
+
+<Route
+  path="/games"
+  element={
+    <PrivateRoute>
+      <GamesZone />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/vocab-battle"
+  element={
+    <PrivateRoute>
+      <VocabBattle />
+    </PrivateRoute>
+  }
 />
 
 <Route
