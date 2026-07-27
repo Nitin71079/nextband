@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 
@@ -22,7 +22,6 @@ import "./Hero.css";
 
 export default function Hero() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const heroStats = [
     {
       value: "120+",
@@ -201,27 +200,6 @@ export default function Hero() {
               delay: .55,
             }}
           >
-
-            <Link to={user ? "/dashboard" : "/register"}>
-
-              <motion.button
-                className="hero-primary-btn"
-                whileHover={{
-                  scale: 1.05,
-                  y: -2,
-                }}
-                whileTap={{
-                  scale: .97,
-                }}
-              >
-
-                {user ? "Go to Dashboard" : "Start Learning Free"}
-
-                <ArrowRight size={18} />
-
-              </motion.button>
-
-            </Link>
 
             <Link to="/pricing">
 
