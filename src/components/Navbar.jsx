@@ -6,7 +6,7 @@ import {
   useCallback,
 } from "react";
 
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -18,6 +18,7 @@ import { auth } from "../firebase";
 
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import useNotifications from "../hooks/useNotifications";
 
 import {
   Menu,
@@ -162,14 +163,18 @@ const MOBILE_MENU_ANIMATION = {
 };
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { darkMode, toggleTheme } = useTheme();
   const { user, name, premium } = useAuth();
+  const { notifications, unreadCount, markAllRead } = useNotifications();
 
   const profileRef = useRef(null);
+  const notifRef = useRef(null);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   /* ==========================================================
@@ -244,6 +249,7 @@ export default function Navbar() {
 
       setMobileOpen(false);
       setProfileOpen(false);
+      setNotifOpen(false);
     };
 
     window.addEventListener(
@@ -301,12 +307,41 @@ export default function Navbar() {
   }, []);
 
   /* ==========================================================
+     CLICK OUTSIDE NOTIF
+  ========================================================== */
+
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (
+        notifRef.current &&
+        !notifRef.current.contains(
+          event.target
+        )
+      ) {
+        setNotifOpen(false);
+      }
+    }
+
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick
+      );
+  }, []);
+
+  /* ==========================================================
      ACTIONS
   ========================================================== */
 
   const closeMenus = useCallback(() => {
     setMobileOpen(false);
     setProfileOpen(false);
+    setNotifOpen(false);
   }, []);
 
   const toggleMobile = useCallback(() => {
@@ -430,15 +465,214 @@ export default function Navbar() {
 ========================================================== */}
 
 {user && (
-  <motion.button
-    whileTap={{ scale: 0.92 }}
-    className="kn-icon-btn"
-    type="button"
-    aria-label="Notifications"
-    title="Notifications"
-  >
-    <Bell size={18} />
-  </motion.button>
+  <div ref={notifRef} style={{ position: "relative" }}>
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      className="kn-icon-btn"
+      type="button"
+      aria-label="Notifications"
+      title="Notifications"
+      onClick={() => {
+        setNotifOpen((prev) => !prev);
+        if (!notifOpen) markAllRead();
+      }}
+      style={{ position: "relative" }}
+    >
+      <Bell size={18} />
+      {unreadCount > 0 && (
+        <span
+          style={{
+            position: "absolute",
+            top: "-4px",
+            right: "-4px",
+            width: "18px",
+            height: "18px",
+            borderRadius: "50%",
+            background: "#ef4444",
+            color: "white",
+            fontSize: "10px",
+            fontWeight: 800,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "2px solid var(--navbar-bg, #ffffff)",
+            lineHeight: 1,
+          }}
+        >
+          {unreadCount > 9 ? "9+" : unreadCount}
+        </span>
+      )}
+    </motion.button>
+
+    <AnimatePresence>
+      {notifOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.96 }}
+          transition={{ duration: 0.2 }}
+          style={{
+            position: "absolute",
+            top: "calc(100% + 12px)",
+            right: 0,
+            width: "340px",
+            maxHeight: "440px",
+            overflowY: "auto",
+            background: "var(--surface, #ffffff)",
+            border: "1px solid var(--border, rgba(226,232,240,1))",
+            borderRadius: "20px",
+            boxShadow:
+              "0 20px 60px rgba(15,23,42,.16), 0 4px 16px rgba(15,23,42,.08)",
+            zIndex: 999,
+          }}
+        >
+          {/* Header */}
+          <div
+            style={{
+              padding: "18px 20px 14px",
+              borderBottom: "1px solid var(--border, rgba(226,232,240,1))",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 800,
+                fontSize: "15px",
+                color: "var(--text, #0f172a)",
+              }}
+            >
+              Notifications
+            </div>
+            {notifications.length > 0 && (
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  color: "#2563eb",
+                  padding: "3px 10px",
+                  borderRadius: "999px",
+                  background: "rgba(37,99,235,.08)",
+                  cursor: "pointer",
+                }}
+                onClick={markAllRead}
+              >
+                Mark all read
+              </span>
+            )}
+          </div>
+
+          {/* Items */}
+          <div style={{ padding: "8px 0" }}>
+            {notifications.length === 0 ? (
+              <div
+                style={{
+                  padding: "32px 20px",
+                  textAlign: "center",
+                  color: "var(--text-secondary, #64748b)",
+                  fontSize: "14px",
+                }}
+              >
+                No notifications yet
+              </div>
+            ) : (
+              notifications.map((n) => (
+                <div
+                  key={n.id}
+                  style={{
+                    padding: "14px 20px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "12px",
+                    background: n.read
+                      ? "transparent"
+                      : "rgba(37,99,235,.04)",
+                    borderLeft: `3px solid ${n.color}`,
+                    marginBottom: "2px",
+                    cursor: "default",
+                    transition: "background .2s",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "12px",
+                      flexShrink: 0,
+                      background: `${n.color}18`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "18px",
+                    }}
+                  >
+                    {n.icon}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "13px",
+                        color: "var(--text, #0f172a)",
+                        marginBottom: "3px",
+                      }}
+                    >
+                      {n.title}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "var(--text-secondary, #64748b)",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {n.message}
+                    </div>
+                    {n.time && (
+                      <div
+                        style={{
+                          fontSize: "11px",
+                          color: "var(--text-secondary, #94a3b8)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        {n.time}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Footer */}
+          <div
+            style={{
+              padding: "12px 20px",
+              borderTop: "1px solid var(--border, rgba(226,232,240,1))",
+              textAlign: "center",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "13px",
+                color: "#2563eb",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setNotifOpen(false);
+                navigate("/notifications");
+              }}
+            >
+              View all notifications →
+            </span>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
 )}
 
 {/* ==========================================================
