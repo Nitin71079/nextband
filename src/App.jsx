@@ -70,6 +70,7 @@ const Support = lazy(() => import("./pages/Support"));
 const FullMocks = lazy(() => import("./pages/FullMocks"));
 const GamesZone = lazy(() => import("./pages/GamesZone"));
 const VocabBattle = lazy(() => import("./pages/VocabBattle"));
+const ReadingRace = lazy(() => import("./pages/ReadingRace"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -445,6 +446,15 @@ element={<ExamHistory/>}
   element={
     <PrivateRoute>
       <VocabBattle />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/reading-race"
+  element={
+    <PrivateRoute>
+      <ReadingRace />
     </PrivateRoute>
   }
 />

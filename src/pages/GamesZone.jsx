@@ -18,6 +18,20 @@ const games = [
     color: "#2563eb",
   },
   {
+    id: "reading-race",
+    icon: "📖",
+    title: "Reading Race",
+    subtitle: "1v1 Multiplayer",
+    description:
+      "Both players get the same IELTS passage and 5 comprehension questions. Read fast, answer accurately — speed bonus for answering first. 3-minute clock.",
+    badge: "LIVE",
+    badgeColor: "#22c55e",
+    available: true,
+    path: "/games/reading-race",
+    tags: ["Multiplayer", "Reading", "Comprehension"],
+    color: "#22c55e",
+  },
+  {
     id: "word-chain",
     icon: "🔗",
     title: "Word Chain",
