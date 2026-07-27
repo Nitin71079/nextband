@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  getFirestore, collection, addDoc, getDocs, orderBy, query,
+  getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp,
 } from "firebase/firestore";
 import { app } from "../firebase";
 import { useAuth } from "../context/AuthContext";
@@ -91,14 +91,23 @@ export default function Community() {
   async function createPost() {
     if (!post.trim()) return;
     setSubmitting(true);
+    const content = post.trim();
+    const displayName = user?.displayName || user?.email?.split("@")[0] || "Anonymous";
     try {
       const db = getFirestore(app);
-      await addDoc(collection(db, "communityPosts"), {
-        content: post,
-        displayName: user?.displayName || user?.email?.split("@")[0] || "Anonymous",
-        createdAt: new Date(),
+      const docRef = await addDoc(collection(db, "communityPosts"), {
+        content,
+        displayName,
+        createdAt: serverTimestamp(),
       });
-      setPost(""); fetchPosts();
+      // Optimistically prepend to feed so it shows immediately
+      setPosts((prev) => [{
+        id: docRef.id,
+        content,
+        displayName,
+        createdAt: new Date(),
+      }, ...prev]);
+      setPost("");
     } catch (e) { console.error(e); }
     finally { setSubmitting(false); }
   }
