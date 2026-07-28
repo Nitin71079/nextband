@@ -1370,7 +1370,7 @@
 
 html{
 
-    scroll-behavior:smooth;
+    /* scroll-behavior: smooth removed — fights route-change scroll reset */
 
 }
 

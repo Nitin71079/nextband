@@ -335,7 +335,7 @@ box-sizing:border-box;
 
 html{
 
-scroll-behavior:smooth;
+/* scroll-behavior: smooth removed — fights route-change scroll reset */
 
 }
 
