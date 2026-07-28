@@ -172,7 +172,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const { darkMode, toggleTheme } = useTheme();
-  const { user, name, premium } = useAuth();
+  const { user, name, premium, loading } = useAuth();
   const { notifications, unreadCount, markAllRead } = useNotifications();
 
   const profileRef = useRef(null);
@@ -734,6 +734,55 @@ export default function Navbar() {
     </motion.div>
   </AnimatePresence>
 </motion.button>
+
+{/* ==========================================================
+    AUTH BUTTONS (unauthenticated)
+========================================================== */}
+
+{!user && !loading && (
+  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    <motion.button
+      whileTap={{ scale: 0.96 }}
+      onClick={() => navigate("/login")}
+      style={{
+        padding: "9px 18px",
+        borderRadius: "12px",
+        border: "1px solid var(--border)",
+        background: "var(--card)",
+        color: "var(--text-secondary)",
+        fontWeight: 600,
+        fontSize: "14px",
+        cursor: "pointer",
+        boxShadow: "var(--shadow)",
+        transition: "all .25s ease",
+      }}
+      onMouseEnter={e => { e.currentTarget.style.color = "var(--primary)"; e.currentTarget.style.borderColor = "rgba(37,99,235,.35)"; }}
+      onMouseLeave={e => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.borderColor = "var(--border)"; }}
+    >
+      Log in
+    </motion.button>
+    <motion.button
+      whileTap={{ scale: 0.96 }}
+      onClick={() => navigate("/register")}
+      style={{
+        padding: "9px 20px",
+        borderRadius: "12px",
+        border: "none",
+        background: "linear-gradient(135deg, var(--primary), #60a5fa)",
+        color: "#fff",
+        fontWeight: 700,
+        fontSize: "14px",
+        cursor: "pointer",
+        boxShadow: "0 8px 20px rgba(37,99,235,.3)",
+        transition: "opacity .25s ease",
+      }}
+      onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+      onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+    >
+      Get Started
+    </motion.button>
+  </div>
+)}
 
 {/* ==========================================================
     PROFILE
