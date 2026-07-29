@@ -128,6 +128,7 @@ export default function Footer() {
           <h4>Company</h4>
 
           <Link to="/about">About Us</Link>
+          <Link to="/help">Help Center</Link>
           <Link to="/privacy">Privacy Policy</Link>
           <Link to="/terms">Terms & Conditions</Link>
           <Link to="/contact">Contact</Link>

@@ -11,6 +11,7 @@ import {
   Calendar, Trash2, BrainCircuit, CheckCircle2, Clock,
 } from "lucide-react";
 import aiService from "../services/aiService";
+import toast from "react-hot-toast";
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 const T = {
@@ -99,7 +100,10 @@ export default function StudyPlanner() {
   const [streaming, setStreaming] = useState(false);
   const planRef = useRef(null);
 
-  useEffect(() => { fetchTasks(); }, [user]);
+  useEffect(() => {
+    if (user) fetchTasks();
+    else setTasks([]);
+  }, [user]);
 
   // scroll plan into view as it streams
   useEffect(() => {
@@ -117,12 +121,18 @@ export default function StudyPlanner() {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       data.sort((a, b) => (a.date > b.date ? 1 : -1));
       setTasks(data);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error("fetchTasks:", e);
+      // Silently ignore permission errors for unauthenticated states
+      if (e?.code !== "permission-denied") {
+        toast.error("Could not load tasks. Please try again.");
+      }
+    }
   }
 
   async function addTask() {
     if (!taskName.trim() || !taskDate) return;
-    if (!user) { alert("Please login first."); return; }
+    if (!user) { toast.error("Please sign in to save tasks."); return; }
     setSavingTask(true);
     try {
       const db = getFirestore(app);
@@ -132,7 +142,11 @@ export default function StudyPlanner() {
       });
       setTaskName(""); setTaskDate("");
       fetchTasks();
-    } catch (e) { console.error(e); }
+      toast.success("Task added!");
+    } catch (e) {
+      console.error("addTask:", e);
+      toast.error("Failed to save task. Please try again.");
+    }
     finally { setSavingTask(false); }
   }
 
@@ -141,7 +155,10 @@ export default function StudyPlanner() {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "studyPlans", id));
       setTasks((prev) => prev.filter((t) => t.id !== id));
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error("deleteTask:", e);
+      toast.error("Could not delete task.");
+    }
   }
 
   async function generatePlan() {

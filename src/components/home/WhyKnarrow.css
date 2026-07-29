@@ -173,3 +173,63 @@
 }
 
 .why * { box-sizing: border-box; }
+
+/* ── PERKS STRIP ── */
+.why-perks {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 64px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.why-perk {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 26px 22px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  cursor: default;
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+}
+
+.why-perk:hover {
+  border-color: rgba(37,99,235,.35);
+  box-shadow: 0 18px 45px rgba(37,99,235,.15);
+}
+
+.why-perk-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(79,70,229,.25), rgba(37,99,235,.25));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+.why-perk h4 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin-bottom: 3px;
+}
+
+.why-perk p {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+@media (max-width: 900px) {
+  .why-perks { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 500px) {
+  .why-perks { grid-template-columns: 1fr; }
+}

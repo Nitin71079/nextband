@@ -1,13 +1,17 @@
 /* ============================================================
-   WHY STUDENTS CHOOSE KNARROW — BILLION DOLLAR EDITION
+   FEATURES SECTION — ULTRA PREMIUM
 ============================================================ */
 
 .features {
   position: relative;
   overflow: hidden;
-  padding: 72px 48px;
+  padding: 100px 48px;
   background: #ffffff;
   isolation: isolate;
+}
+
+[data-theme="dark"] .features {
+  background: #020617;
 }
 
 .features::before {
@@ -37,7 +41,8 @@
 }
 
 /* ── HEADER ── */
-.features-header {
+.features-header,
+.features-games-header {
   position: relative;
   z-index: 2;
   max-width: 800px;
@@ -45,7 +50,12 @@
   text-align: center;
 }
 
-.features-header span {
+.features-games-header {
+  margin-top: 120px;
+}
+
+.features-header span,
+.features-games-header span {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -61,8 +71,15 @@
   margin-bottom: 28px;
 }
 
-.features-header h2 {
-  font-size: clamp(38px, 5vw, 64px);
+.features-games-header span {
+  background: rgba(139,92,246,.07);
+  border-color: rgba(139,92,246,.2);
+  color: #8b5cf6;
+}
+
+.features-header h2,
+.features-games-header h2 {
+  font-size: clamp(36px, 5vw, 60px);
   font-weight: 900;
   letter-spacing: -2px;
   line-height: 1.05;
@@ -70,7 +87,19 @@
   margin: 0 0 22px;
 }
 
-.features-header p {
+[data-theme="dark"] .features-header h2,
+[data-theme="dark"] .features-games-header h2 {
+  color: #f8fafc;
+}
+
+.gradient-text-feat {
+  background: linear-gradient(90deg, #8b5cf6, #ef4444, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.features-header p,
+.features-games-header p {
   color: #64748b;
   font-size: 18px;
   line-height: 1.8;
@@ -105,6 +134,11 @@
   flex-direction: column;
 }
 
+[data-theme="dark"] .feature-card {
+  background: rgba(255,255,255,.03);
+  border-color: rgba(255,255,255,.07);
+}
+
 .feature-card::before {
   content: "";
   position: absolute;
@@ -134,8 +168,25 @@
   box-shadow: 0 32px 80px rgba(37,99,235,.12), 0 8px 30px rgba(15,23,42,.06);
 }
 
+[data-theme="dark"] .feature-card:hover {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(99,102,241,.3);
+  box-shadow: 0 32px 80px rgba(79,70,229,.15);
+}
+
 .feature-card:hover::before { opacity: 1; }
 .feature-card:hover::after  { opacity: 1; }
+
+/* ── GAME CARD GLOW ── */
+.game-card-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .4s;
+  border-radius: inherit;
+}
+
+.game-card:hover .game-card-glow { opacity: 1; }
 
 /* ── ICON ── */
 .feature-icon {
@@ -162,10 +213,7 @@
 }
 
 .feature-icon svg { position: relative; z-index: 1; }
-
-.feature-card:hover .feature-icon {
-  transform: rotate(-8deg) scale(1.1);
-}
+.feature-card:hover .feature-icon { transform: rotate(-8deg) scale(1.1); }
 
 /* ── TEXT ── */
 .feature-card h3 {
@@ -176,6 +224,7 @@
   transition: color .3s;
 }
 
+[data-theme="dark"] .feature-card h3 { color: #f8fafc; }
 .feature-card:hover h3 { color: #2563eb; }
 
 .feature-card p {
@@ -187,6 +236,7 @@
 }
 
 .feature-card:hover p { color: #475569; }
+[data-theme="dark"] .feature-card:hover p { color: #94a3b8; }
 
 /* ── FOOTER ── */
 .feature-footer {
@@ -199,6 +249,7 @@
   transition: border-color .3s;
 }
 
+[data-theme="dark"] .feature-footer { border-color: rgba(255,255,255,.07); }
 .feature-card:hover .feature-footer { border-color: rgba(37,99,235,.18); }
 
 .feature-badge {
@@ -212,6 +263,15 @@
   text-transform: uppercase;
 }
 
+.game-badge {
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+}
+
 .feature-link {
   display: flex;
   align-items: center;
@@ -221,36 +281,92 @@
   font-weight: 700;
   cursor: pointer;
   transition: gap .3s;
+  text-decoration: none;
 }
 
 .feature-link svg { transition: transform .3s; }
 .feature-card:hover .feature-link { gap: 14px; }
 .feature-card:hover .feature-link svg { transform: translateX(4px); }
 
+/* ── EXTRAS PERKS ROW ── */
+.features-extras {
+  max-width: 1360px;
+  margin: 80px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.extra-pill {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 24px;
+  border-radius: 22px;
+  background: #fafbfc;
+  border: 1px solid #e8edf2;
+  cursor: default;
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+}
+
+[data-theme="dark"] .extra-pill {
+  background: rgba(255,255,255,.03);
+  border-color: rgba(255,255,255,.07);
+}
+
+.extra-pill:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(15,23,42,.09);
+  border-color: rgba(37,99,235,.2);
+}
+
+.extra-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.extra-pill h4 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+[data-theme="dark"] .extra-pill h4 { color: #f8fafc; }
+
+.extra-pill p {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 1200px) {
   .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-extras { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 900px) {
-  .features { padding: 52px 32px; }
+  .features { padding: 60px 28px; }
   .features-header { margin-bottom: 48px; }
-  .features-header h2 { font-size: 44px; }
+  .features-games-header { margin-top: 80px; }
 }
 
 @media (max-width: 640px) {
   .features { padding: 40px 18px; }
-  .features-grid { grid-template-columns: 1fr; gap: 20px; }
-  .features-header h2 { font-size: 34px; letter-spacing: -1px; }
-  .features-header p  { font-size: 16px; }
-  .feature-card { padding: 30px 26px; border-radius: 22px; }
-  .feature-icon { width: 62px; height: 62px; }
+  .features-grid { grid-template-columns: 1fr; gap: 18px; }
+  .features-extras { grid-template-columns: 1fr; gap: 16px; }
+  .feature-card { padding: 30px 24px; border-radius: 22px; }
+  .feature-icon { width: 60px; height: 60px; }
   .feature-card h3 { font-size: 20px; }
   .feature-card p  { font-size: 15px; }
+  .features-header h2,
+  .features-games-header h2 { font-size: 32px; letter-spacing: -1px; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
-}
-
-.features * { box-sizing: border-box; }

@@ -39,6 +39,7 @@ import {
   Bell,
   Sparkles,
   Gamepad2,
+  HelpCircle,
 } from "lucide-react";
 
 import "../styles/navbar.css";
@@ -65,6 +66,11 @@ const NAV_ITEMS_PUBLIC = [
   {
     label: "Pricing",
     path: "/pricing",
+  },
+  {
+    label: "Help",
+    path: "/help",
+    icon: HelpCircle,
   },
 ];
 
@@ -107,6 +113,11 @@ const NAV_ITEMS_PRIVATE = [
     label: "Pricing",
     path: "/pricing",
     icon: Crown,
+  },
+  {
+    label: "Help",
+    path: "/help",
+    icon: HelpCircle,
   },
 ];
 

@@ -1,55 +1,126 @@
-.notes-renderer{
-    margin-top:40px;
+/* ============================================================
+   NOTES RENDERER — PREMIUM
+============================================================ */
+.notes-renderer {
+  max-width: 860px;
+  margin: auto;
 }
 
-.notes-card{
-    background:#fff;
-    border:1px solid #e5e7eb;
-    border-radius:18px;
-    padding:30px;
+.notes-renderer > h3 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--l-muted);
+  margin: 0 0 10px;
 }
 
-.notes-heading{
-    margin:25px 0 12px;
-    color:#2563eb;
+.notes-renderer .instruction {
+  font-size: 14px;
+  color: var(--l-text);
+  background: rgba(79,142,247,.07);
+  border-left: 3px solid var(--l-accent);
+  padding: 10px 14px;
+  border-radius: 0 10px 10px 0;
+  margin: 0 0 22px;
+  line-height: 1.65;
 }
 
-.notes-text{
-    line-height:1.8;
-    color:#475569;
+.notes-card {
+  background: var(--l-surface);
+  border: 1px solid var(--l-border);
+  border-radius: var(--l-radius-lg);
+  padding: 30px;
+  box-shadow: var(--l-shadow-sm);
 }
 
-.notes-blank{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin:18px 0;
+.notes-card h2 {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--l-text);
+  margin: 0 0 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--l-border);
 }
 
-.blank-number{
-    width:35px;
-    font-weight:700;
+.notes-heading {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--l-accent);
+  margin: 24px 0 12px;
 }
 
-.notes-blank input{
-    width:220px;
-    padding:10px;
+.notes-text {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--l-muted);
+  margin: 0 0 10px;
 }
 
-/* ==========================================================
+.notes-blank {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 14px 0;
+  flex-wrap: wrap;
+}
+
+.blank-number {
+  width: 30px;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--l-accent);
+  flex-shrink: 0;
+  padding-top: 11px;
+}
+
+.notes-blank input {
+  width: 240px;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid var(--l-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--l-text);
+  transition: all .2s;
+  flex-shrink: 0;
+}
+
+.notes-blank input::placeholder {
+  color: rgba(255,255,255,.18);
+  font-size: 13px;
+}
+
+.notes-blank input:focus {
+  border-color: var(--l-accent);
+  background: rgba(79,142,247,.06);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79,142,247,.12);
+}
+
+.notes-blank .suffix {
+  font-size: 14px;
+  color: var(--l-text);
+  line-height: 1.6;
+  flex: 1;
+  padding-top: 10px;
+}
+
+/* ============================================================
    RESPONSIVE
-========================================================== */
+============================================================ */
+@media (max-width: 768px) {
+  .notes-card { padding: 18px; border-radius: 14px; }
+  .notes-blank { gap: 8px; }
+  .notes-blank input { width: 100%; }
+  .blank-number { padding-top: 0; }
+}
 
-@media(max-width:768px){
-    .notes-card{
-        padding:18px;
-        border-radius:14px;
-    }
-    .notes-blank{
-        flex-wrap:wrap;
-        gap:8px;
-    }
-    .notes-blank input{
-        width:100%;
-    }
+@media (max-width: 480px) {
+  .notes-card { padding: 14px; border-radius: 12px; }
 }

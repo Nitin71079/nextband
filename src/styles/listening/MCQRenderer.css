@@ -1,247 +1,174 @@
-.mcq-renderer{
-
-    max-width:900px;
-
-    margin:auto;
-
+/* ============================================================
+   MCQ RENDERER — PREMIUM
+============================================================ */
+.mcq-renderer {
+  max-width: 900px;
+  margin: auto;
 }
 
-.mcq-header{
-
-    margin-bottom:35px;
-
+.mcq-header {
+  margin-bottom: 28px;
 }
 
-.mcq-header h2{
-
-    font-size:28px;
-
-    margin-bottom:10px;
-
+.mcq-header h2 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--l-muted);
+  margin: 0 0 8px;
 }
 
-.mcq-header p{
-
-    color:#64748b;
-
-    line-height:1.6;
-
+.mcq-header p {
+  font-size: 14px;
+  color: var(--l-text);
+  line-height: 1.65;
+  background: rgba(79,142,247,.07);
+  border-left: 3px solid var(--l-accent);
+  padding: 10px 14px;
+  border-radius: 0 10px 10px 0;
+  margin: 0;
 }
 
-.mcq-card{
-
-    background:white;
-
-    border:1px solid #e2e8f0;
-
-    border-radius:18px;
-
-    padding:28px;
-
-    margin-bottom:24px;
-
-    transition:.25s;
-
+.mcq-card {
+  background: var(--l-surface);
+  border: 1px solid var(--l-border);
+  border-radius: var(--l-radius);
+  padding: 26px;
+  margin-bottom: 20px;
+  transition: border-color .2s, box-shadow .2s;
 }
 
-.mcq-card:hover{
-
-    box-shadow:
-
-        0 12px 30px rgba(0,0,0,.06);
-
+.mcq-card:hover {
+  border-color: rgba(79,142,247,.3);
+  box-shadow: 0 0 24px rgba(79,142,247,.08);
 }
 
-.mcq-card-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    gap:20px;
-
-    align-items:flex-start;
-
-    margin-bottom:22px;
-
+.mcq-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
 }
 
-.mcq-card-header h3{
-
-    font-size:20px;
-
-    font-weight:600;
-
-    line-height:1.6;
-
-    margin:0;
-
+.mcq-card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--l-text);
+  margin: 0;
 }
 
-.question-id{
-
-    color:#2563eb;
-
-    margin-right:8px;
-
+.question-id {
+  color: var(--l-accent);
+  margin-right: 6px;
+  font-weight: 800;
 }
 
-.mcq-options{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:15px;
-
+.mcq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.mcq-option{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:18px;
-
-    padding:18px;
-
-    border:2px solid #e5e7eb;
-
-    border-radius:14px;
-
-    cursor:pointer;
-
-    transition:.25s;
-
+.mcq-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--l-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .2s;
+  background: rgba(255,255,255,.02);
 }
 
-.mcq-option:hover{
-
-    border-color:#2563eb;
-
-    background:#eff6ff;
-
+.mcq-option:hover {
+  border-color: rgba(79,142,247,.45);
+  background: rgba(79,142,247,.05);
 }
 
-.mcq-option.selected{
-
-    background:#dbeafe;
-
-    border-color:#2563eb;
-
+.mcq-option.selected {
+  background: rgba(79,142,247,.12);
+  border-color: var(--l-accent);
+  box-shadow: 0 0 16px rgba(79,142,247,.14);
 }
 
-.mcq-option input{
-
-    transform:scale(1.25);
-
+.mcq-option input[type="radio"] {
+  display: none;
 }
 
-.letter{
-
-    width:34px;
-
-    height:34px;
-
-    border-radius:50%;
-
-    background:#2563eb;
-
-    color:white;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-weight:700;
-
+.letter {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(79,142,247,.15);
+  color: var(--l-accent);
+  border: 1.5px solid rgba(79,142,247,.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: all .2s;
 }
 
-.text{
-
-    flex:1;
-
-    font-size:17px;
-
+.mcq-option.selected .letter {
+  background: var(--l-accent);
+  color: #fff;
+  border-color: var(--l-accent);
 }
 
-.flag-btn{
-
-    border:none;
-
-    background:#f8fafc;
-
-    width:42px;
-
-    height:42px;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-    transition:.25s;
-
+.text {
+  flex: 1;
+  font-size: 15px;
+  color: var(--l-text);
+  line-height: 1.5;
 }
 
-.flag-btn:hover{
-
-    background:#fde68a;
-
+/* Flag button */
+.flag-btn {
+  border: none;
+  background: rgba(255,255,255,.05);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all .2s;
+  flex-shrink: 0;
+  color: var(--l-muted);
 }
 
-.flag-btn.flagged{
-
-    background:#f59e0b;
-
-    color:white;
-
+.flag-btn:hover {
+  background: rgba(245,158,11,.15);
+  color: var(--l-warning);
 }
 
-/* ==========================================================
+.flag-btn.flagged {
+  background: rgba(245,158,11,.2);
+  color: var(--l-warning);
+}
+
+/* ============================================================
    RESPONSIVE
-========================================================== */
-
-@media(max-width:768px){
-    .mcq-renderer{
-        max-width:100%;
-    }
-    .mcq-header h2{
-        font-size:20px;
-    }
-    .mcq-card{
-        padding:18px;
-        border-radius:14px;
-    }
-    .mcq-card-header{
-        flex-direction:column;
-        gap:10px;
-    }
-    .mcq-card-header h3{
-        font-size:16px;
-    }
-    .mcq-option{
-        padding:14px;
-        gap:12px;
-    }
-    .text{
-        font-size:15px;
-    }
-    .letter{
-        width:28px;
-        height:28px;
-        flex-shrink:0;
-    }
+============================================================ */
+@media (max-width: 768px) {
+  .mcq-renderer { max-width: 100%; }
+  .mcq-card { padding: 16px; border-radius: 12px; }
+  .mcq-card-header { flex-direction: column; gap: 10px; }
+  .mcq-card-header h3 { font-size: 15px; }
+  .mcq-option { padding: 12px 14px; gap: 12px; }
+  .text { font-size: 14px; }
+  .letter { width: 28px; height: 28px; font-size: 12px; }
 }
 
-@media(max-width:480px){
-    .mcq-option{
-        padding:12px;
-    }
-    .flag-btn{
-        width:36px;
-        height:36px;
-    }
+@media (max-width: 480px) {
+  .mcq-option { padding: 10px 12px; }
+  .flag-btn { width: 34px; height: 34px; }
 }

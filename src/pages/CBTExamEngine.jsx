@@ -27,7 +27,7 @@ function rand(arr) {
 
 // ─── Section config ──────────────────────────────────────────────────────────
 const SECTIONS = [
-  { key: "listening", label: "Listening", icon: Headphones, color: "#8b5cf6", time: "30 min", questions: 40 },
+  { key: "listening", label: "Listening", icon: Headphones, color: "#8b5cf6", time: "40 min", questions: 40 },
   { key: "reading",   label: "Reading",   icon: BookOpen,   color: "#2563eb", time: "60 min", questions: 40 },
   { key: "writing",   label: "Writing",   icon: PenSquare,  color: "#f97316", time: "60 min", questions: "2 tasks" },
   { key: "speaking",  label: "Speaking",  icon: Mic,        color: "#22c55e", time: "15 min", questions: "3 parts" },
@@ -83,15 +83,16 @@ export default function CBTExamEngine({ examType = "academic" }) {
   }
 
   if (stage === "reading") {
-    const readingId = examType === "academic"
-      ? academicTests[testIds.readingIndex]?.id
-      : generalTests[testIds.readingIndex]?.id;
+    const readingPool = examType === "academic" ? academicTests : generalTests;
+    const selectedTest = readingPool[testIds.readingIndex];
+    const readingId = selectedTest?.id;
     return (
       <>
         <SectionBanner section={SECTIONS[1]} current={2} total={4} />
         <MockReading
           mode="cbt"
           forcedTestId={String(readingId)}
+          forcedExamType={examType}
           onComplete={(band) => advance("reading", band)}
         />
       </>
@@ -217,7 +218,7 @@ function BriefingScreen({ examType, onStart }) {
             {/* Total time */}
             <div style={{ display: "flex", gap: "20px", marginTop: "28px", flexWrap: "wrap" }}>
               {[
-                { icon: Clock, label: "Total Time", value: "2h 45min" },
+                { icon: Clock, label: "Total Time", value: "2h 55min" },
                 { icon: Shuffle, label: "Test Selection", value: "Randomised" },
                 { icon: Shield, label: "Format", value: "Official CBT" },
               ].map(({ icon: I, label, value }) => (

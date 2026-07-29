@@ -1,68 +1,84 @@
-.question-palette{
-    background:white;
-    border-radius:16px;
-    padding:20px;
-    border:1px solid #ddd;
+/* ============================================================
+   QUESTION PALETTE — PREMIUM SIDEBAR
+============================================================ */
+.question-palette {
+  background: var(--l-card);
+  border: 1px solid var(--l-border);
+  border-radius: var(--l-radius);
+  padding: 18px;
 }
 
-.palette-grid{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:10px;
-    margin-top:20px;
+.question-palette h3 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--l-muted);
+  margin: 0 0 14px;
 }
 
-.palette-number{
-    height:42px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#f1f5f9;
-    font-weight:600;
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
 }
 
-.palette-number:hover{
-    background:#dbeafe;
+.palette-number {
+  height: 38px;
+  border: 1.5px solid var(--l-border);
+  border-radius: 9px;
+  cursor: pointer;
+  background: rgba(255,255,255,.03);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--l-muted);
+  transition: all .18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.palette-number.answered{
-    background:#22c55e;
-    color:white;
+.palette-number:hover {
+  border-color: var(--l-accent);
+  color: var(--l-accent);
+  background: rgba(79,142,247,.08);
 }
 
-.palette-number.flagged{
-    border:3px solid orange;
+.palette-number.answered {
+  background: rgba(34,211,165,.12);
+  border-color: rgba(34,211,165,.35);
+  color: var(--l-success);
 }
 
-.palette-number.current{
-    background:#2563eb;
-    color:white;
+.palette-number.flagged {
+  border-color: rgba(245,158,11,.55);
+  background: rgba(245,158,11,.07);
+  color: var(--l-warning);
 }
 
-/* ==========================================================
-   RESPONSIVE
-========================================================== */
+.palette-number.current {
+  background: linear-gradient(135deg, var(--l-accent), #3b6fd4);
+  border-color: var(--l-accent);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(79,142,247,.3);
+}
 
-@media (max-width: 768px) {
-  .question-palette {
-    border-radius: 12px;
-    padding: 14px;
-  }
-
+/* ============================================================
+   RESPONSIVE — on mobile palette moves to top, wider grid
+============================================================ */
+@media (max-width: 900px) {
+  .question-palette { border-radius: 12px; padding: 14px; }
   .palette-grid {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     gap: 6px;
   }
-
-  .palette-number {
-    height: 34px;
-    font-size: 12px;
-    border-radius: 7px;
-  }
+  .palette-number { height: 34px; font-size: 12px; border-radius: 7px; }
 }
 
 @media (max-width: 480px) {
-  .palette-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
+  .palette-grid { grid-template-columns: repeat(8, 1fr); }
+}
+
+@media (max-width: 360px) {
+  .palette-grid { grid-template-columns: repeat(6, 1fr); }
 }

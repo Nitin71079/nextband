@@ -28,6 +28,7 @@ export default function MockReading({
   mode = "practice",
   onComplete,
   forcedTestId,
+  forcedExamType,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,9 +40,10 @@ export default function MockReading({
   const { user } = useAuth();
   const { setReadingBand } = useExam();
 
-  const isGeneral = location.pathname.includes(
-    "/mock/general-reading"
-  );
+  // forcedExamType (from CBT engine) takes priority over URL path detection
+  const isGeneral = forcedExamType
+    ? forcedExamType === "general"
+    : location.pathname.includes("/mock/general-reading");
 
   const readingTests = isGeneral
     ? generalTests

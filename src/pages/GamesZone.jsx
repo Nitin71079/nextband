@@ -4,6 +4,48 @@ import { Swords, Lock, Gamepad2, Zap, Trophy, Users } from "lucide-react";
 
 const games = [
   {
+    id: "speaking-showdown",
+    icon: "🎙️",
+    title: "Speaking Showdown",
+    subtitle: "2v2 / 4v4 Multiplayer",
+    description:
+      "Answer IELTS speaking questions in real-time team battles. AI scores fluency, pronunciation, vocabulary and grammar. Live leaderboard after every round.",
+    badge: "LIVE",
+    badgeColor: "#22c55e",
+    available: true,
+    path: "/games/speaking-showdown",
+    tags: ["Multiplayer", "Speaking", "AI Scoring", "Teams"],
+    color: "#8b5cf6",
+  },
+  {
+    id: "audio-sniper",
+    icon: "🎯",
+    title: "Audio Sniper",
+    subtitle: "Up to 8 Players",
+    description:
+      "Everyone hears the same IELTS-style recording. Be the fastest to answer correctly and snipe maximum points. 10 rounds of real-time listening action.",
+    badge: "LIVE",
+    badgeColor: "#06b6d4",
+    available: true,
+    path: "/games/audio-sniper",
+    tags: ["Multiplayer", "Listening", "Speed", "Real-time"],
+    color: "#06b6d4",
+  },
+  {
+    id: "essay-duel",
+    icon: "✍️",
+    title: "Essay Duel",
+    subtitle: "1v1 Writing Battle",
+    description:
+      "Two players, one IELTS Task 2 topic, 30 minutes on the clock. AI scores both essays on Task Achievement, Coherence, Lexical Resource and Grammar. Highest band wins.",
+    badge: "LIVE",
+    badgeColor: "#f59e0b",
+    available: true,
+    path: "/games/essay-duel",
+    tags: ["1v1", "Writing", "AI Scoring", "Task 2"],
+    color: "#f59e0b",
+  },
+  {
     id: "vocab-battle",
     icon: "⚔️",
     title: "Vocabulary Battle",

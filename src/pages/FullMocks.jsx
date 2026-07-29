@@ -7,7 +7,7 @@ import {
 // ─── Shared section metadata ──────────────────────────────────────────────────
 const SECTIONS = [
   { icon: BookOpen,    label: "Reading",   duration: "60 min",    color: "#06b6d4" },
-  { icon: Headphones,  label: "Listening", duration: "30 min",    color: "#8b5cf6" },
+  { icon: Headphones,  label: "Listening", duration: "40 min",    color: "#8b5cf6" },
   { icon: PenLine,     label: "Writing",   duration: "60 min",    color: "#f59e0b" },
   { icon: Mic,         label: "Speaking",  duration: "11–14 min", color: "#22c55e" },
 ];
@@ -19,7 +19,7 @@ const MOCKS = [
     icon: GraduationCap,
     label: "Academic",
     badge: "IELTS Academic",
-    duration: "2h 45m",
+    duration: "2h 55m",
     path: "/mock/academic",
     tagline: "University admission & professional registration",
     description:
@@ -33,7 +33,7 @@ const MOCKS = [
     icon: Users,
     label: "General Training",
     badge: "IELTS General",
-    duration: "2h 45m",
+    duration: "2h 55m",
     path: "/mock/general",
     tagline: "Work experience, migration & secondary education",
     description:
@@ -132,7 +132,11 @@ export default function FullMocks() {
                 initial={{ opacity: 0, y: 32 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                whileHover={{
+                  y: -6,
+                  boxShadow: `0 24px 60px ${mock.glowColor}`,
+                  transition: { duration: 0.25 },
+                }}
                 style={{
                   position: "relative", overflow: "hidden",
                   borderRadius: "28px",
@@ -141,11 +145,8 @@ export default function FullMocks() {
                   backdropFilter: "blur(24px)",
                   padding: "40px",
                   cursor: "pointer",
-                  boxShadow: `0 0 0 0 ${mock.glowColor}`,
-                  transition: "box-shadow .3s ease",
+                  boxShadow: `0 8px 32px rgba(0,0,0,.12)`,
                 }}
-                onHoverStart={e => e.currentTarget.style.boxShadow = `0 24px 60px ${mock.glowColor}`}
-                onHoverEnd={e => e.currentTarget.style.boxShadow = "0 0 0 0 transparent"}
                 onClick={() => navigate(mock.path)}
               >
                 {/* Gradient top-edge glow */}

@@ -69,6 +69,9 @@ const Referrals = lazy(() => import("./pages/Referrals"));
 const Support = lazy(() => import("./pages/Support"));
 const FullMocks = lazy(() => import("./pages/FullMocks"));
 const GamesZone = lazy(() => import("./pages/GamesZone"));
+const SpeakingShowdown = lazy(() => import("./pages/SpeakingShowdown"));
+const AudioSniper = lazy(() => import("./pages/AudioSniper"));
+const EssayDuel = lazy(() => import("./pages/EssayDuel"));
 const VocabBattle = lazy(() => import("./pages/VocabBattle"));
 const ReadingRace = lazy(() => import("./pages/ReadingRace"));
 const WordChain = lazy(() => import("./pages/WordChain"));
@@ -81,6 +84,8 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Success = lazy(() => import("./pages/Success"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const HelpCenter = lazy(() => import("./pages/HelpCenter"));
+const MonitorPanel = lazy(() => import("./pages/MonitorPanel"));
 
 function App() {
   
@@ -447,6 +452,33 @@ element={<ExamHistory/>}
 />
 
 <Route
+  path="/games/speaking-showdown"
+  element={
+    <PrivateRoute>
+      <SpeakingShowdown />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/audio-sniper"
+  element={
+    <PrivateRoute>
+      <AudioSniper />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/essay-duel"
+  element={
+    <PrivateRoute>
+      <EssayDuel />
+    </PrivateRoute>
+  }
+/>
+
+<Route
   path="/games/vocab-battle"
   element={
     <PrivateRoute>
@@ -519,6 +551,22 @@ element={<ExamHistory/>}
     </PrivateRoute>
   }
 />
+
+          <Route
+            path="/monitor"
+            element={
+              <PrivateRoute>
+                <AdminRoute>
+                  <MonitorPanel />
+                </AdminRoute>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/help"
+            element={<HelpCenter />}
+          />
 
           <Route
             path="*"

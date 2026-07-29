@@ -1,41 +1,117 @@
-.table-renderer{
-    margin-top:40px;
+/* ============================================================
+   TABLE RENDERER — PREMIUM
+============================================================ */
+.table-renderer {
+  max-width: 900px;
+  margin: auto;
 }
 
-.table-renderer table{
-    width:100%;
-    border-collapse:collapse;
-    background:#fff;
+.table-renderer > h3 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--l-muted);
+  margin: 0 0 10px;
 }
 
-.table-renderer td,
-.table-renderer th{
-    border:1px solid #e5e7eb;
-    padding:14px;
+.table-renderer > p {
+  font-size: 14px;
+  color: var(--l-text);
+  background: rgba(79,142,247,.07);
+  border-left: 3px solid var(--l-accent);
+  padding: 10px 14px;
+  border-radius: 0 10px 10px 0;
+  margin: 0 0 22px;
+  line-height: 1.65;
 }
 
-.table-renderer input{
-    width:100%;
-    border:none;
-    border-bottom:2px solid #cbd5e1;
-    padding:8px;
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--l-radius);
+  border: 1px solid var(--l-border);
+  background: var(--l-surface);
+  box-shadow: var(--l-shadow-sm);
 }
 
-/* ==========================================================
+.ielts-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 480px;
+}
+
+.ielts-table thead tr {
+  background: rgba(79,142,247,.1);
+}
+
+.ielts-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--l-accent);
+  border-bottom: 1px solid var(--l-border);
+  white-space: nowrap;
+}
+
+.ielts-table td {
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--l-text);
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  vertical-align: middle;
+}
+
+.ielts-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ielts-table tbody tr:hover td {
+  background: rgba(255,255,255,.02);
+}
+
+.ielts-table .answer-cell {
+  min-width: 200px;
+}
+
+.ielts-table input {
+  width: 100%;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid var(--l-border);
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: var(--l-text);
+  transition: all .2s;
+}
+
+.ielts-table input::placeholder {
+  color: rgba(255,255,255,.18);
+  font-size: 13px;
+}
+
+.ielts-table input:focus {
+  border-color: var(--l-accent);
+  background: rgba(79,142,247,.06);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79,142,247,.12);
+}
+
+.table-answer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================
    RESPONSIVE
-========================================================== */
-
-@media(max-width:768px){
-    .table-renderer{
-        overflow-x:auto;
-        -webkit-overflow-scrolling:touch;
-    }
-    .table-renderer table{
-        min-width:480px;
-    }
-    .table-renderer td,
-    .table-renderer th{
-        padding:10px;
-        font-size:14px;
-    }
+============================================================ */
+@media (max-width: 768px) {
+  .ielts-table th, .ielts-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
 }
