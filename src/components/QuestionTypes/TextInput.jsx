@@ -1,26 +1,11 @@
-export default function TextInput({
-  question,
-  value,
-  onChange,
-  placeholder,
-}) {
+export default function TextInput({ question, value, onChange, placeholder = "Type your answer…" }) {
   return (
     <input
       type="text"
       value={value || ""}
-      onChange={(e) =>
-        onChange(
-          question.id,
-          e.target.value
-        )
-      }
+      onChange={(e) => onChange(question.id, e.target.value)}
       placeholder={placeholder}
-      style={{
-        width: "100%",
-        padding: "10px",
-        borderRadius: "8px",
-        border: "1px solid #cbd5e1",
-      }}
+      className={`ielts-text-input${value ? " has-value" : ""}`}
     />
   );
 }

@@ -1,5 +1,6 @@
 import MCQ from "./QuestionTypes/MCQ";
 import TFNG from "./QuestionTypes/TFNG";
+import YNNG from "./QuestionTypes/YNNG";
 import MatchingHeadings from "./QuestionTypes/MatchingHeadings";
 import MatchingInformation from "./QuestionTypes/MatchingInformation";
 import TextInput from "./QuestionTypes/TextInput";
@@ -80,8 +81,10 @@ export default function QuestionRenderer({
       return <MCQ {...commonProps} />;
 
     case "true-false-not-given":
-    case "yes-no-not-given":
       return <TFNG {...commonProps} />;
+
+    case "yes-no-not-given":
+      return <YNNG {...commonProps} />;
 
     case "matching-headings":
       return <MatchingHeadings {...commonProps} />;

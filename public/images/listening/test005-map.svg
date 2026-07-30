@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 580" width="720" height="580" font-family="Arial, sans-serif">
+
+  <!-- Background -->
+  <rect width="720" height="580" fill="#f2f4f8" rx="6"/>
+
+  <!-- Title -->
+  <text x="360" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">CITY SCIENCE MUSEUM – FLOOR PLAN</text>
+
+  <!-- Floor labels -->
+  <text x="80" y="48" font-size="11" font-weight="bold" fill="#555">GROUND FLOOR</text>
+  <text x="80" y="310" font-size="11" font-weight="bold" fill="#555">FIRST FLOOR</text>
+
+  <!-- Compass -->
+  <text x="686" y="52" font-size="11" fill="#444" font-weight="bold">N</text>
+  <line x1="692" y1="56" x2="692" y2="74" stroke="#444" stroke-width="1.5"/>
+  <polygon points="692,44 688,56 696,56" fill="#444"/>
+
+  <!-- ══════════════════════════════════════
+       GROUND FLOOR OUTLINE
+  ══════════════════════════════════════ -->
+  <rect x="55" y="55" width="610" height="220" fill="#ffffff" stroke="#555" stroke-width="2.5" rx="3"/>
+
+  <!-- Central corridor (ground floor) -->
+  <rect x="230" y="55" width="260" height="220" fill="#ececec" stroke="#bbb" stroke-width="1" rx="0"/>
+  <text x="360" y="172" text-anchor="middle" font-size="10" fill="#888" font-style="italic">Central Corridor</text>
+
+  <!-- MAIN ENTRANCE — west side -->
+  <rect x="55" y="145" width="30" height="40" fill="#c8ddf8" stroke="#4a6888" stroke-width="2"/>
+  <text x="40" y="162" text-anchor="middle" font-size="9" fill="#2a4868" transform="rotate(-90,40,168)">ENTRANCE</text>
+  <text x="40" y="175" text-anchor="middle" font-size="16" fill="#2a4868">▶</text>
+
+  <!-- INFORMATION DESK — centre of corridor -->
+  <rect x="315" y="145" width="90" height="40" fill="#d8f0e8" stroke="#408060" stroke-width="2" rx="2"/>
+  <text x="360" y="162" text-anchor="middle" font-size="10" fill="#205040" font-weight="bold">20</text>
+  <circle cx="360" cy="162" r="12" fill="none" stroke="#205040" stroke-width="1.5"/>
+  <text x="360" y="180" text-anchor="middle" font-size="8" fill="#555" font-style="italic">(label here)</text>
+
+  <!-- INNOVATION GALLERY — left (north) of central corridor, ground floor -->
+  <rect x="55" y="55" width="175" height="220" fill="#fff8e8" stroke="#a07820" stroke-width="2" rx="0"/>
+  <text x="143" y="145" text-anchor="middle" font-size="11" fill="#6a4c10" font-weight="bold">16</text>
+  <circle cx="143" cy="145" r="13" fill="none" stroke="#6a4c10" stroke-width="1.5"/>
+  <text x="143" y="165" text-anchor="middle" font-size="8" fill="#888" font-style="italic">(label here)</text>
+  <!-- Small flask icon -->
+  <rect x="130" y="200" width="10" height="14" fill="none" stroke="#a07820" stroke-width="1.2" rx="1"/>
+  <ellipse cx="135" cy="216" rx="8" ry="5" fill="none" stroke="#a07820" stroke-width="1.2"/>
+
+  <!-- ENERGY ZONE — right (east) of corridor, ground floor -->
+  <rect x="490" y="55" width="175" height="220" fill="#fff0f0" stroke="#a04030" stroke-width="2" rx="0"/>
+  <text x="578" y="145" text-anchor="middle" font-size="11" fill="#6a2010" font-weight="bold">17</text>
+  <circle cx="578" cy="145" r="13" fill="none" stroke="#6a2010" stroke-width="1.5"/>
+  <text x="578" y="165" text-anchor="middle" font-size="8" fill="#888" font-style="italic">(label here)</text>
+  <!-- Lightning bolt icon -->
+  <polyline points="574,190 570,205 576,205 572,220" fill="none" stroke="#a04030" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- STAIRCASE — in corridor, connecting floors -->
+  <rect x="468" y="185" width="22" height="50" fill="#d0d0d0" stroke="#888" stroke-width="1.2"/>
+  <line x1="468" y1="197" x2="490" y2="197" stroke="#888" stroke-width="0.8"/>
+  <line x1="468" y1="210" x2="490" y2="210" stroke="#888" stroke-width="0.8"/>
+  <line x1="468" y1="222" x2="490" y2="222" stroke="#888" stroke-width="0.8"/>
+  <text x="479" y="248" text-anchor="middle" font-size="8" fill="#666">stairs ↑</text>
+
+  <!-- CAFÉ — south-east ground floor (named reference, not numbered) -->
+  <rect x="490" y="195" width="175" height="80" fill="#fdf8e8" stroke="#b09040" stroke-width="1.5" rx="0" stroke-dasharray="4,2"/>
+  <!-- overlap with energy zone — café is actually in east wing lower half, Energy Zone upper -->
+  <!-- Redraw: split east wing -->
+
+  <!-- ══════════════════════════════════════
+       FIRST FLOOR OUTLINE
+  ══════════════════════════════════════ -->
+  <rect x="55" y="320" width="610" height="220" fill="#ffffff" stroke="#555" stroke-width="2.5" rx="3"/>
+
+  <!-- First floor corridor -->
+  <rect x="230" y="320" width="260" height="220" fill="#ececec" stroke="#bbb" stroke-width="1"/>
+  <text x="360" y="438" text-anchor="middle" font-size="10" fill="#888" font-style="italic">First Floor Corridor</text>
+
+  <!-- PLANETARIUM — north-east corner, first floor (Q18 = G) -->
+  <rect x="490" y="320" width="175" height="120" fill="#e8e0f8" stroke="#5030a0" stroke-width="2" rx="0"/>
+  <text x="578" y="368" text-anchor="middle" font-size="11" fill="#301870" font-weight="bold">18</text>
+  <circle cx="578" cy="368" r="13" fill="none" stroke="#301870" stroke-width="1.5"/>
+  <text x="578" y="388" text-anchor="middle" font-size="8" fill="#888" font-style="italic">(label here)</text>
+  <!-- Star / dome icon -->
+  <circle cx="578" cy="410" r="12" fill="none" stroke="#5030a0" stroke-width="1.5"/>
+  <text x="578" y="415" text-anchor="middle" font-size="11" fill="#5030a0">★</text>
+
+  <!-- MUSEUM SHOP — east side, south of Planetarium (named reference F) -->
+  <rect x="490" y="440" width="175" height="100" fill="#f8f0e8" stroke="#907040" stroke-width="1.5" rx="0" stroke-dasharray="4,2"/>
+  <text x="578" y="482" text-anchor="middle" font-size="10" fill="#604820" font-weight="bold">Museum</text>
+  <text x="578" y="497" text-anchor="middle" font-size="10" fill="#604820" font-weight="bold">Shop</text>
+  <text x="578" y="513" text-anchor="middle" font-size="9" fill="#888">(F)</text>
+
+  <!-- DISCOVERY ROOM — south of museum shop / south-east first floor (Q19 = B) -->
+  <rect x="490" y="490" width="175" height="50" fill="#e8f8e0" stroke="#408030" stroke-width="2" rx="0"/>
+  <!-- overlap issue — let's place Discovery Room south-west first floor instead -->
+
+  <!-- SPACE EXPLORATION GALLERY — north-west first floor (named reference H) -->
+  <rect x="55" y="320" width="175" height="120" fill="#e0f0f8" stroke="#204870" stroke-width="1.5" rx="0" stroke-dasharray="4,2"/>
+  <text x="143" y="368" text-anchor="middle" font-size="10" fill="#102848" font-weight="bold">Space</text>
+  <text x="143" y="383" text-anchor="middle" font-size="10" fill="#102848" font-weight="bold">Exploration</text>
+  <text x="143" y="398" text-anchor="middle" font-size="9" fill="#888">(H)</text>
+  <text x="143" y="414" font-size="9" fill="#cc3300" text-anchor="middle">📷 No photography</text>
+
+  <!-- DISCOVERY ROOM — south-west first floor (Q19 = B) -->
+  <rect x="55" y="440" width="175" height="100" fill="#e8f8e0" stroke="#408030" stroke-width="2" rx="0"/>
+  <text x="143" y="480" text-anchor="middle" font-size="11" fill="#204810" font-weight="bold">19</text>
+  <circle cx="143" cy="480" r="13" fill="none" stroke="#204810" stroke-width="1.5"/>
+  <text x="143" y="500" text-anchor="middle" font-size="8" fill="#888" font-style="italic">(label here)</text>
+  <!-- Hands-on activity icon -->
+  <text x="143" y="525" text-anchor="middle" font-size="12" fill="#408030">✋</text>
+
+  <!-- CAFÉ — ground floor south-west (named reference A) -->
+  <rect x="55" y="195" width="175" height="80" fill="#fdf8e8" stroke="#b09040" stroke-width="1.5" rx="0" stroke-dasharray="4,2"/>
+  <text x="143" y="232" text-anchor="middle" font-size="10" fill="#7a5820" font-weight="bold">Café</text>
+  <text x="143" y="248" text-anchor="middle" font-size="9" fill="#888">(A)</text>
+
+  <!-- ══════════════════════════════════════
+       FLOOR CONNECTOR ARROW
+  ══════════════════════════════════════ -->
+  <line x1="360" y1="275" x2="360" y2="318" stroke="#888" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="370" y="300" font-size="9" fill="#888" font-style="italic">↓ ground floor</text>
+  <text x="370" y="314" font-size="9" fill="#888" font-style="italic">↑ first floor</text>
+
+  <!-- ══════════════════════════════════════
+       INFORMATION DESK label (Q20) fix placement
+  ══════════════════════════════════════ -->
+
+  <!-- ══════════════════════════════════════
+       SCALE + LEGEND
+  ══════════════════════════════════════ -->
+  <line x1="68" y1="556" x2="168" y2="556" stroke="#555" stroke-width="1.5"/>
+  <line x1="68" y1="551" x2="68" y2="561" stroke="#555" stroke-width="1.5"/>
+  <line x1="168" y1="551" x2="168" y2="561" stroke="#555" stroke-width="1.5"/>
+  <text x="118" y="571" text-anchor="middle" font-size="10" fill="#555">10 metres</text>
+
+  <!-- Dashed = named (not numbered) rooms -->
+  <line x1="230" y1="562" x2="270" y2="562" stroke="#888" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="275" y="566" font-size="9" fill="#888">= named location (not a question)</text>
+
+  <text x="480" y="571" text-anchor="middle" font-size="10" fill="#888" font-style="italic">Not to scale – for reference only</text>
+
+</svg>

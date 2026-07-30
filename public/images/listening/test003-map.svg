@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 540" width="700" height="540" font-family="Arial, sans-serif">
+
+  <!-- Background -->
+  <rect width="700" height="540" fill="#eef5e8" rx="6"/>
+
+  <!-- Title -->
+  <text x="350" y="28" text-anchor="middle" font-size="15" font-weight="bold" fill="#222">GREENVALE NATURE RESERVE – SITE MAP</text>
+
+  <!-- Outer boundary -->
+  <rect x="50" y="45" width="600" height="465" fill="#f0f8ea" stroke="#5a7a4a" stroke-width="2.5" stroke-dasharray="8,4" rx="4"/>
+
+  <!-- Compass -->
+  <text x="642" y="68" font-size="11" fill="#444" font-weight="bold">N</text>
+  <line x1="648" y1="72" x2="648" y2="90" stroke="#444" stroke-width="1.5"/>
+  <polygon points="648,60 644,72 652,72" fill="#444"/>
+
+  <!-- ══════════════ WATER FEATURES ══════════════ -->
+  <!-- River (west side, running south-north) -->
+  <path d="M90 480 Q80 380 95 280 Q105 200 88 120" fill="none" stroke="#7ab8d8" stroke-width="14" stroke-linecap="round"/>
+  <text x="58" y="310" font-size="9" fill="#4a88b8" font-style="italic" transform="rotate(-80,58,310)">River</text>
+
+  <!-- Central pond -->
+  <ellipse cx="370" cy="295" rx="55" ry="40" fill="#b8ddf0" stroke="#7ab8d8" stroke-width="2"/>
+  <text x="370" y="291" text-anchor="middle" font-size="9" fill="#2a5878" font-weight="bold">Central</text>
+  <text x="370" y="304" text-anchor="middle" font-size="9" fill="#2a5878" font-weight="bold">Pond</text>
+
+  <!-- ══════════════ PATHS ══════════════ -->
+  <!-- Main path south to north through reserve -->
+  <line x1="350" y1="490" x2="350" y2="180" stroke="#c8b880" stroke-width="9" stroke-linecap="round"/>
+  <!-- East branch -->
+  <line x1="350" y1="250" x2="570" y2="250" stroke="#c8b880" stroke-width="7" stroke-linecap="round"/>
+  <!-- West branch to river bank -->
+  <line x1="350" y1="340" x2="140" y2="340" stroke="#c8b880" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Path labels -->
+  <text x="200" y="330" text-anchor="middle" font-size="9" fill="#9a8a50" font-style="italic">Woodland Trail</text>
+  <text x="480" y="242" text-anchor="middle" font-size="9" fill="#9a8a50" font-style="italic">Meadow Trail</text>
+  <text x="362" y="435" font-size="9" fill="#9a8a50" font-style="italic">Main Path</text>
+
+  <!-- ══════════════ BUILDINGS ══════════════ -->
+
+  <!-- VISITOR CENTRE — south entrance (Q16 = G) -->
+  <rect x="285" y="460" width="130" height="55" fill="#d8e8f8" stroke="#4a6888" stroke-width="2" rx="3"/>
+  <text x="350" y="481" text-anchor="middle" font-size="11" fill="#2a4868" font-weight="bold">16</text>
+  <circle cx="350" cy="481" r="13" fill="none" stroke="#2a4868" stroke-width="1.5"/>
+  <text x="350" y="502" text-anchor="middle" font-size="9" fill="#555" font-style="italic">(label here)</text>
+  <text x="350" y="528" text-anchor="middle" font-size="10" fill="#4a6888">▲ ENTRANCE</text>
+
+  <!-- EDUCATION CENTRE — north-east (Q17 = C) -->
+  <rect x="480" y="82" width="130" height="68" fill="#f0e8d0" stroke="#8a7040" stroke-width="2" rx="3"/>
+  <text x="545" y="112" text-anchor="middle" font-size="11" fill="#5a4020" font-weight="bold">17</text>
+  <circle cx="545" cy="112" r="13" fill="none" stroke="#5a4020" stroke-width="1.5"/>
+  <text x="545" y="138" text-anchor="middle" font-size="9" fill="#555" font-style="italic">(label here)</text>
+
+  <!-- BIRD HIDE — east, overlooking wetland (Q18 = A) -->
+  <rect x="520" y="218" width="100" height="56" fill="#e8d8f8" stroke="#705090" stroke-width="2" rx="3"/>
+  <text x="570" y="244" text-anchor="middle" font-size="11" fill="#40206a" font-weight="bold">18</text>
+  <circle cx="570" cy="244" r="13" fill="none" stroke="#40206a" stroke-width="1.5"/>
+  <text x="570" y="262" text-anchor="middle" font-size="9" fill="#555" font-style="italic">(label here)</text>
+  <!-- Binocular icon -->
+  <circle cx="540" cy="228" r="4" fill="none" stroke="#705090" stroke-width="1.5"/>
+  <circle cx="548" cy="228" r="4" fill="none" stroke="#705090" stroke-width="1.5"/>
+  <line x1="544" y1="228" x2="544" y2="224" stroke="#705090" stroke-width="1"/>
+
+  <!-- MEADOW TRAIL marker — north centre (Q19 = D) — shown as a path segment with X -->
+  <rect x="248" y="140" width="120" height="52" fill="#ffeedd" stroke="#cc6622" stroke-width="2" rx="3" stroke-dasharray="5,2"/>
+  <text x="308" y="163" text-anchor="middle" font-size="11" fill="#882200" font-weight="bold">19</text>
+  <circle cx="308" cy="163" r="13" fill="none" stroke="#882200" stroke-width="1.5"/>
+  <text x="308" y="182" text-anchor="middle" font-size="9" fill="#555" font-style="italic">(label here)</text>
+  <!-- Closed marker -->
+  <text x="360" y="155" font-size="11" fill="#cc3300">✕ CLOSED</text>
+
+  <!-- RIVER BANK PATH — west side (Q20 = F) -->
+  <rect x="100" y="310" width="120" height="55" fill="#d0f0e0" stroke="#308860" stroke-width="2" rx="3"/>
+  <text x="160" y="334" text-anchor="middle" font-size="11" fill="#185038" font-weight="bold">20</text>
+  <circle cx="160" cy="334" r="13" fill="none" stroke="#185038" stroke-width="1.5"/>
+  <text x="160" y="353" text-anchor="middle" font-size="9" fill="#555" font-style="italic">(label here)</text>
+  <!-- Otter paw print -->
+  <circle cx="110" cy="317" r="3" fill="#308860" opacity="0.6"/>
+  <circle cx="116" cy="313" r="2.5" fill="#308860" opacity="0.6"/>
+  <circle cx="122" cy="313" r="2.5" fill="#308860" opacity="0.6"/>
+  <circle cx="128" cy="317" r="3" fill="#308860" opacity="0.6"/>
+
+  <!-- ══════════════ CAR PARK (not numbered, reference) ══════════════ -->
+  <rect x="560" y="460" width="80" height="46" fill="#e0e0e0" stroke="#888" stroke-width="1.5" rx="2"/>
+  <text x="600" y="479" text-anchor="middle" font-size="10" fill="#444" font-weight="bold">Car</text>
+  <text x="600" y="494" text-anchor="middle" font-size="10" fill="#444" font-weight="bold">Park</text>
+  <text x="600" y="508" text-anchor="middle" font-size="9" fill="#666">(B)</text>
+
+  <!-- ══════════════ TREES ══════════════ -->
+  <circle cx="460" cy="400" r="14" fill="#80c060" opacity="0.4"/>
+  <circle cx="480" cy="420" r="10" fill="#70b050" opacity="0.4"/>
+  <circle cx="200" cy="180" r="13" fill="#80c060" opacity="0.4"/>
+  <circle cx="220" cy="200" r="9" fill="#70b050" opacity="0.4"/>
+  <circle cx="620" cy="380" r="14" fill="#80c060" opacity="0.4"/>
+  <circle cx="610" cy="400" r="9" fill="#70b050" opacity="0.4"/>
+
+  <!-- ══════════════ SCALE ══════════════ -->
+  <line x1="68" y1="516" x2="168" y2="516" stroke="#555" stroke-width="1.5"/>
+  <line x1="68" y1="511" x2="68" y2="521" stroke="#555" stroke-width="1.5"/>
+  <line x1="168" y1="511" x2="168" y2="521" stroke="#555" stroke-width="1.5"/>
+  <text x="118" y="531" text-anchor="middle" font-size="10" fill="#555">50 metres</text>
+  <text x="400" y="531" text-anchor="middle" font-size="10" fill="#888" font-style="italic">Not to scale – for reference only</text>
+
+</svg>

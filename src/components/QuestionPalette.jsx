@@ -1,36 +1,52 @@
 export default function QuestionPalette({
-  questions,
-  answers,
+  questions = [],
+  answers = {},
+  flaggedQuestions = [],
+  currentQuestion = null,
+  onQuestionClick,
 }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns:
-          "repeat(5,1fr)",
-        gap: "10px",
-        marginBottom: "25px",
-      }}
-    >
-      {questions.map((q) => (
-        <div
-          key={q.id}
-          style={{
-            background:
-              answers[q.id]
-                ? "#22c55e"
-                : "#cbd5e1",
+    <div className="ielts-palette-wrap">
+      <div className="ielts-palette-title">Question Navigator</div>
 
-            color: "white",
-            textAlign: "center",
-            padding: "10px",
-            borderRadius: "8px",
-            fontWeight: "bold",
-          }}
-        >
-          {q.id}
+      <div className="ielts-palette-grid">
+        {questions.map((q) => {
+          const answered = answers[q.id] !== undefined && answers[q.id] !== "";
+          const flagged = flaggedQuestions.includes(q.id);
+          const current = currentQuestion === q.id;
+
+          let cls = "ielts-palette-btn";
+          if (answered) cls += " answered";
+          if (flagged)  cls += " flagged";
+          if (current)  cls += " current";
+
+          return (
+            <button
+              key={q.id}
+              className={cls}
+              onClick={() => onQuestionClick?.(q.id)}
+              title={`Question ${q.id}${answered ? " — Answered" : ""}${flagged ? " — Flagged" : ""}`}
+            >
+              {q.id}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="ielts-palette-legend">
+        <div className="ielts-legend-item">
+          <span className="ielts-legend-dot answered" />
+          Answered
         </div>
-      ))}
+        <div className="ielts-legend-item">
+          <span className="ielts-legend-dot flagged" />
+          Flagged
+        </div>
+        <div className="ielts-legend-item">
+          <span className="ielts-legend-dot empty" />
+          Not answered
+        </div>
+      </div>
     </div>
   );
 }

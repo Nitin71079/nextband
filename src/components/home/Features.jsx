@@ -3,8 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   BookOpen, Headphones, PenSquare, Mic, BrainCircuit, BarChart3,
-  ArrowRight, Sparkles, Gamepad2, Swords, Trophy, Zap, Users,
-  Target, Flame, Crown, Star, BookMarked, Wand2,
+  ArrowRight, Sparkles, Crown, Users, Trophy, Star,
 } from "lucide-react";
 
 const coreFeatures = [
@@ -40,38 +39,11 @@ const coreFeatures = [
   },
 ];
 
-const games = [
-  {
-    icon: Swords, title: "Vocab Battle", color: "#8b5cf6", badge: "Multiplayer",
-    description: "Challenge other learners in real-time vocabulary duels. Top the leaderboard.", link: "/games/vocab-battle",
-  },
-  {
-    icon: Flame, title: "Reading Race", color: "#ef4444", badge: "Solo / Multi",
-    description: "Speed-read passages and compete against the clock or friends.", link: "/games/reading-race",
-  },
-  {
-    icon: Wand2, title: "Band Blitz", color: "#f59e0b", badge: "Solo",
-    description: "Rapid-fire IELTS questions to sharpen your band score under pressure.", link: "/games/band-blitz",
-  },
-  {
-    icon: BookMarked, title: "Word Chain", color: "#22c55e", badge: "Solo",
-    description: "Build vocabulary chains and unlock achievements with every streak.", link: "/games/word-chain",
-  },
-  {
-    icon: Zap, title: "Synonym Sprint", color: "#06b6d4", badge: "Solo",
-    description: "Race to match synonyms in under a minute — the fastest way to expand vocab.", link: "/games/synonym-sprint",
-  },
-  {
-    icon: Target, title: "Grammar Gladiator", color: "#2563eb", badge: "Solo",
-    description: "Crush grammar challenges and earn XP toward your mastery rank.", link: "/games/grammar-gladiator",
-  },
-];
-
 const extras = [
-  { icon: Crown, title: "Full Mock Tests", color: "#f59e0b", desc: "Academic & General CBT in exam conditions.", link: "/full-mocks" },
-  { icon: Users, title: "Community", color: "#2563eb", desc: "Forums, study groups and peer discussions.", link: "/community" },
-  { icon: Trophy, title: "Leaderboard", color: "#8b5cf6", desc: "Rank against learners globally each week.", link: "/leaderboard" },
-  { icon: Star, title: "Achievements", color: "#22c55e", desc: "Badges, streaks and certificates for milestones.", link: "/achievements" },
+  { icon: Crown,  title: "Full Mock Tests", color: "#f59e0b", desc: "Academic & General CBT in exam conditions.", link: "/full-mocks"    },
+  { icon: Users,  title: "Community",       color: "#2563eb", desc: "Forums, study groups and peer discussions.",  link: "/community"     },
+  { icon: Trophy, title: "Leaderboard",     color: "#8b5cf6", desc: "Rank against learners globally each week.",   link: "/leaderboard"   },
+  { icon: Star,   title: "Achievements",    color: "#22c55e", desc: "Badges, streaks and certificates for milestones.", link: "/achievements" },
 ];
 
 export default function Features() {
@@ -83,7 +55,7 @@ export default function Features() {
       <div className="features-header">
         <span><Sparkles size={15} /> WHY STUDENTS CHOOSE KNARROW</span>
         <h2>Everything Required to<br />Master Every IELTS Module</h2>
-        <p>Practice every IELTS module using realistic CBT exams, AI evaluation, personalized coaching and powerful analytics—all in one platform.</p>
+        <p>Practice every IELTS module using realistic CBT exams, AI evaluation, personalized coaching and powerful analytics — all in one platform.</p>
       </div>
 
       <div className="features-grid">
@@ -102,36 +74,6 @@ export default function Features() {
               <div className="feature-footer">
                 <span className="feature-badge">{feature.badge}</span>
                 <Link to={feature.link} className="feature-link">Learn More <ArrowRight size={18} /></Link>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* ── GAMES ZONE ── */}
-      <div className="features-games-header">
-        <span><Gamepad2 size={15} /> GAMES ZONE</span>
-        <h2>Learn With Play — <span className="gradient-text-feat">Solo & Multiplayer Games</span></h2>
-        <p>Sharpen your IELTS skills through gamified challenges, vocabulary battles, reading races and more. Progress while having fun.</p>
-      </div>
-
-      <div className="features-grid games-grid">
-        {games.map((game, index) => {
-          const Icon = game.icon;
-          return (
-            <motion.div key={game.title} className="feature-card game-card"
-              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: index * 0.08 }}
-              whileHover={{ y: -10, scale: 1.02 }}>
-              <div className="game-card-glow" style={{ background: `${game.color}22` }} />
-              <div className="feature-icon" style={{ background: `linear-gradient(135deg, ${game.color}, ${game.color}dd)` }}>
-                <Icon size={32} />
-              </div>
-              <h3>{game.title}</h3>
-              <p>{game.description}</p>
-              <div className="feature-footer">
-                <span className="feature-badge game-badge" style={{ background: `${game.color}20`, color: game.color }}>{game.badge}</span>
-                <Link to={game.link} className="feature-link">Play Now <ArrowRight size={18} /></Link>
               </div>
             </motion.div>
           );

@@ -35,11 +35,14 @@ import GeneralReadingCenter from "./pages/GeneralReadingCenter";
 import ListeningCenter from "./pages/ListeningCenter";
 import WritingCenter from "./pages/WritingCenter";
 import SpeakingCenter from "./pages/SpeakingCenter";
-import ExamHistory
-from "./pages/ExamHistory";
+import ExamHistory from "./pages/ExamHistory";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import AdminContent from "./pages/AdminContent";
+import Terms from "./pages/Terms";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
 const ExpertProfile =
   lazy(() =>
     import(
@@ -563,15 +566,14 @@ element={<ExamHistory/>}
             }
           />
 
-          <Route
-            path="/help"
-            element={<HelpCenter />}
-          />
+          <Route path="/help" element={<HelpCenter />} />
 
-          <Route
-            path="*"
-            element={<NotFound />}
-          />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/contact" element={<Contact />} />
+
+          <Route path="*" element={<NotFound />} />
            </Routes>
   </Suspense>
 
