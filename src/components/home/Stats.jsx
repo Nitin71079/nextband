@@ -4,15 +4,15 @@ import { Users, Brain, BookOpen, Trophy, Sparkles, Zap, Target, Star } from "luc
 
 export default function Stats() {
   const stats = [
-    { icon: Users, number: "10,000+", title: "Active Students", subtitle: "Preparing every month", color: "#2563eb" },
-    { icon: Brain, number: "50,000+", title: "AI Evaluations", subtitle: "Writing & Speaking", color: "#8b5cf6" },
+    { icon: Users, number: "1,000+", title: "Active Students", subtitle: "Preparing every month", color: "#2563eb" },
+    { icon: Brain, number: "20,000+", title: "AI Evaluations", subtitle: "Writing & Speaking", color: "#8b5cf6" },
     { icon: BookOpen, number: "120+", title: "Mock Tests", subtitle: "Academic & General", color: "#22c55e" },
     { icon: Trophy, number: "98%", title: "Success Rate", subtitle: "Student Satisfaction", color: "#f59e0b" },
   ];
 
   const trust = [
     { icon: Star, text: "★★★★★ 4.9 Rating" },
-    { icon: Users, text: "10,000+ Students" },
+    { icon: Users, text: "1,000+ Students" },
     { icon: BookOpen, text: "120+ Mock Tests" },
     { icon: Zap, text: "AI Powered" },
   ];
