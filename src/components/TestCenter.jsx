@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Trophy, BookOpen, Clock3, BarChart3 } from "lucide-react";
+import { Trophy, BookOpen, Clock3, BarChart3, Lock, Crown } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import "../styles/testCenter.css";
 export default function TestCenter({
 
@@ -15,9 +16,12 @@ icon,
 
 theme = "blue",
 
+freeLimit,
+
 }) {
 
 const navigate = useNavigate();
+const { premium } = useAuth();
 
 const completed =
 tests.filter(t=>t.completed).length;
@@ -260,138 +264,233 @@ width:`${progress}%`
 
 <div className="test-grid">
 
-{tests.map(test=>(
+{tests.map((test, index) => {
+  const isLocked = freeLimit && !premium && index >= freeLimit;
+  
+  return (
+    <div
+      key={test.id}
+      className={`test-card ${theme} ${isLocked ? "locked" : ""}`}
+      style={{
+        position: "relative",
+        opacity: isLocked ? 0.7 : 1,
+        pointerEvents: isLocked ? "none" : "auto",
+      }}
+    >
 
-<div
-key={test.id}
-className={`test-card ${theme}`}
->
+      {/* Lock Overlay */}
+      {isLocked && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(15, 23, 42, 0.92)",
+            borderRadius: "24px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "16px",
+            zIndex: 10,
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+          }}
+          onClick={() => navigate("/pricing")}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(15, 23, 42, 0.96)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(15, 23, 42, 0.92)";
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(135deg, #f59e0b, #d97706)",
+              borderRadius: "50%",
+              width: "64px",
+              height: "64px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 8px 24px rgba(245, 158, 11, 0.4)",
+            }}
+          >
+            <Crown size={32} color="#fff" strokeWidth={2.5} />
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <h3
+              style={{
+                color: "#fff",
+                fontSize: "18px",
+                fontWeight: 800,
+                margin: "0 0 6px 0",
+              }}
+            >
+              Premium Only
+            </h3>
+            <p
+              style={{
+                color: "#94a3b8",
+                fontSize: "14px",
+                margin: 0,
+                fontWeight: 600,
+              }}
+            >
+              Unlock unlimited tests
+            </p>
+          </div>
+          <button
+            style={{
+              padding: "10px 24px",
+              background: "linear-gradient(135deg, #f59e0b, #d97706)",
+              color: "#fff",
+              border: "none",
+              borderRadius: "12px",
+              fontSize: "14px",
+              fontWeight: 800,
+              cursor: "pointer",
+              transition: "transform 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.05)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            Upgrade Now →
+          </button>
+        </div>
+      )}
 
-<div className="card-top">
+      <div className="card-top">
 
-<div>
+        <div>
 
-<h2>
+          <h2>
 
-{test.title}
+            {test.title}
 
-</h2>
+          </h2>
 
-<p>
+          <p>
 
-Practice IELTS Mock Test
+            Practice IELTS Mock Test
 
-</p>
+          </p>
 
-</div>
+        </div>
 
-<span
+        <span
 
-className={`difficulty ${(test.difficulty || "Medium").toLowerCase()}`}
->
+          className={`difficulty ${(test.difficulty || "Medium").toLowerCase()}`}
+        >
 
-{test.difficulty || "Medium"}
-</span>
+          {test.difficulty || "Medium"}
+        </span>
 
-</div>
-<div className="card-info">
+      </div>
+      <div className="card-info">
 
-<div>
+        <div>
 
-⏱
+          ⏱
 
-<span>
+          <span>
 
-{test.duration}
+            {test.duration}
 
-</span>
+          </span>
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-📄
+          📄
 
-<span>
+          <span>
 
-{test.questions} Questions
+            {test.questions} Questions
 
-</span>
+          </span>
 
-</div>
+        </div>
 
-</div>
+      </div>
 
-<div className="band-section">
+      <div className="band-section">
 
-<div>
+        <div>
 
-<span className="label">
+          <span className="label">
 
-⭐ Best Band
+            ⭐ Best Band
 
-</span>
+          </span>
 
-<h3>
+          <h3>
 
-{test.bestBand}
+            {test.bestBand}
 
-</h3>
+          </h3>
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<span className="label">
+          <span className="label">
 
-Status
+            Status
 
-</span>
+          </span>
 
-<h3>
+          <h3>
 
-{test.completed
+            {test.completed
 
-?
+              ?
 
-"🏅 Completed"
+              "🏅 Completed"
 
-:
+              :
 
-"🕓 Not Attempted"}
+              "🕓 Not Attempted"}
 
-</h3>
+          </h3>
 
-</div>
+        </div>
 
-</div>
+      </div>
 
-<button
+      <button
 
-className={`start-btn ${theme}`}
-onClick={()=>
+        className={`start-btn ${theme}`}
+        onClick={() =>
 
-navigate(`${route}/${test.id}`)
+          navigate(`${route}/${test.id}`)
 
-}
+        }
 
->
+      >
 
-{test.completed
+        {test.completed
 
-?
+          ?
 
-"Continue Test →"
+          "Continue Test →"
 
-:
+          :
 
-"Start Test →"}
+          "Start Test →"}
 
-</button>
+      </button>
 
-</div>
-
-))}
+    </div>
+  );
+})}
 
 </div>
 

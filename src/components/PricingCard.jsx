@@ -5,13 +5,16 @@ import { useAuth } from "../context/AuthContext";
 
 const FEATURES = {
   Free: [
-    "5 Reading Tests",
-    "5 Listening Tests",
+    "3 Academic Reading Tests",
+    "3 General Reading Tests",
+    "3 Writing Practice Tests",
+    "3 Speaking Practice Tests",
+    "1 Listening Test",
+    "3 Games in Games Zone",
     "Basic Score Reports",
     "Community Forum Access",
     "Leaderboard",
     "Exam History",
-    "3 AI Evaluations / month",
   ],
   "Premium Monthly": [
     "Unlimited Reading Mock Tests",

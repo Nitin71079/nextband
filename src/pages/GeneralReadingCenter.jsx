@@ -19,6 +19,7 @@ export default function GeneralReadingCenter() {
       icon="📗"
 route="/mock/general-reading"
       tests={tests}
+      freeLimit={3}
     />
   );
 }

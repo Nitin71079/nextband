@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Swords, Lock, Gamepad2, Zap, Trophy, Users } from "lucide-react";
+import { Swords, Lock, Gamepad2, Zap, Trophy, Users, Crown } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const games = [
   {
@@ -147,6 +148,9 @@ const games = [
 
 export default function GamesZone() {
   const navigate = useNavigate();
+  const { premium } = useAuth();
+
+  const FREE_GAMES_LIMIT = 3;
 
   return (
     <div
@@ -278,31 +282,43 @@ export default function GamesZone() {
             gap: "24px",
           }}
         >
-          {games.map((game, i) => (
+          {games.map((game, i) => {
+            const isLocked = !premium && i >= FREE_GAMES_LIMIT;
+            const isAvailable = game.available && !isLocked;
+
+            return (
             <motion.div
               key={game.id}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              whileHover={game.available ? { y: -8, scale: 1.015 } : {}}
-              onClick={() => game.available && navigate(game.path)}
+              whileHover={isAvailable ? { y: -8, scale: 1.015 } : {}}
+              onClick={() => {
+                if (isLocked) {
+                  navigate("/pricing");
+                } else if (game.available) {
+                  navigate(game.path);
+                }
+              }}
               style={{
                 position: "relative",
                 padding: "36px 32px",
                 borderRadius: "28px",
-                background: game.available
+                background: isAvailable
                   ? "rgba(255,255,255,.05)"
                   : "rgba(255,255,255,.02)",
-                border: game.available
+                border: isAvailable
                   ? `1px solid rgba(37,99,235,.25)`
+                  : isLocked
+                  ? "1px solid rgba(245,158,11,.2)"
                   : "1px solid rgba(255,255,255,.06)",
-                cursor: game.available ? "pointer" : "default",
-                boxShadow: game.available
+                cursor: isAvailable || isLocked ? "pointer" : "default",
+                boxShadow: isAvailable
                   ? "0 8px 40px rgba(0,0,0,.3)"
                   : "none",
                 overflow: "hidden",
                 transition: "all .3s ease",
-                opacity: game.available ? 1 : 0.55,
+                opacity: isLocked ? 0.7 : game.available ? 1 : 0.55,
               }}
             >
               {/* Top accent line */}
@@ -313,8 +329,10 @@ export default function GamesZone() {
                   left: 0,
                   right: 0,
                   height: "3px",
-                  background: game.available
+                  background: isAvailable
                     ? `linear-gradient(90deg, ${game.color}, #06b6d4)`
+                    : isLocked
+                    ? "linear-gradient(90deg, #f59e0b, #d97706)"
                     : "rgba(255,255,255,.1)",
                   borderRadius: "28px 28px 0 0",
                 }}
@@ -328,19 +346,23 @@ export default function GamesZone() {
                   right: "20px",
                   padding: "5px 12px",
                   borderRadius: "999px",
-                  background: `${game.badgeColor}20`,
-                  border: `1px solid ${game.badgeColor}40`,
-                  color: game.badgeColor,
+                  background: isLocked
+                    ? "rgba(245,158,11,.15)"
+                    : `${game.badgeColor}20`,
+                  border: isLocked
+                    ? "1px solid rgba(245,158,11,.4)"
+                    : `1px solid ${game.badgeColor}40`,
+                  color: isLocked ? "#f59e0b" : game.badgeColor,
                   fontSize: "10px",
                   fontWeight: 800,
                   letterSpacing: "1px",
                 }}
               >
-                {game.badge}
+                {isLocked ? "PREMIUM" : game.badge}
               </div>
 
-              {/* Lock for unavailable */}
-              {!game.available && (
+              {/* Lock overlay for unavailable (coming soon) games */}
+              {!game.available && !isLocked && (
                 <div
                   style={{
                     position: "absolute",
@@ -362,6 +384,78 @@ export default function GamesZone() {
                 </div>
               )}
 
+              {/* Premium lock overlay */}
+              {isLocked && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "rgba(15, 23, 42, 0.88)",
+                    borderRadius: "28px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "14px",
+                    zIndex: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                      borderRadius: "50%",
+                      width: "60px",
+                      height: "60px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "0 8px 24px rgba(245,158,11,.45)",
+                    }}
+                  >
+                    <Crown size={30} color="#fff" strokeWidth={2.5} />
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <p
+                      style={{
+                        color: "#fff",
+                        fontSize: "17px",
+                        fontWeight: 800,
+                        margin: "0 0 4px",
+                      }}
+                    >
+                      Premium Only
+                    </p>
+                    <p
+                      style={{
+                        color: "#94a3b8",
+                        fontSize: "13px",
+                        margin: 0,
+                        fontWeight: 600,
+                      }}
+                    >
+                      Upgrade to unlock all games
+                    </p>
+                  </div>
+                  <button
+                    style={{
+                      padding: "10px 22px",
+                      background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "12px",
+                      fontSize: "13px",
+                      fontWeight: 800,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Upgrade Now →
+                  </button>
+                </div>
+              )}
+
               <div style={{ fontSize: "42px", marginBottom: "16px" }}>{game.icon}</div>
 
               <div style={{ marginBottom: "6px" }}>
@@ -378,7 +472,7 @@ export default function GamesZone() {
                 <p
                   style={{
                     fontSize: "12px",
-                    color: game.color,
+                    color: isLocked ? "#f59e0b" : game.color,
                     fontWeight: 700,
                     margin: "4px 0 0",
                     textTransform: "uppercase",
@@ -420,7 +514,7 @@ export default function GamesZone() {
                 ))}
               </div>
 
-              {game.available && (
+              {isAvailable && (
                 <div
                   style={{
                     marginTop: "24px",
@@ -437,7 +531,8 @@ export default function GamesZone() {
                 </div>
               )}
             </motion.div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </div>

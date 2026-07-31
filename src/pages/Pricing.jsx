@@ -15,15 +15,19 @@ const STATS = [
 
 /* ── comparison rows ── */
 const COMPARE = [
-  { feature: "Reading Practice",      free: "5 Tests",   premium: "Unlimited" },
-  { feature: "Listening Practice",    free: "5 Tests",   premium: "Unlimited" },
-  { feature: "Writing AI Evaluation", free: "—",         premium: "✓"         },
-  { feature: "Speaking AI Evaluation",free: "—",         premium: "✓"         },
-  { feature: "Band Prediction",       free: "—",         premium: "✓"         },
-  { feature: "Performance Analytics", free: "Basic",     premium: "Advanced"  },
-  { feature: "Full CBT Mock Exams",   free: "—",         premium: "✓"         },
-  { feature: "Study Planner",         free: "Basic",     premium: "AI Powered"},
-  { feature: "AI Study Coach",        free: "—",         premium: "✓"         },
+  { feature: "Academic Reading Tests", free: "3 Tests",   premium: "Unlimited" },
+  { feature: "General Reading Tests",  free: "3 Tests",   premium: "Unlimited" },
+  { feature: "Writing Practice Tests", free: "3 Tests",   premium: "Unlimited" },
+  { feature: "Speaking Practice Tests",free: "3 Tests",   premium: "Unlimited" },
+  { feature: "Listening Practice",     free: "1 Test",    premium: "Unlimited" },
+  { feature: "Games Zone",             free: "3 Games",   premium: "All 10 Games" },
+  { feature: "Writing AI Evaluation",  free: "—",         premium: "✓"         },
+  { feature: "Speaking AI Evaluation", free: "—",         premium: "✓"         },
+  { feature: "Band Prediction",        free: "—",         premium: "✓"         },
+  { feature: "Performance Analytics",  free: "Basic",     premium: "Advanced"  },
+  { feature: "Full CBT Mock Exams",    free: "—",         premium: "✓"         },
+  { feature: "Study Planner",          free: "Basic",     premium: "AI Powered"},
+  { feature: "AI Study Coach",         free: "—",         premium: "✓"         },
 ];
 
 /* ── FAQ items ── */

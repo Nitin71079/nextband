@@ -30,6 +30,7 @@ export default function WritingCenter() {
       icon="✍️"
       route="/mock/writing"
       tests={tests}
+      freeLimit={3}
     />
 
   );

@@ -485,7 +485,9 @@ element={<ExamHistory/>}
   path="/games/vocab-battle"
   element={
     <PrivateRoute>
-      <VocabBattle />
+      <PremiumGate>
+        <VocabBattle />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -494,7 +496,9 @@ element={<ExamHistory/>}
   path="/games/reading-race"
   element={
     <PrivateRoute>
-      <ReadingRace />
+      <PremiumGate>
+        <ReadingRace />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -503,7 +507,9 @@ element={<ExamHistory/>}
   path="/games/word-chain"
   element={
     <PrivateRoute>
-      <WordChain />
+      <PremiumGate>
+        <WordChain />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -512,7 +518,9 @@ element={<ExamHistory/>}
   path="/games/sentence-fixer"
   element={
     <PrivateRoute>
-      <SentenceFixer />
+      <PremiumGate>
+        <SentenceFixer />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -521,7 +529,9 @@ element={<ExamHistory/>}
   path="/games/band-blitz"
   element={
     <PrivateRoute>
-      <BandBlitz />
+      <PremiumGate>
+        <BandBlitz />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -530,7 +540,9 @@ element={<ExamHistory/>}
   path="/games/synonym-sprint"
   element={
     <PrivateRoute>
-      <SynonymSprint />
+      <PremiumGate>
+        <SynonymSprint />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -539,7 +551,9 @@ element={<ExamHistory/>}
   path="/games/grammar-gladiator"
   element={
     <PrivateRoute>
-      <GrammarGladiator />
+      <PremiumGate>
+        <GrammarGladiator />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
