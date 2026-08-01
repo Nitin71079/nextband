@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,6 +20,8 @@ import speakingTests from "../data/speaking/tests";
 
 import { saveExamSession } from "../services/examSession";
 import { updateStreak } from "../services/streakService";
+import { useAuth } from "../context/AuthContext";
+import { isFullMockLocked, markFullMockUsed } from "../services/freePlanLimits";
 
 function rand(arr) {
   return Math.floor(Math.random() * arr.length);
@@ -35,6 +37,14 @@ const SECTIONS = [
 
 export default function CBTExamEngine({ examType = "academic" }) {
   const navigate = useNavigate();
+  const { premium } = useAuth();
+
+  /* ── Free plan gate: redirect if this exam type was already used ── */
+  useEffect(() => {
+    if (isFullMockLocked(examType, premium)) {
+      navigate("/pricing", { replace: true });
+    }
+  }, [examType, premium]); // eslint-disable-line
 
   // Pick random tests once on mount
   const testIds = useMemo(() => ({
@@ -44,7 +54,7 @@ export default function CBTExamEngine({ examType = "academic" }) {
     speakingId:     speakingTests[rand(speakingTests)].id,
   }), [examType]);
 
-  const [stage, setStage] = useState("briefing"); // briefing | listening | reading | writing | speaking
+  const [stage, setStage] = useState("briefing");
   const [results, setResults] = useState({ listening: null, reading: null, writing: null, speaking: null });
 
   function advance(section, band) {
@@ -53,13 +63,14 @@ export default function CBTExamEngine({ examType = "academic" }) {
     if (next[section]) {
       setStage(next[section]);
     } else {
-      // speaking done → finish
       finishExam({ ...results, speaking: band });
     }
   }
 
   function finishExam(finalResults) {
     updateStreak();
+    // Mark this exam type as used for free plan tracking
+    markFullMockUsed(examType);
     const overall = (
       (Number(finalResults.listening || 0) + Number(finalResults.reading || 0) +
        Number(finalResults.writing || 0) + Number(finalResults.speaking || 0)) / 4

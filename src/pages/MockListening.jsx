@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import listeningTests from "../data/listening/tests";
 import "../styles/listening/listening.css";
@@ -16,6 +16,8 @@ import TestFeedbackModal from "../components/TestFeedbackModal";
 import { calculateListeningBand } from "../utils/listeningBandCalculator";
 import useQuestionNavigation from "../hooks/useQuestionNavigation";
 import useScrollSpy          from "../hooks/useScrollSpy";
+import { useAuth }           from "../context/AuthContext";
+import { isListeningTestLocked } from "../services/freePlanLimits";
 
 /* ─────────────────────────────────────────────
    Build a lookup: questionId → sectionIndex
@@ -52,6 +54,9 @@ export default function MockListening({
 }) {
   /* ── Resolve test ── */
   const { id: urlId } = useParams();
+  const navigate = useNavigate();
+  const { premium } = useAuth();
+
   const test =
     urlId
       ? listeningTests.find((t) => t.id === urlId) ??
@@ -60,6 +65,14 @@ export default function MockListening({
       : listeningTests[testIdProp] ?? listeningTests[0];
 
   if (!test) return <h2 style={{ color: "#fff", padding: 40 }}>Listening Test Not Found</h2>;
+
+  /* ── Free plan gate ── */
+  useEffect(() => {
+    if (mode === "cbt") return;
+    if (isListeningTestLocked(test.id, premium)) {
+      navigate("/pricing", { replace: true });
+    }
+  }, [test.id, premium, mode]); // eslint-disable-line
 
   /* ── Always clear any saved progress on mount so every open is fresh ── */
   useEffect(() => {

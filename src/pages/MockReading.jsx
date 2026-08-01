@@ -8,6 +8,7 @@ import { saveResult } from "../services/resultService";
 import { getIELTSBand } from "../services/BandCalculator";
 import academicTests from "../data/reading/academic/academicTests";
 import generalTests from "../data/reading/general/generalTests";
+import { isReadingTestLocked } from "../services/freePlanLimits";
 
 import QuestionRenderer from "../components/QuestionRenderer";
 import QuestionPalette from "../components/QuestionPalette";
@@ -47,6 +48,7 @@ export default function MockReading({
   const id = forcedTestId !== undefined ? String(forcedTestId) : paramId;
 
   const { user }         = useAuth();
+  const { premium }      = useAuth();
   const { setReadingBand } = useExam();
 
   const isGeneral = forcedExamType
@@ -55,6 +57,15 @@ export default function MockReading({
 
   const readingTests  = isGeneral ? generalTests : academicTests;
   const currentTest   = readingTests.find((t) => String(t.id) === String(id)) || readingTests[0];
+
+  /* ── Free plan gate — redirect before any state is set ── */
+  useEffect(() => {
+    if (!currentTest) return;
+    if (mode === "cbt") return; // CBT mode is controlled by the full mock gate
+    if (isReadingTestLocked(currentTest.id, isGeneral, premium)) {
+      navigate("/pricing", { replace: true });
+    }
+  }, [currentTest?.id, isGeneral, premium, mode]); // eslint-disable-line
 
   /* ── State ─────────────────────────────────────────── */
   const [passageIndex, setPassageIndex] = useState(0);
@@ -524,8 +535,8 @@ export default function MockReading({
         </button>
       </div>
 
-      {/* ── Test Selector (practice mode) ───────────────── */}
-      {mode === "practice" && (
+      {/* ── Test Selector (practice mode, premium only) ───────────────── */}
+      {mode === "practice" && premium && (
         <div className="ielts-selector-bar">
           <select
             className="ielts-test-select"

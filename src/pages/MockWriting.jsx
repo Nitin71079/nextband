@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import writingTests from "../data/writing/tests";
+import { useAuth } from "../context/AuthContext";
+import { isWritingTestLocked } from "../services/freePlanLimits";
 
 import "../styles/exam/shared.css";
 
@@ -26,12 +28,22 @@ export default function MockWriting({
   forcedTestId,
 }) {
   const { testId: paramTestId } = useParams();
+  const navigate = useNavigate();
+  const { premium } = useAuth();
   const resolvedTestId = forcedTestId !== undefined ? forcedTestId : Number(paramTestId);
 
   const test =
     writingTests.find(
       (t) => t.id === resolvedTestId
     ) || writingTests[0];
+
+  /* ── Free plan gate ── */
+  useEffect(() => {
+    if (forcedTestId !== undefined) return; // CBT controls its own gate
+    if (isWritingTestLocked(test.id, premium)) {
+      navigate("/pricing", { replace: true });
+    }
+  }, [test.id, premium, forcedTestId]); // eslint-disable-line
 
   const [
     activeTask,

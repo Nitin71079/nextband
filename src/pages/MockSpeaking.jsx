@@ -1,9 +1,11 @@
 import "../styles/exam/shared.css";
 
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import speakingTests from "../data/speaking/tests";
+import { useAuth } from "../context/AuthContext";
+import { isSpeakingTestLocked } from "../services/freePlanLimits";
 
 import {
   evaluateSpeakingGPT,
@@ -40,6 +42,8 @@ export default function MockSpeaking({
 }) {
 
   const { testId: paramTestId } = useParams();
+  const navigate = useNavigate();
+  const { premium } = useAuth();
 
   const {
 
@@ -60,6 +64,14 @@ export default function MockSpeaking({
     ) ||
 
     speakingTests[0];
+
+  /* ── Free plan gate ── */
+  useEffect(() => {
+    if (forcedTestId !== undefined) return; // CBT controls its own gate
+    if (isSpeakingTestLocked(test.id, premium)) {
+      navigate("/pricing", { replace: true });
+    }
+  }, [test.id, premium, forcedTestId]); // eslint-disable-line
 
   const [
 

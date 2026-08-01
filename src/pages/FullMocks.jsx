@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Clock, BookOpen, Headphones, PenLine, Mic, ArrowRight, Sparkles, GraduationCap, Users,
+  Clock, BookOpen, Headphones, PenLine, Mic, ArrowRight, Sparkles, GraduationCap, Users, Crown, Lock,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { isFullMockLocked } from "../services/freePlanLimits";
 
 // ─── Shared section metadata ──────────────────────────────────────────────────
 const SECTIONS = [
@@ -57,6 +59,15 @@ function Orb({ style }) {
 
 export default function FullMocks() {
   const navigate = useNavigate();
+  const { premium } = useAuth();
+
+  function handleStart(mock) {
+    if (isFullMockLocked(mock.key, premium)) {
+      navigate("/pricing");
+      return;
+    }
+    navigate(mock.path);
+  }
 
   return (
     <div style={{
@@ -126,6 +137,7 @@ export default function FullMocks() {
         }}>
           {MOCKS.map((mock, idx) => {
             const Icon = mock.icon;
+            const locked = isFullMockLocked(mock.key, premium);
             return (
               <motion.div
                 key={mock.key}
@@ -134,32 +146,41 @@ export default function FullMocks() {
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                 whileHover={{
                   y: -6,
-                  boxShadow: `0 24px 60px ${mock.glowColor}`,
+                  boxShadow: locked
+                    ? "0 24px 60px rgba(245,158,11,.2)"
+                    : `0 24px 60px ${mock.glowColor}`,
                   transition: { duration: 0.25 },
                 }}
                 style={{
                   position: "relative", overflow: "hidden",
                   borderRadius: "28px",
-                  background: "rgba(255,255,255,.05)",
-                  border: "1px solid rgba(255,255,255,.10)",
+                  background: locked ? "rgba(255,255,255,.03)" : "rgba(255,255,255,.05)",
+                  border: locked
+                    ? "1px solid rgba(245,158,11,.25)"
+                    : "1px solid rgba(255,255,255,.10)",
                   backdropFilter: "blur(24px)",
                   padding: "40px",
                   cursor: "pointer",
                   boxShadow: `0 8px 32px rgba(0,0,0,.12)`,
+                  opacity: locked ? 0.85 : 1,
                 }}
-                onClick={() => navigate(mock.path)}
+                onClick={() => handleStart(mock)}
               >
                 {/* Gradient top-edge glow */}
                 <div style={{
                   position: "absolute", top: 0, left: 0, right: 0, height: "2px",
-                  background: `linear-gradient(90deg, transparent, ${mock.accentFrom}, ${mock.accentTo}, transparent)`,
+                  background: locked
+                    ? "linear-gradient(90deg, transparent, #f59e0b, #d97706, transparent)"
+                    : `linear-gradient(90deg, transparent, ${mock.accentFrom}, ${mock.accentTo}, transparent)`,
                 }} />
 
                 {/* Background radial */}
                 <div style={{
                   position: "absolute", top: -60, right: -60,
                   width: 280, height: 280, borderRadius: "50%",
-                  background: `radial-gradient(circle, ${mock.accentFrom}18, transparent 70%)`,
+                  background: locked
+                    ? "radial-gradient(circle, rgba(245,158,11,.1), transparent 70%)"
+                    : `radial-gradient(circle, ${mock.accentFrom}18, transparent 70%)`,
                   pointerEvents: "none",
                 }} />
 
@@ -168,20 +189,22 @@ export default function FullMocks() {
                   <div style={{
                     display: "inline-flex", alignItems: "center", gap: "7px",
                     padding: "6px 14px", borderRadius: "999px",
-                    background: `${mock.accentFrom}20`,
-                    border: `1px solid ${mock.accentFrom}40`,
+                    background: locked ? "rgba(245,158,11,.15)" : `${mock.accentFrom}20`,
+                    border: locked ? "1px solid rgba(245,158,11,.35)" : `1px solid ${mock.accentFrom}40`,
                     fontSize: ".75rem", fontWeight: 800, letterSpacing: ".8px",
-                    color: mock.accentFrom,
+                    color: locked ? "#f59e0b" : mock.accentFrom,
                   }}>
-                    {mock.badge}
+                    {locked ? "PREMIUM — Already Used" : mock.badge}
                   </div>
                   <div style={{
                     width: 52, height: 52, borderRadius: "16px", flexShrink: 0,
-                    background: `linear-gradient(135deg, ${mock.accentFrom}, ${mock.accentTo})`,
+                    background: locked
+                      ? "linear-gradient(135deg, #f59e0b, #d97706)"
+                      : `linear-gradient(135deg, ${mock.accentFrom}, ${mock.accentTo})`,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    boxShadow: `0 12px 28px ${mock.glowColor}`,
+                    boxShadow: locked ? "0 12px 28px rgba(245,158,11,.3)" : `0 12px 28px ${mock.glowColor}`,
                   }}>
-                    <Icon size={24} color="#fff" />
+                    {locked ? <Crown size={24} color="#fff" /> : <Icon size={24} color="#fff" />}
                   </div>
                 </div>
 
@@ -194,9 +217,9 @@ export default function FullMocks() {
                 </h2>
                 <p style={{
                   fontSize: ".83rem", fontWeight: 700, letterSpacing: ".3px",
-                  color: mock.accentFrom, margin: "0 0 16px",
+                  color: locked ? "#f59e0b" : mock.accentFrom, margin: "0 0 16px",
                 }}>
-                  {mock.tagline}
+                  {locked ? "You've used your free attempt — upgrade to take unlimited mocks" : mock.tagline}
                 </p>
                 <p style={{
                   color: "var(--text-secondary)", fontSize: ".9rem",
@@ -233,18 +256,21 @@ export default function FullMocks() {
                   </div>
                   <motion.button
                     whileTap={{ scale: 0.96 }}
-                    onClick={(e) => { e.stopPropagation(); navigate(mock.path); }}
+                    onClick={(e) => { e.stopPropagation(); handleStart(mock); }}
                     style={{
                       display: "flex", alignItems: "center", gap: "8px",
                       padding: "12px 24px", borderRadius: "14px", border: "none",
-                      background: `linear-gradient(135deg, ${mock.accentFrom}, ${mock.accentTo})`,
+                      background: locked
+                        ? "linear-gradient(135deg, #f59e0b, #d97706)"
+                        : `linear-gradient(135deg, ${mock.accentFrom}, ${mock.accentTo})`,
                       color: "#fff", fontWeight: 700, fontSize: ".9rem",
                       cursor: "pointer",
-                      boxShadow: `0 8px 24px ${mock.glowColor}`,
+                      boxShadow: locked
+                        ? "0 8px 24px rgba(245,158,11,.3)"
+                        : `0 8px 24px ${mock.glowColor}`,
                     }}
                   >
-                    Start Test
-                    <ArrowRight size={16} />
+                    {locked ? <><Crown size={15} /> Upgrade to Unlock</> : <>Start Test <ArrowRight size={16} /></>}
                   </motion.button>
                 </div>
               </motion.div>
