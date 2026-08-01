@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import listeningTests from "../data/listening/tests";
@@ -16,8 +16,34 @@ import TestFeedbackModal from "../components/TestFeedbackModal";
 import { calculateListeningBand } from "../utils/listeningBandCalculator";
 import useQuestionNavigation from "../hooks/useQuestionNavigation";
 import useScrollSpy          from "../hooks/useScrollSpy";
-import useAutosave           from "../hooks/useAutosave";
-import useRestoreListening   from "../hooks/useRestoreListening";
+
+/* ─────────────────────────────────────────────
+   Build a lookup: questionId → sectionIndex
+   Used by palette to jump across sections.
+───────────────────────────────────────────── */
+function buildQuestionSectionMap(sections) {
+  const map = {};
+  sections.forEach((section, sIdx) => {
+    if (section.form) {
+      section.form.forEach((q) => { map[q.id] = sIdx; });
+    }
+    section.groups?.forEach((group) => {
+      group.questions?.forEach((q) => { map[q.id] = sIdx; });
+      group.notes?.forEach((item) => {
+        if (item.type === "blank") map[item.id] = sIdx;
+      });
+      group.rows?.forEach((row) => {
+        row.forEach((cell) => {
+          if (cell.id !== undefined && cell.type === undefined) map[cell.id] = sIdx;
+        });
+      });
+      group.steps?.forEach((step) => {
+        if (step.type === "blank") map[step.id] = sIdx;
+      });
+    });
+  });
+  return map;
+}
 
 export default function MockListening({
   testId: testIdProp = 0,
@@ -35,32 +61,32 @@ export default function MockListening({
 
   if (!test) return <h2 style={{ color: "#fff", padding: 40 }}>Listening Test Not Found</h2>;
 
-  /* ── Restore saved progress ── */
-  const savedProgress = useRestoreListening(test.id);
+  /* ── Always clear any saved progress on mount so every open is fresh ── */
+  useEffect(() => {
+    localStorage.removeItem(`listening-${test.id}`);
+  }, [test.id]); // eslint-disable-line
 
-  /* ── State ── */
-  const [answers,        setAnswers]        = useState(savedProgress?.answers        || {});
-  const [currentSection, setCurrentSection] = useState(savedProgress?.currentSection || 0);
-  const [flagged,        setFlagged]        = useState(savedProgress?.flagged        || []);
+  /* ── State — always fresh (no restore) ── */
+  const [answers,        setAnswers]        = useState({});
+  const [currentSection, setCurrentSection] = useState(0);
+  const [flagged,        setFlagged]        = useState([]);
   const [submitted,      setSubmitted]      = useState(false);
   const [showReview,     setShowReview]     = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
-  // Timer: 40 minutes
-  const [timeLeft, setTimeLeft] = useState(
-    savedProgress?.timeLeft ?? 40 * 60
-  );
+  // Always start at 40:00
+  const [timeLeft, setTimeLeft] = useState(40 * 60);
 
   /* ── Navigation ── */
   const { currentQuestion, goToQuestion, setCurrentQuestion } = useQuestionNavigation();
 
-  useEffect(() => {
-    if (savedProgress?.currentQuestion) setCurrentQuestion(savedProgress.currentQuestion);
-  }, []); // eslint-disable-line
-
   useScrollSpy(setCurrentQuestion);
 
-  /* ── Autosave ── */
-  useAutosave({ testId: test.id, answers, currentSection, currentQuestion, timeLeft });
+  /* ── Question → section lookup ── */
+  const questionSectionMap = useMemo(
+    () => buildQuestionSectionMap(test.sections),
+    [test]
+  );
 
   /* ── Current section data ── */
   const currentSectionData = test.sections[currentSection];
@@ -101,31 +127,7 @@ export default function MockListening({
   const minutes       = Math.floor(timeLeft / 60);
   const seconds       = String(timeLeft % 60).padStart(2, "0");
 
-  /* ── Timer ── */
-  useEffect(() => {
-    if (submitted) return;
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setShowReview(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [submitted]);
-
-  /* ── Handlers ── */
-  const updateAnswer = (questionId, value) =>
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
-
-  const toggleFlag = (questionId) =>
-    setFlagged((prev) =>
-      prev.includes(questionId) ? prev.filter((id) => id !== questionId) : [...prev, questionId]
-    );
-
+  /* ── Score calculation ── */
   const calculateScore = () => {
     let score = 0;
     test.sections.forEach((section) => {
@@ -190,15 +192,54 @@ export default function MockListening({
     return score;
   };
 
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-
+  /* ── Submit ── */
   const submitTest = () => {
-    localStorage.removeItem(`knarrow_listening-${test.id}`);
     const score = calculateScore();
     const band  = calculateListeningBand(score);
     setSubmitted(true);
     setShowFeedbackModal(true);
     if (onComplete) onComplete(band);
+  };
+
+  /* ── Timer — auto-submit at 0:00 ── */
+  const submitRef = useRef(submitTest);
+  submitRef.current = submitTest; // keep ref up-to-date without restarting the interval
+
+  useEffect(() => {
+    if (submitted) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          // Auto-submit directly — no review screen, just results
+          submitRef.current();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [submitted]); // eslint-disable-line
+
+  /* ── Handlers ── */
+  const updateAnswer = (questionId, value) =>
+    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+
+  const toggleFlag = (questionId) =>
+    setFlagged((prev) =>
+      prev.includes(questionId) ? prev.filter((id) => id !== questionId) : [...prev, questionId]
+    );
+
+  /* ── Palette navigation: switch section then scroll ── */
+  const handlePaletteSelect = (questionId) => {
+    const targetSection = questionSectionMap[questionId];
+    if (targetSection !== undefined && targetSection !== currentSection) {
+      setCurrentSection(targetSection);
+      // Wait for the new section to render, then scroll
+      setTimeout(() => goToQuestion(questionId), 80);
+    } else {
+      goToQuestion(questionId);
+    }
   };
 
   const previousSection = () => {
@@ -216,7 +257,7 @@ export default function MockListening({
         sections={test.sections}
         answers={answers}
         flagged={flagged}
-        goToQuestion={goToQuestion}
+        goToQuestion={handlePaletteSelect}
         onReturn={() => setShowReview(false)}
         onSubmit={submitTest}
       />
@@ -283,12 +324,17 @@ export default function MockListening({
             answers={answers}
             flagged={flagged}
             currentQuestion={currentQuestion}
-            onSelectQuestion={goToQuestion}
+            onSelectQuestion={handlePaletteSelect}
           />
 
           <div className="progress-card">
             <h3>Progress</h3>
-            <h1>{answeredCount} <span style={{ fontSize: 18, color: "var(--l-muted)", fontWeight: 500 }}>/ {totalQuestions}</span></h1>
+            <h1>
+              {answeredCount}{" "}
+              <span style={{ fontSize: 18, color: "var(--l-muted)", fontWeight: 500 }}>
+                / {totalQuestions}
+              </span>
+            </h1>
             <div className="progress-bar-track">
               <div
                 className="progress-bar-fill"
