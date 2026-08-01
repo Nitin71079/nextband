@@ -11,6 +11,7 @@ import generalTests from "../data/reading/general/generalTests";
 
 import QuestionRenderer from "../components/QuestionRenderer";
 import QuestionPalette from "../components/QuestionPalette";
+import TestFeedbackModal from "../components/TestFeedbackModal";
 import scoreReading from "../utils/scoreReading";
 
 import "../styles/mock-reading.css";
@@ -66,6 +67,7 @@ export default function MockReading({
   const [mobileTab,    setMobileTab]    = useState("passage"); // "passage" | "questions"
   const [currentQ,     setCurrentQ]     = useState(null);
   const [submitting,   setSubmitting]   = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   const questionRefs = useRef({});
   const questionsScrollRef = useRef(null);
@@ -215,6 +217,7 @@ export default function MockReading({
     onComplete?.(band);
     setSubmitting(false);
     setSubmitted(true);
+    setShowFeedbackModal(true);
   }
 
   function restartTest() {
@@ -345,6 +348,12 @@ export default function MockReading({
             </div>
           )}
 
+          <TestFeedbackModal
+            isOpen={showFeedbackModal}
+            onClose={() => setShowFeedbackModal(false)}
+            testType="Reading Mock Test"
+            testId={id}
+          />
         </div>
       </div>
     );
@@ -429,7 +438,9 @@ export default function MockReading({
       <div className="ielts-exam-bar">
         <div className="ielts-bar-left">
           <span className={badgeCls}>IELTS {examType}</span>
-          <span className="ielts-bar-title">{currentTest.title}</span>
+          {mode !== "cbt" && (
+            <span className="ielts-bar-title">{currentTest.title}</span>
+          )}
         </div>
 
         <div className="ielts-bar-center">

@@ -11,6 +11,7 @@ import SectionRenderer   from "../components/listening/SectionRenderer";
 import QuestionPalette   from "../components/listening/renderers/QuestionPalette";
 import ListeningReview   from "../components/listening/ListeningReview";
 import ResultsPanel      from "../components/listening/ResultsPanel";
+import TestFeedbackModal from "../components/TestFeedbackModal";
 
 import { calculateListeningBand } from "../utils/listeningBandCalculator";
 import useQuestionNavigation from "../hooks/useQuestionNavigation";
@@ -189,11 +190,14 @@ export default function MockListening({
     return score;
   };
 
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
   const submitTest = () => {
     localStorage.removeItem(`knarrow_listening-${test.id}`);
     const score = calculateScore();
     const band  = calculateListeningBand(score);
     setSubmitted(true);
+    setShowFeedbackModal(true);
     if (onComplete) onComplete(band);
   };
 
@@ -221,7 +225,17 @@ export default function MockListening({
 
   /* ── Results screen ── */
   if (submitted) {
-    return <ResultsPanel test={test} answers={answers} />;
+    return (
+      <>
+        <ResultsPanel test={test} answers={answers} />
+        <TestFeedbackModal
+          isOpen={showFeedbackModal}
+          onClose={() => setShowFeedbackModal(false)}
+          testType="Listening Mock Test"
+          testId={test.id}
+        />
+      </>
+    );
   }
 
   /* ── Progress % ── */
@@ -236,7 +250,7 @@ export default function MockListening({
 
       {/* Header bar */}
       <ListeningHeader
-        title={test.title}
+        title={mode === "cbt" ? "IELTS Listening" : test.title}
         section={currentSection + 1}
         totalSections={test.sections.length}
       />
