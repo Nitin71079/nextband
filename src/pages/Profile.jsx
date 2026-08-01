@@ -6,11 +6,13 @@ import {
   Crown, BookOpen, Headphones, PenSquare, Mic,
   Target, Flame, TrendingUp, Award, Calendar,
   Mail, Shield, ChevronRight, Sparkles, Star,
-  BarChart3, Clock,
+  BarChart3, Clock, Gift, Copy, Check,
 } from "lucide-react";
 import { app } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { getExamHistory } from "../services/examSession";
+import { getOrCreateReferralCode } from "../services/referralService";
+import toast from "react-hot-toast";
 import "../styles/profile.css";
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
@@ -50,6 +52,8 @@ export default function Profile() {
   const { user, name, premium, premiumPlan, premiumExpires } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [referralCode, setReferralCode] = useState("");
+  const [referralCopied, setReferralCopied] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -57,7 +61,16 @@ export default function Profile() {
     getDoc(doc(db, "users", user.uid)).then((snap) => {
       if (snap.exists()) setProfile(snap.data());
     });
+    getOrCreateReferralCode(user).then(setReferralCode).catch(console.error);
   }, [user]);
+
+  function copyReferralCode() {
+    if (!referralCode) return;
+    navigator.clipboard.writeText(referralCode);
+    setReferralCopied(true);
+    toast.success("Referral code copied!");
+    setTimeout(() => setReferralCopied(false), 2000);
+  }
 
   const history = getExamHistory();
   const testsCompleted = history.length;
@@ -180,6 +193,31 @@ export default function Profile() {
                   </button>
                 </Link>
               )}
+
+              {/* ── Referral Code ───────────────────────────────────── */}
+              <div style={{ marginTop: "16px", background: "linear-gradient(135deg,#f0f9ff,#e0f2fe)", border: "1px solid #bae6fd", borderRadius: "16px", padding: "16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "10px" }}>
+                  <Gift size={15} color="#0284c7" />
+                  <span style={{ fontSize: ".78rem", fontWeight: 700, color: "#0284c7", textTransform: "uppercase", letterSpacing: ".8px" }}>
+                    Your Referral Code
+                  </span>
+                </div>
+                <div style={{ background: "white", border: "1.5px dashed #0284c7", borderRadius: "12px", padding: "10px 14px", fontSize: "1.1rem", fontWeight: 900, color: "#0284c7", letterSpacing: "2px", textAlign: "center", marginBottom: "10px", minHeight: "42px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {referralCode || "Loading…"}
+                </div>
+                <button
+                  onClick={copyReferralCode}
+                  disabled={!referralCode}
+                  style={{ width: "100%", padding: "9px", border: "none", borderRadius: "11px", background: referralCopied ? "#16a34a" : "linear-gradient(135deg,#0284c7,#2563eb)", color: "white", fontWeight: 700, fontSize: "13px", cursor: referralCode ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", transition: "background .25s", boxShadow: "0 4px 12px rgba(2,132,199,.25)" }}
+                >
+                  {referralCopied ? <Check size={14} /> : <Copy size={14} />}
+                  {referralCopied ? "Copied!" : "Copy Code"}
+                </button>
+                <p style={{ fontSize: ".73rem", color: "#0369a1", margin: "8px 0 0", textAlign: "center", fontWeight: 600 }}>
+                  Earn 20% when friends upgrade →{" "}
+                  <Link to="/referrals" style={{ color: "#0284c7", textDecoration: "underline" }}>View earnings</Link>
+                </p>
+              </div>
 
               <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
                 {[
