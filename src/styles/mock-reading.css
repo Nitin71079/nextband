@@ -1084,3 +1084,83 @@
   .ielts-ak-ans    { grid-column: 1 / 3; grid-row: 2; display: none; }
   .ielts-ak-badge  { grid-column: 3; grid-row: 1 / 3; }
 }
+
+/* ==========================================================
+   DARK MODE OVERRIDES — MOCK READING
+========================================================== */
+[data-theme="dark"] .ielts-reading-page {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ielts-passage-panel {
+  background: var(--surface, #151c2c);
+  border-right-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ielts-questions-panel {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ielts-mobile-tabs {
+  background: var(--surface, #151c2c);
+  border-bottom-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .ielts-mobile-tab {
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .ielts-mobile-tab.active {
+  color: var(--primary, #3b82f6);
+}
+
+[data-theme="dark"] .ielts-q-card,
+[data-theme="dark"] .ielts-instructions-card,
+[data-theme="dark"] .ielts-passage-box {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ielts-q-text,
+[data-theme="dark"] .passage-title,
+[data-theme="dark"] .passage-p {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ielts-option-label {
+  background: var(--surface-2, #1e293b);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ielts-option-label:hover {
+  background: var(--border, #26334d);
+}
+
+[data-theme="dark"] .ielts-text-input,
+[data-theme="dark"] .ielts-select-input {
+  background: var(--surface-2, #1e293b);
+  color: var(--text, #f8fafc);
+  border-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .ielts-palette {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .ielts-palette-btn {
+  background: var(--surface-2, #1e293b);
+  border-color: var(--border, #26334d);
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .ielts-modal-card {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}

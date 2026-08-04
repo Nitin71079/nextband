@@ -4,7 +4,7 @@ import {
   Clock, BookOpen, Headphones, PenLine, Mic, ArrowRight, Sparkles, GraduationCap, Users, Crown, Lock,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { isFullMockLocked } from "../services/freePlanLimits";
+import { isFullMockLocked, hasUsedFullMock } from "../services/freePlanLimits";
 
 // ─── Shared section metadata ──────────────────────────────────────────────────
 const SECTIONS = [
@@ -25,7 +25,7 @@ const MOCKS = [
     path: "/mock/academic",
     tagline: "University admission & professional registration",
     description:
-      "Designed for students applying to undergraduate or postgraduate programmes and those seeking professional registration. Tests advanced reading passages, graph/diagram writing tasks, and formal spoken interaction.",
+      "Designed for students applying to undergraduate or postgraduate programmes. Tests advanced reading passages, graph/diagram writing tasks, and formal spoken interaction.",
     accentFrom: "#4f46e5",
     accentTo: "#2563eb",
     glowColor: "rgba(79,70,229,.28)",
@@ -39,7 +39,7 @@ const MOCKS = [
     path: "/mock/general",
     tagline: "Work experience, migration & secondary education",
     description:
-      "Suited for people migrating to English-speaking countries or applying for secondary education and work experience programmes. Features everyday reading texts, letter-writing tasks, and practical conversation topics.",
+      "Suited for people migrating to English-speaking countries or applying for work experience. Features everyday reading texts, letter-writing tasks, and practical conversation topics.",
     accentFrom: "#0891b2",
     accentTo: "#06b6d4",
     glowColor: "rgba(6,182,212,.25)",
@@ -60,6 +60,7 @@ function Orb({ style }) {
 export default function FullMocks() {
   const navigate = useNavigate();
   const { premium } = useAuth();
+  const freeMockUsed = !premium && hasUsedFullMock("any");
 
   function handleStart(mock) {
     if (isFullMockLocked(mock.key, premium)) {
@@ -104,7 +105,7 @@ export default function FullMocks() {
             fontSize: ".78rem", fontWeight: 700, color: "var(--text)", letterSpacing: "1.2px",
           }}>
             <Sparkles size={12} color="#fbbf24" />
-            FULL SIMULATION
+            OFFICIAL CBT SIMULATION
           </div>
 
           <h1 style={{
@@ -122,10 +123,28 @@ export default function FullMocks() {
 
           <p style={{
             color: "var(--text-secondary)", fontSize: "1.05rem",
-            maxWidth: "500px", margin: "0 auto", lineHeight: 1.75,
+            maxWidth: "540px", margin: "0 auto", lineHeight: 1.75,
           }}>
-            Full 2h 45m simulations covering all four sections — exactly as you'll face on exam day.
+            Full 2h 45m CBT simulations covering all four sections — exactly as on exam day.
           </p>
+
+          {!premium && (
+            <div style={{
+              marginTop: 16,
+              display: "inline-block",
+              background: freeMockUsed ? "#fffbeb" : "rgba(37,99,235,.1)",
+              border: freeMockUsed ? "1px solid #fde68a" : "1px solid rgba(37,99,235,.25)",
+              color: freeMockUsed ? "#b45309" : "#2563eb",
+              padding: "8px 18px",
+              borderRadius: 14,
+              fontSize: 13,
+              fontWeight: 800,
+            }}>
+              {freeMockUsed
+                ? "🔒 You have used your 1 free full CBT mock test attempt. Upgrade to Premium for unlimited full mocks!"
+                : "💡 Free Plan Limit: 1 Full CBT Mock Attempt Total (Academic OR General)."}
+            </div>
+          )}
         </motion.div>
 
         {/* ── Two mock cards ── */}
@@ -185,7 +204,7 @@ export default function FullMocks() {
                 }} />
 
                 {/* Badge + icon row */}
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "28px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyBetween: "space-between", marginBottom: "28px" }}>
                   <div style={{
                     display: "inline-flex", alignItems: "center", gap: "7px",
                     padding: "6px 14px", borderRadius: "999px",
@@ -194,7 +213,7 @@ export default function FullMocks() {
                     fontSize: ".75rem", fontWeight: 800, letterSpacing: ".8px",
                     color: locked ? "#f59e0b" : mock.accentFrom,
                   }}>
-                    {locked ? "PREMIUM — Already Used" : mock.badge}
+                    {locked ? "PREMIUM — 1 Free Attempt Used" : mock.badge}
                   </div>
                   <div style={{
                     width: 52, height: 52, borderRadius: "16px", flexShrink: 0,
@@ -219,7 +238,7 @@ export default function FullMocks() {
                   fontSize: ".83rem", fontWeight: 700, letterSpacing: ".3px",
                   color: locked ? "#f59e0b" : mock.accentFrom, margin: "0 0 16px",
                 }}>
-                  {locked ? "You've used your free attempt — upgrade to take unlimited mocks" : mock.tagline}
+                  {locked ? "You have used your 1 free full CBT mock test attempt — upgrade to unlock unlimited mocks" : mock.tagline}
                 </p>
                 <p style={{
                   color: "var(--text-secondary)", fontSize: ".9rem",

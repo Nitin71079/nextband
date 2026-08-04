@@ -133,6 +133,18 @@ service cloud.firestore {
         if isAdmin();
     }
 
+    // TEST FEEDBACK
+    match /testFeedback/{docId} {
+      allow create:
+        if isSignedIn();
+
+      allow read:
+        if isAdmin();
+
+      allow update, delete:
+        if isAdmin();
+    }
+
     // ADMIN ACCESS
     match /{document=**} {
       allow read, write:

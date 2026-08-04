@@ -315,3 +315,54 @@
   .ana-skill-grid{ grid-template-columns: 1fr; }
   .ana-hero-left h1 { font-size: 22px; }
 }
+
+/* ==========================================================
+   DARK MODE OVERRIDES — ANALYTICS
+========================================================== */
+[data-theme="dark"] .ana-page {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ana-card,
+[data-theme="dark"] .ana-kpi-card,
+[data-theme="dark"] .ana-skill-card,
+[data-theme="dark"] .ana-chart-card,
+[data-theme="dark"] .ana-table-card,
+[data-theme="dark"] .ana-empty,
+[data-theme="dark"] .ana-lock {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ana-card-title,
+[data-theme="dark"] .ana-kpi-val,
+[data-theme="dark"] .ana-skill-name,
+[data-theme="dark"] .ana-row-title,
+[data-theme="dark"] .ana-empty h2,
+[data-theme="dark"] .ana-lock h2 {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .ana-kpi-lbl,
+[data-theme="dark"] .ana-skill-sub,
+[data-theme="dark"] .ana-row-date,
+[data-theme="dark"] .ana-loading p,
+[data-theme="dark"] .ana-empty p,
+[data-theme="dark"] .ana-lock p {
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .ana-table-head {
+  background: var(--surface-2, #1e293b);
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .ana-table-row {
+  border-bottom-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .ana-hero p {
+  color: rgba(255, 255, 255, 0.9);
+}

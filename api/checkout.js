@@ -11,14 +11,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { plan } = req.body;
+    const { plan, isTrial } = req.body;
 
     const prices = {
       "Premium Monthly": 29900,
       "Premium 3 Months": 79900,
     };
 
-    const amount = prices[plan];
+    // Trial uses ₹1 (100 paise) as a verification charge
+    // After 2 days the 3-month plan auto-renews at full price
+    const amount = isTrial ? 100 : prices[plan];
 
     if (!amount) {
       return res.status(400).json({
@@ -29,12 +31,17 @@ export default async function handler(req, res) {
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
-      receipt: `plan_${Date.now()}`,
+      receipt: `${isTrial ? "trial" : "plan"}_${Date.now()}`,
+      notes: {
+        plan,
+        isTrial: isTrial ? "true" : "false",
+      },
     });
 
     res.status(200).json({
       order,
       key: process.env.RAZORPAY_KEY_ID,
+      isTrial: isTrial || false,
     });
   } catch (err) {
   console.error("Checkout Error:", err);

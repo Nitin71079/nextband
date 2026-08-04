@@ -231,3 +231,46 @@
   .faq-answer, .faq-answer.open { padding-left: 20px; padding-right: 20px; }
   .faq-category-title { padding: 14px 20px 8px; }
 }
+
+/* ==========================================================
+   DARK MODE OVERRIDES — LEGAL & FAQ
+========================================================== */
+[data-theme="dark"] .legal-page {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .legal-card,
+[data-theme="dark"] .legal-section,
+[data-theme="dark"] .legal-toc,
+[data-theme="dark"] .faq-item {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .legal-section h2,
+[data-theme="dark"] .legal-toc-title,
+[data-theme="dark"] .faq-question-text,
+[data-theme="dark"] .faq-category-title {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .legal-section p,
+[data-theme="dark"] .legal-section li,
+[data-theme="dark"] .faq-answer p {
+  color: var(--text-secondary, #cbd5e1);
+}
+
+[data-theme="dark"] .legal-toc a {
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .legal-toc a:hover,
+[data-theme="dark"] .legal-toc a.active {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .legal-hero p {
+  color: rgba(255, 255, 255, 0.85);
+}

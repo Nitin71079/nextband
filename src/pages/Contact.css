@@ -275,3 +275,34 @@ a.ci-value:hover { color: #2563eb; }
   .contact-row-2 { grid-template-columns: 1fr; }
   .contact-info-card { padding: 20px 18px; }
 }
+
+/* ==========================================================
+   DARK MODE OVERRIDES — CONTACT
+========================================================== */
+[data-theme="dark"] .contact-form-card,
+[data-theme="dark"] .contact-info-card,
+[data-theme="dark"] .contact-info-mini {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .contact-form-title,
+[data-theme="dark"] .contact-label,
+[data-theme="dark"] .contact-info-title,
+[data-theme="dark"] .contact-info-mini h4 {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .contact-input,
+[data-theme="dark"] .contact-textarea,
+[data-theme="dark"] .contact-select {
+  background: var(--surface-2, #1e293b);
+  color: var(--text, #f8fafc);
+  border-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .contact-info-text,
+[data-theme="dark"] .contact-info-mini p {
+  color: var(--text-muted, #94a3b8);
+}

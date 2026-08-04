@@ -11,7 +11,7 @@ const tests = listeningTests.map((test) => {
     // Sections 2–4
     if (section.groups) {
       section.groups.forEach((group) => {
-        // MCQ, Matching, Map, Table, FlowChart, Diagram
+        // MCQ, Matching, Map, Diagram
         if (group.questions) {
           total += group.questions.length;
         }
@@ -20,6 +20,22 @@ const tests = listeningTests.map((test) => {
         if (group.notes) {
           total += group.notes.filter(
             (note) => note.type === "blank"
+          ).length;
+        }
+
+        // Table Completion — cells with an id and no type are answer blanks
+        if (group.rows) {
+          group.rows.forEach((row) => {
+            total += row.filter(
+              (cell) => cell.id !== undefined && cell.type === undefined
+            ).length;
+          });
+        }
+
+        // Flowchart Completion
+        if (group.steps) {
+          total += group.steps.filter(
+            (step) => step.type === "blank"
           ).length;
         }
       });

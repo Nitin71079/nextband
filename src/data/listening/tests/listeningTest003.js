@@ -2,7 +2,7 @@ const listeningTest003 = {
   id: "listening-test-003",
   title: "IELTS Listening Practice Test 003",
   difficulty: "Academic",
-  duration: 30,
+  duration: 40,
   audio: "/audio/listening/test003.mp3",
   transcript: "/assets/listening/test003/transcript.pdf",
 

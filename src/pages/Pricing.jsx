@@ -1,8 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AuroraBackground from "../components/AuroraBackground";
 import PricingCard from "../components/PricingCard";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
+import { validateAndApplyCoupon } from "../services/couponService";
 import "../styles/pricing.css";
 
 /* ── social proof numbers ── */
@@ -28,10 +30,20 @@ const COMPARE = [
   { feature: "Full CBT Mock Exams",    free: "—",         premium: "✓"         },
   { feature: "Study Planner",          free: "Basic",     premium: "AI Powered"},
   { feature: "AI Study Coach",         free: "—",         premium: "✓"         },
+  { feature: "1-Hour AI Bot Live Coaching", free: "₹349/session", premium: "FREE Unlimited" },
+  { feature: "1-on-1 Senior Human Expert (60 Min)", free: "₹1,499", premium: "₹749 (50% OFF)" },
 ];
 
 /* ── FAQ items ── */
 const FAQ = [
+  {
+    q: "Is there a free trial?",
+    a: "Yes! The 3-Month Premium plan comes with a 2-day free trial. We charge just ₹1 to verify your payment method. After 2 days, the full ₹799 is charged and your 3-month plan begins. You can cancel before the trial ends to avoid the charge.",
+  },
+  {
+    q: "Does the 3-Month plan auto-renew?",
+    a: "Yes. The 3-Month Premium plan auto-renews every 90 days at ₹799 for uninterrupted access. You will receive a reminder before each renewal. You can cancel anytime from your account settings.",
+  },
   {
     q: "Is Premium activated immediately?",
     a: "Yes. Once Razorpay verifies your payment, Premium unlocks automatically within seconds.",
@@ -46,7 +58,7 @@ const FAQ = [
   },
   {
     q: "Will my Premium expire automatically?",
-    a: "Yes. Your subscription stays active until the expiry date shown in your account.",
+    a: "Yes. Your subscription stays active until the expiry date shown in your account. The 3-Month plan auto-renews; the Monthly plan requires manual renewal.",
   },
   {
     q: "What if I'm already on a plan?",
@@ -55,9 +67,31 @@ const FAQ = [
 ];
 
 export default function Pricing() {
-  const { user, premium, premiumPlan, premiumExpires } = useAuth();
+  const { user, premium, premiumPlan, premiumExpires, isTrial, autoRenew } = useAuth();
   const navigate = useNavigate();
   const pricingRef = useRef(null);
+
+  const [couponInput, setCouponInput] = useState("FIRST50");
+  const [couponApplied, setCouponApplied] = useState(false);
+
+  async function handleApplyCoupon() {
+    if (!couponInput) {
+      toast.error("Please enter a coupon code.");
+      return;
+    }
+    const result = await validateAndApplyCoupon({
+      couponCode: couponInput,
+      user,
+      originalPrice: 299,
+    });
+    if (result.valid) {
+      setCouponApplied(true);
+      toast.success(result.message);
+    } else {
+      setCouponApplied(false);
+      toast.error(result.message);
+    }
+  }
 
   /* figure out which card is "active" */
   const currentPlan = !user
@@ -137,21 +171,22 @@ export default function Pricing() {
         <div className="pr-active-banner">
           <div className="pr-active-banner-inner">
             <div className="pr-active-banner-left">
-              <span className="pr-active-crown">👑</span>
+              <span className="pr-active-crown">{isTrial ? "🎁" : "👑"}</span>
               <div>
-                <strong>You're on {currentPlan}</strong>
+                <strong>{isTrial ? "2-Day Free Trial Active" : `You're on ${currentPlan}`}</strong>
                 {premiumExpires && (() => {
                   const d = premiumExpires?.toDate
                     ? premiumExpires.toDate()
                     : new Date(premiumExpires);
                   return (
                     <p>
-                      Active until{" "}
+                      {isTrial ? "Trial ends" : "Active until"}{" "}
                       {d.toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "long",
                         year: "numeric",
                       })}
+                      {autoRenew && !isTrial && " · Auto-renews every 3 months"}
                     </p>
                   );
                 })()}
@@ -180,6 +215,65 @@ export default function Pricing() {
           Upgrade anytime and unlock the complete Knarrow experience.
         </p>
 
+        {/* 🎟 FIRST USER COUPON BANNER */}
+        <div
+          style={{
+            maxWidth: "680px",
+            margin: "0 auto 30px auto",
+            background: "linear-gradient(135deg, #0284c7, #2563eb)",
+            color: "#ffffff",
+            borderRadius: "20px",
+            padding: "20px 24px",
+            boxShadow: "0 10px 25px rgba(2, 132, 199, 0.25)",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: "14px", fontWeight: "800", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "4px" }}>
+            🎉 FIRST TIME USER OFFER — 50% OFF!
+          </div>
+          <p style={{ fontSize: "14px", opacity: 0.95, margin: "4px 0 14px 0" }}>
+            Use coupon code <strong style={{ background: "rgba(255,255,255,0.2)", padding: "2px 8px", borderRadius: "6px" }}>FIRST50</strong> during checkout to get 50% OFF your first Premium plan!
+          </p>
+          <div style={{ display: "flex", gap: "8px", maxWidth: "420px", margin: "0 auto" }}>
+            <input
+              type="text"
+              placeholder="Enter coupon code (e.g. FIRST50)"
+              value={couponInput}
+              onChange={(e) => setCouponInput(e.target.value)}
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                borderRadius: "12px",
+                border: "none",
+                fontSize: "14px",
+                color: "#0f172a",
+                fontWeight: "600",
+                outline: "none",
+              }}
+            />
+            <button
+              onClick={handleApplyCoupon}
+              style={{
+                background: "#ffffff",
+                color: "#0284c7",
+                border: "none",
+                borderRadius: "12px",
+                padding: "10px 18px",
+                fontWeight: "800",
+                fontSize: "14px",
+                cursor: "pointer",
+              }}
+            >
+              Apply 50% OFF
+            </button>
+          </div>
+          {couponApplied && (
+            <div style={{ marginTop: "10px", fontSize: "13px", fontWeight: "700", color: "#4ade80" }}>
+              ✓ Coupon FIRST50 Applied! 50% OFF enabled on plans below.
+            </div>
+          )}
+        </div>
+
         <div className="pr-plans-grid">
 
           <PricingCard
@@ -190,14 +284,18 @@ export default function Pricing() {
 
           <PricingCard
             title="Premium Monthly"
-            price="299"
+            price={couponApplied ? "149.50" : "299"}
+            originalPrice="299"
+            couponApplied={couponApplied}
             currentPlan={currentPlan}
             expiresAt={premiumExpires}
           />
 
           <PricingCard
             title="Premium 3 Months"
-            price="799"
+            price={couponApplied ? "399.50" : "799"}
+            originalPrice="799"
+            couponApplied={couponApplied}
             popular
             currentPlan={currentPlan}
             expiresAt={premiumExpires}

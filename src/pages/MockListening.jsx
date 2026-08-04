@@ -256,11 +256,17 @@ export default function MockListening({
   };
 
   const previousSection = () => {
-    if (currentSection > 0) setCurrentSection((p) => p - 1);
+    if (currentSection > 0) {
+      setCurrentSection((p) => p - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const nextSection = () => {
-    if (currentSection < test.sections.length - 1) setCurrentSection((p) => p + 1);
+    if (currentSection < test.sections.length - 1) {
+      setCurrentSection((p) => p + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   /* ── Review screen ── */

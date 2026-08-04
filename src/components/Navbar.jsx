@@ -32,6 +32,7 @@ import {
   CalendarDays,
   Trophy,
   Users,
+  UserCheck,
   Award,
   Settings,
   ChevronDown,
@@ -40,6 +41,11 @@ import {
   Sparkles,
   Gamepad2,
   HelpCircle,
+  BookOpen,
+  Headphones,
+  PenSquare,
+  Mic,
+  FileText,
 } from "lucide-react";
 
 import "../styles/navbar.css";
@@ -54,23 +60,43 @@ const NAV_ITEMS_PUBLIC = [
     path: "/",
   },
   {
+    label: "Experts Corner",
+    path: "/experts-corner",
+    icon: UserCheck,
+  },
+  {
+    label: "Full Mocks",
+    path: "/full-mocks",
+    icon: FileText,
+  },
+  {
+    label: "Reading",
+    path: "/reading",
+    icon: BookOpen,
+  },
+  {
+    label: "Listening",
+    path: "/listening",
+    icon: Headphones,
+  },
+  {
+    label: "Writing",
+    path: "/writing",
+    icon: PenSquare,
+  },
+  {
+    label: "Speaking",
+    path: "/speaking",
+    icon: Mic,
+  },
+  {
     label: "Community",
     path: "/community",
     icon: Users,
   },
   {
-    label: "Leaderboard",
-    path: "/leaderboard",
-    icon: Trophy,
-  },
-  {
     label: "Pricing",
     path: "/pricing",
-  },
-  {
-    label: "Help",
-    path: "/help",
-    icon: HelpCircle,
   },
 ];
 
@@ -85,6 +111,36 @@ const NAV_ITEMS_PRIVATE = [
     icon: LayoutDashboard,
   },
   {
+    label: "Experts Corner",
+    path: "/experts-corner",
+    icon: UserCheck,
+  },
+  {
+    label: "Full Mocks",
+    path: "/full-mocks",
+    icon: FileText,
+  },
+  {
+    label: "Reading",
+    path: "/reading",
+    icon: BookOpen,
+  },
+  {
+    label: "Listening",
+    path: "/listening",
+    icon: Headphones,
+  },
+  {
+    label: "Writing",
+    path: "/writing",
+    icon: PenSquare,
+  },
+  {
+    label: "Speaking",
+    path: "/speaking",
+    icon: Mic,
+  },
+  {
     label: "AI Studio",
     path: "/ai-center",
     icon: BrainCircuit,
@@ -95,16 +151,6 @@ const NAV_ITEMS_PRIVATE = [
     icon: CalendarDays,
   },
   {
-    label: "Community",
-    path: "/community",
-    icon: Users,
-  },
-  {
-    label: "Leaderboard",
-    path: "/leaderboard",
-    icon: Trophy,
-  },
-  {
     label: "Games",
     path: "/games",
     icon: Gamepad2,
@@ -113,11 +159,6 @@ const NAV_ITEMS_PRIVATE = [
     label: "Pricing",
     path: "/pricing",
     icon: Crown,
-  },
-  {
-    label: "Help",
-    path: "/help",
-    icon: HelpCircle,
   },
 ];
 
@@ -188,10 +229,14 @@ export default function Navbar() {
 
   const profileRef = useRef(null);
   const notifRef = useRef(null);
+  const practiceRef = useRef(null);
+  const toolsRef = useRef(null);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [practiceOpen, setPracticeOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   /* ==========================================================
@@ -352,6 +397,24 @@ export default function Navbar() {
   }, []);
 
   /* ==========================================================
+     CLICK OUTSIDE DROPDOWNS
+  ========================================================== */
+
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (practiceRef.current && !practiceRef.current.contains(event.target)) {
+        setPracticeOpen(false);
+      }
+      if (toolsRef.current && !toolsRef.current.contains(event.target)) {
+        setToolsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  /* ==========================================================
      ACTIONS
   ========================================================== */
 
@@ -359,6 +422,8 @@ export default function Navbar() {
     setMobileOpen(false);
     setProfileOpen(false);
     setNotifOpen(false);
+    setPracticeOpen(false);
+    setToolsOpen(false);
   }, []);
 
   const toggleMobile = useCallback(() => {
@@ -425,51 +490,204 @@ export default function Navbar() {
           DESKTOP NAVIGATION
       ========================================================== */}
 
-      <nav
-        className="kn-desktop-nav"
-        aria-label="Primary navigation"
-      >
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isPricingLink = item.path === "/pricing";
+      <nav className="kn-desktop-nav" aria-label="Primary navigation">
+        {/* Dashboard */}
+        {user && (
+          <NavLink to="/dashboard" className={navLinkClass}>
+            {({ isActive }) => (
+              <>
+                <LayoutDashboard size={17} strokeWidth={2} />
+                <span>Dashboard</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="active-pill"
+                    className="kn-active-pill"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
+              </>
+            )}
+          </NavLink>
+        )}
 
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={navLinkClass}
-            >
-              {({ isActive }) => (
-                <>
-                  {Icon && (
-                    <Icon
-                      size={17}
-                      strokeWidth={2}
-                    />
-                  )}
+        {/* Practice Dropdown */}
+        <div ref={practiceRef} className="kn-nav-dropdown">
+          <button
+            type="button"
+            className={`kn-nav-link ${
+              ["/reading", "/listening", "/writing", "/speaking", "/full-mocks"].some((p) =>
+                location.pathname.startsWith(p)
+              )
+                ? "active"
+                : ""
+            }`}
+            onClick={() => {
+              setPracticeOpen((prev) => !prev);
+              setToolsOpen(false);
+            }}
+          >
+            <BookOpen size={17} strokeWidth={2} />
+            <span>Practice</span>
+            <ChevronDown size={14} className={`transition-transform duration-200 ${practiceOpen ? "rotate-180" : ""}`} />
+          </button>
 
-                  <span>{item.label}</span>
+          <AnimatePresence>
+            {practiceOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.96 }}
+                transition={{ duration: 0.18 }}
+                className="kn-dropdown-menu"
+              >
+                <NavLink to="/full-mocks" className="kn-dropdown-item" onClick={() => setPracticeOpen(false)}>
+                  <FileText size={16} className="text-cyan-400" />
+                  <div>
+                    <div className="font-bold">Full Mock Exams</div>
+                    <div className="text-[11px] opacity-70">CBT Exam Simulator</div>
+                  </div>
+                </NavLink>
+                <NavLink to="/reading" className="kn-dropdown-item" onClick={() => setPracticeOpen(false)}>
+                  <BookOpen size={16} className="text-blue-400" />
+                  <div>
+                    <div className="font-bold">Reading Center</div>
+                    <div className="text-[11px] opacity-70">Academic & General</div>
+                  </div>
+                </NavLink>
+                <NavLink to="/listening" className="kn-dropdown-item" onClick={() => setPracticeOpen(false)}>
+                  <Headphones size={16} className="text-purple-400" />
+                  <div>
+                    <div className="font-bold">Listening Center</div>
+                    <div className="text-[11px] opacity-70">Audio & Transcripts</div>
+                  </div>
+                </NavLink>
+                <NavLink to="/writing" className="kn-dropdown-item" onClick={() => setPracticeOpen(false)}>
+                  <PenSquare size={16} className="text-emerald-400" />
+                  <div>
+                    <div className="font-bold">Writing Center</div>
+                    <div className="text-[11px] opacity-70">Task 1 & Task 2 AI</div>
+                  </div>
+                </NavLink>
+                <NavLink to="/speaking" className="kn-dropdown-item" onClick={() => setPracticeOpen(false)}>
+                  <Mic size={16} className="text-amber-400" />
+                  <div>
+                    <div className="font-bold">Speaking Center</div>
+                    <div className="text-[11px] opacity-70">Part 1, 2 & 3 Mocks</div>
+                  </div>
+                </NavLink>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-                  {isPricingLink && !premium && (
-                    <span className="kn-upgrade-pill">Upgrade</span>
-                  )}
-
-                  {isActive && (
-                    <motion.div
-                      layoutId="active-pill"
-                      className="kn-active-pill"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </>
+        {/* Experts Corner */}
+        <NavLink to="/experts-corner" className={navLinkClass}>
+          {({ isActive }) => (
+            <>
+              <span>Experts Corner</span>
+              {isActive && (
+                <motion.div
+                  layoutId="active-pill"
+                  className="kn-active-pill"
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                />
               )}
-            </NavLink>
-          );
-        })}
+            </>
+          )}
+        </NavLink>
+
+        {/* AI Studio */}
+        {user && (
+          <NavLink to="/ai-center" className={navLinkClass}>
+            {({ isActive }) => (
+              <>
+                <BrainCircuit size={17} strokeWidth={2} />
+                <span>AI Studio</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="active-pill"
+                    className="kn-active-pill"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
+              </>
+            )}
+          </NavLink>
+        )}
+
+        {/* Tools & Extras Dropdown */}
+        {user && (
+          <div ref={toolsRef} className="kn-nav-dropdown">
+            <button
+              type="button"
+              className={`kn-nav-link ${
+                ["/planner", "/games", "/community"].some((p) => location.pathname.startsWith(p))
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() => {
+                setToolsOpen((prev) => !prev);
+                setPracticeOpen(false);
+              }}
+            >
+              <Sparkles size={17} strokeWidth={2} />
+              <span>Tools</span>
+              <ChevronDown size={14} className={`transition-transform duration-200 ${toolsOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            <AnimatePresence>
+              {toolsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.96 }}
+                  transition={{ duration: 0.18 }}
+                  className="kn-dropdown-menu"
+                >
+                  <NavLink to="/planner" className="kn-dropdown-item" onClick={() => setToolsOpen(false)}>
+                    <CalendarDays size={16} className="text-cyan-400" />
+                    <div>
+                      <div className="font-bold">Study Planner</div>
+                      <div className="text-[11px] opacity-70">AI Schedule</div>
+                    </div>
+                  </NavLink>
+                  <NavLink to="/games" className="kn-dropdown-item" onClick={() => setToolsOpen(false)}>
+                    <Gamepad2 size={16} className="text-amber-400" />
+                    <div>
+                      <div className="font-bold">Games Zone</div>
+                      <div className="text-[11px] opacity-70">Gamified Vocab & Grammar</div>
+                    </div>
+                  </NavLink>
+                  <NavLink to="/community" className="kn-dropdown-item" onClick={() => setToolsOpen(false)}>
+                    <Users size={16} className="text-emerald-400" />
+                    <div>
+                      <div className="font-bold">Community</div>
+                      <div className="text-[11px] opacity-70">Student Forum</div>
+                    </div>
+                  </NavLink>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* Pricing */}
+        <NavLink to="/pricing" className={navLinkClass}>
+          {({ isActive }) => (
+            <>
+              <Crown size={17} strokeWidth={2} />
+              <span>Pricing</span>
+              {!premium && <span className="kn-upgrade-pill">Upgrade</span>}
+              {isActive && (
+                <motion.div
+                  layoutId="active-pill"
+                  className="kn-active-pill"
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                />
+              )}
+            </>
+          )}
+        </NavLink>
       </nav>
 
       {/* ==========================================================

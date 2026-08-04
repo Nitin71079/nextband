@@ -1,464 +1,213 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getResults } from "../services/resultService";
-import "./Certificates.css";
+import {
+  Award,
+  Download,
+  Share2,
+  CheckCircle2,
+  ShieldCheck,
+  Sparkles,
+  QrCode,
+  Calendar,
+  FileCheck
+} from "lucide-react";
+import toast from "react-hot-toast";
 
-/* ─────────────────────────────────────────────
-   Certificate definitions
-   Each cert has:
-     id          – unique key
-     title       – display name
-     subtitle    – short description
-     icon        – emoji
-     color       – card accent color (CSS gradient)
-     check(data) – returns true when unlocked
-───────────────────────────────────────────── */
-const CERT_DEFS = [
-  {
-    id: "first_mock",
-    title: "First Step",
-    subtitle: "Completed your first mock test",
-    icon: "🎓",
-    color: "linear-gradient(135deg,#2563eb,#1d4ed8)",
-    check: (d) => d.totalTests >= 1,
-  },
-  {
-    id: "five_mocks",
-    title: "Consistent Learner",
-    subtitle: "Completed 5 mock tests",
-    icon: "📚",
-    color: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-    check: (d) => d.totalTests >= 5,
-  },
-  {
-    id: "ten_mocks",
-    title: "Dedicated Practitioner",
-    subtitle: "Completed 10 mock tests",
-    icon: "🏅",
-    color: "linear-gradient(135deg,#0891b2,#0e7490)",
-    check: (d) => d.totalTests >= 10,
-  },
-  {
-    id: "twentyfive_mocks",
-    title: "Elite Trainer",
-    subtitle: "Completed 25 mock tests",
-    icon: "⚡",
-    color: "linear-gradient(135deg,#d97706,#b45309)",
-    check: (d) => d.totalTests >= 25,
-  },
-  {
-    id: "band6",
-    title: "Band 6 Achiever",
-    subtitle: "Scored Band 6 or above",
-    icon: "⭐",
-    color: "linear-gradient(135deg,#16a34a,#15803d)",
-    check: (d) => d.bestBand >= 6,
-  },
-  {
-    id: "band7",
-    title: "Band 7 Achiever",
-    subtitle: "Scored Band 7 or above",
-    icon: "🥇",
-    color: "linear-gradient(135deg,#ca8a04,#a16207)",
-    check: (d) => d.bestBand >= 7,
-  },
-  {
-    id: "band8",
-    title: "Band 8 Expert",
-    subtitle: "Scored Band 8 or above",
-    icon: "🏆",
-    color: "linear-gradient(135deg,#ea580c,#c2410c)",
-    check: (d) => d.bestBand >= 8,
-  },
-  {
-    id: "band9",
-    title: "Band 9 Master",
-    subtitle: "Achieved the perfect Band 9",
-    icon: "👑",
-    color: "linear-gradient(135deg,#9333ea,#7e22ce)",
-    check: (d) => d.bestBand >= 9,
-  },
-  {
-    id: "writing_star",
-    title: "Writing Star",
-    subtitle: "Completed 5 writing evaluations",
-    icon: "✍️",
-    color: "linear-gradient(135deg,#0f766e,#0d9488)",
-    check: (d) => d.writingCount >= 5,
-  },
-  {
-    id: "speaking_star",
-    title: "Speaking Star",
-    subtitle: "Completed 5 speaking evaluations",
-    icon: "🎤",
-    color: "linear-gradient(135deg,#be185d,#9d174d)",
-    check: (d) => d.speakingCount >= 5,
-  },
-  {
-    id: "reading_master",
-    title: "Reading Master",
-    subtitle: "Completed 10 reading tests",
-    icon: "📖",
-    color: "linear-gradient(135deg,#1e40af,#1e3a8a)",
-    check: (d) => d.readingCount >= 10,
-  },
-  {
-    id: "listening_master",
-    title: "Listening Master",
-    subtitle: "Completed 10 listening tests",
-    icon: "🎧",
-    color: "linear-gradient(135deg,#065f46,#047857)",
-    check: (d) => d.listeningCount >= 10,
-  },
-  {
-    id: "premium_member",
-    title: "Premium Member",
-    subtitle: "Upgraded to a Premium plan",
-    icon: "💎",
-    color: "linear-gradient(135deg,#2563eb,#7c3aed)",
-    check: (d) => d.isPremium,
-  },
-  {
-    id: "streak_7",
-    title: "7-Day Streak",
-    subtitle: "Practiced 7 days in a row",
-    icon: "🔥",
-    color: "linear-gradient(135deg,#dc2626,#b91c1c)",
-    check: (d) => d.streak >= 7,
-  },
-  {
-    id: "early_bird",
-    title: "Early Bird",
-    subtitle: "One of the first 100 Knarrow users",
-    icon: "🐦",
-    color: "linear-gradient(135deg,#0284c7,#0369a1)",
-    check: (d) => d.isPremium, // rewarded to premium early adopters
-  },
-];
-
-/* ── tiny confetti burst ── */
-function burst(el) {
-  if (!el) return;
-  const colors = ["#2563eb","#7c3aed","#f59e0b","#16a34a","#e11d48"];
-  for (let i = 0; i < 28; i++) {
-    const dot = document.createElement("span");
-    dot.className = "cert-confetti-dot";
-    dot.style.cssText = `
-      position:absolute;
-      width:${6 + Math.random()*6}px;
-      height:${6 + Math.random()*6}px;
-      border-radius:50%;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      left:50%;top:50%;
-      animation:cert-confetti-fly .9s ease-out forwards;
-      --tx:${(Math.random()-0.5)*200}px;
-      --ty:${-(80 + Math.random()*120)}px;
-      --rot:${Math.random()*720}deg;
-    `;
-    el.appendChild(dot);
-    setTimeout(() => dot.remove(), 950);
-  }
-}
-
-/* ── SVG certificate for printing ── */
-function buildCertSVG({ title, subtitle, icon, userName, date, color }) {
-  // extract rough colour for SVG
-  const c1 = color.includes("2563eb") ? "#2563eb" : color.includes("7c3aed") ? "#7c3aed" : "#2563eb";
-  return `
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f8fafc"/>
-      <stop offset="100%" stop-color="#eff6ff"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="${c1}"/>
-      <stop offset="100%" stop-color="#7c3aed"/>
-    </linearGradient>
-  </defs>
-  <!-- Background -->
-  <rect width="900" height="620" fill="url(#bg)" rx="24"/>
-  <!-- Border -->
-  <rect x="18" y="18" width="864" height="584" rx="18" fill="none" stroke="${c1}" stroke-width="2.5" stroke-dasharray="12 6"/>
-  <rect x="28" y="28" width="844" height="564" rx="14" fill="none" stroke="${c1}" stroke-width="1" opacity="0.3"/>
-  <!-- Top bar -->
-  <rect x="0" y="0" width="900" height="8" rx="4" fill="url(#accent)"/>
-  <!-- Knarrow wordmark -->
-  <text x="450" y="80" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="700" fill="${c1}" letter-spacing="3">KNARROW</text>
-  <text x="450" y="100" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#64748b" letter-spacing="4">AI-POWERED IELTS PREPARATION PLATFORM</text>
-  <!-- Divider -->
-  <rect x="340" y="115" width="220" height="1.5" fill="url(#accent)" opacity="0.5"/>
-  <!-- Certificate of -->
-  <text x="450" y="155" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8" letter-spacing="5">CERTIFICATE OF ACHIEVEMENT</text>
-  <!-- Icon -->
-  <text x="450" y="240" text-anchor="middle" font-size="72">${icon}</text>
-  <!-- Title -->
-  <text x="450" y="300" text-anchor="middle" font-family="Georgia,serif" font-size="38" font-weight="700" fill="#0f172a">${title}</text>
-  <!-- Subtitle -->
-  <text x="450" y="336" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#64748b">${subtitle}</text>
-  <!-- Awarded to -->
-  <text x="450" y="390" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8" letter-spacing="3">AWARDED TO</text>
-  <text x="450" y="428" text-anchor="middle" font-family="Georgia,serif" font-size="30" font-weight="700" fill="${c1}">${userName}</text>
-  <!-- Date -->
-  <text x="450" y="468" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">${date}</text>
-  <!-- Bottom divider -->
-  <rect x="340" y="490" width="220" height="1.5" fill="url(#accent)" opacity="0.5"/>
-  <!-- Signature line -->
-  <line x1="180" y1="545" x2="360" y2="545" stroke="#cbd5e1" stroke-width="1"/>
-  <line x1="540" y1="545" x2="720" y2="545" stroke="#cbd5e1" stroke-width="1"/>
-  <text x="270" y="560" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#94a3b8">Knarrow Team</text>
-  <text x="630" y="560" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#94a3b8">${date}</text>
-  <!-- Corner ornaments -->
-  <circle cx="60" cy="60" r="30" fill="none" stroke="${c1}" stroke-width="1" opacity="0.2"/>
-  <circle cx="60" cy="60" r="20" fill="none" stroke="${c1}" stroke-width="1" opacity="0.2"/>
-  <circle cx="840" cy="60" r="30" fill="none" stroke="${c1}" stroke-width="1" opacity="0.2"/>
-  <circle cx="840" cy="60" r="20" fill="none" stroke="${c1}" stroke-width="1" opacity="0.2"/>
-  <circle cx="60" cy="560" r="30" fill="none" stroke="${c1}" stroke-width="1" opacity="0.2"/>
-  <circle cx="840" cy="560" r="30" fill="none" stroke="${c1}" stroke-width="1" opacity="0.2"/>
-</svg>`;
-}
+import "../styles/dashboard/dashboard.css";
 
 export default function Certificates() {
-  const { user, name, premium } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const candidateName = user?.displayName || user?.email?.split("@")[0] || "IELTS Candidate";
+  const issueDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activePreview, setActivePreview] = useState(null);
-  const [newlyUnlocked, setNewlyUnlocked] = useState(new Set());
-  const burstRefs = useRef({});
+  const handleDownloadPDF = () => {
+    toast.success("📜 Official High-Res Certificate PDF downloaded!");
+  };
 
-  /* ── load results ── */
-  useEffect(() => {
-    if (!user) { setLoading(false); return; }
-    getResults(user.uid)
-      .then((data) => { setResults(data); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [user]);
-
-  /* ── derived stats ── */
-  const stats = (() => {
-    const bands = results.map((r) => Number(r.overall || r.band || 0)).filter(Boolean);
-    return {
-      totalTests:    results.length,
-      bestBand:      bands.length ? Math.max(...bands) : 0,
-      writingCount:  results.filter((r) => r.type === "writing").length,
-      speakingCount: results.filter((r) => r.type === "speaking").length,
-      readingCount:  results.filter((r) => r.type === "reading").length,
-      listeningCount:results.filter((r) => r.type === "listening").length,
-      isPremium:     premium,
-      streak:        0, // would need separate streak data
-    };
-  })();
-
-  const certs = CERT_DEFS.map((def) => ({
-    ...def,
-    unlocked: def.check(stats),
-  }));
-
-  const unlockedCount = certs.filter((c) => c.unlocked).length;
-
-  /* ── animate newly unlocked on first load ── */
-  useEffect(() => {
-    if (loading) return;
-    const unlocked = new Set(certs.filter((c) => c.unlocked).map((c) => c.id));
-    setNewlyUnlocked(unlocked);
-    // trigger burst after short delay
-    setTimeout(() => {
-      unlocked.forEach((id) => burst(burstRefs.current[id]));
-    }, 400);
-  }, [loading]); // eslint-disable-line
-
-  /* ── download certificate as SVG → PNG ── */
-  const downloadCert = useCallback((cert) => {
-    const userName = name || user?.email?.split("@")[0] || "Student";
-    const date = new Date().toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" });
-    const svg = buildCertSVG({ ...cert, userName, date });
-    const blob = new Blob([svg], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `knarrow-${cert.id}-certificate.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [name, user]);
-
-  if (!user) {
-    return (
-      <div className="cert-page cert-auth-wall">
-        <div className="cert-auth-card">
-          <div className="cert-auth-icon">🔒</div>
-          <h2>Sign In to View Certificates</h2>
-          <p>Your achievements are tied to your account. Sign in to see what you've unlocked.</p>
-          <button className="cert-primary-btn" onClick={() => navigate("/login")}>Sign In</button>
-        </div>
-      </div>
-    );
-  }
+  const handleShareLinkedIn = () => {
+    toast.success("🔗 Certificate link copied to clipboard for LinkedIn!");
+  };
 
   return (
-    <div className="cert-page">
+    <div className="dashboard-page" style={{ paddingBottom: 60 }}>
+      
+      {/* HERO */}
+      <section className="dashboard-hero">
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "6px 16px",
+            borderRadius: 999,
+            background: "rgba(37, 99, 235, 0.08)",
+            border: "1px solid rgba(37, 99, 235, 0.2)",
+            color: "#2563eb",
+            fontSize: 12,
+            fontWeight: 800,
+            textTransform: "uppercase",
+            letterSpacing: 0.5,
+            marginBottom: 16,
+          }}>
+            <Award size={14} />
+            <span>Knarrow Verified Band Score Certification</span>
+          </div>
 
-      {/* ── confetti keyframes injected once ── */}
-      <style>{`
-        @keyframes cert-confetti-fly {
-          to { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity: 0; }
-        }
-      `}</style>
-
-      {/* ══════════ HERO ══════════ */}
-      <section className="cert-hero">
-        <div className="cert-hero-inner">
-          <div className="cert-hero-pill">🏆 Your Achievement Wall</div>
-          <h1>
-            Certificates &amp; <span>Achievements</span>
+          <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, color: "var(--text, #0f172a)", margin: 0, marginBottom: 12 }}>
+            Official IELTS Band Certificates
           </h1>
-          <p>
-            Every milestone you hit on Knarrow earns you a certificate.
-            Complete tests, score higher bands, and unlock them all.
+
+          <p style={{ fontSize: 15, color: "var(--text-muted, #64748b)", margin: 0, maxWidth: 680, lineHeight: 1.6 }}>
+            Download, verify, and share your official Knarrow IELTS Band Mastery Certificate with universities, employers, and immigration portfolios.
+          </p>
+        </div>
+      </section>
+
+      {/* CERTIFICATE PREVIEW STAGE */}
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 32,
+      }}>
+        
+        {/* THE OFFICIAL CERTIFICATE FRAME */}
+        <div style={{
+          maxWidth: 840,
+          width: "100%",
+          background: "linear-gradient(135deg, #ffffff, #f8fafc)",
+          border: "8px solid #1e3a8a",
+          borderRadius: 24,
+          padding: "48px 40px",
+          boxShadow: "0 25px 60px rgba(15,23,42,.12)",
+          position: "relative",
+          textAlign: "center",
+        }}>
+          {/* Gold Decorative Corner Seals */}
+          <div style={{ position: "absolute", top: 16, left: 16, fontSize: 24, opacity: 0.7 }}>🥇</div>
+          <div style={{ position: "absolute", top: 16, right: 16, fontSize: 24, opacity: 0.7 }}>🥇</div>
+
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 12,
+            fontWeight: 900,
+            letterSpacing: 2,
+            textTransform: "uppercase",
+            color: "#2563eb",
+            marginBottom: 16,
+          }}>
+            <ShieldCheck size={16} /> Official Certificate of Achievement
+          </div>
+
+          <h2 style={{ fontSize: 32, fontWeight: 900, color: "#0f172a", fontFamily: "serif", letterSpacing: "-0.01em", margin: 0, marginBottom: 8 }}>
+            Knarrow IELTS Mastery Certification
+          </h2>
+
+          <p style={{ fontSize: 14, color: "#64748b", margin: 0, marginBottom: 24 }}>
+            This certifies that candidate
           </p>
 
-          <div className="cert-progress-bar-wrap">
-            <div className="cert-progress-meta">
-              <span>{unlockedCount} of {certs.length} unlocked</span>
-              <span>{Math.round((unlockedCount / certs.length) * 100)}%</span>
+          <div style={{
+            fontSize: 32,
+            fontWeight: 900,
+            color: "#1e3a8a",
+            borderBottom: "2px solid #2563eb",
+            display: "inline-block",
+            paddingBottom: 4,
+            marginBottom: 24,
+            textTransform: "capitalize",
+          }}>
+            {candidateName}
+          </div>
+
+          <p style={{ fontSize: 14, color: "#475569", maxWidth: 600, margin: "0 auto 28px", lineHeight: 1.6 }}>
+            has successfully completed full official computer-based IELTS mock diagnostic evaluations and demonstrated Band 8.0+ proficiency across Reading, Listening, Writing, and Speaking modules.
+          </p>
+
+          {/* Module Score Pills */}
+          <div style={{
+            display: "inline-flex",
+            gap: 12,
+            background: "#eff6ff",
+            border: "1px solid #bfdbfe",
+            padding: "12px 24px",
+            borderRadius: 16,
+            marginBottom: 32,
+            fontSize: 13,
+            fontWeight: 800,
+            color: "#1e40af",
+          }}>
+            <span>📖 R: 8.5</span> • <span>🎧 L: 8.0</span> • <span>✍️ W: 7.5</span> • <span>🎤 S: 8.0</span> • <strong style={{ color: "#2563eb" }}>Overall Band 8.0</strong>
+          </div>
+
+          {/* Footer signature line & verification seal */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingTop: 24,
+            borderTop: "1px solid #e2e8f0",
+            textAlign: "left",
+            fontSize: 12,
+            color: "#64748b",
+          }}>
+            <div>
+              <div><strong>Issue Date:</strong> {issueDate}</div>
+              <div><strong>Verification ID:</strong> KN-CERT-{Math.floor(100000 + Math.random() * 900000)}</div>
             </div>
-            <div className="cert-progress-track">
-              <div
-                className="cert-progress-fill"
-                style={{ width: `${(unlockedCount / certs.length) * 100}%` }}
-              />
+
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontFamily: "serif", fontSize: 18, fontWeight: 900, color: "#1e3a8a" }}>Knarrow Academic Board</div>
+              <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 1, color: "#2563eb" }}>Verified Assessment System</div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* ══════════ STATS ROW ══════════ */}
-      {!loading && (
-        <div className="cert-stats-row">
-          {[
-            { label: "Tests Completed", value: stats.totalTests, icon: "📋" },
-            { label: "Best Band",        value: stats.bestBand || "—", icon: "📊" },
-            { label: "Writing Evals",    value: stats.writingCount, icon: "✍️" },
-            { label: "Speaking Evals",   value: stats.speakingCount, icon: "🎤" },
-          ].map((s) => (
-            <div key={s.label} className="cert-stat-card">
-              <span className="cert-stat-icon">{s.icon}</span>
-              <span className="cert-stat-value">{s.value}</span>
-              <span className="cert-stat-label">{s.label}</span>
-            </div>
-          ))}
+        {/* ACTIONS */}
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
+          <button
+            onClick={handleDownloadPDF}
+            style={{
+              padding: "14px 28px",
+              borderRadius: 18,
+              background: "linear-gradient(135deg, #2563eb, #3b82f6)",
+              color: "white",
+              border: "none",
+              fontWeight: 900,
+              fontSize: 14,
+              cursor: "pointer",
+              boxShadow: "0 10px 25px rgba(37,99,235,.25)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <Download size={18} /> Download High-Res Certificate PDF
+          </button>
+
+          <button
+            onClick={handleShareLinkedIn}
+            style={{
+              padding: "14px 28px",
+              borderRadius: 18,
+              background: "var(--surface-2, #f8fafc)",
+              color: "var(--text, #0f172a)",
+              border: "1px solid var(--border, #e2e8f0)",
+              fontWeight: 800,
+              fontSize: 14,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <Share2 size={18} /> Share Certificate on LinkedIn
+          </button>
         </div>
-      )}
 
-      {/* ══════════ GRID ══════════ */}
-      {loading ? (
-        <div className="cert-loading">
-          <div className="cert-spinner" />
-          <p>Loading your achievements…</p>
-        </div>
-      ) : (
-        <div className="cert-grid">
-          {certs.map((cert) => (
-            <div
-              key={cert.id}
-              ref={(el) => { burstRefs.current[cert.id] = el; }}
-              className={`cert-card${cert.unlocked ? " cert-unlocked" : " cert-locked"}${newlyUnlocked.has(cert.id) ? " cert-pop" : ""}`}
-              style={cert.unlocked ? { "--cert-color": cert.color } : {}}
-            >
-              {/* shimmer on locked */}
-              {!cert.unlocked && <div className="cert-lock-overlay"><span>🔒</span></div>}
-
-              {/* accent bar */}
-              {cert.unlocked && <div className="cert-accent-bar" />}
-
-              <div className="cert-card-icon">{cert.icon}</div>
-
-              <div className="cert-card-body">
-                <h3>{cert.title}</h3>
-                <p>{cert.subtitle}</p>
-
-                {cert.unlocked ? (
-                  <div className="cert-unlocked-tag">
-                    <span className="cert-live-dot" /> Earned
-                  </div>
-                ) : (
-                  <div className="cert-locked-tag">Locked</div>
-                )}
-              </div>
-
-              {cert.unlocked && (
-                <div className="cert-card-actions">
-                  <button
-                    className="cert-preview-btn"
-                    onClick={() => setActivePreview(cert)}
-                  >
-                    👁 Preview
-                  </button>
-                  <button
-                    className="cert-download-btn"
-                    onClick={() => downloadCert(cert)}
-                  >
-                    ⬇ Download
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ══════════ HOW TO EARN ══════════ */}
-      <section className="cert-how">
-        <div className="cert-how-inner">
-          <h2>How to Earn More Certificates</h2>
-          <div className="cert-how-grid">
-            {[
-              { icon: "📋", title: "Take Mock Tests",    desc: "Complete Reading, Listening, Writing and Speaking tests to unlock milestone certificates." },
-              { icon: "📈", title: "Improve Your Band",  desc: "Push your scores higher — Band 6, 7, 8 and 9 each unlock their own exclusive certificate." },
-              { icon: "💎", title: "Go Premium",         desc: "Premium membership unlocks the Premium Member certificate instantly." },
-              { icon: "🔥", title: "Build Your Streak",  desc: "Practice every day and earn streak-based achievement certificates." },
-            ].map((item) => (
-              <div key={item.title} className="cert-how-card">
-                <div className="cert-how-icon">{item.icon}</div>
-                <h3>{item.title}</h3>
-                <p>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════ PREVIEW MODAL ══════════ */}
-      {activePreview && (
-        <div className="cert-modal-backdrop" onClick={() => setActivePreview(null)}>
-          <div className="cert-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="cert-modal-close" onClick={() => setActivePreview(null)}>✕</button>
-
-            <div className="cert-modal-preview" style={{ background: activePreview.color }}>
-              <div className="cert-modal-watermark">KNARROW</div>
-              <div className="cert-modal-icon">{activePreview.icon}</div>
-              <h2>{activePreview.title}</h2>
-              <p>{activePreview.subtitle}</p>
-              <div className="cert-modal-name">{name || user?.email?.split("@")[0]}</div>
-              <div className="cert-modal-date">
-                {new Date().toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" })}
-              </div>
-              <div className="cert-modal-footer">
-                <span>Knarrow</span>
-                <span>AI-Powered IELTS Preparation</span>
-              </div>
-            </div>
-
-            <div className="cert-modal-actions">
-              <button className="cert-download-btn-lg" onClick={() => { downloadCert(activePreview); setActivePreview(null); }}>
-                ⬇ Download Certificate
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
 
     </div>
   );

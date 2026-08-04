@@ -44,6 +44,8 @@
 --surface:#ffffff;
 --surface-2:#f8fafc;
 --surface-3:#f1f5f9;
+--card:#ffffff;
+--card-hover:#f8fafc;
 
 --glass:
 rgba(255,255,255,.72);
@@ -51,12 +53,12 @@ rgba(255,255,255,.72);
 --glass-border:
 rgba(255,255,255,.55);
 
-
 /*==============================================================
   TEXT
 ==============================================================*/
 
 --text:#0f172a;
+--text-secondary:#475569;
 --text-light:#334155;
 --text-muted:#64748b;
 --text-faint:#94a3b8;
@@ -98,6 +100,39 @@ rgba(148,163,184,.18);
 --danger:#ef4444;
 --danger-bg:#fef2f2;
 
+}
+
+/*==============================================================
+  DARK THEME VARIABLES OVERRIDE
+==============================================================*/
+
+[data-theme="dark"] {
+  --bg: #0b0f19;
+  --bg-soft: #0f172a;
+  --surface: #151c2c;
+  --surface-2: #1e293b;
+  --surface-3: #334155;
+  --card: #151c2c;
+  --card-hover: #1e293b;
+
+  --text: #f8fafc;
+  --text-light: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+
+  --border: #26334d;
+  --border-light: #1e293b;
+  --divider: rgba(255, 255, 255, 0.12);
+
+  --success-bg: rgba(34, 197, 94, 0.15);
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --danger-bg: rgba(239, 68, 68, 0.15);
+
+  --glass: rgba(21, 28, 44, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.12);
+}
+
+:root {
 
 /*==============================================================
   SHADOWS
@@ -243,79 +278,9 @@ clamp(2rem,3vw,2.8rem);
 --blur-md:18px;
 --blur-lg:28px;
 
-
-/*==============================================================
-  GRADIENTS
-==============================================================*/
-
---gradient-primary:
-linear-gradient(
-135deg,
-#2563eb,
-#3b82f6,
-#60a5fa
-);
-
---gradient-success:
-linear-gradient(
-135deg,
-#16a34a,
-#22c55e
-);
-
---gradient-purple:
-linear-gradient(
-135deg,
-#7c3aed,
-#8b5cf6
-);
-
---gradient-orange:
-linear-gradient(
-135deg,
-#ea580c,
-#f97316
-);
-
---gradient-dark:
-linear-gradient(
-135deg,
-#0f172a,
-#1e293b
-);
-
---gradient-card:
-linear-gradient(
-180deg,
-#ffffff,
-#fbfcfe
-);
-
-
-/*==============================================================
-  Z INDEX
-==============================================================*/
-
---z-base:1;
 --z-overlay:10;
 --z-dropdown:100;
 --z-modal:1000;
-
-
-/*==============================================================
-  BREAKPOINTS
-
-Reference only.
-Used in media queries.
-
-1440
-1280
-1024
-768
-640
-480
-
-==============================================================*/
 
 }
 

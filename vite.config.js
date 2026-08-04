@@ -8,6 +8,9 @@ export default defineConfig({
 
     VitePWA({
       registerType: "autoUpdate",
+      workbox: {
+        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15MB limit
+      },
 
       manifest: {
         name: "Knarrow",

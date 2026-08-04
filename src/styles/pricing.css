@@ -770,3 +770,56 @@
   .pr-footer { flex-direction: column; text-align: center; }
   .pr-footer a { margin: 0 10px; }
 }
+
+/* =====================================================
+   DARK MODE OVERRIDES — PRICING
+===================================================== */
+[data-theme="dark"] {
+  --pr-text:      #f8fafc;
+  --pr-muted:     #94a3b8;
+  --pr-bg:        #0b0f19;
+  --pr-card:      #151c2c;
+  --pr-border:    #26334d;
+  --pr-shadow:    0 25px 70px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] .pr-hero-pill {
+  background: var(--pr-card);
+  border-color: var(--pr-border);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .pricing-card {
+  background: var(--pr-card);
+  border-color: var(--pr-border);
+  color: var(--pr-text);
+}
+
+[data-theme="dark"] .pricing-card.popular {
+  border-color: #3b82f6;
+  box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25);
+}
+
+[data-theme="dark"] .feature-item {
+  color: var(--pr-text);
+}
+
+[data-theme="dark"] .feature-item.dim {
+  color: var(--pr-muted);
+}
+
+[data-theme="dark"] .pr-faq-card {
+  background: var(--pr-card);
+  border-color: var(--pr-border);
+}
+
+[data-theme="dark"] .pr-btn-secondary {
+  background: var(--pr-card);
+  border-color: var(--pr-border);
+  color: var(--pr-text);
+}
+
+[data-theme="dark"] .pr-active-banner {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.3);
+}

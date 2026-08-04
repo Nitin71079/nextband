@@ -3,6 +3,7 @@ import {
   updateProfile,
   updatePassword,
   updateEmail,
+  sendPasswordResetEmail,
   deleteUser,
   signOut,
   EmailAuthProvider,
@@ -121,6 +122,16 @@ export default function Settings() {
       }
     } finally {
       setSavingPw(false);
+    }
+  }
+
+  async function sendResetEmail() {
+    if (!user?.email) return;
+    try {
+      await sendPasswordResetEmail(auth, user.email);
+      toast.success(`Password reset email sent to ${user.email}`);
+    } catch (err) {
+      toast.error(err.message || "Failed to send reset email.");
     }
   }
 
@@ -313,6 +324,21 @@ export default function Settings() {
                 <h2>Security</h2>
                 <p>Change your password and email address</p>
               </div>
+            </div>
+
+            {/* QUICK PASSWORD RESET LINK */}
+            <div style={{ background: "#f0f9ff", padding: "16px 20px", borderRadius: "14px", border: "1px solid #bae6fd", marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <strong style={{ color: "#0369a1", fontSize: "15px" }}>Forgot or Want to Reset Password?</strong>
+                <p style={{ color: "#0284c7", fontSize: "13px", margin: "2px 0 0 0" }}>We can send a secure password reset email to <strong>{user?.email}</strong>.</p>
+              </div>
+              <button
+                type="button"
+                onClick={sendResetEmail}
+                style={{ background: "#0284c7", color: "#ffffff", border: "none", borderRadius: "10px", padding: "8px 16px", fontWeight: "700", fontSize: "13px", cursor: "pointer" }}
+              >
+                Send Reset Email 📧
+              </button>
             </div>
 
             {/* change password */}

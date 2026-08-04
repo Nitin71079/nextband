@@ -15,8 +15,7 @@ export default function PremiumGate({
   // DEVELOPMENT ONLY
   // MUST BE FALSE BEFORE DEPLOY
   // ============================
-  const DEV_BYPASS =
-    import.meta.env.DEV;
+  const DEV_BYPASS = false;
 
   if (DEV_BYPASS) {
     return children;

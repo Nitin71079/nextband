@@ -21,7 +21,14 @@ import {
   evaluateWritingGPT,
 } from "../services/evaluateWritingGPT";
 
+import toast from "react-hot-toast";
 import WritingReport from "../components/WritingReport";
+import {
+  validateWritingSubmission,
+  TASK1_MIN_WORDS,
+  TASK2_MIN_WORDS,
+  countWords,
+} from "../utils/writingBandCalculator";
 
 export default function MockWriting({
   onComplete,
@@ -224,81 +231,51 @@ export default function MockWriting({
   -------------------------- */
 
   async function handleEvaluation() {
-
     if (!canUseAI()) {
-
-      alert(
-        "Free AI evaluation limit reached."
-      );
-
+      toast.error("Free AI evaluation limit reached.");
       return;
-
     }
 
-    if (task2Words < 50) {
+    // STRICT VALIDATION: Task 1 >= 80 words, Task 2 >= 200 words
+    const validation = validateWritingSubmission(task1, task2);
 
-      alert(
-        "Essay is too short."
-      );
-
+    if (!validation.canSubmit) {
+      toast.error(validation.reason);
+      if (!validation.task1Valid) {
+        setActiveTask(1);
+      } else if (!validation.task2Valid) {
+        setActiveTask(2);
+      }
       return;
-
     }
 
     setLoading(true);
 
     try {
-
-      const essay = `
-
-Task 1
-
-${task1}
-
--------------------------
-
-Task 2
-
-${task2}
-
-`;
-
-      const result =
-        await evaluateWritingGPT(
-          essay
-        );
+      const result = await evaluateWritingGPT({
+        task1Text: task1,
+        task2Text: task2,
+        task1Type: test?.task1?.type || "Chart/Diagram",
+        task1Question: test?.task1?.question || "",
+        task2Question: test?.task2?.question || "",
+      });
 
       trackAIUsage();
 
       saveEvaluation({
-
         type: "writing",
-
-        overallBand:
-          result.overallBand,
-
+        overallBand: result.overallBand,
         report: result,
-
       });
 
       setReport(result);
-
+      toast.success("AI Writing Evaluation Complete!");
     } catch (error) {
-
-      console.error(
-        error
-      );
-
-      alert(
-        "Evaluation failed."
-      );
-
+      console.error("Evaluation error:", error);
+      toast.error("Evaluation failed. Please try again.");
     } finally {
-
       setLoading(false);
-
     }
-
   }
 
   /* -------------------------
@@ -512,9 +489,9 @@ Recommended Time • 20 Minutes
 
 </div>
 
-<div className="task-badge">
+<div className="task-badge" style={{ background: task1Words >= 80 ? "#dcfce7" : "#fee2e2", color: task1Words >= 80 ? "#166534" : "#991b1b" }}>
 
-150+ Words
+{task1Words >= 80 ? "✓ Min 80 Words Met" : "80+ Words (Required)"}
 
 </div>
 
@@ -560,9 +537,9 @@ Summarise the information shown.
 
 </div>
 
-<div className="word-chip">
+<div className="word-chip" style={{ background: task1Words >= 80 ? "#dcfce7" : "#fee2e2", color: task1Words >= 80 ? "#166534" : "#991b1b" }}>
 
-{task1Words} Words
+{task1Words} Words {task1Words < 80 ? "(< 80)" : ""}
 
 </div>
 
@@ -582,7 +559,7 @@ e.target.value
 
 }
 
-placeholder="Write your Task 1 response here..."
+placeholder="Write your Task 1 response here... (Minimum 80 words required to submit)"
 
 className="writing-editor"
 
@@ -594,11 +571,11 @@ className="writing-editor"
 
 <strong>
 
-Minimum
+Minimum Required
 
 </strong>
 
-150 Words
+80 Words
 
 </div>
 
@@ -618,11 +595,13 @@ Recommended
 
 <strong>
 
-Current
+Current Status
 
 </strong>
 
-{task1Words}
+<span style={{ color: task1Words >= 80 ? "#16a34a" : "#dc2626", fontWeight: "bold" }}>
+{task1Words >= 80 ? `✓ Ready (${task1Words})` : `❌ Short (${task1Words}/80)`}
+</span>
 
 </div>
 
@@ -674,9 +653,9 @@ Recommended Time • 40 Minutes
 
 </div>
 
-<div className="task-badge">
+<div className="task-badge" style={{ background: task2Words >= 200 ? "#dcfce7" : "#fee2e2", color: task2Words >= 200 ? "#166534" : "#991b1b" }}>
 
-250+ Words
+{task2Words >= 200 ? "✓ Min 200 Words Met" : "200+ Words (Required)"}
 
 </div>
 
@@ -712,9 +691,9 @@ Present your opinion with relevant examples.
 
 </div>
 
-<div className="word-chip">
+<div className="word-chip" style={{ background: task2Words >= 200 ? "#dcfce7" : "#fee2e2", color: task2Words >= 200 ? "#166534" : "#991b1b" }}>
 
-{task2Words} Words
+{task2Words} Words {task2Words < 200 ? "(< 200)" : ""}
 
 </div>
 
@@ -734,7 +713,7 @@ e.target.value
 
 }
 
-placeholder="Write your Task 2 essay here..."
+placeholder="Write your Task 2 essay here... (Minimum 200 words required to submit)"
 
 className="writing-editor"
 
@@ -746,11 +725,11 @@ className="writing-editor"
 
 <strong>
 
-Minimum
+Minimum Required
 
 </strong>
 
-250 Words
+200 Words
 
 </div>
 
@@ -770,11 +749,13 @@ Recommended
 
 <strong>
 
-Current
+Current Status
 
 </strong>
 
-{task2Words}
+<span style={{ color: task2Words >= 200 ? "#16a34a" : "#dc2626", fontWeight: "bold" }}>
+{task2Words >= 200 ? `✓ Ready (${task2Words})` : `❌ Short (${task2Words}/200)`}
+</span>
 
 </div>
 

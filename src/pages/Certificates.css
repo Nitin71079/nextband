@@ -419,3 +419,34 @@
   .cert-grid    { grid-template-columns: 1fr; }
   .cert-stats-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* ═══════════════════════════════════════
+   DARK MODE OVERRIDES — CERTIFICATES
+═══════════════════════════════════════ */
+[data-theme="dark"] .cert-page {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .cert-auth-card,
+[data-theme="dark"] .cert-card,
+[data-theme="dark"] .cert-stat-card,
+[data-theme="dark"] .cert-step,
+[data-theme="dark"] .cert-modal {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .cert-card-title,
+[data-theme="dark"] .cert-modal-header h3,
+[data-theme="dark"] .cert-auth-card h2,
+[data-theme="dark"] .cert-stat-num {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .cert-card-sub,
+[data-theme="dark"] .cert-auth-card p,
+[data-theme="dark"] .cert-step p {
+  color: var(--text-muted, #94a3b8);
+}

@@ -15,7 +15,7 @@
     radial-gradient(circle at bottom right,
       rgba(59,130,246,.18),
       transparent 35%),
-    var(--background);
+    var(--bg);
 }
 
 /* ===========================================================

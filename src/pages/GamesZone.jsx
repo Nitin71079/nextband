@@ -5,6 +5,51 @@ import { useAuth } from "../context/AuthContext";
 
 const games = [
   {
+    id: "reading-race",
+    icon: "📖",
+    title: "Reading Race",
+    subtitle: "1v1 Multiplayer",
+    description:
+      "Both players get the same IELTS passage and 5 comprehension questions. Read fast, answer accurately — speed bonus for answering first. 3-minute clock.",
+    badge: "FREE",
+    badgeColor: "#22c55e",
+    available: true,
+    isFree: true,
+    path: "/games/reading-race",
+    tags: ["Multiplayer", "Reading", "Comprehension"],
+    color: "#22c55e",
+  },
+  {
+    id: "vocab-battle",
+    icon: "⚔️",
+    title: "Vocabulary Battle",
+    subtitle: "1v1 Multiplayer",
+    description:
+      "Challenge another student to a real-time IELTS vocabulary duel. 10 questions, 15 seconds each — fastest correct answer wins the round.",
+    badge: "FREE",
+    badgeColor: "#22c55e",
+    available: true,
+    isFree: true,
+    path: "/games/vocab-battle",
+    tags: ["Multiplayer", "Vocabulary", "Real-time"],
+    color: "#2563eb",
+  },
+  {
+    id: "essay-duel",
+    icon: "✍️",
+    title: "Essay Duel",
+    subtitle: "1v1 Writing Battle",
+    description:
+      "Two players, one IELTS Task 2 topic, 30 minutes on the clock. AI scores both essays on Task Achievement, Coherence, Lexical Resource and Grammar. Highest band wins.",
+    badge: "FREE",
+    badgeColor: "#f59e0b",
+    available: true,
+    isFree: true,
+    path: "/games/essay-duel",
+    tags: ["1v1", "Writing", "AI Scoring", "Task 2"],
+    color: "#f59e0b",
+  },
+  {
     id: "speaking-showdown",
     icon: "🎙️",
     title: "Speaking Showdown",
@@ -12,8 +57,9 @@ const games = [
     description:
       "Answer IELTS speaking questions in real-time team battles. AI scores fluency, pronunciation, vocabulary and grammar. Live leaderboard after every round.",
     badge: "LIVE",
-    badgeColor: "#22c55e",
+    badgeColor: "#8b5cf6",
     available: true,
+    isFree: false,
     path: "/games/speaking-showdown",
     tags: ["Multiplayer", "Speaking", "AI Scoring", "Teams"],
     color: "#8b5cf6",
@@ -28,51 +74,10 @@ const games = [
     badge: "LIVE",
     badgeColor: "#06b6d4",
     available: true,
+    isFree: false,
     path: "/games/audio-sniper",
     tags: ["Multiplayer", "Listening", "Speed", "Real-time"],
     color: "#06b6d4",
-  },
-  {
-    id: "essay-duel",
-    icon: "✍️",
-    title: "Essay Duel",
-    subtitle: "1v1 Writing Battle",
-    description:
-      "Two players, one IELTS Task 2 topic, 30 minutes on the clock. AI scores both essays on Task Achievement, Coherence, Lexical Resource and Grammar. Highest band wins.",
-    badge: "LIVE",
-    badgeColor: "#f59e0b",
-    available: true,
-    path: "/games/essay-duel",
-    tags: ["1v1", "Writing", "AI Scoring", "Task 2"],
-    color: "#f59e0b",
-  },
-  {
-    id: "vocab-battle",
-    icon: "⚔️",
-    title: "Vocabulary Battle",
-    subtitle: "1v1 Multiplayer",
-    description:
-      "Challenge another student to a real-time IELTS vocabulary duel. 10 questions, 15 seconds each — fastest correct answer wins the round.",
-    badge: "LIVE",
-    badgeColor: "#22c55e",
-    available: true,
-    path: "/games/vocab-battle",
-    tags: ["Multiplayer", "Vocabulary", "Real-time"],
-    color: "#2563eb",
-  },
-  {
-    id: "reading-race",
-    icon: "📖",
-    title: "Reading Race",
-    subtitle: "1v1 Multiplayer",
-    description:
-      "Both players get the same IELTS passage and 5 comprehension questions. Read fast, answer accurately — speed bonus for answering first. 3-minute clock.",
-    badge: "LIVE",
-    badgeColor: "#22c55e",
-    available: true,
-    path: "/games/reading-race",
-    tags: ["Multiplayer", "Reading", "Comprehension"],
-    color: "#22c55e",
   },
   {
     id: "word-chain",
@@ -84,6 +89,7 @@ const games = [
     badge: "NEW",
     badgeColor: "#8b5cf6",
     available: true,
+    isFree: false,
     path: "/games/word-chain",
     tags: ["Solo", "Vocabulary", "Concepts"],
     color: "#8b5cf6",
@@ -98,6 +104,7 @@ const games = [
     badge: "NEW",
     badgeColor: "#f59e0b",
     available: true,
+    isFree: false,
     path: "/games/sentence-fixer",
     tags: ["Solo", "Grammar", "Writing"],
     color: "#f59e0b",
@@ -112,6 +119,7 @@ const games = [
     badge: "NEW",
     badgeColor: "#22c55e",
     available: true,
+    isFree: false,
     path: "/games/band-blitz",
     tags: ["Solo", "Writing", "Band Score"],
     color: "#22c55e",
@@ -126,6 +134,7 @@ const games = [
     badge: "NEW",
     badgeColor: "#a78bfa",
     available: true,
+    isFree: false,
     path: "/games/synonym-sprint",
     tags: ["Solo", "Vocabulary", "Paraphrasing"],
     color: "#7c3aed",
@@ -140,6 +149,7 @@ const games = [
     badge: "LIVE",
     badgeColor: "#f43f5e",
     available: true,
+    isFree: false,
     path: "/games/grammar-gladiator",
     tags: ["Multiplayer", "Grammar", "Real-time"],
     color: "#f43f5e",
@@ -283,7 +293,7 @@ export default function GamesZone() {
           }}
         >
           {games.map((game, i) => {
-            const isLocked = !premium && i >= FREE_GAMES_LIMIT;
+            const isLocked = !premium && !game.isFree;
             const isAvailable = game.available && !isLocked;
 
             return (

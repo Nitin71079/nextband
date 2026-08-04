@@ -52,12 +52,13 @@ const FEATURES = {
   ],
 };
 
-export default function PricingCard({ title, price, popular, currentPlan, expiresAt }) {
+export default function PricingCard({ title, price, originalPrice, couponApplied, popular, currentPlan, expiresAt }) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const isCurrentPlan = currentPlan === title;
   const isFree = title === "Free";
+  const is3Month = title === "Premium 3 Months";
   const features = FEATURES[title] || [];
 
   const periodLabel = title === "Premium Monthly"
@@ -66,7 +67,7 @@ export default function PricingCard({ title, price, popular, currentPlan, expire
     ? "/3 months"
     : "";
 
-  async function handleCheckout() {
+  async function handleCheckout(isTrial = false) {
     if (isFree) {
       toast.success("You're on the Free plan — explore Knarrow!");
       return;
@@ -78,7 +79,7 @@ export default function PricingCard({ title, price, popular, currentPlan, expire
     }
     try {
       setLoading(true);
-      await startCheckout(title);
+      await startCheckout(title, isTrial);
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Unable to start checkout.");
@@ -121,8 +122,11 @@ export default function PricingCard({ title, price, popular, currentPlan, expire
       <div className="card-header">
         <h2>{title}</h2>
 
-        {title === "Premium 3 Months" && !isCurrentPlan && (
+        {title === "Premium 3 Months" && !isCurrentPlan && !couponApplied && (
           <span className="save-badge">🎉 Save ₹98</span>
+        )}
+        {couponApplied && !isFree && (
+          <span className="save-badge" style={{ background: "#22c55e" }}>🎟 50% OFF</span>
         )}
       </div>
 
@@ -130,6 +134,11 @@ export default function PricingCard({ title, price, popular, currentPlan, expire
       <div className="price-section">
         {!isFree && <span className="currency">₹</span>}
         <span className="price">{isFree ? "Free" : price}</span>
+        {couponApplied && originalPrice && !isFree && (
+          <span style={{ textDecoration: "line-through", color: "#94a3b8", fontSize: "18px", marginLeft: "8px" }}>
+            ₹{originalPrice}
+          </span>
+        )}
         {periodLabel && <span className="period">{periodLabel}</span>}
       </div>
 
@@ -137,6 +146,26 @@ export default function PricingCard({ title, price, popular, currentPlan, expire
       {expiryLabel && (
         <div className="expiry">
           <span>🗓</span> {expiryLabel}
+        </div>
+      )}
+
+      {/* 2-day free trial badge for 3-month plan */}
+      {is3Month && !isCurrentPlan && (
+        <div style={{
+          background: "linear-gradient(135deg, #10b981, #059669)",
+          color: "#fff",
+          borderRadius: "12px",
+          padding: "10px 14px",
+          marginBottom: "16px",
+          textAlign: "center",
+          fontSize: "13px",
+          fontWeight: "700",
+          boxShadow: "0 4px 14px rgba(16,185,129,0.30)",
+        }}>
+          🎁 Try FREE for 2 days — only ₹1 authorization
+          <div style={{ fontSize: "11px", fontWeight: 600, opacity: 0.9, marginTop: 3 }}>
+            Auto-renews to 3-Month plan after trial
+          </div>
         </div>
       )}
 
@@ -150,10 +179,25 @@ export default function PricingCard({ title, price, popular, currentPlan, expire
         ))}
       </ul>
 
-      {/* CTA */}
+      {/* CTA — trial button for 3-month plan */}
+      {is3Month && !isCurrentPlan && (
+        <button
+          className="pricing-btn primary"
+          onClick={() => handleCheckout(true)}
+          disabled={loading}
+          style={{
+            marginBottom: "8px",
+            background: "linear-gradient(135deg, #10b981, #059669)",
+            boxShadow: "0 4px 14px rgba(16,185,129,0.35)",
+          }}
+        >
+          {loading ? "Opening Razorpay…" : "🎁 Start 2-Day Free Trial"}
+        </button>
+      )}
+
       <button
         className={`pricing-btn ${isFree ? "secondary" : "primary"}${isCurrentPlan ? " active-btn" : ""}`}
-        onClick={handleCheckout}
+        onClick={() => handleCheckout(false)}
         disabled={loading || isCurrentPlan}
       >
         {btnLabel}
@@ -161,7 +205,9 @@ export default function PricingCard({ title, price, popular, currentPlan, expire
 
       {!isFree && !isCurrentPlan && (
         <p className="secure-text">
-          🔒 Secured by Razorpay
+          {is3Month
+            ? "🔒 Trial charges ₹1 · Auto-renews after 2 days · Cancel anytime"
+            : "🔒 Secured by Razorpay"}
         </p>
       )}
     </div>

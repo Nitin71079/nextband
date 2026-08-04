@@ -1117,3 +1117,46 @@ linear-gradient(
 #16a34a);
 
 }
+
+/* ===========================================
+   DARK MODE OVERRIDES — TEST CENTER
+=========================================== */
+[data-theme="dark"] .test-center {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .test-card,
+[data-theme="dark"] .stat-card {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .test-card h3,
+[data-theme="dark"] .stat-number,
+[data-theme="dark"] .stat-card h3,
+[data-theme="dark"] .section-header h2 {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .test-card p,
+[data-theme="dark"] .stat-card p,
+[data-theme="dark"] .section-header p {
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .hero-card p {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="dark"] .filter-btn {
+  background: var(--surface-2, #1e293b);
+  color: var(--text-muted, #94a3b8);
+  border-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .filter-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+}

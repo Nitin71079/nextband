@@ -26,6 +26,7 @@ import {
 } from "../context/ExamContext";
 
 import SpeakingReport from "../components/SpeakingReport";
+import InteractiveSpeakingEngine from "../components/InteractiveSpeakingEngine";
 
 import AudioRecorder from "../components/AudioRecorder";
 import AudioPlayback from "../components/AudioPlayback";
@@ -73,60 +74,41 @@ export default function MockSpeaking({
     }
   }, [test.id, premium, forcedTestId]); // eslint-disable-line
 
+  const [testMode, setTestMode] = useState("interactive"); // "interactive" | "practice"
+
   const [
-
     currentPart,
-
     setCurrentPart,
-
   ] = useState(1);
 
   const [
-
     response,
-
     setResponse,
-
   ] = useState("");
 
   const [
-
     report,
-
     setReport,
-
   ] = useState(null);
 
   const [
-
     audioBlob,
-
     setAudioBlob,
-
   ] = useState(null);
 
   const [
-
     audioUrl,
-
     setAudioUrl,
-
   ] = useState("");
 
   const [
-
     transcript,
-
     setTranscript,
-
   ] = useState("");
 
   const [
-
     evaluating,
-
     setEvaluating,
-
   ] = useState(false);
 
   /* -------------------------
@@ -134,15 +116,8 @@ export default function MockSpeaking({
   ------------------------- */
 
   function handleRecording(blob) {
-
     setAudioBlob(blob);
-
-    setAudioUrl(
-
-      URL.createObjectURL(blob)
-
-    );
-
+    setAudioUrl(URL.createObjectURL(blob));
   }
 
   /* -------------------------
@@ -150,17 +125,11 @@ export default function MockSpeaking({
   ------------------------- */
 
   function resetSpeaking() {
-
     setResponse("");
-
     setTranscript("");
-
     setAudioBlob(null);
-
     setAudioUrl("");
-
     setReport(null);
-
   }
 
   /* -------------------------
@@ -168,23 +137,14 @@ export default function MockSpeaking({
   ------------------------- */
 
   function saveDraft() {
-
     localStorage.setItem(
-
       "speakingDraft",
-
       JSON.stringify({
-
         response,
-
         transcript,
-
       })
-
     );
-
     alert("Draft Saved!");
-
   }
 
   /* -------------------------
@@ -192,152 +152,68 @@ export default function MockSpeaking({
   ------------------------- */
 
   useEffect(() => {
-
-    const draft =
-
-      localStorage.getItem(
-
-        "speakingDraft"
-
-      );
-
+    const draft = localStorage.getItem("speakingDraft");
     if (!draft) return;
 
     try {
-
-      const data =
-
-        JSON.parse(draft);
-
-      setResponse(
-
-        data.response || ""
-
-      );
-
-      setTranscript(
-
-        data.transcript || ""
-
-      );
-
+      const data = JSON.parse(draft);
+      setResponse(data.response || "");
+      setTranscript(data.transcript || "");
     } catch {}
-
   }, []);
 
   /* -------------------------
         AI EVALUATION
   ------------------------- */
 
-  async function handleEvaluation() {
-
+  async function handleEvaluation(overrideText) {
     if (!canUseAI()) {
-
-      alert(
-
-        "Free AI evaluation limit reached."
-
-      );
-
+      alert("Free AI evaluation limit reached.");
       return;
-
     }
 
-    const words =
+    const textToEvaluate = overrideText || response;
+    const words = textToEvaluate.trim().split(/\s+/).filter(Boolean).length;
 
-      response
-
-        .trim()
-
-        .split(/\s+/)
-
-        .filter(Boolean)
-
-        .length;
-
-    if (words < 15) {
-
-      alert(
-
-        "Speaking response is too short."
-
-      );
-
+    if (words < 10) {
+      alert("Speaking response is too short for AI evaluation.");
       return;
-
     }
 
     setEvaluating(true);
 
     try {
+      const result = await evaluateSpeakingGPT(textToEvaluate);
 
-      const result =
-
-        await evaluateSpeakingGPT(
-
-          response
-
-        );
-
-      if (!result)
-
-        throw new Error(
-
-          "No evaluation."
-
-        );
+      if (!result) throw new Error("No evaluation.");
 
       trackAIUsage();
 
       saveEvaluation({
-
         type: "speaking",
-
-        overallBand:
-
-          result.overallBand || 6,
-
+        overallBand: result.overallBand || 6,
         report: result,
-
-        createdAt:
-
-          new Date().toISOString(),
-
+        createdAt: new Date().toISOString(),
       });
 
       setReport(result);
 
-      if (
-
-        result.overallBand
-
-      ) {
-
-        setSpeakingBand(
-
-          result.overallBand
-
-        );
-
+      if (result.overallBand) {
+        setSpeakingBand(result.overallBand);
       }
-
     } catch (error) {
-
-      console.error(error);
-
-      alert(
-
-        "Evaluation failed."
-
-      );
-
+      console.error("Speaking evaluation error:", error);
+      alert("Evaluation failed. Please try again.");
     } finally {
-
       setEvaluating(false);
-
     }
-
   }
+
+  // Triggered when interactive engine completes
+  const handleInteractiveFinish = (compiledTranscript) => {
+    setResponse(compiledTranscript);
+    handleEvaluation(compiledTranscript);
+  };
 
   /* -------------------------
         RETURN
@@ -466,6 +342,50 @@ flexWrap:"wrap",
 </div>
 
 </div>
+
+{/* ===========================================
+                MODE SWITCHER TABS
+=========================================== */}
+
+<div className="writing-tabs" style={{ marginBottom: "25px" }}>
+
+<button
+className={testMode === "interactive" ? "writing-tab active" : "writing-tab"}
+onClick={() => setTestMode("interactive")}
+style={{ fontWeight: "800" }}
+>
+
+🤖 Interactive AI Examiner Mode (Voice & Timed)
+
+</button>
+
+<button
+className={testMode === "practice" ? "writing-tab active" : "writing-tab"}
+onClick={() => setTestMode("practice")}
+style={{ fontWeight: "800" }}
+>
+
+📝 Self-Paced Practice Mode
+
+</button>
+
+</div>
+
+{/* ===========================================
+        INTERACTIVE AI EXAMINER ENGINE
+=========================================== */}
+
+{testMode === "interactive" && (
+  <div style={{ marginBottom: "30px" }}>
+    <InteractiveSpeakingEngine
+      test={test}
+      onFinishTest={handleInteractiveFinish}
+    />
+  </div>
+)}
+
+{testMode === "practice" && (
+  <>
 
 {/* ===========================================
               PROGRESS BAR
@@ -1120,6 +1040,10 @@ evaluating
 </div>
 
 </div>
+
+</>
+)}
+
 {/* ===========================================
                 AI REPORT
 =========================================== */}

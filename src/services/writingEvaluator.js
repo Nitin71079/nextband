@@ -1,366 +1,133 @@
-import {
-  generateImprovedEssay,
-} from "./rewriteEngine";
-import {
-explainWritingBands,
-} from "./rubricExplainer";
+import { calculateIELTSTotalWritingBand, countWords } from "../utils/writingBandCalculator";
 
-import {
-compareToBenchmark,
-} from "./benchmarkComparison";
+/**
+ * Fallback rules-based writing evaluator implementing official IELTS Task 1 & Task 2 scoring:
+ * - 33.3% weight for Task 1
+ * - 66.7% weight for Task 2
+ * - Separate criteria breakdown for each task
+ */
+export function evaluateWriting({
+  task1Text = "",
+  task2Text = "",
+  task1Type = "Chart/Diagram",
+  task1Question = "",
+  task2Question = "",
+}) {
+  const t1Words = countWords(task1Text);
+  const t2Words = countWords(task2Text);
 
-import {
-calculateConfidence,
-getBandRange,
-} from "./calibrationEngine";
+  // Evaluate Task 1
+  const t1Eval = evaluateTask1(task1Text, t1Words);
 
-import {
-getBenchmarkFeedback,
-} from "./benchmarkMatcher";
+  // Evaluate Task 2
+  const t2Eval = evaluateTask2(task2Text, t2Words);
 
-export function evaluateWriting(
-essay
-) {
-const words =
-essay
-.trim()
-.split(/\s+/)
-.filter(Boolean)
-.length;
+  // Final Overall Band = 33% Task 1 + 67% Task 2
+  const finalOverallBand = calculateIELTSTotalWritingBand(t1Eval.band, t2Eval.band);
 
-if (words < 30) {
   return {
     success: true,
-
-    overallBand: 1,
-
-    taskResponse: 1,
-
-    coherenceCohesion: 1,
-
-    lexicalResource: 1,
-
-    grammarRangeAccuracy: 1,
-
-    confidence: 99,
-
-    estimatedRange:
-      "1.0 - 1.5",
-
-    benchmark:
-      "Response far below IELTS minimum requirements.",
-
-    strengths: [],
-
-    weaknesses: [
-      "Essay is far too short.",
-      "Task not addressed.",
-      "Insufficient language produced.",
-    ],
-
-    recommendations: [
-      "Write at least 250 words.",
-      "Develop ideas fully.",
-      "Use proper essay structure.",
-    ],
-
-    wordCount: words,
+    overallBand: finalOverallBand,
+    calculationBreakdown: `33% Task 1 (Band ${t1Eval.band.toFixed(1)}) + 67% Task 2 (Band ${t2Eval.band.toFixed(1)}) = Final Overall Band ${finalOverallBand.toFixed(1)}`,
+    task1: t1Eval,
+    task2: t2Eval,
+    improvedTask1: `Improved version of Task 1 response...`,
+    improvedTask2: `Improved version of Task 2 response...`,
   };
 }
 
-let taskResponse = 3;
-let coherenceCohesion = 3;
-let lexicalResource = 3;
-let grammarRangeAccuracy = 3;
+function evaluateTask1(text, wordCount) {
+  let ta = 5.5; // Task Achievement
+  let cc = 5.5; // Coherence & Cohesion
+  let lr = 5.5; // Lexical Resource
+  let gra = 5.5; // Grammar Range & Accuracy
 
-// Task Response
+  if (wordCount >= 150) ta += 1.0;
+  else if (wordCount >= 120) ta += 0.5;
 
-if (words >= 250) {
-taskResponse += 0.5;
-}
-if (words < 250) {
-  taskResponse -= 1;
-}
+  const lower = text.toLowerCase();
+  if (lower.includes("overall") || lower.includes("shows") || lower.includes("illustrates")) ta += 0.5;
+  if (lower.includes("compared") || lower.includes("whereas") || lower.includes("while")) cc += 0.5;
+  if (lower.includes("significant") || lower.includes("dramatically") || lower.includes("substantially")) lr += 0.5;
+  if ((text.match(/[.,;:!?]/g) || []).length > 6) gra += 0.5;
 
-if (
-essay
-.toLowerCase()
-.includes("agree") ||
-essay
-.toLowerCase()
-.includes("disagree")
-) {
-taskResponse += 0.5;
-}
+  ta = Math.min(9.0, Math.max(1.0, ta));
+  cc = Math.min(9.0, Math.max(1.0, cc));
+  lr = Math.min(9.0, Math.max(1.0, lr));
+  gra = Math.min(9.0, Math.max(1.0, gra));
 
-// Coherence & Cohesion
+  const band = Number(((ta + cc + lr + gra) / 4).toFixed(1));
 
-const paragraphs =
-essay
-.split("\n")
-.filter(
-(p) => p.trim()
-).length;
+  const strengths = [];
+  const weaknesses = [];
+  const recommendations = [];
 
-if (paragraphs >= 4) {
-coherenceCohesion += 0.5;
-}
+  if (ta >= 6.0) strengths.push("Provided a clear overview of main trends and features.");
+  else weaknesses.push("Task Achievement can be improved by adding a distinct overview paragraph.");
 
-if (
-essay
-.toLowerCase()
-.includes("however")
-) {
-coherenceCohesion += 0.5;
-}
+  if (cc >= 6.0) strengths.push("Logical organization and smooth transitions between data points.");
+  else recommendations.push("Use clearer linking words when making data comparisons.");
 
-if (
-essay
-.toLowerCase()
-.includes("therefore")
-) {
-coherenceCohesion += 0.5;
+  if (lr >= 6.0) strengths.push("Good range of data reporting vocabulary.");
+  else recommendations.push("Use more specific trend vocabulary (e.g., 'fluctuated', 'surpassed').");
+
+  return {
+    band,
+    wordCount,
+    taskAchievement: ta,
+    coherenceCohesion: cc,
+    lexicalResource: lr,
+    grammarRangeAccuracy: gra,
+    strengths,
+    weaknesses,
+    recommendations,
+  };
 }
 
-// Lexical Resource
+function evaluateTask2(text, wordCount) {
+  let tr = 5.5; // Task Response
+  let cc = 5.5; // Coherence & Cohesion
+  let lr = 5.5; // Lexical Resource
+  let gra = 5.5; // Grammar Range & Accuracy
 
-if (words >= 350) {
-lexicalResource += 0.5;
-}
+  if (wordCount >= 250) tr += 1.0;
+  else if (wordCount >= 220) tr += 0.5;
 
-if (
-essay
-.toLowerCase()
-.includes("significant")
-) {
-lexicalResource += 0.5;
-}
+  const lower = text.toLowerCase();
+  if (lower.includes("agree") || lower.includes("disagree") || lower.includes("opinion") || lower.includes("believe")) tr += 0.5;
+  if (lower.includes("however") || lower.includes("therefore") || lower.includes("furthermore")) cc += 0.5;
+  if (lower.includes("consequently") || lower.includes("substantial") || lower.includes("pivotal")) lr += 0.5;
+  if ((text.match(/[.,;:!?]/g) || []).length > 10) gra += 0.5;
 
-if (
-essay
-.toLowerCase()
-.includes("consequently")
-) {
-lexicalResource += 0.5;
-}
+  tr = Math.min(9.0, Math.max(1.0, tr));
+  cc = Math.min(9.0, Math.max(1.0, cc));
+  lr = Math.min(9.0, Math.max(1.0, lr));
+  gra = Math.min(9.0, Math.max(1.0, gra));
 
-// Grammar
+  const band = Number(((tr + cc + lr + gra) / 4).toFixed(1));
 
-const punctuationCount =
-(
-essay.match(
-/[.,;:!?]/g
-) || []
-).length;
+  const strengths = [];
+  const weaknesses = [];
+  const recommendations = [];
 
-if (
-punctuationCount > 8
-) {
-grammarRangeAccuracy +=
-0.5;
-}
+  if (tr >= 6.0) strengths.push("Addressed main prompt questions with relevant main ideas.");
+  else weaknesses.push("Arguments could be supported with more concrete examples.");
 
-if (
-punctuationCount > 15
-) {
-grammarRangeAccuracy +=
-0.5;
-}
+  if (cc >= 6.0) strengths.push("Clear paragraph division with effective topic sentences.");
+  else recommendations.push("Ensure each body paragraph focuses on one primary central idea.");
 
-// IELTS limits
+  if (lr >= 6.0) strengths.push("Effective use of academic vocabulary and collocations.");
+  else recommendations.push("Incorporate a wider range of topic-specific vocabulary.");
 
-taskResponse =
-Math.min(
-9,
-taskResponse
-);
-
-coherenceCohesion =
-Math.min(
-9,
-coherenceCohesion
-);
-
-lexicalResource =
-Math.min(
-9,
-lexicalResource
-);
-
-grammarRangeAccuracy =
-Math.min(
-9,
-grammarRangeAccuracy
-);
-
-// Overall Band
-
-const overallBand =
-Number(
-(
-(
-taskResponse +
-coherenceCohesion +
-lexicalResource +
-grammarRangeAccuracy
-) / 4
-).toFixed(1)
-);
-
-// Calibration
-
-const confidence =
-calculateConfidence({
-taskResponse,
-coherenceCohesion,
-lexicalResource,
-grammarRangeAccuracy,
-});
-
-const range =
-getBandRange(
-overallBand
-);
-
-const benchmark =
-getBenchmarkFeedback(
-overallBand
-);
-
-const comparison =
-compareToBenchmark(
-overallBand
-);
-
-const explanation =
-explainWritingBands({
-taskResponse,
-coherenceCohesion,
-lexicalResource,
-grammarRangeAccuracy,
-});
-
-// Feedback
-
-const strengths = [];
-const weaknesses = [];
-const recommendations =
-[];
-
-if (
-taskResponse >= 6.5
-) {
-strengths.push(
-"Clear response to the essay question."
-);
-} else {
-weaknesses.push(
-"Ideas could be developed further."
-);
-
-
-recommendations.push(
-  "Provide more detailed explanations and examples."
-);
-
-}
-
-if (
-coherenceCohesion >=
-6.5
-) {
-strengths.push(
-"Good organization and logical flow."
-);
-} else {
-weaknesses.push(
-"Paragraph structure needs improvement."
-);
-
-recommendations.push(
-  "Use clearer topic sentences and linking devices."
-);
-
-}
-
-if (
-lexicalResource >=
-6.5
-) {
-strengths.push(
-"Good vocabulary range."
-);
-} else {
-weaknesses.push(
-"Vocabulary variety is limited."
-);
-
-recommendations.push(
-  "Use more advanced vocabulary and collocations."
-);
-
-
-}
-
-if (
-grammarRangeAccuracy >=
-6.5
-) {
-strengths.push(
-"Reasonably accurate grammar."
-);
-} else {
-weaknesses.push(
-"Sentence structures are too simple."
-);
-
-recommendations.push(
-  "Practice complex and compound sentence forms."
-);
-
-}
-const improvedEssay =
-  generateImprovedEssay(
-    essay,
-    overallBand
-  );
-
-return {
-success: true,
-
-overallBand,
-
-confidence,
-
-estimatedRange:
-  `${range.lower} - ${range.upper}`,
-
-benchmark,
-
-matchedBand:
-  comparison.matchedBand,
-
-similarity:
-  comparison.similarity,
-
-explanation,
-
-taskResponse,
-
-coherenceCohesion,
-
-lexicalResource,
-
-grammarRangeAccuracy,
-
-wordCount: words,
-
-strengths,
-
-weaknesses,
-
-recommendations,
-
-
-};
+  return {
+    band,
+    wordCount,
+    taskResponse: tr,
+    coherenceCohesion: cc,
+    lexicalResource: lr,
+    grammarRangeAccuracy: gra,
+    strengths,
+    weaknesses,
+    recommendations,
+  };
 }

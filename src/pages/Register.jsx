@@ -20,6 +20,7 @@ import {
 } from "../firebase";
 
 import toast from "react-hot-toast";
+import { applyReferralCode, getOrCreateReferralCode } from "../services/referralService";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -27,10 +28,13 @@ export default function Register() {
   const [email, setEmail] =
     useState("");
 
-    const [name, setName] =
+  const [name, setName] =
   useState("");
 
   const [password, setPassword] =
+    useState("");
+
+  const [referralCode, setReferralCode] =
     useState("");
 
   const [loading, setLoading] =
@@ -56,21 +60,30 @@ export default function Register() {
           userCredential.user.uid
         ),
       {
-  name,
-
-  email,
-
-  premium: false,
-
-  admin: false,
-
-  averageBand: 0,
-
-  testsTaken: 0,
-
-  createdAt: Date.now()
-}
+        name,
+        email,
+        premium: false,
+        admin: false,
+        averageBand: 0,
+        testsTaken: 0,
+        createdAt: Date.now()
+      }
       );
+
+      // Auto-generate own referral code
+      await getOrCreateReferralCode(userCredential.user);
+
+      // Apply entered referral code if provided
+      if (referralCode.trim()) {
+        try {
+          await applyReferralCode(userCredential.user.uid, referralCode.trim());
+          toast.success("Referral code applied!");
+        } catch (refErr) {
+          console.warn("Referral code error:", refErr.message);
+        }
+      }
+
+      sessionStorage.setItem("justLoggedIn", "true");
 
       toast.success(
         "Account created!"
@@ -221,6 +234,26 @@ export default function Register() {
                   )
                 }
                 required
+              />
+            </div>
+
+            <div
+              style={{
+                marginTop: "20px"
+              }}
+            >
+              <label>Referral Code (Optional)</label>
+
+              <input
+                type="text"
+                className="input"
+                placeholder="e.g. REF-ABC123"
+                value={referralCode}
+                onChange={(e) =>
+                  setReferralCode(
+                    e.target.value
+                  )
+                }
               />
             </div>
 

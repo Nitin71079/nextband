@@ -629,3 +629,47 @@
     height: 44px;
   }
 }
+
+/* ============================================================
+   DARK MODE OVERRIDES — HELP CENTER
+============================================================ */
+[data-theme="dark"] .hc-page {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .hc-cat-card,
+[data-theme="dark"] .hc-article-card,
+[data-theme="dark"] .hc-contact-card,
+[data-theme="dark"] .hc-popular-tag {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .hc-popular-tag {
+  color: var(--text-secondary, #cbd5e1);
+}
+
+[data-theme="dark"] .hc-popular-tag:hover {
+  background: var(--primary, #3b82f6);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .hc-search-input {
+  background: var(--surface, #151c2c);
+  color: var(--text, #f8fafc);
+  border-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .hc-article-title,
+[data-theme="dark"] .hc-cat-name,
+[data-theme="dark"] .hc-contact-title {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .hc-article-sub,
+[data-theme="dark"] .hc-cat-count,
+[data-theme="dark"] .hc-contact-sub {
+  color: var(--text-muted, #94a3b8);
+}

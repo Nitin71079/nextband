@@ -5,7 +5,7 @@ const listeningTest001 = {
 
   difficulty: "Academic",
 
-  duration: 30,
+  duration: 40,
 
   audio: "/audio/listening/test001.mp3",
 

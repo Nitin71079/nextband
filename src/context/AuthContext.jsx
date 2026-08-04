@@ -48,12 +48,20 @@ export function AuthProvider({
   const [name, setName] =
     useState("");
 
+  const [isTrial, setIsTrial] =
+    useState(false);
+
+  const [autoRenew, setAutoRenew] =
+    useState(false);
+
   function resetUserData() {
     setPremium(false);
     setPremiumPlan("");
     setPremiumExpires(null);
     setAdmin(false);
     setName("");
+    setIsTrial(false);
+    setAutoRenew(false);
   }
 
   useEffect(() => {
@@ -106,13 +114,23 @@ export function AuthProvider({
                   data.admin || false
                 );
 
+                setIsTrial(
+                  data.isTrial || false
+                );
+
+                setAutoRenew(
+                  data.autoRenew || false
+                );
+
                 setPremiumPlan(
                   data.premiumPlan ||
+                    data.plan ||
                     ""
                 );
 
                 setPremiumExpires(
                   data.premiumExpires ||
+                    data.expiresAt ||
                     null
                 );
 
@@ -195,6 +213,8 @@ export function AuthProvider({
         premiumExpires,
         admin,
         name,
+        isTrial,
+        autoRenew,
       }}
     >
       {children}

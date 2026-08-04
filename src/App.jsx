@@ -23,6 +23,8 @@ import {lazy, Suspense} from "react";
 import MockReading from "./pages/MockReading";
 import Navbar from "./components/Navbar";
 import MobileNav from "./components/MobileNav";
+import ReferralPopup from "./components/ReferralPopup";
+import WelcomeGreeting from "./components/WelcomeGreeting";
 import Footer from "./components/home/Footer";
 import Loader from "./components/Loader";
 import ScrollToTop from "./components/ScrollToTop";
@@ -43,6 +45,7 @@ import Terms from "./pages/Terms";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+const ExpertsCorner = lazy(() => import("./pages/ExpertsCorner"));
 const ExpertProfile =
   lazy(() =>
     import(
@@ -95,6 +98,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <WelcomeGreeting />
       <Navbar />
 
       <Suspense fallback={<Loader />}>
@@ -186,6 +190,22 @@ element={<ExamHistory/>}
   path="/payment-cancelled"
   element={
     <PaymentCancelled />
+  }
+/>
+<Route
+  path="/experts-corner"
+  element={
+    <PrivateRoute>
+      <ExpertsCorner />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/experts"
+  element={
+    <PrivateRoute>
+      <ExpertsCorner />
+    </PrivateRoute>
   }
 />
 <Route
@@ -458,7 +478,9 @@ element={<ExamHistory/>}
   path="/games/speaking-showdown"
   element={
     <PrivateRoute>
-      <SpeakingShowdown />
+      <PremiumGate>
+        <SpeakingShowdown />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -467,7 +489,9 @@ element={<ExamHistory/>}
   path="/games/audio-sniper"
   element={
     <PrivateRoute>
-      <AudioSniper />
+      <PremiumGate>
+        <AudioSniper />
+      </PremiumGate>
     </PrivateRoute>
   }
 />
@@ -485,9 +509,7 @@ element={<ExamHistory/>}
   path="/games/vocab-battle"
   element={
     <PrivateRoute>
-      <PremiumGate>
-        <VocabBattle />
-      </PremiumGate>
+      <VocabBattle />
     </PrivateRoute>
   }
 />
@@ -496,9 +518,7 @@ element={<ExamHistory/>}
   path="/games/reading-race"
   element={
     <PrivateRoute>
-      <PremiumGate>
-        <ReadingRace />
-      </PremiumGate>
+      <ReadingRace />
     </PrivateRoute>
   }
 />
@@ -593,6 +613,7 @@ element={<ExamHistory/>}
 
   <Footer />
   <MobileNav />
+  <ReferralPopup />
 </>
 );
 }

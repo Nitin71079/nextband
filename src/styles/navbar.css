@@ -103,34 +103,29 @@
 ========================================================== */
 
 .kn-navbar-container{
-
     max-width:1320px;
-
     margin:0 auto;
-
-    display:grid;
-
-    grid-template-columns: 1fr auto 1fr;
-
+    display:flex;
     align-items:center;
-
-    gap:0;
-
+    justify-content:space-between;
+    gap:16px;
 }
 
-/* Logo lives in column 1, left-aligned */
+/* Logo lives on far left */
 .kn-navbar-container > .kn-logo {
-    justify-self: start;
+    flex-shrink: 0;
 }
 
-/* Desktop nav lives in column 2, perfectly centered */
+/* Desktop nav lives in middle */
 .kn-navbar-container > .kn-desktop-nav {
-    justify-self: center;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* Right section lives in column 3, right-aligned */
+/* Right section lives on far right */
 .kn-navbar-container > .kn-right {
-    justify-self: end;
+    flex-shrink: 0;
 }
 
 /* Mobile drawer sits outside the grid flow (fixed position) */
@@ -383,6 +378,61 @@
         0 14px 30px
         rgba(37,99,235,.25);
 
+}
+
+/* ==========================================================
+   NAVBAR DROPDOWNS
+========================================================== */
+
+.kn-nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.kn-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+    background: var(--surface, #ffffff);
+    border: 1px solid var(--border, rgba(226, 232, 240, 0.9));
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16);
+    z-index: 1000;
+}
+
+[data-theme="dark"] .kn-dropdown-menu {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+}
+
+.kn-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    color: var(--text-secondary, #64748b);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.kn-dropdown-item:hover,
+.kn-dropdown-item.active {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--primary, #2563eb);
+}
+
+[data-theme="dark"] .kn-dropdown-item:hover,
+[data-theme="dark"] .kn-dropdown-item.active {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
 }
 /* ==========================================================
    RIGHT SIDE

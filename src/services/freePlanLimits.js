@@ -12,7 +12,7 @@ export const FREE_LIMITS = {
   generalReading:  3,
   writing:         3,
   speaking:        3,
-  listening:       1,   // only test 0 free
+  listening:       1,   // test 0 free
 };
 
 /* ── Reading ── */
@@ -60,13 +60,15 @@ function getFullMockUsed() {
 }
 
 export function hasUsedFullMock(type) {
-  // type: "academic" | "general"
-  return !!getFullMockUsed()[type];
+  const used = getFullMockUsed();
+  // Free users get ONLY 1 full CBT mock attempt total (either academic OR general, only once)
+  return Object.keys(used).length > 0 || !!used.academic || !!used.general || !!used.any;
 }
 
 export function markFullMockUsed(type) {
   const used = getFullMockUsed();
-  used[type] = true;
+  used[type || "general"] = true;
+  used.any = true;
   localStorage.setItem(FULL_MOCK_KEY, JSON.stringify(used));
 }
 

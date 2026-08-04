@@ -1,13 +1,14 @@
 import toast from "react-hot-toast";
 import { auth } from "../firebase";
+import { processReferralCommissionOnPremium } from "./referralService";
 
-export async function createOrder(plan) {
+export async function createOrder(plan, isTrial = false) {
   const response = await fetch("/api/checkout", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ plan }),
+    body: JSON.stringify({ plan, isTrial }),
   });
 
   // 👇 Show the raw response
@@ -48,7 +49,7 @@ export async function verifyPayment(data) {
   return result;
 }
 
-export async function startCheckout(plan) {
+export async function startCheckout(plan, isTrial = false) {
   const user = auth.currentUser;
 
   if (!user) {
@@ -57,7 +58,10 @@ export async function startCheckout(plan) {
   }
 
   const { order, key } =
-    await createOrder(plan);
+    await createOrder(plan, isTrial);
+
+  const trialDescription =
+    "2-day FREE trial — ₹1 authorization only. Auto-renews to 3-Month Premium after trial.";
 
   const options = {
     key,
@@ -70,7 +74,9 @@ export async function startCheckout(plan) {
 
     name: "Knarrow",
 
-    description: plan === "Premium Monthly"
+    description: isTrial
+      ? trialDescription
+      : plan === "Premium Monthly"
       ? "Unlimited mocks · AI Writing & Speaking · Study Planner · Analytics · Accent Lab"
       : "Everything in Monthly · Unlimited AI · Accent Lab · Priority features · Save ₹98",
 
@@ -84,6 +90,7 @@ export async function startCheckout(plan) {
           await verifyPayment({
             uid: user.uid,
             plan,
+            isTrial,
 
             razorpay_order_id:
               payment.razorpay_order_id,
@@ -96,9 +103,23 @@ export async function startCheckout(plan) {
           });
 
         if (result.success) {
-          toast.success(
-            "🎉 Premium Activated!"
-          );
+          if (isTrial) {
+            toast.success(
+              "🎉 2-Day Free Trial Started! Auto-renews to 3-Month Premium."
+            );
+          } else {
+            toast.success(
+              "🎉 Premium Activated!"
+            );
+          }
+
+          // Process 20% commission for referrer if user was referred
+          const planPrice = plan === "Premium 3 Months" ? 799 : 299;
+          await processReferralCommissionOnPremium({
+            userId: user.uid,
+            planPrice: isTrial ? 1 : planPrice,
+            planName: plan,
+          });
         } else {
           toast.error(
             "Payment verification failed."

@@ -274,7 +274,6 @@ width:`${progress}%`
       style={{
         position: "relative",
         opacity: isLocked ? 0.7 : 1,
-        pointerEvents: isLocked ? "none" : "auto",
       }}
     >
 
@@ -469,10 +468,9 @@ width:`${progress}%`
 
         className={`start-btn ${theme}`}
         onClick={() =>
-
           navigate(`${route}/${test.id}`)
-
         }
+        style={isLocked ? { pointerEvents: "none", opacity: 0 } : {}}
 
       >
 

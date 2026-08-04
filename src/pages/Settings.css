@@ -553,3 +553,67 @@
   .st-section-header > span { font-size: 24px; }
   .st-plan-top { flex-wrap: wrap; }
 }
+
+/* ═══════════════════════════════════════
+   DARK MODE OVERRIDES — SETTINGS
+═══════════════════════════════════════ */
+[data-theme="dark"] .st-page {
+  background: var(--bg, #0b0f19);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .st-sidebar,
+[data-theme="dark"] .st-section {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .st-sidebar-user {
+  border-bottom-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .st-sidebar-user strong,
+[data-theme="dark"] .st-section-title h2,
+[data-theme="dark"] .st-field-group label,
+[data-theme="dark"] .st-info-item strong,
+[data-theme="dark"] .st-plan-details strong,
+[data-theme="dark"] .st-sub-title,
+[data-theme="dark"] .st-billing-table th {
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .st-nav-btn {
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .st-nav-btn:hover {
+  background: var(--surface-2, #1e293b);
+  color: var(--text, #f8fafc);
+}
+
+[data-theme="dark"] .st-nav-btn.active {
+  background: rgba(37, 99, 235, 0.15);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .st-input,
+[data-theme="dark"] .st-select {
+  background: var(--surface-2, #1e293b);
+  color: var(--text, #f8fafc);
+  border-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .st-info-item,
+[data-theme="dark"] .st-plan-card,
+[data-theme="dark"] .st-stat-card,
+[data-theme="dark"] .st-danger-zone {
+  background: var(--surface-2, #1e293b);
+  border-color: var(--border, #26334d);
+}
+
+[data-theme="dark"] .st-modal {
+  background: var(--surface, #151c2c);
+  border-color: var(--border, #26334d);
+  color: var(--text, #f8fafc);
+}

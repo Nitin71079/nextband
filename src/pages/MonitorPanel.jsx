@@ -8,7 +8,7 @@ import {
   Users, Crown, BarChart3, BookOpen, Headphones, PenLine, Mic,
   Search, RefreshCw, TrendingUp, Calendar, ChevronDown, ChevronUp,
   Activity, Award, Eye, X, CheckCircle, XCircle, Clock,
-  Gamepad2, BrainCircuit,
+  Gamepad2, BrainCircuit, Globe, MousePointer, Navigation, Wifi,
 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -191,7 +191,12 @@ export default function MonitorPanel() {
   const [sortBy, setSortBy] = useState("joined"); // joined | name | tests | band
   const [sortDir, setSortDir] = useState("desc");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview"); // overview | users | results
+  const [activeTab, setActiveTab] = useState("overview"); // overview | users | results | traffic
+
+  // GA4 traffic data
+  const [trafficData, setTrafficData] = useState(null);
+  const [trafficLoading, setTrafficLoading] = useState(false);
+  const [trafficError, setTrafficError] = useState(null);
 
   async function fetchData(silent = false) {
     if (!silent) setLoading(true);
@@ -211,7 +216,27 @@ export default function MonitorPanel() {
     }
   }
 
+  async function fetchTrafficData() {
+    setTrafficLoading(true);
+    setTrafficError(null);
+    try {
+      const res = await fetch("/api/analytics");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to load traffic data");
+      setTrafficData(data);
+    } catch (err) {
+      setTrafficError(err.message);
+    } finally {
+      setTrafficLoading(false);
+    }
+  }
+
   useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    if (activeTab === "traffic" && !trafficData && !trafficLoading) {
+      fetchTrafficData();
+    }
+  }, [activeTab]); // eslint-disable-line
 
   // ── derived stats ─────────────────────────────────────────────────────────
   const premiumCount = useMemo(() => users.filter(u => u.premium).length, [users]);
@@ -357,7 +382,7 @@ export default function MonitorPanel() {
 
         {/* ── Tabs ── */}
         <div style={{ display: "flex", gap: 4, marginBottom: 28, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 999, padding: 4, width: "fit-content" }}>
-          {["overview", "users", "results"].map(t => (
+          {["overview", "users", "results", "traffic"].map(t => (
             <button key={t} onClick={() => setActiveTab(t)} style={TAB_STYLE(t)}>
               {t.charAt(0).toUpperCase() + t.slice(1)}
             </button>
@@ -619,6 +644,179 @@ export default function MonitorPanel() {
             </div>
           </motion.div>
         )}
+
+        {/* ══════════ TRAFFIC TAB ══════════ */}
+        {activeTab === "traffic" && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: "var(--text)", margin: 0 }}>Web Traffic — Last 7 Days</h2>
+                <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 4 }}>Powered by Google Analytics 4</p>
+              </div>
+              <button onClick={fetchTrafficData} style={{
+                display: "flex", alignItems: "center", gap: 7, padding: "9px 16px", borderRadius: 12,
+                border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)",
+                fontSize: 13, fontWeight: 700, cursor: "pointer",
+              }}>
+                <RefreshCw size={14} style={{ animation: trafficLoading ? "spin .8s linear infinite" : "none" }} />
+                Refresh
+              </button>
+            </div>
+
+            {/* Not configured notice */}
+            {trafficData && !trafficData.configured && (
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 32, textAlign: "center", marginBottom: 24 }}>
+                <Globe size={40} color={ACCENT.amber} style={{ marginBottom: 12 }} />
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--text)", marginBottom: 8 }}>GA4 Not Configured</h3>
+                <p style={{ fontSize: 14, color: "var(--text-secondary)", maxWidth: 520, margin: "0 auto 16px" }}>
+                  To display real web traffic data, set up Google Analytics 4 and add these environment variables to your Vercel project:
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, maxWidth: 480, margin: "0 auto", textAlign: "left" }}>
+                  {["GA4_PROPERTY_ID — e.g. properties/123456789", "GA4_CLIENT_EMAIL — service account email", "GA4_PRIVATE_KEY — service account private key"].map(v => (
+                    <div key={v} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "8px 14px", fontSize: 13, fontFamily: "monospace", color: "var(--text)" }}>
+                      {v}
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 16 }}>
+                  Also replace <code>G-XXXXXXXXXX</code> in index.html with your GA4 Measurement ID.
+                </p>
+              </div>
+            )}
+
+            {trafficError && (
+              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 16, padding: "16px 20px", color: "#b91c1c", fontSize: 14, marginBottom: 20 }}>
+                ⚠ {trafficError}
+              </div>
+            )}
+
+            {trafficLoading && (
+              <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-secondary)" }}>
+                <RefreshCw size={28} style={{ animation: "spin .8s linear infinite", marginBottom: 10 }} />
+                <div>Loading traffic data…</div>
+              </div>
+            )}
+
+            {trafficData && trafficData.configured && !trafficLoading && (() => {
+              const rows = trafficData.dailyStats?.rows || [];
+              const dailyChartData = rows.map(r => ({
+                label: r.dimensionValues[0].value.replace(/(\d{4})(\d{2})(\d{2})/, "$3/$2"),
+                sessions: Number(r.metricValues[0].value),
+                users: Number(r.metricValues[1].value),
+                pageviews: Number(r.metricValues[2].value),
+                newUsers: Number(r.metricValues[3].value),
+              })).sort((a, b) => a.label.localeCompare(b.label));
+
+              const totals = dailyChartData.reduce((acc, d) => ({
+                sessions: acc.sessions + d.sessions,
+                users: acc.users + d.users,
+                pageviews: acc.pageviews + d.pageviews,
+                newUsers: acc.newUsers + d.newUsers,
+              }), { sessions: 0, users: 0, pageviews: 0, newUsers: 0 });
+
+              const topPages = (trafficData.topPages?.rows || []).map(r => ({
+                path: r.dimensionValues[0].value,
+                views: Number(r.metricValues[0].value),
+                users: Number(r.metricValues[1].value),
+              }));
+
+              const sources = (trafficData.sources?.rows || []).map(r => ({
+                source: r.dimensionValues[0].value || "(direct)",
+                sessions: Number(r.metricValues[0].value),
+                users: Number(r.metricValues[1].value),
+              }));
+
+              return (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 24 }}>
+                    <StatCard label="Total Sessions"  value={totals.sessions.toLocaleString()}  icon={Wifi}         color={ACCENT.blue}   />
+                    <StatCard label="Active Users"    value={totals.users.toLocaleString()}     icon={Users}        color={ACCENT.purple} />
+                    <StatCard label="Total Pageviews" value={totals.pageviews.toLocaleString()} icon={MousePointer} color={ACCENT.cyan}   />
+                    <StatCard label="New Users"       value={totals.newUsers.toLocaleString()}  icon={TrendingUp}   color={ACCENT.green}  />
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20, marginBottom: 24 }}>
+                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                      <SectionHeader title="Sessions per Day" icon={Activity} color={ACCENT.blue} />
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={dailyChartData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
+                          <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
+                          <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
+                          <Bar dataKey="sessions" fill={ACCENT.blue} radius={[6, 6, 0, 0]} name="Sessions" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                      <SectionHeader title="Pageviews & Users per Day" icon={Eye} color={ACCENT.cyan} />
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={dailyChartData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
+                          <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
+                          <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
+                          <Line type="monotone" dataKey="pageviews" stroke={ACCENT.cyan} strokeWidth={2.5} dot={{ r: 4, fill: ACCENT.cyan }} name="Pageviews" />
+                          <Line type="monotone" dataKey="users" stroke={ACCENT.purple} strokeWidth={2} strokeDasharray="4 2" dot={false} name="Users" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20 }}>
+                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                      <SectionHeader title="Top Pages" icon={Navigation} color={ACCENT.amber} />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {topPages.length === 0
+                          ? <div style={{ color: "var(--text-secondary)", fontSize: 14, textAlign: "center", padding: "20px 0" }}>No data</div>
+                          : topPages.map((p, i) => (
+                            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                                <span style={{ fontSize: 12, fontWeight: 800, color: "var(--primary)", width: 20, flexShrink: 0 }}>{i + 1}</span>
+                                <span style={{ fontSize: 13, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.path}</span>
+                              </div>
+                              <div style={{ display: "flex", gap: 14, flexShrink: 0, marginLeft: 8 }}>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: ACCENT.cyan }}>{p.views.toLocaleString()} views</span>
+                                <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{p.users} users</span>
+                              </div>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    </div>
+
+                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                      <SectionHeader title="Traffic Sources" icon={Globe} color={ACCENT.green} />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {sources.length === 0
+                          ? <div style={{ color: "var(--text-secondary)", fontSize: 14, textAlign: "center", padding: "20px 0" }}>No data</div>
+                          : sources.map((s, i) => {
+                            const maxSessions = sources[0]?.sessions || 1;
+                            const pct = Math.round((s.sessions / maxSessions) * 100);
+                            return (
+                              <div key={i}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                                  <span style={{ fontSize: 13, color: "var(--text)", fontWeight: 600, textTransform: "capitalize" }}>{s.source}</span>
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{s.sessions.toLocaleString()} sessions</span>
+                                </div>
+                                <div style={{ height: 6, borderRadius: 999, background: "var(--border)" }}>
+                                  <div style={{ height: "100%", borderRadius: 999, width: `${pct}%`, background: ACCENT.green, transition: "width .5s ease" }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </motion.div>
+        )}
+
       </div>
 
       {/* User detail modal */}

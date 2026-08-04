@@ -16,6 +16,7 @@ from "../firebase";
 
 import toast
 from "react-hot-toast";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
 export default function Login() {
   const navigate =
@@ -33,6 +34,10 @@ export default function Login() {
     setLoading] =
     useState(false);
 
+  const [showForgotPassword,
+    setShowForgotPassword] =
+    useState(false);
+
   async function handleLogin(
     e
   ) {
@@ -46,6 +51,8 @@ export default function Login() {
         email,
         password
       );
+
+      sessionStorage.setItem("justLoggedIn", "true");
 
       toast.success(
         "Login successful!"
@@ -214,9 +221,25 @@ export default function Login() {
                   "20px"
               }}
             >
-              <label>
-                Password
-              </label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label>
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#0891b2",
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                  }}
+                >
+                  Forgot Password?
+                </button>
+              </div>
 
               <input
                 type="password"
@@ -275,6 +298,11 @@ export default function Login() {
           </p>
         </div>
       </div>
+
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </div>
   );
 }

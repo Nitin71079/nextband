@@ -2,9 +2,9 @@ const listeningTest002 = {
   id: "listening-test-002",
   title: "IELTS Listening Practice Test 002",
   difficulty: "Academic",
-  duration: 30,
+  duration: 40,
   audio: "/audio/listening/test002.mp3",
-  transcript: "/assets/listening/test002/transcript.pdf",
+  transcript: "/assets/listening/test002/transcript.txt",
 
   instructions: [
     "You will hear each recording ONCE only.",
@@ -13,18 +13,18 @@ const listeningTest002 = {
   ],
 
   audioTimeline: {
-    section1: { start: 0,    end: 335  },
-    section2: { start: 336,  end: 705  },
-    section3: { start: 706,  end: 1198 },
-    section4: { start: 1199, end: 1738 }
+    section1: { start: 0,    end: 330  },
+    section2: { start: 331,  end: 680  },
+    section3: { start: 681,  end: 1170 },
+    section4: { start: 1171, end: 1710 }
   },
 
   sections: [
 
     /* ============================================================
-       SECTION 1
-       Scenario: Nathan Collins phones the Riverside Community
-       Art Centre to register for an evening art course.
+       SECTION 1  (00:00 – ~05:30)
+       Scenario: Sandra phones Greenfield Leisure Centre to book
+       lane swimming sessions and ask about fitness classes.
        Question type: Form completion (Q1–10)
     ============================================================ */
     {
@@ -32,81 +32,81 @@ const listeningTest002 = {
       title: "Section 1",
       type: "form",
       audioStart: 0,
-      audioEnd: 335,
+      audioEnd: 330,
 
       instruction:
-        "Complete the registration form below. " +
+        "Complete the booking form below. " +
         "Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer.",
 
-      formTitle: "RIVERSIDE COMMUNITY ART CENTRE — REGISTRATION FORM",
+      formTitle: "GREENFIELD LEISURE CENTRE — LANE SWIMMING BOOKING FORM",
 
       form: [
         {
           id: 1,
-          label: "Full name",
-          answer: "Nathan Collins"
+          label: "Customer name",
+          answer: "Sandra Howell"
         },
         {
           id: 2,
-          label: "Home address",
-          answer: "27 Willow Road"
+          label: "Membership number",
+          answer: "GL4728"
         },
         {
           id: 3,
-          label: "Postcode",
-          answer: "BS14 8PL"
+          label: "Activity booked",
+          answer: "lane swimming"
         },
         {
           id: 4,
-          label: "Telephone number",
-          answer: "07831 694582"
+          label: "Preferred day",
+          answer: "Tuesday"
         },
         {
           id: 5,
-          label: "Course selected",
-          answer: "watercolour"
+          label: "Session time",
+          answer: "7:30"
         },
         {
           id: 6,
-          label: "Preferred evening",
-          answer: "Thursday"
+          label: "Number of sessions",
+          answer: "8"
         },
         {
           id: 7,
-          label: "How heard about centre",
-          answer: "neighbour"
+          label: "Class of interest",
+          answer: "aqua aerobics"
         },
         {
           id: 8,
-          label: "Equipment hire",
-          answer: "painting set"
+          label: "Class fee per session",
+          prefix: "£",
+          answer: "12"
         },
         {
           id: 9,
-          label: "Refundable deposit",
-          prefix: "£",
-          answer: "25"
+          label: "Special requirement (lane position)",
+          answer: "shallow end"
         },
         {
           id: 10,
-          label: "Reason for joining",
-          answer: "personal interest"
+          label: "Confirmation method",
+          answer: "email"
         }
       ]
     },
 
     /* ============================================================
-       SECTION 2
-       Scenario: A guide (Emily) gives a talk about Riverside
-       Botanical Gardens before a guided tour.
-       Q11–15: MCQ  |  Q16–20: Map labelling
+       SECTION 2  (~05:31 – ~11:20)
+       Scenario: Guide Caroline gives an introductory talk at
+       the Hartley City Museum before a group tour.
+       Q11–15: MCQ  |  Q16–20: Map labelling (ground floor)
     ============================================================ */
     {
       id: 2,
       title: "Section 2",
       type: "mixed",
-      audioStart: 336,
-      audioEnd: 705,
+      audioStart: 331,
+      audioEnd: 680,
 
       groups: [
 
@@ -119,62 +119,57 @@ const listeningTest002 = {
 
             {
               id: 11,
-              question:
-                "Why is today's tour route different from the usual one?",
+              question: "When was the Hartley City Museum originally opened?",
               options: [
-                { letter: "A", text: "The Japanese Garden is temporarily closed." },
-                { letter: "B", text: "The Orchid House is closed for new equipment." },
-                { letter: "C", text: "The bridge crossing the lake is under repair." }
+                { letter: "A", text: "1887" },
+                { letter: "B", text: "1907" },
+                { letter: "C", text: "1927" }
               ],
-              answer: "B"
+              answer: "A"
             },
 
             {
               id: 12,
-              question:
-                "Why are visitors asked to stay on the marked paths?",
+              question: "Where does the majority of the museum's operating budget come from today?",
               options: [
-                { letter: "A", text: "Maintenance vehicles are operating nearby." },
-                { letter: "B", text: "The paths have recently been resurfaced." },
-                { letter: "C", text: "Rare alpine plants are beginning to flower." }
+                { letter: "A", text: "Government grants" },
+                { letter: "B", text: "Ticket revenue" },
+                { letter: "C", text: "Private donations" }
               ],
               answer: "C"
             },
 
             {
               id: 13,
-              question:
-                "What restriction applies to photography in the gardens?",
+              question: "Which part of the museum is temporarily closed on the day of the visit?",
               options: [
-                { letter: "A", text: "Visitors must pay for a photography permit." },
-                { letter: "B", text: "Drones are not permitted anywhere on the property." },
-                { letter: "C", text: "Photography is prohibited in most areas." }
+                { letter: "A", text: "The Natural History Gallery" },
+                { letter: "B", text: "The Ancient Civilisations Gallery" },
+                { letter: "C", text: "The Modern Art Gallery" }
               ],
               answer: "B"
             },
 
             {
               id: 14,
-              question:
-                "What does the guide say about the Glasshouse?",
+              question: "What must visitors do before entering the photography exhibition?",
               options: [
-                { letter: "A", text: "It is the oldest structure in the gardens." },
-                { letter: "B", text: "It will be closed during today's tour." },
-                { letter: "C", text: "It was completed in 2012." }
+                { letter: "A", text: "Purchase a separate ticket at the admissions desk" },
+                { letter: "B", text: "Register their name with the guide" },
+                { letter: "C", text: "Leave their bags in the cloakroom" }
               ],
-              answer: "C"
+              answer: "A"
             },
 
             {
               id: 15,
-              question:
-                "What will visitors be able to do during the free time at the end of the tour?",
+              question: "What was added to the museum as part of the recent renovation?",
               options: [
-                { letter: "A", text: "Join a second guided walk." },
-                { letter: "B", text: "Explore the gardens independently." },
-                { letter: "C", text: "Take part in a photography workshop." }
+                { letter: "A", text: "A rooftop café" },
+                { letter: "B", text: "An underground car park" },
+                { letter: "C", text: "A new lecture theatre" }
               ],
-              answer: "B"
+              answer: "A"
             }
 
           ]
@@ -185,45 +180,45 @@ const listeningTest002 = {
           type: "map",
           title: "Questions 16–20",
           instruction:
-            "Label the map of Riverside Botanical Gardens below.\n" +
+            "Label the map of the Hartley City Museum ground floor below.\n" +
             "Choose FIVE answers from the box and write the correct letter, A–H, " +
             "next to Questions 16–20.",
           image: "/images/listening/test002-map.svg",
           options: [
-            { letter: "A", text: "Bridge"           },
-            { letter: "B", text: "Café"              },
-            { letter: "C", text: "Children's Garden" },
-            { letter: "D", text: "Gift Shop"         },
-            { letter: "E", text: "Glasshouse"        },
-            { letter: "F", text: "Japanese Garden"   },
-            { letter: "G", text: "Rose Garden"       },
-            { letter: "H", text: "Visitor Centre"    }
+            { letter: "A", text: "Café"                    },
+            { letter: "B", text: "Café (ground floor)"     },
+            { letter: "C", text: "Children's Workshop"     },
+            { letter: "D", text: "Egyptian Exhibition"     },
+            { letter: "E", text: "Cloakroom"               },
+            { letter: "F", text: "Children's Workshop"     },
+            { letter: "G", text: "Photography Exhibition"  },
+            { letter: "H", text: "Lecture Theatre"         }
           ],
           questions: [
             {
               id: 16,
-              label: "Current starting point (southern side)",
-              answer: "H"
-            },
-            {
-              id: 17,
-              label: "First stop on today's tour",
-              answer: "F"
-            },
-            {
-              id: 18,
-              label: "Structure crossed to reach Glasshouse",
-              answer: "A"
-            },
-            {
-              id: 19,
-              label: "Building visited after the bridge",
+              label: "Room in top-left corner (store coats and bags)",
               answer: "E"
             },
             {
+              id: 17,
+              label: "Large space north of Entrance Hall (over 300 artefacts)",
+              answer: "D"
+            },
+            {
+              id: 18,
+              label: "Top-right room (ticketed, fragile prints)",
+              answer: "G"
+            },
+            {
+              id: 19,
+              label: "Middle-left room (hands-on crafts for children)",
+              answer: "F"
+            },
+            {
               id: 20,
-              label: "Where the guided tour officially ends",
-              answer: "C"
+              label: "Middle-right room adjacent to atrium (hot meals and beverages)",
+              answer: "B"
             }
           ]
         }
@@ -232,18 +227,19 @@ const listeningTest002 = {
     },
 
     /* ============================================================
-       SECTION 3
-       Scenario: Emma and Liam meet their supervisor Dr. Harris
-       to discuss their Renewable Energy Research Project.
-       Q21–25: Matching (speaker opinions)
+       SECTION 3  (~11:21 – ~19:30)
+       Scenario: Priya and Tom meet their tutor Dr Chen to discuss
+       their psychology research project on social media and
+       self-esteem in undergraduates.
+       Q21–25: Matching (who says what)
        Q26–30: MCQ
     ============================================================ */
     {
       id: 3,
       title: "Section 3",
       type: "mixed",
-      audioStart: 706,
-      audioEnd: 1198,
+      audioStart: 681,
+      audioEnd: 1170,
 
       groups: [
 
@@ -255,35 +251,35 @@ const listeningTest002 = {
             "Who expresses each of the following opinions?\n" +
             "Choose the correct letter, A, B or C.",
           options: [
-            { letter: "A", text: "Emma"      },
-            { letter: "B", text: "Liam"      },
-            { letter: "C", text: "Dr. Harris" }
+            { letter: "A", text: "Priya"    },
+            { letter: "B", text: "Tom"      },
+            { letter: "C", text: "Dr Chen"  }
           ],
           questions: [
             {
               id: 21,
-              item: "Suggests comparing different types of public buildings.",
+              item: "Believes a sample of thirty to forty participants is sufficient for a valid conclusion.",
               answer: "C"
             },
             {
               id: 22,
-              item: "Initially wanted to focus only on solar energy.",
-              answer: "A"
+              item: "Suggested using a control group to strengthen the research design.",
+              answer: "B"
             },
             {
               id: 23,
-              item: "Was concerned about obtaining reliable financial figures.",
+              item: "Is concerned that the data collection period is too short to capture trends.",
               answer: "A"
             },
             {
               id: 24,
-              item: "Recommended collecting maintenance frequency instead of costs.",
+              item: "Strongly recommends piloting the survey with a small group first.",
               answer: "C"
             },
             {
               id: 25,
-              item: "Recognises that analysing results may require more time than expected.",
-              answer: "C"
+              item: "Plans to revise the wording of two problematic questions before the pilot.",
+              answer: "A"
             }
           ]
         },
@@ -297,62 +293,57 @@ const listeningTest002 = {
 
             {
               id: 26,
-              question:
-                "Why does Dr. Harris advise the students to narrow the scope of their project?",
+              question: "Why did the students change their original research topic?",
               options: [
-                { letter: "A", text: "Smaller studies generally produce stronger findings." },
-                { letter: "B", text: "The university limits the size of undergraduate projects." },
-                { letter: "C", text: "There are too few renewable energy sites available." }
+                { letter: "A", text: "It was too broad for an undergraduate project." },
+                { letter: "B", text: "They could not find enough participants." },
+                { letter: "C", text: "The university ethics committee rejected the proposal." }
               ],
-              answer: "A"
+              answer: "C"
             },
 
             {
               id: 27,
-              question:
-                "What is identified as the main disadvantage of interviews?",
+              question: "According to Dr Chen, what is the main advantage of observational methods?",
               options: [
-                { letter: "A", text: "Participants often refuse to answer honestly." },
-                { letter: "B", text: "They are time-consuming to arrange." },
-                { letter: "C", text: "They are difficult to compare statistically." }
+                { letter: "A", text: "They are quicker to analyse than surveys." },
+                { letter: "B", text: "They capture behaviour in a natural setting." },
+                { letter: "C", text: "They are easier to organise than interviews." }
               ],
               answer: "B"
             },
 
             {
               id: 28,
-              question:
-                "What advice does Dr. Harris give about background reading?",
+              question: "What does Dr Chen say the final report must include?",
               options: [
-                { letter: "A", text: "Use websites only for statistical information." },
-                { letter: "B", text: "Base the main discussion on peer-reviewed research." },
-                { letter: "C", text: "Avoid government publications completely." }
+                { letter: "A", text: "A section explicitly acknowledging the study's limitations." },
+                { letter: "B", text: "A comparison with at least three previous studies." },
+                { letter: "C", text: "A separate appendix containing all raw data." }
               ],
-              answer: "B"
+              answer: "A"
             },
 
             {
               id: 29,
-              question:
-                "According to Dr. Harris, why should the timetable be changed?",
+              question: "What problem has Tom encountered while preparing the research?",
               options: [
-                { letter: "A", text: "Questionnaire data usually arrive later than expected." },
-                { letter: "B", text: "Analysing the findings often takes longer than students expect." },
-                { letter: "C", text: "Preparing questionnaires requires additional approval." }
+                { letter: "A", text: "Several participants have withdrawn from the study." },
+                { letter: "B", text: "Some interview recordings are unclear and difficult to transcribe." },
+                { letter: "C", text: "The survey has not yet been approved by the department." }
               ],
               answer: "B"
             },
 
             {
               id: 30,
-              question:
-                "What does Dr. Harris recommend for presenting findings?",
+              question: "When is the draft literature review due?",
               options: [
-                { letter: "A", text: "Present all findings mainly in tables." },
-                { letter: "B", text: "Explain technical terms and use graphs where appropriate." },
-                { letter: "C", text: "Avoid discussing specialist concepts." }
+                { letter: "A", text: "The following Monday" },
+                { letter: "B", text: "End of the current week" },
+                { letter: "C", text: "Two weeks from today" }
               ],
-              answer: "B"
+              answer: "A"
             }
 
           ]
@@ -362,19 +353,20 @@ const listeningTest002 = {
     },
 
     /* ============================================================
-       SECTION 4
-       Scenario: An academic lecture on Coral Reef Conservation —
-       threats, restoration techniques and future solutions.
+       SECTION 4  (~19:31 – ~28:30)
+       Scenario: Lecture on urban water management and sustainable
+       cities — surface runoff, permeable paving, city examples,
+       and the sustainable urban water cycle.
        Q31–34: Notes completion
-       Q35–37: Table completion
-       Q38–40: Flowchart completion
+       Q35–37: Table completion (city comparisons)
+       Q38–40: Flowchart completion (water cycle stages)
     ============================================================ */
     {
       id: 4,
       title: "Section 4",
       type: "mixed",
-      audioStart: 1199,
-      audioEnd: 1738,
+      audioStart: 1171,
+      audioEnd: 1710,
 
       groups: [
 
@@ -385,46 +377,49 @@ const listeningTest002 = {
           instruction:
             "Complete the notes below.\n" +
             "Write NO MORE THAN TWO WORDS for each answer.",
-          notesTitle: "Coral Reef Conservation: Challenges and Future Solutions",
+          notesTitle: "Urban Water Management and Sustainable Cities",
           notes: [
             {
               type: "heading",
-              text: "Threats to coral reefs"
+              text: "Key concepts"
             },
             {
               type: "text",
               text:
-                "Although coral reefs cover less than one per cent of the ocean floor, " +
-                "they support approximately twenty-five per cent of all known marine species."
+                "More than half the world's population now lives in cities. " +
+                "This places enormous pressure on freshwater resources and " +
+                "drainage systems designed decades — sometimes centuries — ago."
             },
             {
               type: "blank",
               id: 31,
-              suffix: "is considered the greatest long-term threat to coral reefs."
+              suffix:
+                " is the term for rainfall that flows across hard urban surfaces and enters the drainage network."
             },
             {
               type: "blank",
               id: 32,
-              suffix: "causes corals to lose the algae that provide food and colour."
+              suffix:
+                " replaces solid concrete surfaces with materials that allow water to seep through, reducing flood risk."
             },
             {
               type: "blank",
               id: 33,
               suffix:
-                "from rivers carries fertilisers, plastics and chemical waste into coastal waters."
+                " refers to how well a city can withstand and recover from water-related disruptions such as floods or droughts."
             },
             {
               type: "blank",
               id: 34,
               suffix:
-                "are trained to monitor reef health and report illegal fishing activity."
+                " is identified as the leading cause of freshwater scarcity in rapidly growing cities, particularly in South and Southeast Asia."
             }
           ],
           answers: {
-            31: "Climate change",
-            32: "Coral bleaching",
-            33: "Pollution",
-            34: "Local residents"
+            31: "Surface runoff",
+            32: "Permeable paving",
+            33: "Water resilience",
+            34: "Population growth"
           }
         },
 
@@ -435,29 +430,29 @@ const listeningTest002 = {
           instruction:
             "Complete the table below.\n" +
             "Write NO MORE THAN TWO WORDS for each answer.",
-          tableTitle: "Modern Coral Reef Restoration Techniques",
-          headers: [ "Technique", "How it works", "Key advantage" ],
+          tableTitle: "City Water Management Strategies",
+          headers: ["City", "Key approach", "Reported benefit"],
           rows: [
             [
-              { type: "text", value: "Coral nurseries" },
-              { id: 35 },
-              { type: "text", value: "under controlled conditions before transplantation" }
+              { type: "text", value: "Singapore" },
+              { type: "text", value: "NEWater programme (advanced water recycling)" },
+              { id: 35 }
             ],
             [
-              { type: "text", value: "Underwater drones" },
+              { type: "text", value: "Copenhagen" },
               { id: 36 },
-              { type: "text", value: "thousands of square metres quickly" }
+              { type: "text", value: "Dramatically reduced flood damage costs" }
             ],
             [
-              { type: "text", value: "Artificial intelligence" },
-              { id: 37 },
-              { type: "text", value: "patterns of bleaching before visible to the human eye" }
+              { type: "text", value: "Mumbai" },
+              { type: "text", value: "Upgraded drainage tunnels beneath the city" },
+              { id: 37 }
             ]
           ],
           answers: {
-            35: "grow coral fragments",
-            36: "photograph",
-            37: "detect"
+            35: "water independence",
+            36: "cloudburst management",
+            37: "faster flood recovery"
           }
         },
 
@@ -468,32 +463,36 @@ const listeningTest002 = {
           instruction:
             "Complete the flow chart below.\n" +
             "Write NO MORE THAN TWO WORDS for each answer.",
-          flowchartTitle: "Successful Coral Reef Conservation",
+          flowchartTitle: "Stages of a Sustainable Urban Water Cycle",
           steps: [
             {
               type: "text",
-              text: "Reduce greenhouse gas emissions to address climate change."
+              text:
+                "Rainfall is collected from rooftops and hard surfaces."
             },
             {
               type: "blank",
               id: 38,
-              suffix: "and controlling fishing practices improve local reef conditions."
+              suffix:
+                " — engineered ecosystems of plants, gravel and microorganisms — filter pollutants such as heavy metals, oils and pathogens."
             },
             {
               type: "blank",
               id: 39,
-              suffix: "helps identify damaged reef areas quickly and efficiently."
+              suffix:
+                " tracks consumption in real time, identifies leaks, and manages water distribution efficiently."
             },
             {
               type: "blank",
               id: 40,
-              suffix: "ensures conservation policies work across national borders."
+              suffix:
+                " converts organic matter in wastewater into methane gas, which can generate electricity to power the treatment facility."
             }
           ],
           answers: {
-            38: "Improving water quality",
-            39: "Artificial intelligence",
-            40: "International cooperation"
+            38: "Constructed wetlands",
+            39: "Smart metering",
+            40: "Biogas generation"
           }
         }
 
