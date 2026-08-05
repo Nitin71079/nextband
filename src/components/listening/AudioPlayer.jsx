@@ -6,10 +6,26 @@ export default function AudioPlayer({ audioUrl, startTime = 0, endTime = null })
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0–100
 
+  /* ── Sync currentTime when startTime or audioUrl changes ── */
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      const targetTime = startTime || 0;
+      try {
+        audio.currentTime = targetTime;
+      } catch (e) {
+        console.warn("Audio seek error:", e);
+      }
+      setPlaying(false);
+      setProgress(0);
+    }
+  }, [audioUrl, startTime]);
+
   /* ── Seek to startTime once metadata loads ── */
   function handleLoadedMetadata() {
-    if (audioRef.current && startTime > 0) {
-      audioRef.current.currentTime = startTime;
+    if (audioRef.current) {
+      const targetTime = startTime || 0;
+      audioRef.current.currentTime = targetTime;
     }
   }
 
@@ -18,17 +34,24 @@ export default function AudioPlayer({ audioUrl, startTime = 0, endTime = null })
     const audio = audioRef.current;
     if (!audio) return;
 
+    const start = startTime || 0;
+    const end = endTime ?? audio.duration ?? 0;
+
+    // Enforce startTime boundary if audio hasn't seeked yet
+    if (start > 0 && audio.currentTime < start - 2) {
+      audio.currentTime = start;
+    }
+
+    // Enforce endTime boundary
     if (endTime !== null && audio.currentTime >= endTime) {
       audio.pause();
       setPlaying(false);
       return;
     }
 
-    const start    = startTime || 0;
-    const end      = endTime ?? audio.duration ?? 0;
     const duration = end - start;
-    const elapsed  = audio.currentTime - start;
-    setProgress(duration > 0 ? Math.min((elapsed / duration) * 100, 100) : 0);
+    const elapsed = audio.currentTime - start;
+    setProgress(duration > 0 ? Math.min(Math.max((elapsed / duration) * 100, 0), 100) : 0);
   }
 
   function handleEnded() {
@@ -36,14 +59,28 @@ export default function AudioPlayer({ audioUrl, startTime = 0, endTime = null })
     setProgress(100);
   }
 
+  function handleError(e) {
+    console.warn("Audio playback error encountered:", e);
+    // If error occurs mid-stream, attempt to recover by advancing slightly
+    const audio = audioRef.current;
+    if (audio && playing) {
+      try {
+        audio.currentTime += 0.5;
+        audio.play().catch(() => setPlaying(false));
+      } catch {}
+    } else {
+      setPlaying(false);
+    }
+  }
+
   /* ── Seek on progress bar click ── */
   function handleSeek(e) {
     const audio = audioRef.current;
     if (!audio) return;
-    const rect    = e.currentTarget.getBoundingClientRect();
-    const ratio   = (e.clientX - rect.left) / rect.width;
-    const start   = startTime || 0;
-    const end     = endTime ?? audio.duration ?? 0;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    const start = startTime || 0;
+    const end = endTime ?? audio.duration ?? 0;
     const newTime = start + ratio * (end - start);
     audio.currentTime = Math.max(start, Math.min(end, newTime));
     setProgress(ratio * 100);
@@ -56,8 +93,14 @@ export default function AudioPlayer({ audioUrl, startTime = 0, endTime = null })
       audio.pause();
       setPlaying(false);
     } else {
-      audio.play();
-      setPlaying(true);
+      // Ensure audio is positioned within bounds before playing
+      if (startTime > 0 && audio.currentTime < startTime) {
+        audio.currentTime = startTime;
+      }
+      audio.play().then(() => setPlaying(true)).catch((err) => {
+        console.error("Audio play error:", err);
+        setPlaying(false);
+      });
     }
   }
 
@@ -77,6 +120,7 @@ export default function AudioPlayer({ audioUrl, startTime = 0, endTime = null })
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
+        onError={handleError}
         style={{ display: "none" }}
       >
         <source src={audioUrl} type="audio/mpeg" />
