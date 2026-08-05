@@ -9,11 +9,13 @@ import {
   Search, RefreshCw, TrendingUp, Calendar, ChevronDown, ChevronUp,
   Activity, Award, Eye, X, CheckCircle, XCircle, Clock,
   Gamepad2, BrainCircuit, Globe, MousePointer, Navigation, Wifi,
+  Timer, Compass, Layers, ExternalLink, Sparkles
 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   CartesianGrid, LineChart, Line, PieChart, Pie, Cell, Legend,
 } from "recharts";
+import { getRouteLabel } from "../services/telemetryService";
 
 const db = getFirestore(app);
 
@@ -38,6 +40,58 @@ function ago(val) {
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
   return `${Math.floor(diff / 86400000)}d ago`;
 }
+
+function fmtDuration(totalSeconds) {
+  if (!totalSeconds || totalSeconds <= 0) return "0m";
+  const mins = Math.round(totalSeconds / 60);
+  if (mins < 60) return `${mins} mins`;
+  const hrs = (mins / 60).toFixed(1);
+  return `${hrs} hrs (${mins}m)`;
+}
+
+function getTelemetryInfo(tDoc) {
+  if (!tDoc) return { minutesStr: "0 mins", totalMins: 0, topVisited: "—", topTimeSpent: "—", lastPath: "—" };
+
+  const totalSecs = tDoc.totalSeconds || 0;
+  const totalMins = Math.round(totalSecs / 60);
+  const minutesStr = fmtDuration(totalSecs);
+
+  // Top Visited Page
+  let maxVisits = 0;
+  let topVisitedPath = "—";
+  if (tDoc.pageViews) {
+    Object.entries(tDoc.pageViews).forEach(([key, count]) => {
+      if (count > maxVisits) {
+        maxVisits = count;
+        topVisitedPath = tDoc.pathNames?.[key] || key;
+      }
+    });
+  }
+  const topVisited = maxVisits > 0 ? `${getRouteLabel(topVisitedPath)} (${maxVisits}v)` : "—";
+
+  // Top Time Spent Page
+  let maxSecs = 0;
+  let topTimePath = "—";
+  if (tDoc.pageDurations) {
+    Object.entries(tDoc.pageDurations).forEach(([key, secs]) => {
+      if (secs > maxSecs) {
+        maxSecs = secs;
+        topTimePath = tDoc.pathNames?.[key] || key;
+      }
+    });
+  }
+  const topTimeMins = Math.round(maxSecs / 60);
+  const topTimeSpent = maxSecs > 0 ? `${getRouteLabel(topTimePath)} (${topTimeMins}m)` : "—";
+
+  return {
+    minutesStr,
+    totalMins,
+    topVisited,
+    topTimeSpent,
+    lastPath: getRouteLabel(tDoc.lastPath),
+  };
+}
+
 const BAND_COLORS = { "9": "#22c55e", "8": "#4ade80", "7": "#86efac", "6": "#fbbf24", "5": "#f97316", "4": "#ef4444" };
 function bandColor(b) {
   const n = Math.floor(Number(b));
@@ -63,7 +117,7 @@ function StatCard({ label, value, sub, icon: Icon, color, trend }) {
           </span>
         )}
       </div>
-      <div style={{ fontSize: 32, fontWeight: 900, color: "var(--text)", lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: 28, fontWeight: 900, color: "var(--text)", lineHeight: 1.1, wordBreak: "break-word" }}>{value}</div>
       <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6, fontWeight: 600 }}>{label}</div>
       {sub && <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 3 }}>{sub}</div>}
     </div>
@@ -83,7 +137,7 @@ function SectionHeader({ title, icon: Icon, color = ACCENT.blue }) {
 }
 
 // ─── User detail modal ────────────────────────────────────────────────────────
-function UserModal({ user, results, onClose }) {
+function UserModal({ user, results, telemetryDoc, onClose }) {
   if (!user) return null;
   const userResults = results.filter(r => r.userId === user.id);
   const modules = ["reading", "listening", "writing", "speaking"];
@@ -94,6 +148,8 @@ function UserModal({ user, results, onClose }) {
   });
   const icons = { reading: BookOpen, listening: Headphones, writing: PenLine, speaking: Mic };
   const colors = { reading: ACCENT.cyan, listening: ACCENT.purple, writing: ACCENT.amber, speaking: ACCENT.green };
+
+  const tInfo = getTelemetryInfo(telemetryDoc);
 
   return (
     <div style={{
@@ -106,7 +162,7 @@ function UserModal({ user, results, onClose }) {
         onClick={e => e.stopPropagation()}
         style={{
           background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24,
-          padding: 32, width: "100%", maxWidth: 700, maxHeight: "85vh",
+          padding: 32, width: "100%", maxWidth: 720, maxHeight: "85vh",
           overflowY: "auto", position: "relative",
           boxShadow: "0 30px 80px rgba(0,0,0,.25)",
         }}
@@ -124,7 +180,7 @@ function UserModal({ user, results, onClose }) {
           </div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: "var(--text)" }}>
-              {user.displayName || user.email?.split("@")[0] || "Unknown"}
+              {user.displayName || user.email?.split("@")[0] || "Unknown Candidate"}
             </div>
             <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{user.email}</div>
             <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>Joined {fmtDate(user.createdAt)}</div>
@@ -133,6 +189,27 @@ function UserModal({ user, results, onClose }) {
             <span style={{ fontSize: 12, fontWeight: 700, padding: "5px 14px", borderRadius: 999, background: user.premium ? "#dcfce7" : "#fee2e2", color: user.premium ? "#166534" : "#991b1b" }}>
               {user.premium ? "👑 Premium" : "Free"}
             </span>
+          </div>
+        </div>
+
+        {/* Telemetry Engagement Box */}
+        <div style={{ background: "rgba(37,99,235,.06)", border: "1px solid rgba(37,99,235,.2)", borderRadius: 16, padding: 18, marginBottom: 24 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: "var(--primary)", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+            <Timer size={16} /> User App Telemetry &amp; Time Stayed
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12 }}>
+            <div style={{ background: "var(--card)", padding: 12, borderRadius: 12, border: "1px solid var(--border)" }}>
+              <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>Total Time Stayed</div>
+              <div style={{ fontSize: 18, fontWeight: 900, color: ACCENT.blue, marginTop: 4 }}>{tInfo.minutesStr}</div>
+            </div>
+            <div style={{ background: "var(--card)", padding: 12, borderRadius: 12, border: "1px solid var(--border)" }}>
+              <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>Most Visited Page</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: ACCENT.purple, marginTop: 4 }}>{tInfo.topVisited}</div>
+            </div>
+            <div style={{ background: "var(--card)", padding: 12, borderRadius: 12, border: "1px solid var(--border)" }}>
+              <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>Most Time Spent Page</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: ACCENT.green, marginTop: 4 }}>{tInfo.topTimeSpent}</div>
+            </div>
           </div>
         </div>
 
@@ -184,14 +261,15 @@ function UserModal({ user, results, onClose }) {
 export default function MonitorPanel() {
   const [users, setUsers] = useState([]);
   const [results, setResults] = useState([]);
+  const [telemetry, setTelemetry] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
   const [filterPlan, setFilterPlan] = useState("all"); // all | premium | free
-  const [sortBy, setSortBy] = useState("joined"); // joined | name | tests | band
+  const [sortBy, setSortBy] = useState("joined"); // joined | name | tests | band | stay
   const [sortDir, setSortDir] = useState("desc");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview"); // overview | users | results | traffic
+  const [activeTab, setActiveTab] = useState("overview"); // overview | users | engagement | results | traffic
 
   // GA4 traffic data
   const [trafficData, setTrafficData] = useState(null);
@@ -202,14 +280,16 @@ export default function MonitorPanel() {
     if (!silent) setLoading(true);
     else setRefreshing(true);
     try {
-      const [usersSnap, resultsSnap] = await Promise.all([
+      const [usersSnap, resultsSnap, telemetrySnap] = await Promise.all([
         getDocs(collection(db, "users")),
         getDocs(collection(db, "results")),
+        getDocs(collection(db, "telemetry")),
       ]);
       setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       setResults(resultsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setTelemetry(telemetrySnap.docs.map(d => ({ id: d.id, ...d.data() })));
     } catch (e) {
-      console.error("MonitorPanel fetch:", e);
+      console.error("MonitorPanel fetch error:", e);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -238,7 +318,74 @@ export default function MonitorPanel() {
     }
   }, [activeTab]); // eslint-disable-line
 
-  // ── derived stats ─────────────────────────────────────────────────────────
+  // Map telemetry by User ID
+  const telemetryMap = useMemo(() => {
+    const map = {};
+    telemetry.forEach(t => {
+      if (t.id || t.userId) map[t.id || t.userId] = t;
+    });
+    return map;
+  }, [telemetry]);
+
+  // Global Platform Engagement Stats
+  const platformEngagement = useMemo(() => {
+    let totalSecondsSum = 0;
+    const viewsByPath = {};
+    const durationByPath = {};
+
+    telemetry.forEach(tDoc => {
+      totalSecondsSum += (tDoc.totalSeconds || 0);
+
+      if (tDoc.pageViews) {
+        Object.entries(tDoc.pageViews).forEach(([key, count]) => {
+          const pathName = tDoc.pathNames?.[key] || key;
+          viewsByPath[pathName] = (viewsByPath[pathName] || 0) + Number(count || 0);
+        });
+      }
+      if (tDoc.pageDurations) {
+        Object.entries(tDoc.pageDurations).forEach(([key, secs]) => {
+          const pathName = tDoc.pathNames?.[key] || key;
+          durationByPath[pathName] = (durationByPath[pathName] || 0) + Number(secs || 0);
+        });
+      }
+    });
+
+    const allPaths = Array.from(new Set([...Object.keys(viewsByPath), ...Object.keys(durationByPath)]));
+
+    const pageList = allPaths.map(path => {
+      const visits = viewsByPath[path] || 0;
+      const totalSecs = durationByPath[path] || 0;
+      const minutes = Math.round(totalSecs / 60);
+      const avgMins = visits > 0 ? +(minutes / visits).toFixed(1) : 0;
+      return {
+        path,
+        label: getRouteLabel(path),
+        visits,
+        minutes,
+        avgMins,
+      };
+    });
+
+    const sortedByVisits = [...pageList].sort((a, b) => b.visits - a.visits);
+    const sortedByMinutes = [...pageList].sort((a, b) => b.minutes - a.minutes);
+
+    const mostVisited = sortedByVisits[0] || { label: "Dashboard", visits: 0 };
+    const mostTimeSpent = sortedByMinutes[0] || { label: "Reading Center", minutes: 0 };
+
+    const totalMinutesSum = Math.round(totalSecondsSum / 60);
+    const avgUserMins = users.length > 0 ? (totalMinutesSum / users.length).toFixed(1) : 0;
+
+    return {
+      totalMinutesSum,
+      totalHoursSum: (totalMinutesSum / 60).toFixed(1),
+      avgUserMins,
+      mostVisited,
+      mostTimeSpent,
+      pageList: sortedByMinutes,
+    };
+  }, [telemetry, users]);
+
+  // Derived stats
   const premiumCount = useMemo(() => users.filter(u => u.premium).length, [users]);
   const freeCount = users.length - premiumCount;
 
@@ -258,35 +405,7 @@ export default function MonitorPanel() {
     ];
   }, [results]);
 
-  // last 7 days signups
-  const signupChart = useMemo(() => {
-    const days = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(); d.setDate(d.getDate() - (6 - i));
-      return { label: d.toLocaleDateString("en-IN", { weekday: "short" }), date: d.toDateString(), count: 0 };
-    });
-    users.forEach(u => {
-      const d = u.createdAt?.toDate ? u.createdAt.toDate() : new Date(u.createdAt || 0);
-      const entry = days.find(x => x.date === d.toDateString());
-      if (entry) entry.count++;
-    });
-    return days;
-  }, [users]);
-
-  // last 7 days activity (tests taken)
-  const activityChart = useMemo(() => {
-    const days = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(); d.setDate(d.getDate() - (6 - i));
-      return { label: d.toLocaleDateString("en-IN", { weekday: "short" }), date: d.toDateString(), count: 0 };
-    });
-    results.forEach(r => {
-      const d = r.completedAt?.toDate ? r.completedAt.toDate() : new Date(r.completedAt || 0);
-      const entry = days.find(x => x.date === d.toDateString());
-      if (entry) entry.count++;
-    });
-    return days;
-  }, [results]);
-
-  // per-user result counts + avg bands
+  // Per-user result counts + avg bands
   const userStats = useMemo(() => {
     const map = {};
     results.forEach(r => {
@@ -298,7 +417,7 @@ export default function MonitorPanel() {
     return map;
   }, [results]);
 
-  // ── filtered / sorted user list ────────────────────────────────────────────
+  // Filtered / sorted user list
   const filteredUsers = useMemo(() => {
     let list = [...users];
     if (filterPlan === "premium") list = list.filter(u => u.premium);
@@ -315,6 +434,7 @@ export default function MonitorPanel() {
       let av, bv;
       if (sortBy === "name") { av = (a.displayName || a.email || "").toLowerCase(); bv = (b.displayName || b.email || "").toLowerCase(); }
       else if (sortBy === "tests") { av = userStats[a.id]?.count || 0; bv = userStats[b.id]?.count || 0; }
+      else if (sortBy === "stay") { av = telemetryMap[a.id]?.totalSeconds || 0; bv = telemetryMap[b.id]?.totalSeconds || 0; }
       else if (sortBy === "band") {
         const ab = userStats[a.id]?.bands || []; const bb = userStats[b.id]?.bands || [];
         av = ab.length ? ab.reduce((s, x) => s + x, 0) / ab.length : 0;
@@ -328,7 +448,7 @@ export default function MonitorPanel() {
       return sortDir === "asc" ? av - bv : bv - av;
     });
     return list;
-  }, [users, filterPlan, search, sortBy, sortDir, userStats]);
+  }, [users, filterPlan, search, sortBy, sortDir, userStats, telemetryMap]);
 
   function toggleSort(col) {
     if (sortBy === col) setSortDir(d => d === "asc" ? "desc" : "asc");
@@ -357,17 +477,17 @@ export default function MonitorPanel() {
     <div style={{ minHeight: "100vh", background: "var(--bg)", fontFamily: "Inter, sans-serif" }}>
       <div style={{ maxWidth: 1300, margin: "0 auto", padding: "60px 24px 80px" }}>
 
-        {/* ── Page header ── */}
+        {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginBottom: 36 }}>
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "5px 14px", borderRadius: 999, background: "rgba(37,99,235,.10)", color: "var(--primary)", fontSize: 12, fontWeight: 700, marginBottom: 10 }}>
               <Eye size={13} /> MONITORING PANEL
             </div>
             <h1 style={{ fontSize: "clamp(1.6rem,3vw,2.4rem)", fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-1px" }}>
-              User Analytics
+              User Analytics &amp; Time Engagement
             </h1>
             <p style={{ color: "var(--text-secondary)", marginTop: 6, fontSize: 14 }}>
-              {users.length} total users · {results.length} test results · read-only view
+              {users.length} registered candidates · {platformEngagement.totalHoursSum} hrs total stay time · {results.length} test submissions
             </p>
           </div>
           <button onClick={() => fetchData(true)} style={{
@@ -376,66 +496,59 @@ export default function MonitorPanel() {
             fontSize: 13, fontWeight: 700, cursor: "pointer",
           }}>
             <RefreshCw size={15} style={{ animation: refreshing ? "spin .8s linear infinite" : "none" }} />
-            Refresh
+            Refresh Data
           </button>
         </div>
 
-        {/* ── Tabs ── */}
-        <div style={{ display: "flex", gap: 4, marginBottom: 28, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 999, padding: 4, width: "fit-content" }}>
-          {["overview", "users", "results", "traffic"].map(t => (
-            <button key={t} onClick={() => setActiveTab(t)} style={TAB_STYLE(t)}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-            </button>
-          ))}
+        {/* Stat cards overview */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginBottom: 36 }}>
+          <StatCard label="Total App Stay Time" value={`${platformEngagement.totalMinutesSum} m`} sub={`${platformEngagement.totalHoursSum} hours across candidates`} icon={Timer} color={ACCENT.blue} />
+          <StatCard label="Most Visited Page" value={platformEngagement.mostVisited.label} sub={`${platformEngagement.mostVisited.visits} total visits`} icon={Compass} color={ACCENT.purple} />
+          <StatCard label="Most Time Spent Page" value={platformEngagement.mostTimeSpent.label} sub={`${platformEngagement.mostTimeSpent.minutes} mins spent total`} icon={Clock} color={ACCENT.green} />
+          <StatCard label="Avg Stay per User" value={`${platformEngagement.avgUserMins} m`} sub="Average minutes per candidate" icon={Users} color={ACCENT.amber} />
+          <StatCard label="Avg Platform Band" value={avgBand} sub="Across all test modules" icon={Award} color={ACCENT.cyan} />
+        </div>
+
+        {/* Nav Tabs */}
+        <div style={{ display: "flex", gap: 8, background: "var(--card)", border: "1px solid var(--border)", borderRadius: 999, padding: 4, width: "fit-content", marginBottom: 28 }}>
+          <button style={TAB_STYLE("overview")} onClick={() => setActiveTab("overview")}>Overview</button>
+          <button style={TAB_STYLE("users")} onClick={() => setActiveTab("users")}>Users &amp; Stay Time ({users.length})</button>
+          <button style={TAB_STYLE("engagement")} onClick={() => setActiveTab("engagement")}>Page Engagement</button>
+          <button style={TAB_STYLE("results")} onClick={() => setActiveTab("results")}>Test Results ({results.length})</button>
+          <button style={TAB_STYLE("traffic")} onClick={() => setActiveTab("traffic")}>GA4 Web Traffic</button>
         </div>
 
         {/* ══════════ OVERVIEW TAB ══════════ */}
         {activeTab === "overview" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
-            {/* Stat cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 28 }}>
-              <StatCard label="Total Users"    value={users.length}  icon={Users}     color={ACCENT.blue}   />
-              <StatCard label="Premium Users"  value={premiumCount}  sub={`${freeCount} on Free`} icon={Crown} color={ACCENT.purple} />
-              <StatCard label="Tests Completed" value={results.length} icon={BarChart3} color={ACCENT.cyan}  />
-              <StatCard label="Avg Band Score" value={avgBand}       icon={TrendingUp} color={ACCENT.green}  />
-            </div>
-
-            {/* Charts row */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20, marginBottom: 28 }}>
-
-              {/* Signups chart */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 20 }}>
+              {/* Page Engagement Ranking */}
               <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                <SectionHeader title="New Signups (Last 7 Days)" icon={Calendar} color={ACCENT.blue} />
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={signupChart}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
-                    <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
-                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
-                    <Bar dataKey="count" fill={ACCENT.blue} radius={[6, 6, 0, 0]} name="Signups" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Activity chart */}
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                <SectionHeader title="Tests Taken (Last 7 Days)" icon={Activity} color={ACCENT.cyan} />
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={activityChart}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
-                    <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
-                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
-                    <Line type="monotone" dataKey="count" stroke={ACCENT.cyan} strokeWidth={2.5} dot={{ r: 4, fill: ACCENT.cyan }} name="Tests" />
-                  </LineChart>
-                </ResponsiveContainer>
+                <SectionHeader title="Top Time-Spent Pages" icon={Clock} color={ACCENT.green} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {platformEngagement.pageList.slice(0, 6).map((item, idx) => (
+                    <div key={item.path} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 12, fontWeight: 900, color: ACCENT.blue, width: 18 }}>#{idx + 1}</span>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{item.label}</div>
+                          <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{item.path} · {item.visits} visits</div>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: ACCENT.green }}>{item.minutes} mins</div>
+                        <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>avg {item.avgMins}m / visit</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Module breakdown */}
               <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
                 <SectionHeader title="Tests by Module" icon={BookOpen} color={ACCENT.amber} />
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={moduleBreakdown} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
@@ -447,43 +560,18 @@ export default function MonitorPanel() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-
-              {/* Plan split */}
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24, display: "flex", flexDirection: "column" }}>
-                <SectionHeader title="Plan Distribution" icon={Crown} color={ACCENT.purple} />
-                <ResponsiveContainer width="100%" height={160}>
-                  <PieChart>
-                    <Pie data={[{ name: "Premium", value: premiumCount }, { name: "Free", value: freeCount }]}
-                      cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={4} dataKey="value">
-                      <Cell fill={ACCENT.purple} /> <Cell fill={ACCENT.blue} />
-                    </Pie>
-                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
-                    <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 8 }}>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 24, fontWeight: 900, color: ACCENT.purple }}>{premiumCount}</div>
-                    <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>Premium</div>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 24, fontWeight: 900, color: ACCENT.blue }}>{freeCount}</div>
-                    <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>Free</div>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* Top users by tests */}
+            {/* Top users by stay time */}
             <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-              <SectionHeader title="Most Active Users" icon={Award} color={ACCENT.green} />
+              <SectionHeader title="Top Candidates by App Stay Time" icon={Timer} color={ACCENT.blue} />
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[...users].sort((a, b) => (userStats[b.id]?.count || 0) - (userStats[a.id]?.count || 0)).slice(0, 8).map((u, i) => {
-                  const st = userStats[u.id] || { count: 0, bands: [] };
-                  const avg = st.bands.length ? (st.bands.reduce((s, x) => s + x, 0) / st.bands.length).toFixed(1) : null;
+                {[...users].sort((a, b) => (telemetryMap[b.id]?.totalSeconds || 0) - (telemetryMap[a.id]?.totalSeconds || 0)).slice(0, 8).map((u, i) => {
+                  const tInfo = getTelemetryInfo(telemetryMap[u.id]);
+                  const st = userStats[u.id] || { count: 0 };
                   return (
                     <div key={u.id} onClick={() => setSelectedUser(u)}
-                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, cursor: "pointer", transition: "border-color .2s" }}
+                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, cursor: "pointer", transition: "border-color .2s" }}
                       onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
                       onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
                     >
@@ -496,9 +584,11 @@ export default function MonitorPanel() {
                         </div>
                         <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{u.email}</div>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 14, flexShrink: 0 }}>
-                        <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{st.count} tests</span>
-                        {avg && <span style={{ fontSize: 14, fontWeight: 800, color: bandColor(avg) }}>Band {avg}</span>}
+                      <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 14, fontWeight: 900, color: ACCENT.blue }}>{tInfo.minutesStr}</div>
+                          <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Top: {tInfo.topTimeSpent}</div>
+                        </div>
                         <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: u.premium ? "#dcfce7" : "#fee2e2", color: u.premium ? "#166534" : "#991b1b" }}>
                           {u.premium ? "Premium" : "Free"}
                         </span>
@@ -511,7 +601,7 @@ export default function MonitorPanel() {
           </motion.div>
         )}
 
-        {/* ══════════ USERS TAB ══════════ */}
+        {/* ══════════ USERS & STAY TIME TAB ══════════ */}
         {activeTab === "users" && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
 
@@ -533,8 +623,8 @@ export default function MonitorPanel() {
             {/* Table */}
             <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, overflow: "hidden" }}>
               {/* Table header */}
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1.6fr 80px 80px 90px 80px", gap: 0, padding: "12px 20px", background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
-                {[["Name / Email", "name"], ["Joined", "joined"], ["Tests", "tests"], ["Avg Band", "band"], ["Plan", null], ["Actions", null]].map(([label, col]) => (
+              <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 100px 1.2fr 1.2fr 80px 80px", gap: 8, padding: "12px 20px", background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
+                {[["Candidate Name", "name"], ["Joined", "joined"], ["Time Stayed", "stay"], ["Most Visited Page", null], ["Most Time Spent Page", null], ["Tests", "tests"], ["Actions", null]].map(([label, col]) => (
                   <div key={label} onClick={col ? () => toggleSort(col) : undefined}
                     style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: ".5px", cursor: col ? "pointer" : "default", display: "flex", alignItems: "center", gap: 4, userSelect: "none" }}>
                     {label} <SortIcon col={col} />
@@ -549,30 +639,33 @@ export default function MonitorPanel() {
                 ) : (
                   filteredUsers.map(u => {
                     const st = userStats[u.id] || { count: 0, bands: [] };
-                    const avg = st.bands.length ? (st.bands.reduce((s, x) => s + x, 0) / st.bands.length).toFixed(1) : null;
+                    const tInfo = getTelemetryInfo(telemetryMap[u.id]);
                     return (
                       <div key={u.id}
-                        style={{ display: "grid", gridTemplateColumns: "2fr 1.6fr 80px 80px 90px 80px", gap: 0, padding: "14px 20px", borderBottom: "1px solid var(--border)", alignItems: "center", transition: "background .15s" }}
+                        style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 100px 1.2fr 1.2fr 80px 80px", gap: 8, padding: "14px 20px", borderBottom: "1px solid var(--border)", alignItems: "center", transition: "background .15s" }}
                         onMouseEnter={e => e.currentTarget.style.background = "var(--surface)"}
                         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                       >
                         <div style={{ minWidth: 0 }}>
                           <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {u.displayName || u.email?.split("@")[0] || "—"}
+                            {u.displayName || u.email?.split("@")[0] || "Candidate"}
                           </div>
                           <div style={{ fontSize: 12, color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.email}</div>
                         </div>
-                        <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+                        <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
                           <div>{fmtDate(u.createdAt)}</div>
                           <div style={{ fontSize: 11 }}>{ago(u.createdAt)}</div>
                         </div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>{st.count}</div>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: avg ? bandColor(avg) : "var(--text-secondary)" }}>{avg || "—"}</div>
                         <div>
-                          <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999, background: u.premium ? "#dcfce7" : "#fee2e2", color: u.premium ? "#166534" : "#991b1b" }}>
-                            {u.premium ? "👑 Premium" : "Free"}
-                          </span>
+                          <span style={{ fontSize: 13, fontWeight: 800, color: ACCENT.blue }}>{tInfo.minutesStr}</span>
                         </div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {tInfo.topVisited}
+                        </div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: ACCENT.green, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {tInfo.topTimeSpent}
+                        </div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>{st.count}</div>
                         <div>
                           <button onClick={() => setSelectedUser(u)}
                             style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "none", color: "var(--primary)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
@@ -585,7 +678,35 @@ export default function MonitorPanel() {
                 )}
               </div>
               <div style={{ padding: "10px 20px", background: "var(--surface)", borderTop: "1px solid var(--border)", fontSize: 12, color: "var(--text-secondary)" }}>
-                Showing {filteredUsers.length} of {users.length} users
+                Showing {filteredUsers.length} of {users.length} candidates
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ══════════ PAGE ENGAGEMENT TAB ══════════ */}
+        {activeTab === "engagement" && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24, marginBottom: 24 }}>
+              <SectionHeader title="Page Engagement Breakdown (Time Spent &amp; Visits)" icon={Layers} color={ACCENT.purple} />
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", borderBottom: "1px solid var(--border)", borderRadius: 10, marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Page Name / Route</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Visits</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Time Spent</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Avg Mins / Visit</div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {platformEngagement.pageList.map((item) => (
+                  <div key={item.path} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>{item.label}</div>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{item.path}</div>
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: ACCENT.purple }}>{item.visits} visits</div>
+                    <div style={{ fontSize: 15, fontWeight: 900, color: ACCENT.green }}>{item.minutes} mins</div>
+                    <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{item.avgMins}m / visit</div>
+                  </div>
+                ))}
               </div>
             </div>
           </motion.div>
@@ -619,27 +740,18 @@ export default function MonitorPanel() {
                   const mod = (r.module || r.type || "—").toLowerCase();
                   const modColors = { reading: ACCENT.cyan, listening: ACCENT.purple, writing: ACCENT.amber, speaking: ACCENT.green };
                   return (
-                    <div key={i}
-                      style={{ display: "grid", gridTemplateColumns: "1.2fr 1.5fr 90px 90px 110px 100px", padding: "12px 20px", borderBottom: "1px solid var(--border)", alignItems: "center", transition: "background .15s" }}
-                      onMouseEnter={e => e.currentTarget.style.background = "var(--surface)"}
-                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                    >
-                      <div>
-                        <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: `${modColors[mod] || "#94a3b8"}18`, color: modColors[mod] || "#94a3b8", textTransform: "capitalize" }}>{mod}</span>
-                      </div>
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.2fr 1.5fr 90px 90px 110px 100px", padding: "12px 20px", borderBottom: "1px solid var(--border)", alignItems: "center" }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: modColors[mod] || "var(--text)", textTransform: "capitalize" }}>{r.module || r.type || "—"}</div>
                       <div style={{ fontSize: 13, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {u ? (u.displayName || u.email?.split("@")[0]) : r.userId?.slice(0, 10) || "—"}
+                        {u?.displayName || u?.email?.split("@")[0] || r.userId || "Anonymous"}
                       </div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: bandColor(r.band) }}>{r.band || "—"}</div>
-                      <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{r.score != null ? `${r.score}/${r.total || "?"}` : "—"}</div>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: bandColor(r.band || r.score) }}>{r.band || "—"}</div>
+                      <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{r.rawScore !== undefined ? `${r.rawScore}/${r.totalQuestions || 40}` : "—"}</div>
                       <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{fmtDate(r.completedAt)}</div>
-                      <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{fmtTime(r.completedAt)}</div>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{ago(r.completedAt)}</div>
                     </div>
                   );
                 })}
-              </div>
-              <div style={{ padding: "10px 20px", background: "var(--surface)", borderTop: "1px solid var(--border)", fontSize: 12, color: "var(--text-secondary)" }}>
-                Showing latest {Math.min(200, results.length)} of {results.length} results
               </div>
             </div>
           </motion.div>
@@ -648,185 +760,37 @@ export default function MonitorPanel() {
         {/* ══════════ TRAFFIC TAB ══════════ */}
         {activeTab === "traffic" && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-              <div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: "var(--text)", margin: 0 }}>Web Traffic — Last 7 Days</h2>
-                <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 4 }}>Powered by Google Analytics 4</p>
+            {trafficLoading ? (
+              <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-secondary)" }}>Loading GA4 analytics…</div>
+            ) : trafficError ? (
+              <div style={{ padding: 24, background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 16, color: "#991b1b" }}>
+                <strong>GA4 Connection Notice:</strong> {trafficError}
               </div>
-              <button onClick={fetchTrafficData} style={{
-                display: "flex", alignItems: "center", gap: 7, padding: "9px 16px", borderRadius: 12,
-                border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)",
-                fontSize: 13, fontWeight: 700, cursor: "pointer",
-              }}>
-                <RefreshCw size={14} style={{ animation: trafficLoading ? "spin .8s linear infinite" : "none" }} />
-                Refresh
-              </button>
-            </div>
-
-            {/* Not configured notice */}
-            {trafficData && !trafficData.configured && (
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 32, textAlign: "center", marginBottom: 24 }}>
-                <Globe size={40} color={ACCENT.amber} style={{ marginBottom: 12 }} />
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--text)", marginBottom: 8 }}>GA4 Not Configured</h3>
-                <p style={{ fontSize: 14, color: "var(--text-secondary)", maxWidth: 520, margin: "0 auto 16px" }}>
-                  To display real web traffic data, set up Google Analytics 4 and add these environment variables to your Vercel project:
-                </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6, maxWidth: 480, margin: "0 auto", textAlign: "left" }}>
-                  {["GA4_PROPERTY_ID — e.g. properties/123456789", "GA4_CLIENT_EMAIL — service account email", "GA4_PRIVATE_KEY — service account private key"].map(v => (
-                    <div key={v} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "8px 14px", fontSize: 13, fontFamily: "monospace", color: "var(--text)" }}>
-                      {v}
-                    </div>
-                  ))}
+            ) : trafficData ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+                  <StatCard label="Active Users (30d)" value={trafficData.activeUsers || "—"} icon={Users} color={ACCENT.blue} />
+                  <StatCard label="Page Views" value={trafficData.screenPageViews || "—"} icon={Globe} color={ACCENT.purple} />
+                  <StatCard label="Sessions" value={trafficData.sessions || "—"} icon={Activity} color={ACCENT.green} />
                 </div>
-                <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 16 }}>
-                  Also replace <code>G-XXXXXXXXXX</code> in index.html with your GA4 Measurement ID.
-                </p>
               </div>
-            )}
-
-            {trafficError && (
-              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 16, padding: "16px 20px", color: "#b91c1c", fontSize: 14, marginBottom: 20 }}>
-                ⚠ {trafficError}
-              </div>
-            )}
-
-            {trafficLoading && (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-secondary)" }}>
-                <RefreshCw size={28} style={{ animation: "spin .8s linear infinite", marginBottom: 10 }} />
-                <div>Loading traffic data…</div>
-              </div>
-            )}
-
-            {trafficData && trafficData.configured && !trafficLoading && (() => {
-              const rows = trafficData.dailyStats?.rows || [];
-              const dailyChartData = rows.map(r => ({
-                label: r.dimensionValues[0].value.replace(/(\d{4})(\d{2})(\d{2})/, "$3/$2"),
-                sessions: Number(r.metricValues[0].value),
-                users: Number(r.metricValues[1].value),
-                pageviews: Number(r.metricValues[2].value),
-                newUsers: Number(r.metricValues[3].value),
-              })).sort((a, b) => a.label.localeCompare(b.label));
-
-              const totals = dailyChartData.reduce((acc, d) => ({
-                sessions: acc.sessions + d.sessions,
-                users: acc.users + d.users,
-                pageviews: acc.pageviews + d.pageviews,
-                newUsers: acc.newUsers + d.newUsers,
-              }), { sessions: 0, users: 0, pageviews: 0, newUsers: 0 });
-
-              const topPages = (trafficData.topPages?.rows || []).map(r => ({
-                path: r.dimensionValues[0].value,
-                views: Number(r.metricValues[0].value),
-                users: Number(r.metricValues[1].value),
-              }));
-
-              const sources = (trafficData.sources?.rows || []).map(r => ({
-                source: r.dimensionValues[0].value || "(direct)",
-                sessions: Number(r.metricValues[0].value),
-                users: Number(r.metricValues[1].value),
-              }));
-
-              return (
-                <>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 24 }}>
-                    <StatCard label="Total Sessions"  value={totals.sessions.toLocaleString()}  icon={Wifi}         color={ACCENT.blue}   />
-                    <StatCard label="Active Users"    value={totals.users.toLocaleString()}     icon={Users}        color={ACCENT.purple} />
-                    <StatCard label="Total Pageviews" value={totals.pageviews.toLocaleString()} icon={MousePointer} color={ACCENT.cyan}   />
-                    <StatCard label="New Users"       value={totals.newUsers.toLocaleString()}  icon={TrendingUp}   color={ACCENT.green}  />
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20, marginBottom: 24 }}>
-                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                      <SectionHeader title="Sessions per Day" icon={Activity} color={ACCENT.blue} />
-                      <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={dailyChartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
-                          <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
-                          <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
-                          <Bar dataKey="sessions" fill={ACCENT.blue} radius={[6, 6, 0, 0]} name="Sessions" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                      <SectionHeader title="Pageviews & Users per Day" icon={Eye} color={ACCENT.cyan} />
-                      <ResponsiveContainer width="100%" height={200}>
-                        <LineChart data={dailyChartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
-                          <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
-                          <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
-                          <Line type="monotone" dataKey="pageviews" stroke={ACCENT.cyan} strokeWidth={2.5} dot={{ r: 4, fill: ACCENT.cyan }} name="Pageviews" />
-                          <Line type="monotone" dataKey="users" stroke={ACCENT.purple} strokeWidth={2} strokeDasharray="4 2" dot={false} name="Users" />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20 }}>
-                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                      <SectionHeader title="Top Pages" icon={Navigation} color={ACCENT.amber} />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        {topPages.length === 0
-                          ? <div style={{ color: "var(--text-secondary)", fontSize: 14, textAlign: "center", padding: "20px 0" }}>No data</div>
-                          : topPages.map((p, i) => (
-                            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10 }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                                <span style={{ fontSize: 12, fontWeight: 800, color: "var(--primary)", width: 20, flexShrink: 0 }}>{i + 1}</span>
-                                <span style={{ fontSize: 13, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.path}</span>
-                              </div>
-                              <div style={{ display: "flex", gap: 14, flexShrink: 0, marginLeft: 8 }}>
-                                <span style={{ fontSize: 13, fontWeight: 700, color: ACCENT.cyan }}>{p.views.toLocaleString()} views</span>
-                                <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{p.users} users</span>
-                              </div>
-                            </div>
-                          ))
-                        }
-                      </div>
-                    </div>
-
-                    <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                      <SectionHeader title="Traffic Sources" icon={Globe} color={ACCENT.green} />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {sources.length === 0
-                          ? <div style={{ color: "var(--text-secondary)", fontSize: 14, textAlign: "center", padding: "20px 0" }}>No data</div>
-                          : sources.map((s, i) => {
-                            const maxSessions = sources[0]?.sessions || 1;
-                            const pct = Math.round((s.sessions / maxSessions) * 100);
-                            return (
-                              <div key={i}>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                                  <span style={{ fontSize: 13, color: "var(--text)", fontWeight: 600, textTransform: "capitalize" }}>{s.source}</span>
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{s.sessions.toLocaleString()} sessions</span>
-                                </div>
-                                <div style={{ height: 6, borderRadius: 999, background: "var(--border)" }}>
-                                  <div style={{ height: "100%", borderRadius: 999, width: `${pct}%`, background: ACCENT.green, transition: "width .5s ease" }} />
-                                </div>
-                              </div>
-                            );
-                          })
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
+            ) : null}
           </motion.div>
         )}
 
       </div>
 
-      {/* User detail modal */}
+      {/* Detail Modal */}
       <AnimatePresence>
         {selectedUser && (
-          <UserModal user={selectedUser} results={results} onClose={() => setSelectedUser(null)} />
+          <UserModal
+            user={selectedUser}
+            results={results}
+            telemetryDoc={telemetryMap[selectedUser.id]}
+            onClose={() => setSelectedUser(null)}
+          />
         )}
       </AnimatePresence>
-
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

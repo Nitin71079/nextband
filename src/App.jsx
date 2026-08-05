@@ -95,8 +95,11 @@ const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const MonitorPanel = lazy(() => import("./pages/MonitorPanel"));
 const VideoCommercialAd = lazy(() => import("./pages/VideoCommercialAd"));
 
+import { useTelemetryTracker } from "./hooks/useTelemetryTracker";
+
 function App() {
-  
+  useTelemetryTracker();
+
   return (
     <>
       <ScrollToTop />
