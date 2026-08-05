@@ -759,22 +759,62 @@ export default function MonitorPanel() {
 
         {/* ══════════ TRAFFIC TAB ══════════ */}
         {activeTab === "traffic" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
-            {trafficLoading ? (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-secondary)" }}>Loading GA4 analytics…</div>
-            ) : trafficError ? (
-              <div style={{ padding: 24, background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 16, color: "#991b1b" }}>
-                <strong>GA4 Connection Notice:</strong> {trafficError}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            
+            {/* Live Native Web Traffic Header */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+              <StatCard label="Live Tracked Candidates" value={telemetry.length || users.length} sub="Active candidate sessions" icon={Users} color={ACCENT.blue} />
+              <StatCard label="Total Screen Page Views" value={platformEngagement.pageList.reduce((s, p) => s + p.visits, 0)} sub="Across all app routes" icon={Globe} color={ACCENT.purple} />
+              <StatCard label="Total Platform Stay Time" value={`${platformEngagement.totalMinutesSum} m`} sub={`${platformEngagement.totalHoursSum} total stay hours`} icon={Clock} color={ACCENT.green} />
+              <StatCard label="Avg Stay / Candidate" value={`${platformEngagement.avgUserMins} m`} sub="Minutes spent per candidate" icon={Activity} color={ACCENT.amber} />
+            </div>
+
+            {/* Daily Traffic Chart */}
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+              <SectionHeader title="Daily Candidate Traffic &amp; Test Activity (Last 7 Days)" icon={TrendingUp} color={ACCENT.cyan} />
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={signupChart}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
+                  <Line type="monotone" dataKey="count" stroke={ACCENT.blue} strokeWidth={3} dot={{ r: 5, fill: ACCENT.blue }} name="New Signups" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Top Visited Pages Table */}
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+              <SectionHeader title="Most Visited Web Pages &amp; Time Spent" icon={Navigation} color={ACCENT.purple} />
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", borderBottom: "1px solid var(--border)", borderRadius: 10, marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Page Title / Route</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Page Views</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Time Spent</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Avg Stay / Visit</div>
               </div>
-            ) : trafficData ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
-                  <StatCard label="Active Users (30d)" value={trafficData.activeUsers || "—"} icon={Users} color={ACCENT.blue} />
-                  <StatCard label="Page Views" value={trafficData.screenPageViews || "—"} icon={Globe} color={ACCENT.purple} />
-                  <StatCard label="Sessions" value={trafficData.sessions || "—"} icon={Activity} color={ACCENT.green} />
-                </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {platformEngagement.pageList.map((item, idx) => (
+                  <div key={item.path} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>{idx + 1}. {item.label}</div>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{item.path}</div>
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: ACCENT.purple }}>{item.visits} views</div>
+                    <div style={{ fontSize: 14, fontWeight: 900, color: ACCENT.green }}>{item.minutes} mins</div>
+                    <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{item.avgMins}m</div>
+                  </div>
+                ))}
               </div>
-            ) : null}
+            </div>
+
+            {/* Optional GA4 Sync Notice */}
+            <div style={{ padding: "14px 18px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, fontSize: 12, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 10 }}>
+              <Globe size={16} color="var(--primary)" />
+              <span>
+                <strong>Native Live Analytics Active:</strong> Tracking real-time user stay duration and page views. To optionally connect external Google Analytics 4, add <code style={{ background: "var(--card)", padding: "2px 6px", borderRadius: 4 }}>GA4_PROPERTY_ID</code>, <code style={{ background: "var(--card)", padding: "2px 6px", borderRadius: 4 }}>GA4_CLIENT_EMAIL</code>, and <code style={{ background: "var(--card)", padding: "2px 6px", borderRadius: 4 }}>GA4_PRIVATE_KEY</code> to your environment variables.
+              </span>
+            </div>
+
           </motion.div>
         )}
 
