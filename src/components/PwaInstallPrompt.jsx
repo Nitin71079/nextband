@@ -17,15 +17,29 @@ export default function PwaInstallPrompt() {
   const repeatIntervalRef = useRef(null);
 
   useEffect(() => {
-    const checkStandalone = () => {
-      return (
+    // Check if app is running in standalone mode OR if user already installed/dismissed it
+    const checkStandaloneOrInstalled = () => {
+      const isStandalone = (
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.matchMedia("(display-mode: window-controls-overlay)").matches ||
+        window.navigator.standalone === true ||
+        localStorage.getItem("knarrow_pwa_installed") === "true" ||
+        localStorage.getItem("knarrow_pwa_dismissed") === "true"
+      );
+
+      if (
         window.matchMedia("(display-mode: standalone)").matches ||
         window.navigator.standalone === true
-      );
+      ) {
+        localStorage.setItem("knarrow_pwa_installed", "true");
+      }
+
+      return isStandalone;
     };
 
-    if (checkStandalone()) {
+    if (checkStandaloneOrInstalled()) {
       setIsInstalled(true);
+      setShowPrompt(false);
       return;
     }
 
@@ -42,6 +56,7 @@ export default function PwaInstallPrompt() {
     };
 
     const handleAppInstalled = () => {
+      localStorage.setItem("knarrow_pwa_installed", "true");
       setIsInstalled(true);
       setShowPrompt(false);
     };
@@ -50,7 +65,10 @@ export default function PwaInstallPrompt() {
     window.addEventListener("appinstalled", handleAppInstalled);
 
     const triggerPromptFor30s = () => {
-      if (checkStandalone()) return;
+      if (checkStandaloneOrInstalled()) {
+        setShowPrompt(false);
+        return;
+      }
 
       setShowPrompt(true);
 
@@ -84,6 +102,7 @@ export default function PwaInstallPrompt() {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === "accepted") {
+          localStorage.setItem("knarrow_pwa_installed", "true");
           setIsInstalled(true);
           setShowPrompt(false);
         }
@@ -98,8 +117,11 @@ export default function PwaInstallPrompt() {
   };
 
   const handleDismiss = () => {
+    localStorage.setItem("knarrow_pwa_dismissed", "true");
+    setIsInstalled(true);
     setShowPrompt(false);
     if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
+    if (repeatIntervalRef.current) clearInterval(repeatIntervalRef.current);
   };
 
   if (isInstalled || !showPrompt) return null;
