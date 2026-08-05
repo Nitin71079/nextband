@@ -216,6 +216,14 @@ export default function Support() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <Mail size={20} style={{ color: "#2563eb", flexShrink: 0, marginTop: 2 }} />
+              <div>
+                <strong style={{ fontSize: 14, color: "var(--text, #0f172a)", display: "block" }}>Direct Support Email</strong>
+                <a href="mailto:support@knarrow.in" style={{ fontSize: 13, color: "#2563eb", fontWeight: 700, textDecoration: "none" }}>support@knarrow.in</a>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <Clock size={20} style={{ color: "#2563eb", flexShrink: 0, marginTop: 2 }} />
               <div>
                 <strong style={{ fontSize: 14, color: "var(--text, #0f172a)", display: "block" }}>2-Hour Response Time</strong>

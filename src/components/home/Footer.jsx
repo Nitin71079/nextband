@@ -76,6 +76,7 @@ export default function Footer() {
         <div className="footer-links">
           <h4>Company</h4>
           <Link to="/pricing">Pricing</Link>
+          <Link to="/commercial" style={{ color: "#60a5fa", fontWeight: "600" }}>🎬 Watch Commercial</Link>
           <Link to="/help">Help Center</Link>
           <Link to="/faq">FAQ</Link>
           <Link to="/contact">Contact Us</Link>

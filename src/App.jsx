@@ -92,6 +92,7 @@ const Success = lazy(() => import("./pages/Success"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const MonitorPanel = lazy(() => import("./pages/MonitorPanel"));
+const VideoCommercialAd = lazy(() => import("./pages/VideoCommercialAd"));
 
 function App() {
   
@@ -104,6 +105,7 @@ function App() {
       <Suspense fallback={<Loader />}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/commercial" element={<VideoCommercialAd />} />
 
           <Route path="/login" element={<Login />} />
 
