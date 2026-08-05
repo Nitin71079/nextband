@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Download, X, Share, PlusSquare, Sparkles } from "lucide-react";
+import { Download, X, Share, PlusSquare, Sparkles, MoreVertical } from "lucide-react";
 import "./PwaInstallPrompt.css";
 
 const DISPLAY_DURATION_MS = 30000; // 30 seconds
@@ -9,14 +9,14 @@ export default function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIos, setIsIos] = useState(false);
-  const [showIosGuide, setShowIosGuide] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
   const displayTimerRef = useRef(null);
   const repeatIntervalRef = useRef(null);
 
   useEffect(() => {
-    // Check if app is already running in standalone (installed) mode
     const checkStandalone = () => {
       return (
         window.matchMedia("(display-mode: standalone)").matches ||
@@ -29,12 +29,13 @@ export default function PwaInstallPrompt() {
       return;
     }
 
-    // Detect iOS
     const ua = window.navigator.userAgent;
     const isIosDevice = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
-    setIsIos(isIosDevice);
+    const isMobileDevice = /android|iphone|ipad|ipod/i.test(ua);
 
-    // Save prompt event for Android / Chrome / Edge
+    setIsIos(isIosDevice);
+    setIsMobile(isMobileDevice);
+
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -48,7 +49,6 @@ export default function PwaInstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // Trigger function to show prompt for exactly 30 seconds
     const triggerPromptFor30s = () => {
       if (checkStandalone()) return;
 
@@ -56,18 +56,15 @@ export default function PwaInstallPrompt() {
 
       if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
 
-      // Auto-dismiss after 30 seconds
       displayTimerRef.current = setTimeout(() => {
         setShowPrompt(false);
       }, DISPLAY_DURATION_MS);
     };
 
-    // Initial pop-up after 2 seconds
     const initialTimer = setTimeout(() => {
       triggerPromptFor30s();
     }, 2000);
 
-    // Repeat pop-up every 2 minutes
     repeatIntervalRef.current = setInterval(() => {
       triggerPromptFor30s();
     }, REPEAT_INTERVAL_MS);
@@ -82,23 +79,22 @@ export default function PwaInstallPrompt() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) {
-      // Fallback instruction if browser prompt event hasn't fired yet
-      alert("To add Knarrow to your Home Screen: open your browser menu (⋮) and tap 'Add to Home screen' or 'Install app'.");
-      return;
-    }
-
-    try {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        setIsInstalled(true);
-        setShowPrompt(false);
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted") {
+          setIsInstalled(true);
+          setShowPrompt(false);
+        }
+      } catch (err) {
+        console.error("Install prompt error:", err);
       }
-    } catch (err) {
-      console.error("Install prompt error:", err);
+      setDeferredPrompt(null);
+    } else {
+      // Toggle visual guide if native prompt event hasn't fired
+      setShowGuide((prev) => !prev);
     }
-    setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
@@ -133,32 +129,53 @@ export default function PwaInstallPrompt() {
 
         {/* Actions */}
         <div className="pwa-prompt-right">
-          {!isIos ? (
-            <button className="pwa-install-btn" onClick={handleInstallClick}>
-              <Download size={16} /> Install App Now
-            </button>
-          ) : (
-            <button className="pwa-install-btn" onClick={() => setShowIosGuide(!showIosGuide)}>
-              <Share size={16} /> Add to Home Screen
-            </button>
-          )}
+          <button className="pwa-install-btn" onClick={handleInstallClick}>
+            {isIos ? <Share size={16} /> : <Download size={16} />}
+            {deferredPrompt ? "Install App Now" : "How to Install"}
+          </button>
 
           <button className="pwa-dismiss-btn" onClick={handleDismiss} aria-label="Close app install banner">
             <X size={18} />
           </button>
         </div>
 
-        {/* iOS Step-by-Step Guidance */}
-        {isIos && (
+        {/* Interactive Visual Guide */}
+        {(showGuide || isIos) && (
           <div className="pwa-ios-guide">
-            <div className="pwa-ios-step">
-              <span className="pwa-ios-step-num">1</span>
-              <span>Tap <strong>Share</strong> <Share size={13} style={{ verticalAlign: "middle" }} /> at the bottom of Safari</span>
-            </div>
-            <div className="pwa-ios-step">
-              <span className="pwa-ios-step-num">2</span>
-              <span>Tap <strong>Add to Home Screen</strong> <PlusSquare size={13} style={{ verticalAlign: "middle" }} /></span>
-            </div>
+            {isIos ? (
+              <>
+                <div className="pwa-ios-step">
+                  <span className="pwa-ios-step-num">1</span>
+                  <span>Tap <strong>Share</strong> <Share size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> at the bottom of Safari</span>
+                </div>
+                <div className="pwa-ios-step">
+                  <span className="pwa-ios-step-num">2</span>
+                  <span>Tap <strong>Add to Home Screen</strong> <PlusSquare size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /></span>
+                </div>
+              </>
+            ) : isMobile ? (
+              <>
+                <div className="pwa-ios-step">
+                  <span className="pwa-ios-step-num">1</span>
+                  <span>Tap the <strong>3 dots (⋮)</strong> <MoreVertical size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> in the top right corner of Chrome</span>
+                </div>
+                <div className="pwa-ios-step">
+                  <span className="pwa-ios-step-num">2</span>
+                  <span>Select <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="pwa-ios-step">
+                  <span className="pwa-ios-step-num">1</span>
+                  <span>Look at the <strong>Top Right</strong> of your browser address bar</span>
+                </div>
+                <div className="pwa-ios-step">
+                  <span className="pwa-ios-step-num">2</span>
+                  <span>Click the <strong>Install Icon</strong> <Download size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> or <strong>3 dots (⋮) → Install Knarrow</strong></span>
+                </div>
+              </>
+            )}
           </div>
         )}
 
