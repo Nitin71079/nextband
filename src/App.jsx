@@ -24,6 +24,7 @@ import MockReading from "./pages/MockReading";
 import Navbar from "./components/Navbar";
 import MobileNav from "./components/MobileNav";
 import ReferralPopup from "./components/ReferralPopup";
+import PwaInstallPrompt from "./components/PwaInstallPrompt";
 import WelcomeGreeting from "./components/WelcomeGreeting";
 import Footer from "./components/home/Footer";
 import Loader from "./components/Loader";
@@ -616,6 +617,7 @@ element={<ExamHistory/>}
   <Footer />
   <MobileNav />
   <ReferralPopup />
+  <PwaInstallPrompt />
 </>
 );
 }

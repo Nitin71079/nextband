@@ -8,20 +8,72 @@ export default defineConfig({
 
     VitePWA({
       registerType: "autoUpdate",
+      includeAssets: ["favicon.png", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"],
       workbox: {
         maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15MB limit
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}"],
       },
-
       manifest: {
-        name: "Knarrow",
+        id: "/",
+        name: "Knarrow — AI IELTS Platform",
         short_name: "Knarrow",
-
         description:
-          "AI-powered IELTS Preparation Platform with Writing, Speaking, Reading and Listening.",
-
+          "Master IELTS with AI-powered Writing & Speaking evaluation, realistic CBT mock tests, Reading, Listening, and personalized analytics.",
         theme_color: "#2563eb",
-        background_color: "#ffffff",
+        background_color: "#0f172a",
         display: "standalone",
+        orientation: "portrait-primary",
+        start_url: "/",
+        scope: "/",
+        categories: ["education", "productivity"],
+        icons: [
+          {
+            src: "/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+          {
+            src: "/apple-touch-icon.png",
+            sizes: "180x180",
+            type: "image/png",
+          },
+        ],
+        shortcuts: [
+          {
+            name: "My Dashboard",
+            short_name: "Dashboard",
+            description: "View your IELTS progress and recent scores",
+            url: "/dashboard",
+            icons: [{ src: "/icon-192.png", sizes: "192x192" }],
+          },
+          {
+            name: "Full Mock Tests",
+            short_name: "Mock Tests",
+            description: "Take full CBT-style IELTS mock exams",
+            url: "/full-mocks",
+            icons: [{ src: "/icon-192.png", sizes: "192x192" }],
+          },
+          {
+            name: "AI Speaking Practice",
+            short_name: "Speaking",
+            description: "Practice IELTS Speaking with live AI examiner",
+            url: "/speaking",
+            icons: [{ src: "/icon-192.png", sizes: "192x192" }],
+          },
+        ],
       },
     }),
   ],
