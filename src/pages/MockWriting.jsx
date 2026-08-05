@@ -113,40 +113,16 @@ export default function MockWriting({
   }, []);
 
   /* -------------------------
-      LOAD DRAFT
+      ALWAYS START FRESH (CLEAR DRAFTS)
   -------------------------- */
 
   useEffect(() => {
-
-    const draft =
-      localStorage.getItem(
-        "writingDraft"
-      );
-
-    if (!draft) return;
-
-    try {
-
-      const data =
-        JSON.parse(draft);
-
-      setTask1(
-        data.task1 || ""
-      );
-
-      setTask2(
-        data.task2 || ""
-      );
-
-    } catch {
-
-      console.log(
-        "No draft found."
-      );
-
-    }
-
-  }, []);
+    localStorage.removeItem("writingDraft");
+    setTask1("");
+    setTask2("");
+    setReport(null);
+    setTimeLeft(60 * 60);
+  }, [test.id]);
 
   /* -------------------------
       TIMER DISPLAY

@@ -63,6 +63,19 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
     };
   }, []);
 
+  // Always reset state on mount or test change
+  useEffect(() => {
+    stop();
+    setPhase("IDLE");
+    setStatus("IDLE");
+    setTimer(0);
+    setPrepNotes("");
+    setPart1Index(0);
+    setPart3Index(0);
+    setTranscripts({ part1: [], part2: "", part3: [] });
+    setCurrentInput("");
+  }, [test?.id]);
+
   // Timer Countdown Effect
   useEffect(() => {
     if (timer <= 0) return;

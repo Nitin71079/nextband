@@ -148,19 +148,17 @@ export default function MockSpeaking({
   }
 
   /* -------------------------
-        LOAD DRAFT
+        ALWAYS START FRESH (CLEAR DRAFTS)
   ------------------------- */
 
   useEffect(() => {
-    const draft = localStorage.getItem("speakingDraft");
-    if (!draft) return;
-
-    try {
-      const data = JSON.parse(draft);
-      setResponse(data.response || "");
-      setTranscript(data.transcript || "");
-    } catch {}
-  }, []);
+    localStorage.removeItem("speakingDraft");
+    setResponse("");
+    setTranscript("");
+    setAudioBlob(null);
+    setAudioUrl("");
+    setReport(null);
+  }, [test.id]);
 
   /* -------------------------
         AI EVALUATION
