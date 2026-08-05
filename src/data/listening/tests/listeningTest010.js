@@ -13,10 +13,10 @@ const listeningTest010 = {
   ],
 
   audioTimeline: {
-    section1: { start: 0, end: 409 },
-    section2: { start: 409, end: 754 },
-    section3: { start: 754, end: 1125 },
-    section4: { start: 1125, end: 1541 }
+    section1: { start: 0, end: 380 },
+    section2: { start: 380, end: 690 },
+    section3: { start: 690, end: 1010 },
+    section4: { start: 1010, end: 1300 }
   },
 
   sections: [
@@ -25,83 +25,458 @@ const listeningTest010 = {
       title: "Section 1",
       type: "form",
       audioStart: 0,
-      audioEnd: 409,
+      audioEnd: 380,
       instruction: "Complete the form below. Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer.",
       formTitle: "CAR RENTAL SERVICE BOOKING",
-      questions: [
-        { id: 1, type: "fill-in", number: 1, label: "Full Name:", answer: "James Wilson", explanation: "The speaker confirms her full name is James Wilson." },
-        { id: 2, type: "fill-in", number: 2, label: "Contact Phone:", answer: "07700 900888", explanation: "The speaker corrects her phone number to 07700 900888." },
-        { id: 3, type: "fill-in", number: 3, label: "Home Address:", answer: "12 Victoria Road, Manchester", explanation: "The residential address given is 12 Victoria Road, Manchester." },
-        { id: 4, type: "fill-in", number: 4, label: "Discounted Fee (£):", answer: "50", explanation: "The local resident fee is 50 pounds." },
-        { id: 5, type: "fill-in", number: 5, label: "Orientation Time:", answer: "9:30 AM", explanation: "Orientation starts at 9:30 AM." },
-        { id: 6, type: "fill-in", number: 6, label: "Required Document:", answer: "photo ID", explanation: "Participants must bring valid photo ID." },
-        { id: 7, type: "fill-in", number: 7, label: "Parking Location:", answer: "north visitor", explanation: "Free parking is located in the north visitor car park." },
-        { id: 8, type: "fill-in", number: 8, label: "Payment Method:", answer: "credit card", explanation: "Payment is processed online via credit card." },
-        { id: 9, type: "fill-in", number: 9, label: "Reference Code:", answer: "REG904", explanation: "The reference code provided is REG904." },
-        { id: 10, type: "fill-in", number: 10, label: "Contact Person:", answer: "Mark", explanation: "Mark is the administration officer." }
-      ]
+      form: [
+        {
+                "id": 1,
+                "label": "Full Name",
+                "answer": "James Wilson"
+        },
+        {
+                "id": 2,
+                "label": "Contact Phone",
+                "answer": "07700 900888"
+        },
+        {
+                "id": 3,
+                "label": "Home Address",
+                "answer": "12 Victoria Road, Manchester"
+        },
+        {
+                "id": 4,
+                "label": "Discounted Fee (\u00a3)",
+                "answer": "50"
+        },
+        {
+                "id": 5,
+                "label": "Orientation Time",
+                "answer": "9:30 AM"
+        },
+        {
+                "id": 6,
+                "label": "Required Document",
+                "answer": "photo ID"
+        },
+        {
+                "id": 7,
+                "label": "Parking Location",
+                "answer": "north visitor"
+        },
+        {
+                "id": 8,
+                "label": "Payment Method",
+                "answer": "credit card"
+        },
+        {
+                "id": 9,
+                "label": "Reference Code",
+                "answer": "REG904"
+        },
+        {
+                "id": 10,
+                "label": "Contact Person",
+                "answer": "Mark"
+        }
+]
     },
     {
       id: 2,
       title: "Section 2",
-      type: "monologue",
-      audioStart: 409,
-      audioEnd: 754,
-      instruction: "Choose the correct letter A, B, or C.",
-      formTitle: "REGIONAL ART GALLERY EXHIBITION",
-      questions: [
-        { id: 11, type: "multiple-choice", number: 11, question: "What is the total size of the facility grounds?", options: ["A. 25 hectares", "B. 25 hectares", "C. 100 hectares"], answer: "B", explanation: "The presenter confirms the site spans 25 hectares." },
-        { id: 12, type: "multiple-choice", number: 12, question: "What time does the facility open daily?", options: ["A. 7:00 AM", "B. 8:00 AM", "C. 9:00 AM"], answer: "B", explanation: "The presenter states grounds open from 8:00 AM." },
-        { id: 13, type: "multiple-choice", number: 13, question: "Where is the gift shop situated?", options: ["A. Main entrance", "B. Beside the lake", "C. Inside the café"], answer: "A", explanation: "The entrance leads directly to the information kiosk and gift shop." },
-        { id: 14, type: "multiple-choice", number: 14, question: "What is featured in the exhibition hall?", options: ["A. Modern art", "B. Historic artifacts and digital displays", "C. Sculpture"], answer: "B", explanation: "The hall features historic artifacts and digital displays." },
-        { id: 15, type: "multiple-choice", number: 15, question: "Where can visitors find outdoor seating?", options: ["A. Car park", "B. Beside the café", "C. Information kiosk"], answer: "B", explanation: "Outdoor seating is located beside the café." },
-        { id: 16, type: "fill-in", number: 16, label: "Rule on walking paths:", answer: "designated", explanation: "Visitors must remain on designated walking paths." },
-        { id: 17, type: "fill-in", number: 17, label: "Guided tour departure frequency:", answer: "every hour", explanation: "Tours depart every hour on the hour." },
-        { id: 18, type: "fill-in", number: 18, label: "Guided tour leader qualification:", answer: "certified staff", explanation: "Tours are led by certified staff members." },
-        { id: 19, type: "fill-in", number: 19, label: "Special group booking requirement:", answer: "advance online", explanation: "Group bookings must be made in advance online." },
-        { id: 20, type: "fill-in", number: 20, label: "First-aid station location:", answer: "main visitor", explanation: "First-aid stations are located inside the main visitor center." }
+      type: "mixed",
+      audioStart: 380,
+      audioEnd: 690,
+      groups: [
+        {
+          id: "section2_mcq",
+          type: "mcq",
+          title: "Questions 11–15",
+          instruction: "Choose the correct letter, A, B or C.",
+          questions: [
+            {
+                        "id": 11,
+                        "question": "What is the total size of the facility grounds?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "25 hectares"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "25 hectares"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "100 hectares"
+                                    }
+                        ],
+                        "answer": "B"
+            },
+            {
+                        "id": 12,
+                        "question": "What time does the facility open daily?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "7:00 AM"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "8:00 AM"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "9:00 AM"
+                                    }
+                        ],
+                        "answer": "B"
+            },
+            {
+                        "id": 13,
+                        "question": "Where is the gift shop situated?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "Main entrance"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "Beside the lake"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Inside the caf\u00e9"
+                                    }
+                        ],
+                        "answer": "A"
+            },
+            {
+                        "id": 14,
+                        "question": "What is featured in the exhibition hall?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "Modern art"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "Historic artifacts and digital displays"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Sculpture"
+                                    }
+                        ],
+                        "answer": "B"
+            },
+            {
+                        "id": 15,
+                        "question": "Where can visitors find outdoor seating?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "Car park"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "Beside the caf\u00e9"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Information kiosk"
+                                    }
+                        ],
+                        "answer": "B"
+            }
+]
+        },
+        {
+          id: "section2_notes",
+          type: "notes",
+          title: "Questions 16–20",
+          instruction: "Complete the notes below. Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer.",
+          notesTitle: "Section 2 Notes & Information",
+          notes: [
+            {
+                        "type": "heading",
+                        "text": "Visitor Guidelines & Rules"
+            },
+            {
+                        "type": "blank",
+                        "id": 16,
+                        "suffix": "(Rule on walking paths)"
+            },
+            {
+                        "type": "blank",
+                        "id": 17,
+                        "suffix": "(Guided tour departure frequency)"
+            },
+            {
+                        "type": "blank",
+                        "id": 18,
+                        "suffix": "(Guided tour leader qualification)"
+            },
+            {
+                        "type": "blank",
+                        "id": 19,
+                        "suffix": "(Special group booking requirement)"
+            },
+            {
+                        "type": "blank",
+                        "id": 20,
+                        "suffix": "(First-aid station location)"
+            }
+],
+          answers: {
+            "16": "designated",
+            "17": "every hour",
+            "18": "certified staff",
+            "19": "advance online",
+            "20": "main visitor"
+}
+        }
       ]
     },
     {
       id: 3,
       title: "Section 3",
-      type: "discussion",
-      audioStart: 754,
-      audioEnd: 1125,
-      instruction: "Choose the correct letter A, B, or C.",
-      formTitle: "PROJECT DISCUSSION",
-      questions: [
-        { id: 21, type: "multiple-choice", number: 21, question: "What is the primary topic of the students' research proposal?", options: ["A. Research Project", "B. Financial budgeting", "C. Student housing"], answer: "A", explanation: "The discussion focuses on the research proposal." },
-        { id: 22, type: "multiple-choice", number: 22, question: "What limitation was noted in secondary sampling?", options: ["A. High equipment cost", "B. Margin of error", "C. Missing documentation"], answer: "B", explanation: "Sampling showed a margin of error during weather events." },
-        { id: 23, type: "multiple-choice", number: 23, question: "What model does the professor recommend?", options: ["A. Linear calculation", "B. Multi-variable statistical regression", "C. Qualitative survey"], answer: "B", explanation: "The professor advises multi-variable statistical regression." },
-        { id: 24, type: "multiple-choice", number: 24, question: "In which chapter will qualitative case studies be presented?", options: ["A. Chapter 1", "B. Chapter 3", "C. Chapter 5"], answer: "B", explanation: "Case studies will appear in Chapter 3." },
-        { id: 25, type: "multiple-choice", number: 25, question: "When is the final draft dissertation due?", options: ["A. End of October", "B. End of November", "C. Mid-December"], answer: "B", explanation: "Draft is due by the end of November." },
-        { id: 26, type: "fill-in", number: 26, label: "Data Processing Tool:", answer: "SPSS statistical", explanation: "Data was processed using SPSS statistical software." },
-        { id: 27, type: "fill-in", number: 27, label: "Field Sampling Issue Cause:", answer: "heavy rainfall", explanation: "Challenges arose due to heavy rainfall." },
-        { id: 28, type: "fill-in", number: 28, label: "Primary Sampling Sites Count:", answer: "three", explanation: "Data was collected across three primary sites." },
-        { id: 29, type: "fill-in", number: 29, label: "Appendix Inclusion:", answer: "calibration logs", explanation: "Appendix includes instrument calibration logs." },
-        { id: 30, type: "fill-in", number: 30, label: "Final Submission Target:", answer: "draft dissertation", explanation: "The team will submit their completed draft dissertation." }
+      type: "mixed",
+      audioStart: 690,
+      audioEnd: 1010,
+      groups: [
+        {
+          id: "section3_mcq",
+          type: "mcq",
+          title: "Questions 21–25",
+          instruction: "Choose the correct letter, A, B or C.",
+          questions: [
+            {
+                        "id": 21,
+                        "question": "What is the primary topic of the students' research proposal?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "Research Project"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "Financial budgeting"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Student housing"
+                                    }
+                        ],
+                        "answer": "A"
+            },
+            {
+                        "id": 22,
+                        "question": "What limitation was noted in secondary sampling?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "High equipment cost"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "Margin of error"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Missing documentation"
+                                    }
+                        ],
+                        "answer": "B"
+            },
+            {
+                        "id": 23,
+                        "question": "What model does the professor recommend?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "Linear calculation"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "Multi-variable statistical regression"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Qualitative survey"
+                                    }
+                        ],
+                        "answer": "B"
+            },
+            {
+                        "id": 24,
+                        "question": "In which chapter will qualitative case studies be presented?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "Chapter 1"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "Chapter 3"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Chapter 5"
+                                    }
+                        ],
+                        "answer": "B"
+            },
+            {
+                        "id": 25,
+                        "question": "When is the final draft dissertation due?",
+                        "options": [
+                                    {
+                                                "letter": "A",
+                                                "text": "End of October"
+                                    },
+                                    {
+                                                "letter": "B",
+                                                "text": "End of November"
+                                    },
+                                    {
+                                                "letter": "C",
+                                                "text": "Mid-December"
+                                    }
+                        ],
+                        "answer": "B"
+            }
+]
+        },
+        {
+          id: "section3_notes",
+          type: "notes",
+          title: "Questions 26–30",
+          instruction: "Complete the notes below. Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer.",
+          notesTitle: "Section 3 Project Discussion Notes",
+          notes: [
+            {
+                        "type": "heading",
+                        "text": "Research Project & Methodology"
+            },
+            {
+                        "type": "blank",
+                        "id": 26,
+                        "suffix": "(Data Processing Tool)"
+            },
+            {
+                        "type": "blank",
+                        "id": 27,
+                        "suffix": "(Field Sampling Issue Cause)"
+            },
+            {
+                        "type": "blank",
+                        "id": 28,
+                        "suffix": "(Primary Sampling Sites Count)"
+            },
+            {
+                        "type": "blank",
+                        "id": 29,
+                        "suffix": "(Appendix Inclusion)"
+            },
+            {
+                        "type": "blank",
+                        "id": 30,
+                        "suffix": "(Final Submission Target)"
+            }
+],
+          answers: {
+            "26": "SPSS statistical",
+            "27": "heavy rainfall",
+            "28": "three",
+            "29": "calibration logs",
+            "30": "draft dissertation"
+}
+        }
       ]
     },
     {
       id: 4,
       title: "Section 4",
-      type: "lecture",
-      audioStart: 1125,
-      audioEnd: 1541,
-      instruction: "Complete the lecture notes below. Write NO MORE THAN TWO WORDS for each answer.",
-      formTitle: "UNIVERSITY LECTURE",
-      questions: [
-        { id: 31, type: "fill-in", number: 31, label: "Research field expansion period:", answer: "three decades", explanation: "Research has expanded over three decades." },
-        { id: 32, type: "fill-in", number: 32, label: "Early research established:", answer: "baseline parameters", explanation: "Initial research established baseline physical parameters." },
-        { id: 33, type: "fill-in", number: 33, label: "Telemetry technology:", answer: "satellite telemetry", explanation: "Satellite telemetry enabled detailed insights." },
-        { id: 34, type: "fill-in", number: 34, label: "Environmental pressure outcome:", answer: "structural reorganization", explanation: "Pressures induce structural reorganization." },
-        { id: 35, type: "fill-in", number: 35, label: "Equilibrium regulation mechanism:", answer: "physiological feedback", explanation: "Physiological feedback loops regulate equilibrium." },
-        { id: 36, type: "fill-in", number: 36, label: "Engineering applications adopt:", answer: "biological principles", explanation: "Engineers adopt biological principles." },
-        { id: 37, type: "fill-in", number: 37, label: "Long-term data collection period:", answer: "multi-decadal", explanation: "Data was collected over multi-decadal cycles." },
-        { id: 38, type: "fill-in", number: 38, label: "Short-term study limitation:", answer: "non-linear dynamics", explanation: "Short-term studies fail to capture non-linear dynamics." },
-        { id: 39, type: "fill-in", number: 39, label: "Essential global protocol:", answer: "standardized monitoring", explanation: "Standardized monitoring remains indispensable." },
-        { id: 40, type: "fill-in", number: 40, label: "Key to global solutions:", answer: "interdisciplinary collaboration", explanation: "Interdisciplinary collaboration is crucial." }
+      type: "mixed",
+      audioStart: 1010,
+      audioEnd: 1300,
+      groups: [
+        {
+          id: "section4_notes",
+          type: "notes",
+          title: "Questions 31–40",
+          instruction: "Complete the lecture notes below. Write NO MORE THAN TWO WORDS for each answer.",
+          notesTitle: "Section 4 Lecture Notes",
+          notes: [
+            {
+                        "type": "heading",
+                        "text": "Academic Lecture Overview"
+            },
+            {
+                        "type": "blank",
+                        "id": 31,
+                        "suffix": "(Research field expansion period)"
+            },
+            {
+                        "type": "blank",
+                        "id": 32,
+                        "suffix": "(Early research established)"
+            },
+            {
+                        "type": "blank",
+                        "id": 33,
+                        "suffix": "(Telemetry technology)"
+            },
+            {
+                        "type": "blank",
+                        "id": 34,
+                        "suffix": "(Environmental pressure outcome)"
+            },
+            {
+                        "type": "blank",
+                        "id": 35,
+                        "suffix": "(Equilibrium regulation mechanism)"
+            },
+            {
+                        "type": "blank",
+                        "id": 36,
+                        "suffix": "(Engineering applications adopt)"
+            },
+            {
+                        "type": "blank",
+                        "id": 37,
+                        "suffix": "(Long-term data collection period)"
+            },
+            {
+                        "type": "blank",
+                        "id": 38,
+                        "suffix": "(Short-term study limitation)"
+            },
+            {
+                        "type": "blank",
+                        "id": 39,
+                        "suffix": "(Essential global protocol)"
+            },
+            {
+                        "type": "blank",
+                        "id": 40,
+                        "suffix": "(Key to global solutions)"
+            }
+],
+          answers: {
+            "31": "three decades",
+            "32": "baseline parameters",
+            "33": "satellite telemetry",
+            "34": "structural reorganization",
+            "35": "physiological feedback",
+            "36": "biological principles",
+            "37": "multi-decadal",
+            "38": "non-linear dynamics",
+            "39": "standardized monitoring",
+            "40": "interdisciplinary collaboration"
+}
+        }
       ]
     }
   ]
