@@ -1,6 +1,6 @@
-const listeningTest002 = {
-  id: "listening-test-002",
-  title: "IELTS Listening Practice Test 002",
+const listeningTest022 = {
+  id: "listening-test-022",
+  title: "IELTS Listening Practice Test 022",
   difficulty: "Academic",
   duration: 40,
   audio: "/audio/listening/test002.mp3",
@@ -503,4 +503,4 @@ const listeningTest002 = {
 
 };
 
-export default listeningTest002;
+export default listeningTest022;
