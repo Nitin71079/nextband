@@ -34,57 +34,44 @@ transcriptRef.current = "";
 );
 
   if (SpeechRecognition) {
-    const recognition =
-      new SpeechRecognition();
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
 
-    recognition.continuous =
-      true;
+    let finalTranscript = "";
 
-    recognition.interimResults =
-      true;
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      let newFinal = "";
 
-    recognition.lang =
-      "en-US";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const res = event.results[i];
+        if (res.isFinal) {
+          newFinal += res[0].transcript + " ";
+        } else {
+          interimTranscript += res[0].transcript;
+        }
+      }
 
-recognition.onresult =
-  (event) => {
-    console.log(
-      "Speech event:",
-      event
-    );
+      if (newFinal) {
+        finalTranscript += newFinal;
+      }
 
-    let transcript =
-      "";
+      const combined = (finalTranscript + " " + interimTranscript).replace(/\s+/g, " ").trim();
+      transcriptRef.current = combined;
+    };
 
-    for (
-      let i = 0;
-      i <
-      event.results.length;
-      i++
-    ) {
-      transcript +=
-        event.results[i][0]
-          .transcript +
-        " ";
-    }
+    recognition.onend = () => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+        try { recognition.start(); } catch {}
+      }
+    };
 
-    console.log(
-      "Transcript:",
-      transcript
-    );
+    recognition.start();
 
-    transcriptRef.current =
-      transcript;
-  };
-
-recognition.start();
-
-console.log(
-  "Speech recognition started"
-);
-
-    recognitionRef.current =
-      recognition;
+    console.log("Speech recognition started");
+    recognitionRef.current = recognition;
   }
 
   const stream =

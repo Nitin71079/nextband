@@ -28,6 +28,8 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
   const [currentInput, setCurrentInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef(null);
+  const isRecordingRef = useRef(false);
+  const finalTranscriptRef = useRef("");
 
   // Initialize Speech Recognition if supported
   useEffect(() => {
@@ -41,15 +43,48 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
       rec.lang = "en-US";
 
       rec.onresult = (event) => {
-        let currentText = "";
+        let interimText = "";
+        let newFinalChunk = "";
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          currentText += event.results[i][0].transcript + " ";
+          const resultItem = event.results[i];
+          if (resultItem.isFinal) {
+            newFinalChunk += resultItem[0].transcript + " ";
+          } else {
+            interimText += resultItem[0].transcript;
+          }
         }
-        setCurrentInput((prev) => (prev ? `${prev} ${currentText.trim()}` : currentText.trim()));
+
+        if (newFinalChunk) {
+          finalTranscriptRef.current += newFinalChunk;
+        }
+
+        const combinedText = (finalTranscriptRef.current + " " + interimText).replace(/\s+/g, " ").trim();
+        if (combinedText) {
+          setCurrentInput(combinedText);
+        }
       };
 
       rec.onerror = (e) => {
         console.warn("Speech recognition error:", e.error);
+        if ((e.error === "no-speech" || e.error === "aborted") && isRecordingRef.current) {
+          try {
+            rec.stop();
+            rec.start();
+          } catch {}
+        } else if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+          toast.error("Microphone access denied. Please allow mic permissions in your browser.");
+        }
+      };
+
+      rec.onend = () => {
+        if (isRecordingRef.current) {
+          try {
+            rec.start();
+          } catch (e) {
+            console.warn("Failed to auto-restart speech recognition:", e);
+          }
+        }
       };
 
       recognitionRef.current = rec;
@@ -57,6 +92,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
 
     return () => {
       stop();
+      isRecordingRef.current = false;
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch {}
       }
@@ -288,13 +324,24 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
 
   // Recording controls
   const startRecording = () => {
+    isRecordingRef.current = true;
     setIsRecording(true);
+    finalTranscriptRef.current = "";
+    setCurrentInput("");
     if (recognitionRef.current) {
-      try { recognitionRef.current.start(); } catch {}
+      try {
+        recognitionRef.current.start();
+      } catch (e) {
+        try {
+          recognitionRef.current.stop();
+          recognitionRef.current.start();
+        } catch {}
+      }
     }
   };
 
   const stopRecording = () => {
+    isRecordingRef.current = false;
     setIsRecording(false);
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
