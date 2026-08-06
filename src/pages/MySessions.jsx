@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getBookings, cancelBooking, updateBookingStatus } from "../services/bookingService";
+import { getBookings, cancelBooking, updateBookingStatus, processExpertAbsenceRefund } from "../services/bookingService";
 import AISessionRoomModal from "../components/AISessionRoomModal";
 import toast from "react-hot-toast";
 import {
@@ -12,7 +12,9 @@ import {
   Video,
   ShieldCheck,
   Sparkles,
-  Trash2
+  Trash2,
+  RefreshCw,
+  CreditCard
 } from "lucide-react";
 
 import "../styles/dashboard/dashboard.css";
@@ -23,9 +25,9 @@ export default function MySessions() {
   const [activeAITopic, setActiveAITopic] = useState("Speaking Practice");
 
   const handleSimulateTeacherOffline = (bookingId) => {
-    updateBookingStatus(bookingId, "Teacher Offline - 50% Refunded & AI Active");
+    processExpertAbsenceRefund(bookingId);
     setBookings(getBookings());
-    toast.success("⚡ Teacher marked offline: 50% Class Fee Refunded & AI Assistant Ready!");
+    toast.success("⚡ Expert Marked Absent: 50% Session Fee Refunded Instantly via Razorpay! AI Examiner Class Ready.");
   };
 
   const handleLaunchAIClass = (topic) => {

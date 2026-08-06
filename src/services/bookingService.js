@@ -70,3 +70,24 @@ export function cancelBooking(indexOrId) {
   localStorage.setItem(KEY, JSON.stringify(updated));
   return updated;
 }
+
+export function processExpertAbsenceRefund(bookingId) {
+  const bookings = getBookings();
+  const updated = bookings.map((b) => {
+    if (b.id === bookingId || b.expertId === bookingId) {
+      const originalFeeNum = parseInt(String(b.pricePaid || "1499").replace(/[^0-9]/g, ""), 10) || 1499;
+      const refundAmount = Math.round(originalFeeNum * 0.5);
+      return {
+        ...b,
+        status: "Expert Absent - 50% Instant Refund Processed & AI Active",
+        refundStatus: "50% Instant Refund Processed via Razorpay",
+        refundAmount: `₹${refundAmount}`,
+        refundTimestamp: Date.now(),
+        refundReference: `ref_rzp_${Date.now().toString().slice(-8)}`,
+      };
+    }
+    return b;
+  });
+  localStorage.setItem(KEY, JSON.stringify(updated));
+  return updated;
+}

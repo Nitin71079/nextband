@@ -246,6 +246,13 @@ export default function MockWriting({
 
       setReport(result);
       toast.success("AI Writing Evaluation Complete!");
+
+      if (onComplete) {
+        onComplete({
+          band: result.overallBand || 6,
+          report: result,
+        });
+      }
     } catch (error) {
       console.error("Evaluation error:", error);
       toast.error("Evaluation failed. Please try again.");
@@ -337,22 +344,6 @@ flexWrap:"wrap",
 <strong>
 
 {minutes}:{String(seconds).padStart(2,"0")}
-
-</strong>
-
-</div>
-
-<div className="writing-stat">
-
-<span>
-
-🤖 AI Used
-
-</span>
-
-<strong>
-
-{getAIUsage()}/10
 
 </strong>
 
@@ -790,14 +781,8 @@ disabled={loading}
 >
 
 {loading
-
-?
-
-"🤖 AI Evaluating..."
-
-:
-
-"🤖 AI Evaluate Essay"}
+? (onComplete ? "🤖 Evaluating & Advancing..." : "🤖 AI Evaluating...")
+: (onComplete ? "Submit Writing Section →" : "🤖 AI Evaluate Essay")}
 
 </button>
 
@@ -806,10 +791,10 @@ disabled={loading}
 </div>
 
 {/* =====================================
-            REPORT
+            REPORT (Standalone Mode Only)
 ===================================== */}
 
-{report && (
+{report && !onComplete && (
 
 <>
 
@@ -832,45 +817,6 @@ Detailed IELTS Band Analysis
 report={report}
 
 />
-
-</div>
-
-<div
-style={{
-marginTop:"30px",
-display:"flex",
-justifyContent:"center",
-}}
->
-
-<button
-
-className="primary-btn"
-
-style={{
-padding:"16px 42px",
-fontSize:"18px",
-}}
-
-onClick={()=>{
-
-if(onComplete){
-
-onComplete(
-
-report.overallBand || 6
-
-);
-
-}
-
-}}
-
->
-
-Continue to Speaking →
-
-</button>
 
 </div>
 

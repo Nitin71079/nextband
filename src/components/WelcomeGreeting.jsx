@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { saveGameResult } from "../services/gameStatsService";
 import toast from "react-hot-toast";
 import {
@@ -73,6 +73,7 @@ export function getTimeBasedGreeting() {
 export default function WelcomeGreeting() {
   const { user, name, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRiddle, setSelectedRiddle] = useState(DAILY_RIDDLES[0]);
@@ -80,8 +81,13 @@ export default function WelcomeGreeting() {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [earnedEXP, setEarnedEXP] = useState(0);
 
+  const isExamRoute =
+    location.pathname.includes("/mock") ||
+    location.pathname.includes("/cbt-exam") ||
+    location.pathname.includes("/full-mocks");
+
   useEffect(() => {
-    if (loading || !user) return;
+    if (loading || !user || isExamRoute) return;
 
     const justLoggedIn = sessionStorage.getItem("justLoggedIn");
     if (justLoggedIn === "true") {
@@ -98,7 +104,7 @@ export default function WelcomeGreeting() {
 
       return () => clearTimeout(timer);
     }
-  }, [user, name, loading]);
+  }, [user, name, loading, isExamRoute]);
 
   const handleSelectOption = (option) => {
     if (hasAnswered) return;
@@ -128,7 +134,7 @@ export default function WelcomeGreeting() {
     setIsOpen(false);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || isExamRoute) return null;
 
   const displayName = name || user?.displayName || user?.email?.split("@")[0] || "Candidate";
   const { greeting, subtext } = getTimeBasedGreeting();
@@ -136,28 +142,34 @@ export default function WelcomeGreeting() {
   return (
     <div style={{
       position: "fixed",
-      inset: 0,
-      zIndex: 1000,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "16px",
-      background: "rgba(11, 14, 23, 0.85)",
-      backdropFilter: "blur(12px)",
-      overflowY: "auto",
+      top: "76px",
+      right: "24px",
+      zIndex: 99999,
+      width: "440px",
+      maxWidth: "calc(100vw - 32px)",
     }}>
-      {/* FULL-PAGE CENTER MODAL CONTAINER */}
+      {/* TOP ARROW POINTER POINTING TO PROFILE ICON */}
       <div style={{
-        maxWidth: 680,
-        width: "100%",
+        position: "absolute",
+        top: "-10px",
+        right: "28px",
+        width: 0,
+        height: 0,
+        borderLeft: "10px solid transparent",
+        borderRight: "10px solid transparent",
+        borderBottom: "10px solid #f59e0b",
+        zIndex: 2,
+      }} />
+
+      {/* POPOVER CARD CONTAINER */}
+      <div style={{
         background: "linear-gradient(145deg, #172036, #121826, #0e1320)",
-        border: "1px solid rgba(245, 158, 11, 0.4)",
-        borderRadius: 32,
-        padding: "36px 32px",
-        boxShadow: "0 30px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(245, 158, 11, 0.15)",
+        border: "2px solid #f59e0b",
+        borderRadius: 24,
+        padding: "24px 20px",
+        boxShadow: "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.2)",
         position: "relative",
         color: "#ffffff",
-        margin: "auto 0",
       }}>
         {/* Close Button */}
         <button

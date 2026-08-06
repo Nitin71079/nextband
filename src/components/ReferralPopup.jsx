@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Gift, Copy, Check, X, Sparkles, Share2, Award, Zap } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
@@ -8,12 +9,18 @@ const FIVE_MINUTES_MS = 5 * 60 * 1000;
 
 export default function ReferralPopup() {
   const { user } = useAuth();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const isExamRoute =
+    location.pathname.includes("/mock") ||
+    location.pathname.includes("/cbt-exam") ||
+    location.pathname.includes("/full-mocks");
+
   useEffect(() => {
-    if (!user) return;
+    if (!user || isExamRoute) return;
 
     // Load or generate referral code
     getOrCreateReferralCode(user).then((code) => {
@@ -40,9 +47,9 @@ export default function ReferralPopup() {
       clearTimeout(initialTimer);
       clearInterval(interval);
     };
-  }, [user]);
+  }, [user, isExamRoute]);
 
-  if (!isOpen || !user || !referralCode) return null;
+  if (!isOpen || !user || !referralCode || isExamRoute) return null;
 
   function copyCode() {
     navigator.clipboard.writeText(referralCode);

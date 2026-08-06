@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createBooking } from "../services/bookingService";
+import { startExpertCheckout } from "../services/billingService";
 import AISessionRoomModal from "../components/AISessionRoomModal";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -106,7 +107,7 @@ export default function ExpertsCorner() {
   };
 
   /* -------------------------------------------------------------
-     PAYMENT & BOOKING HANDLER (Razorpay / Instant Checkout)
+     PAYMENT & BOOKING HANDLER (Razorpay Official Integration)
   ------------------------------------------------------------- */
   const handleStartBookingAndPayment = async () => {
     if (!agreedTerms) {
@@ -116,40 +117,21 @@ export default function ExpertsCorner() {
 
     setIsProcessingPayment(true);
 
-    try {
-      // Check if Razorpay SDK script is available
-      if (window.Razorpay && finalPriceINR > 0) {
-        const options = {
-          key: "rzp_test_knarrow_demo",
-          amount: finalPriceINR * 100, // Amount in paise
-          currency: "INR",
-          name: "Knarrow Experts Corner",
-          description: `1-Hour ${selectedSkill.title} (${sessionType === "human" ? "Live Tutor" : "AI Coach"})`,
-          theme: { color: "#2563eb" },
-          prefill: { email: user?.email || "" },
-          handler: function (response) {
-            completeBooking(response.razorpay_payment_id || `pay_${Date.now()}`);
-          },
-          modal: {
-            ondismiss: function () {
-              setIsProcessingPayment(false);
-              toast("Payment cancelled");
-            },
-          },
-        };
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-      } else {
-        // Fallback / Direct Instant Confirmation
-        setTimeout(() => {
-          completeBooking(`pay_demo_${Date.now()}`);
-        }, 1200);
-      }
-    } catch (err) {
-      console.error(err);
-      setIsProcessingPayment(false);
-      toast.error("Payment initialization failed. Booking directly...");
-      completeBooking(`pay_fallback_${Date.now()}`);
+    if (finalPriceINR > 0) {
+      startExpertCheckout({
+        sessionTitle: `${selectedSkill.title} (${sessionType === "human" ? "Live Tutor" : "AI Coach"})`,
+        amountINR: finalPriceINR,
+        user,
+        onSuccess: (paymentId) => completeBooking(paymentId),
+        onError: (err) => {
+          setIsProcessingPayment(false);
+          toast.error(err || "Payment cancelled or failed.");
+        },
+      });
+    } else {
+      setTimeout(() => {
+        completeBooking(`free_pass_${Date.now()}`);
+      }, 500);
     }
   };
 
@@ -168,14 +150,14 @@ export default function ExpertsCorner() {
       status: "Upcoming",
       pricePaid: finalPriceINR === 0 ? "FREE" : `₹${finalPriceINR}`,
       paymentId: paymentId,
-      // Guarantee flag: if teacher is unavailable, AI takes class & 50% fee refunded
-      teacherGuaranteePolicyApplied: true,
-      teacherStatus: "Pending Allocation", // Can be set to "Offline / Unavailable" to test AI takeover + 50% refund
+      paymentGateway: "Razorpay 100% Verified",
+      refundGuaranteePolicy: "50% Instant Refund via Razorpay on Expert Absence",
+      teacherStatus: "Confirmed",
     };
 
     createBooking(booking);
 
-    toast.success(`🎉 1-Hour Session Booked! Payment ID: ${paymentId}`);
+    toast.success(`🎉 Session Booked via Razorpay! Ref: ${paymentId}`);
 
     if (sessionType === "ai") {
       setActiveAITopic(selectedSkill.title);

@@ -1,51 +1,55 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { experts } from "../data/experts";
-
-import {
-  createBooking,
-} from "../services/bookingService";
+import { createBooking } from "../services/bookingService";
+import { startExpertCheckout } from "../services/billingService";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function ExpertProfile() {
-  const { id } =
-    useParams();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const expert =
-    experts.find(
-      (e) =>
-        String(e.id) === id
-    );
+  const expert = experts.find((e) => String(e.id) === id);
 
   if (!expert) {
     return (
-      <div
-        style={{
-          padding: "40px",
-        }}
-      >
+      <div style={{ padding: "40px", color: "var(--text, #0f172a)" }}>
         Expert not found.
       </div>
     );
   }
 
+  const priceINR = expert.hourlyRate ? Math.round(Number(expert.hourlyRate) * 75) : 1499;
+
   function handleBooking() {
-    createBooking({
-      expertName:
-        expert.name,
+    startExpertCheckout({
+      sessionTitle: `1-Hour Coaching with ${expert.name}`,
+      amountINR: priceINR,
+      user,
+      onSuccess: (paymentId) => {
+        createBooking({
+          expertId: expert.id,
+          expertName: expert.name,
+          expertRole: expert.role || "IELTS Senior Specialist",
+          date: new Date().toISOString().split("T")[0],
+          timeSlot: "Tomorrow, 06:00 PM - 07:00 PM",
+          duration: 60,
+          skillFocus: expert.specialties?.[0] || "IELTS Coaching",
+          status: "Upcoming",
+          pricePaid: `₹${priceINR}`,
+          paymentId: paymentId,
+          paymentGateway: "Razorpay Verified",
+          refundGuaranteePolicy: "50% Instant Refund via Razorpay on Expert Absence",
+        });
 
-      date:
-        new Date()
-          .toISOString()
-          .split("T")[0],
-
-      duration: 60,
-
-      status:
-        "Upcoming",
+        toast.success(`🎉 1-Hour Session Booked with ${expert.name} via Razorpay!`);
+        navigate("/my-sessions");
+      },
+      onError: (err) => {
+        toast.error("Razorpay payment cancelled or incomplete.");
+      },
     });
-
-    alert(
-      "Session booked successfully."
-    );
   }
 
   return (

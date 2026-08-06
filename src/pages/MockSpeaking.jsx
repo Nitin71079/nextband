@@ -199,6 +199,13 @@ export default function MockSpeaking({
       if (result.overallBand) {
         setSpeakingBand(result.overallBand);
       }
+
+      if (onComplete) {
+        onComplete({
+          band: result.overallBand || 6,
+          report: result,
+        });
+      }
     } catch (error) {
       console.error("Speaking evaluation error:", error);
       alert("Evaluation failed. Please try again.");
@@ -233,13 +240,13 @@ export default function MockSpeaking({
 <div
 style={{
 background:
-"linear-gradient(135deg,#22c55e,#16a34a)",
+"linear-gradient(135deg,#0f766e,#0d9488)",
 borderRadius:"24px",
 padding:"30px 35px",
 color:"white",
 marginBottom:"30px",
 boxShadow:
-"0 20px 45px rgba(34,197,94,.25)",
+"0 20px 45px rgba(13,148,136,.25)",
 }}
 >
 
@@ -307,22 +314,6 @@ flexWrap:"wrap",
 
 <span>
 
-🤖 AI Used
-
-</span>
-
-<strong>
-
-{getAIUsage()}/10
-
-</strong>
-
-</div>
-
-<div className="writing-stat">
-
-<span>
-
 🎙 Status
 
 </span>
@@ -342,9 +333,10 @@ flexWrap:"wrap",
 </div>
 
 {/* ===========================================
-                MODE SWITCHER TABS
+                MODE SWITCHER TABS (Standalone Mode Only)
 =========================================== */}
 
+{!onComplete && forcedTestId === undefined && (
 <div className="writing-tabs" style={{ marginBottom: "25px" }}>
 
 <button
@@ -368,6 +360,7 @@ style={{ fontWeight: "800" }}
 </button>
 
 </div>
+)}
 
 {/* ===========================================
         INTERACTIVE AI EXAMINER ENGINE

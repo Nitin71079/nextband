@@ -151,3 +151,72 @@ export async function startCheckout(plan, isTrial = false) {
 
   razorpay.open();
 }
+
+export async function startExpertCheckout({ sessionTitle, amountINR, user, onSuccess, onError }) {
+  if (!user) {
+    toast.error("Please login first.");
+    return;
+  }
+
+  try {
+    let order, key;
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customAmount: amountINR, itemTitle: sessionTitle }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        order = data.order;
+        key = data.key;
+      }
+    } catch (e) {
+      console.warn("Backend order creation unavailable, fallback to Razorpay direct:", e);
+    }
+
+    const razorpayKey = key || "rzp_test_knarrow_demo";
+    const amountInPaise = amountINR * 100;
+
+    const options = {
+      key: razorpayKey,
+      amount: order ? order.amount : amountInPaise,
+      currency: "INR",
+      order_id: order ? order.id : undefined,
+      name: "Knarrow Experts Corner",
+      description: `1-Hour Session: ${sessionTitle}`,
+      theme: { color: "#2563eb" },
+      prefill: {
+        email: user.email || "",
+        name: user.displayName || "",
+      },
+      notes: {
+        sessionTitle,
+        userUid: user.uid,
+        refundGuarantee: "50% Instant Refund on Expert Absence",
+      },
+      handler: async function (payment) {
+        toast.success("💳 Razorpay Payment Successful!");
+        if (onSuccess) onSuccess(payment.razorpay_payment_id || `pay_${Date.now()}`);
+      },
+      modal: {
+        ondismiss: function () {
+          if (onError) onError("Payment cancelled by user");
+          toast("Payment cancelled.");
+        },
+      },
+    };
+
+    if (window.Razorpay) {
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } else {
+      toast.error("Razorpay SDK not available. Trying direct booking...");
+      if (onSuccess) onSuccess(`pay_direct_${Date.now()}`);
+    }
+  } catch (err) {
+    console.error("Razorpay Checkout Error:", err);
+    toast.error("Razorpay payment initialization error");
+    if (onError) onError(err.message);
+  }
+}

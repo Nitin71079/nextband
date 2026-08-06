@@ -32,7 +32,7 @@ const SECTIONS = [
   { key: "listening", label: "Listening", icon: Headphones, color: "#8b5cf6", time: "40 min", questions: 40 },
   { key: "reading",   label: "Reading",   icon: BookOpen,   color: "#2563eb", time: "60 min", questions: 40 },
   { key: "writing",   label: "Writing",   icon: PenSquare,  color: "#f97316", time: "60 min", questions: "2 tasks" },
-  { key: "speaking",  label: "Speaking",  icon: Mic,        color: "#22c55e", time: "15 min", questions: "3 parts" },
+  { key: "speaking",  label: "Speaking",  icon: Mic,        color: "#0d9488", time: "15 min", questions: "3 parts" },
 ];
 
 export default function CBTExamEngine({ examType = "academic" }) {
@@ -57,25 +57,53 @@ export default function CBTExamEngine({ examType = "academic" }) {
   const [stage, setStage] = useState("briefing");
   const [results, setResults] = useState({ listening: null, reading: null, writing: null, speaking: null });
 
-  function advance(section, band) {
+  function advance(section, res) {
     const next = { listening: "reading", reading: "writing", writing: "speaking" };
-    setResults(prev => ({ ...prev, [section]: band }));
+    setResults(prev => {
+      const updated = { ...prev, [section]: res };
+      if (!next[section]) {
+        finishExam(updated);
+      }
+      return updated;
+    });
     if (next[section]) {
       setStage(next[section]);
-    } else {
-      finishExam({ ...results, speaking: band });
     }
   }
 
   function finishExam(finalResults) {
     updateStreak();
-    // Mark this exam type as used for free plan tracking
     markFullMockUsed(examType);
-    const overall = (
-      (Number(finalResults.listening || 0) + Number(finalResults.reading || 0) +
-       Number(finalResults.writing || 0) + Number(finalResults.speaking || 0)) / 4
-    ).toFixed(1);
-    saveExamSession({ ...finalResults, overall, completedAt: new Date().toLocaleString() });
+
+    const getVal = (val) => {
+      if (!val) return 0;
+      if (typeof val === "object") return Number(val.band || val.overallBand || 0);
+      return Number(val);
+    };
+
+    const l = getVal(finalResults.listening);
+    const r = getVal(finalResults.reading);
+    const w = getVal(finalResults.writing);
+    const s = getVal(finalResults.speaking);
+
+    // Official IELTS Overall Band Score rounding (rounds to nearest 0.5)
+    const rawAvg = (l + r + w + s) / 4;
+    const overall = (Math.round(rawAvg * 2) / 2).toFixed(1);
+
+    const writingReport = typeof finalResults.writing === "object" ? finalResults.writing.report : null;
+    const speakingReport = typeof finalResults.speaking === "object" ? finalResults.speaking.report : null;
+
+    saveExamSession({
+      listening: l,
+      reading: r,
+      writing: w,
+      speaking: s,
+      writingReport,
+      speakingReport,
+      overall,
+      examType,
+      completedAt: new Date().toISOString(),
+    });
     navigate("/exam-results");
   }
 

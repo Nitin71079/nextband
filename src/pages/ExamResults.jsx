@@ -1,6 +1,9 @@
+import { useState } from "react";
 import AICoachCard from "../components/AICoachCard";
 import BandBreakdown from "../components/BandBreakdown";
 import ForecastCard from "../components/ForecastCard";
+import WritingReport from "../components/WritingReport";
+import SpeakingReport from "../components/SpeakingReport";
 
 import {
   getExamSession,
@@ -16,8 +19,8 @@ import {
 import { useNavigate } from "react-router-dom";
 export default function ExamResults() {
   const navigate = useNavigate();
-  const session =
-    getExamSession();
+  const session = getExamSession();
+  const [activeSectionTab, setActiveSectionTab] = useState("writing");
 
   if (!session) {
     return (
@@ -39,23 +42,12 @@ export default function ExamResults() {
     );
   }
 
-  const overallBand =
-    (
-      (
-        Number(
-          session.reading || 0
-        ) +
-        Number(
-          session.listening || 0
-        ) +
-        Number(
-          session.writing || 0
-        ) +
-        Number(
-          session.speaking || 0
-        )
-      ) / 4
-    ).toFixed(1);
+  const l = Number(session.listening || 0);
+  const r = Number(session.reading || 0);
+  const w = Number(session.writing || 0);
+  const s = Number(session.speaking || 0);
+  const rawAvg = (l + r + w + s) / 4;
+  const overallBand = session.overall || (Math.round(rawAvg * 2) / 2).toFixed(1);
 
   const scores = {
     Reading: Number(
@@ -298,6 +290,73 @@ export default function ExamResults() {
 
 </div>
       </div>
+
+      {/* 📊 DETAILED SECTION AI REPORTS */}
+      {(session.writingReport || session.speakingReport) && (
+        <div
+          style={{
+            marginTop: "30px",
+            background: "#fff",
+            padding: "30px",
+            borderRadius: "20px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+          }}
+        >
+          <h2 style={{ marginBottom: "16px" }}>Detailed Section AI Evaluations</h2>
+          <p style={{ color: "#64748b", marginTop: 0, marginBottom: "20px" }}>
+            Comprehensive band score diagnostics and feedback for Writing and Speaking.
+          </p>
+
+          <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
+            {session.writingReport && (
+              <button
+                onClick={() => setActiveSectionTab("writing")}
+                style={{
+                  padding: "12px 24px",
+                  borderRadius: "14px",
+                  fontWeight: "800",
+                  fontSize: "15px",
+                  border: "none",
+                  cursor: "pointer",
+                  background: activeSectionTab === "writing" ? "linear-gradient(135deg,#f97316,#ea580c)" : "#f1f5f9",
+                  color: activeSectionTab === "writing" ? "#ffffff" : "#475569",
+                  boxShadow: activeSectionTab === "writing" ? "0 8px 20px rgba(249,115,22,0.3)" : "none",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                ✍️ Writing Evaluation
+              </button>
+            )}
+            {session.speakingReport && (
+              <button
+                onClick={() => setActiveSectionTab("speaking")}
+                style={{
+                  padding: "12px 24px",
+                  borderRadius: "14px",
+                  fontWeight: "800",
+                  fontSize: "15px",
+                  border: "none",
+                  cursor: "pointer",
+                  background: activeSectionTab === "speaking" ? "linear-gradient(135deg,#0f766e,#0d9488)" : "#f1f5f9",
+                  color: activeSectionTab === "speaking" ? "#ffffff" : "#475569",
+                  boxShadow: activeSectionTab === "speaking" ? "0 8px 20px rgba(13,148,136,0.3)" : "none",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                🎤 Speaking Evaluation
+              </button>
+            )}
+          </div>
+
+          {activeSectionTab === "writing" && session.writingReport && (
+            <WritingReport report={session.writingReport} />
+          )}
+
+          {activeSectionTab === "speaking" && session.speakingReport && (
+            <SpeakingReport report={session.speakingReport} />
+          )}
+        </div>
+      )}
 
       <div
         style={{

@@ -103,39 +103,87 @@ body {
 }
 
 /* ===========================================================
-   DARK MODE COMPONENT OVERRIDES
+   THEME COMPONENT OVERRIDES & CONTRAST HARMONY
 =========================================================== */
 
 [data-theme="dark"] {
   color-scheme: dark;
 }
 
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Light Theme Explicit Hero & Cards */
+[data-theme="light"] .dashboard-hero {
+  background: linear-gradient(135deg, #ffffff, #f8fafc) !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .dashboard-hero h1 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .dashboard-hero p {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .hero-progress-card,
+[data-theme="light"] .hero-stat-card,
+[data-theme="light"] .dashboard-card,
+[data-theme="light"] .test-card,
+[data-theme="light"] .stat-card,
+[data-theme="light"] .insight-card,
+[data-theme="light"] .help-card,
+[data-theme="light"] .quick-card,
+[data-theme="light"] .activity-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Dark Theme Explicit Hero & Cards */
 [data-theme="dark"] .dashboard-hero {
   background: linear-gradient(180deg, #0f172a, #0b0e17) !important;
   border-color: #334155 !important;
+  color: #f8fafc !important;
 }
 
+[data-theme="dark"] .dashboard-hero h1 {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .dashboard-hero p {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .hero-progress-card,
+[data-theme="dark"] .hero-stat-card,
 [data-theme="dark"] .card,
 [data-theme="dark"] .dashboard-card,
 [data-theme="dark"] .test-card,
+[data-theme="dark"] .stat-card,
 [data-theme="dark"] .insight-card,
-[data-theme="dark"] .help-card {
-  background: var(--surface);
-  border-color: var(--border);
-  color: var(--text);
+[data-theme="dark"] .help-card,
+[data-theme="dark"] .quick-card,
+[data-theme="dark"] .activity-card {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
 }
 
 [data-theme="dark"] input,
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
-  background-color: var(--surface-2);
-  color: var(--text);
-  border-color: var(--border);
+  background-color: var(--surface-2) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
 }
 
 [data-theme="dark"] input::placeholder,
 [data-theme="dark"] textarea::placeholder {
-  color: var(--text-muted);
+  color: var(--text-muted) !important;
 }
 
 /* Precise typography targeting — preserves text gradients, buttons & status badges */

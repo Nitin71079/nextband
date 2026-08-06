@@ -1,55 +1,49 @@
 import TestCenter from "../components/TestCenter";
 import listeningTests from "../data/listening/tests";
 
-const tests = listeningTests.map((test) => {
-  const totalQuestions = test.sections.reduce((total, section) => {
-    // Section 1 (Form Completion)
-    if (section.form) {
-      total += section.form.length;
-    }
+const TOTAL_TESTS = 50;
 
-    // Sections 2–4
-    if (section.groups) {
-      section.groups.forEach((group) => {
-        // MCQ, Matching, Map, Diagram
-        if (group.questions) {
-          total += group.questions.length;
-        }
+const tests = Array.from({ length: TOTAL_TESTS }, (_, index) => {
+  const existingTest = listeningTests[index];
+  const testNum = String(index + 1).padStart(3, "0");
 
-        // Notes Completion
-        if (group.notes) {
-          total += group.notes.filter(
-            (note) => note.type === "blank"
-          ).length;
-        }
-
-        // Table Completion — cells with an id and no type are answer blanks
-        if (group.rows) {
-          group.rows.forEach((row) => {
-            total += row.filter(
-              (cell) => cell.id !== undefined && cell.type === undefined
-            ).length;
+  if (existingTest) {
+    let count = 0;
+    if (existingTest.sections && Array.isArray(existingTest.sections)) {
+      existingTest.sections.forEach((section) => {
+        if (section.form) count += section.form.length;
+        if (section.questions) count += section.questions.length;
+        if (section.groups) {
+          section.groups.forEach((group) => {
+            if (group.questions) count += group.questions.length;
+            if (group.notes) count += group.notes.filter((n) => n.type === "blank").length;
+            if (group.rows) {
+              group.rows.forEach((r) => {
+                if (Array.isArray(r)) count += r.filter((cell) => cell.id !== undefined && cell.type === undefined).length;
+              });
+            }
+            if (group.steps) count += group.steps.filter((s) => s.type === "blank").length;
           });
-        }
-
-        // Flowchart Completion
-        if (group.steps) {
-          total += group.steps.filter(
-            (step) => step.type === "blank"
-          ).length;
         }
       });
     }
-
-    return total;
-  }, 0);
+    return {
+      id: existingTest.id || `listening-test-${testNum}`,
+      title: existingTest.title || `IELTS Listening Practice Test ${testNum}`,
+      duration: `${existingTest.duration || 40} mins`,
+      questions: count > 0 ? count : 40,
+      difficulty: existingTest.difficulty || "Academic",
+      completed: false,
+      bestBand: "--",
+    };
+  }
 
   return {
-    id: test.id,
-    title: test.title,
-    duration: `${test.duration} mins`,
-    questions: totalQuestions,
-    difficulty: test.difficulty || "Mixed",
+    id: `listening-test-${testNum}`,
+    title: `IELTS Listening Practice Test ${testNum}`,
+    duration: "40 mins",
+    questions: 40,
+    difficulty: index % 3 === 0 ? "Hard" : index % 2 === 0 ? "Medium" : "Academic",
     completed: false,
     bestBand: "--",
   };
@@ -64,7 +58,7 @@ export default function ListeningCenter() {
       icon="🎧"
       route="/mock/listening"
       tests={tests}
-      freeLimit={1}
+      freeLimit={3}
     />
   );
 }

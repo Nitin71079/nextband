@@ -314,7 +314,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px", borderBottom: "2px solid #f1f5f9", paddingBottom: "20px" }}>
         <div>
           <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#0f172a", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
-            <Sparkles style={{ color: "#16a34a" }} /> Interactive Virtual AI Examiner Simulator
+            <Sparkles style={{ color: "#0d9488" }} /> Interactive Virtual AI Examiner Simulator
           </h2>
           <p style={{ color: "#64748b", margin: "4px 0 0 0", fontSize: "14px" }}>
             Real-time voice narration, timed sections, and automated speech recognition.
@@ -323,13 +323,13 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
 
         {/* Phase Badges */}
         <div style={{ display: "flex", gap: "10px" }}>
-          <span style={{ padding: "6px 14px", borderRadius: "12px", fontSize: "13px", fontWeight: "700", background: phase === "PART1" ? "#16a34a" : "#f1f5f9", color: phase === "PART1" ? "#ffffff" : "#64748b" }}>
+          <span style={{ padding: "6px 14px", borderRadius: "12px", fontSize: "13px", fontWeight: "700", background: phase === "PART1" ? "#0d9488" : "#f1f5f9", color: phase === "PART1" ? "#ffffff" : "#64748b" }}>
             Part 1: Interview
           </span>
-          <span style={{ padding: "6px 14px", borderRadius: "12px", fontSize: "13px", fontWeight: "700", background: phase.includes("PART2") ? "#16a34a" : "#f1f5f9", color: phase.includes("PART2") ? "#ffffff" : "#64748b" }}>
+          <span style={{ padding: "6px 14px", borderRadius: "12px", fontSize: "13px", fontWeight: "700", background: phase.includes("PART2") ? "#0d9488" : "#f1f5f9", color: phase.includes("PART2") ? "#ffffff" : "#64748b" }}>
             Part 2: Cue Card
           </span>
-          <span style={{ padding: "6px 14px", borderRadius: "12px", fontSize: "13px", fontWeight: "700", background: phase === "PART3" ? "#16a34a" : "#f1f5f9", color: phase === "PART3" ? "#ffffff" : "#64748b" }}>
+          <span style={{ padding: "6px 14px", borderRadius: "12px", fontSize: "13px", fontWeight: "700", background: phase === "PART3" ? "#0d9488" : "#f1f5f9", color: phase === "PART3" ? "#ffffff" : "#64748b" }}>
             Part 3: Discussion
           </span>
         </div>
@@ -338,18 +338,18 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
       {/* 🎬 IDLE START CARD */}
       {phase === "IDLE" && (
         <div style={{ textAlign: "center", padding: "40px 20px" }}>
-          <div style={{ width: "90px", height: "90px", borderRadius: "50%", background: "linear-gradient(135deg,#22c55e,#16a34a)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", color: "white", boxShadow: "0 10px 25px rgba(34,197,94,0.3)" }}>
+          <div style={{ width: "90px", height: "90px", borderRadius: "50%", background: "linear-gradient(135deg,#0f766e,#0d9488)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", color: "white", boxShadow: "0 10px 25px rgba(13,148,136,0.3)" }}>
             <Volume2 size={42} />
           </div>
           <h3 style={{ fontSize: "28px", fontWeight: "900", color: "#0f172a", marginBottom: "12px" }}>
-            Ready to begin Speaking Test {test.id}?
+            Ready to begin IELTS Speaking Test?
           </h3>
           <p style={{ maxWidth: "550px", margin: "0 auto 30px", color: "#475569", fontSize: "15px", lineHeight: "1.6" }}>
             The AI Examiner will read out each question aloud. You will have allocated time limits for each response (35s for Part 1, 1m prep + 2m speech for Part 2, and 45s for Part 3).
           </p>
           <button
             onClick={startFullTest}
-            style={{ padding: "16px 42px", borderRadius: "16px", background: "linear-gradient(135deg,#22c55e,#16a34a)", color: "#ffffff", border: "none", fontSize: "18px", fontWeight: "800", cursor: "pointer", boxShadow: "0 10px 25px rgba(34,197,94,0.35)", display: "inline-flex", alignItems: "center", gap: "10px" }}
+            style={{ padding: "16px 42px", borderRadius: "16px", background: "linear-gradient(135deg,#0f766e,#0d9488)", color: "#ffffff", border: "none", fontSize: "18px", fontWeight: "800", cursor: "pointer", boxShadow: "0 10px 25px rgba(13,148,136,0.35)", display: "inline-flex", alignItems: "center", gap: "10px" }}
           >
             <Play size={20} /> Start Interactive AI Test Now
           </button>
@@ -363,18 +363,18 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
           <div style={{ background: "linear-gradient(135deg, #0f172a, #1e293b)", borderRadius: "20px", padding: "24px", color: "#ffffff", marginBottom: "25px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
               <div style={{ position: "relative" }}>
-                <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px" }}>
+                <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "#0d9488", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px" }}>
                   👩‍💼
                 </div>
                 {isSpeaking && (
-                  <span style={{ position: "absolute", bottom: 0, right: 0, width: "16px", height: "16px", background: "#22c55e", borderRadius: "50%", border: "2px solid #0f172a", animation: "pulse 1.5s infinite" }} />
+                  <span style={{ position: "absolute", bottom: 0, right: 0, width: "16px", height: "16px", background: "#14b8a6", borderRadius: "50%", border: "2px solid #0f172a", animation: "pulse 1.5s infinite" }} />
                 )}
               </div>
               <div>
                 <h4 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: "#ffffff" }}>
                   Dr. Sarah Jenkins <span style={{ fontSize: "12px", opacity: 0.7, fontWeight: "400" }}>(AI Examiner)</span>
                 </h4>
-                <div style={{ fontSize: "14px", color: status === "EXAMINER_SPEAKING" ? "#38bdf8" : status === "USER_SPEAKING" ? "#4ade80" : "#fbbf24", fontWeight: "700", marginTop: "4px" }}>
+                <div style={{ fontSize: "14px", color: status === "EXAMINER_SPEAKING" ? "#38bdf8" : status === "USER_SPEAKING" ? "#2dd4bf" : "#fbbf24", fontWeight: "700", marginTop: "4px" }}>
                   {status === "EXAMINER_SPEAKING" && "🗣️ Examiner is reading question aloud..."}
                   {status === "USER_SPEAKING" && "🎙️ Candidate's Turn to Speak (Recording...)"}
                   {status === "PREPARING" && "⏱️ 1-Minute Note Preparation Time"}
@@ -387,7 +387,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
               {timer > 0 && (
                 <div style={{ background: "rgba(255,255,255,0.1)", padding: "10px 20px", borderRadius: "14px", textAlign: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
                   <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px", opacity: 0.8 }}>Time Left</div>
-                  <div style={{ fontSize: "24px", fontWeight: "900", color: status === "USER_SPEAKING" ? "#4ade80" : "#ffffff" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "900", color: status === "USER_SPEAKING" ? "#2dd4bf" : "#ffffff" }}>
                     {formatTimer(timer)}
                   </div>
                 </div>
@@ -396,7 +396,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
               {status === "USER_SPEAKING" && (
                 <button
                   onClick={handleTimerExpire}
-                  style={{ background: "#22c55e", color: "white", border: "none", padding: "12px 22px", borderRadius: "12px", fontWeight: "800", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
+                  style={{ background: "#0d9488", color: "white", border: "none", padding: "12px 22px", borderRadius: "12px", fontWeight: "800", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
                 >
                   <SkipForward size={16} /> Done Speaking
                 </button>
@@ -408,7 +408,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
           <div style={{ background: "#f8fafc", borderRadius: "18px", padding: "24px", border: "1px solid #e2e8f0", marginBottom: "25px" }}>
             {phase === "PART1" && (
               <div>
-                <span style={{ fontSize: "12px", fontWeight: "800", color: "#16a34a", textTransform: "uppercase" }}>
+                <span style={{ fontSize: "12px", fontWeight: "800", color: "#0d9488", textTransform: "uppercase" }}>
                   Part 1 • Question {part1Index + 1} of {test.part1.questions.length}
                 </span>
                 <h3 style={{ fontSize: "22px", fontWeight: "800", color: "#0f172a", marginTop: "8px" }}>
@@ -441,7 +441,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
 
             {phase === "PART2_SPEAKING" && (
               <div>
-                <span style={{ fontSize: "12px", fontWeight: "800", color: "#16a34a", textTransform: "uppercase" }}>
+                <span style={{ fontSize: "12px", fontWeight: "800", color: "#0d9488", textTransform: "uppercase" }}>
                   Part 2 • Individual Long Turn Speech (Up to 2 Minutes)
                 </span>
                 <div style={{ whiteSpace: "pre-wrap", fontSize: "15px", color: "#334155", marginTop: "8px", background: "#ffffff", padding: "16px", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
@@ -490,7 +490,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
       {/* 🏁 TEST FINISHED SUMMARY */}
       {phase === "FINISHED" && (
         <div style={{ textAlign: "center", padding: "30px 20px" }}>
-          <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#dcfce7", color: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+          <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#ccfbf1", color: "#0d9488", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
             <CheckCircle2 size={48} />
           </div>
           <h3 style={{ fontSize: "26px", fontWeight: "900", color: "#0f172a" }}>
