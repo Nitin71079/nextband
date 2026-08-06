@@ -60,11 +60,6 @@ const NAV_ITEMS_PUBLIC = [
     path: "/",
   },
   {
-    label: "Experts Corner",
-    path: "/experts-corner",
-    icon: UserCheck,
-  },
-  {
     label: "Full Mocks",
     path: "/full-mocks",
     icon: FileText,
@@ -109,11 +104,6 @@ const NAV_ITEMS_PRIVATE = [
     label: "Dashboard",
     path: "/dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    label: "Experts Corner",
-    path: "/experts-corner",
-    icon: UserCheck,
   },
   {
     label: "Full Mocks",
@@ -579,22 +569,6 @@ export default function Navbar() {
             )}
           </AnimatePresence>
         </div>
-
-        {/* Experts Corner */}
-        <NavLink to="/experts-corner" className={navLinkClass}>
-          {({ isActive }) => (
-            <>
-              <span>Experts Corner</span>
-              {isActive && (
-                <motion.div
-                  layoutId="active-pill"
-                  className="kn-active-pill"
-                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                />
-              )}
-            </>
-          )}
-        </NavLink>
 
         {/* AI Studio */}
         {user && (

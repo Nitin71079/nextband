@@ -14,7 +14,7 @@ import ProgressAnalytics from "./pages/ProgressAnalytics";
 import ExamResults from "./pages/ExamResults";
 import FullAcademicMock from "./pages/FullAcademicMock";
 import FullGeneralMock from "./pages/FullGeneralMock";
-import { Routes, Route} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Certificates from "./pages/Certificates";
 import MockListening from "./pages/MockListening";
 import MockSpeaking from "./pages/MockSpeaking";
@@ -200,35 +200,19 @@ element={<ExamHistory/>}
 />
 <Route
   path="/experts-corner"
-  element={
-    <PrivateRoute>
-      <ExpertsCorner />
-    </PrivateRoute>
-  }
+  element={<Navigate to="/dashboard" replace />}
 />
 <Route
   path="/experts"
-  element={
-    <PrivateRoute>
-      <ExpertsCorner />
-    </PrivateRoute>
-  }
+  element={<Navigate to="/dashboard" replace />}
 />
 <Route
   path="/experts/:id"
-  element={
-    <PrivateRoute>
-      <ExpertProfile />
-    </PrivateRoute>
-  }
+  element={<Navigate to="/dashboard" replace />}
 />
 <Route
   path="/my-sessions"
-  element={
-    <PrivateRoute>
-      <MySessions />
-    </PrivateRoute>
-  }
+  element={<Navigate to="/dashboard" replace />}
 />
 <Route
   path="/accent-lab"
