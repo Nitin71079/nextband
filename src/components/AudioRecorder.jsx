@@ -39,31 +39,21 @@ transcriptRef.current = "";
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
-    let finalTranscript = "";
+    let previousSessionsText = "";
 
     recognition.onresult = (event) => {
-      let interimTranscript = "";
-      let newFinal = "";
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const res = event.results[i];
-        if (res.isFinal) {
-          newFinal += res[0].transcript + " ";
-        } else {
-          interimTranscript += res[0].transcript;
-        }
+      let sessionText = "";
+      for (let i = 0; i < event.results.length; i++) {
+        sessionText += event.results[i][0].transcript + " ";
       }
 
-      if (newFinal) {
-        finalTranscript += newFinal;
-      }
-
-      const combined = (finalTranscript + " " + interimTranscript).replace(/\s+/g, " ").trim();
+      const combined = (previousSessionsText + " " + sessionText).replace(/\s+/g, " ").trim();
       transcriptRef.current = combined;
     };
 
     recognition.onend = () => {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+        previousSessionsText = transcriptRef.current;
         try { recognition.start(); } catch {}
       }
     };

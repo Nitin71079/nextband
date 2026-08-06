@@ -29,7 +29,12 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef(null);
   const isRecordingRef = useRef(false);
-  const finalTranscriptRef = useRef("");
+  const previousSessionsTextRef = useRef("");
+  const currentInputRef = useRef("");
+
+  useEffect(() => {
+    currentInputRef.current = currentInput;
+  }, [currentInput]);
 
   // Initialize Speech Recognition if supported
   useEffect(() => {
@@ -43,23 +48,15 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
       rec.lang = "en-US";
 
       rec.onresult = (event) => {
-        let interimText = "";
-        let newFinalChunk = "";
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const resultItem = event.results[i];
-          if (resultItem.isFinal) {
-            newFinalChunk += resultItem[0].transcript + " ";
-          } else {
-            interimText += resultItem[0].transcript;
-          }
+        let sessionTranscript = "";
+        for (let i = 0; i < event.results.length; i++) {
+          sessionTranscript += event.results[i][0].transcript + " ";
         }
 
-        if (newFinalChunk) {
-          finalTranscriptRef.current += newFinalChunk;
-        }
+        const combinedText = (previousSessionsTextRef.current + " " + sessionTranscript)
+          .replace(/\s+/g, " ")
+          .trim();
 
-        const combinedText = (finalTranscriptRef.current + " " + interimText).replace(/\s+/g, " ").trim();
         if (combinedText) {
           setCurrentInput(combinedText);
         }
@@ -79,6 +76,7 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
 
       rec.onend = () => {
         if (isRecordingRef.current) {
+          previousSessionsTextRef.current = currentInputRef.current;
           try {
             rec.start();
           } catch (e) {
@@ -326,7 +324,8 @@ export default function InteractiveSpeakingEngine({ test, onFinishTest }) {
   const startRecording = () => {
     isRecordingRef.current = true;
     setIsRecording(true);
-    finalTranscriptRef.current = "";
+    previousSessionsTextRef.current = "";
+    currentInputRef.current = "";
     setCurrentInput("");
     if (recognitionRef.current) {
       try {
