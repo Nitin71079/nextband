@@ -366,6 +366,7 @@ element={<ExamHistory/>}
             }
           />
 <Route path="/mock/reading/:id" element={<MockReading />} />
+<Route path="/mock/general-reading/:id" element={<MockReading />} />
 
 <Route path="/mock/listening/:id" element={<MockListening />} />
 <Route

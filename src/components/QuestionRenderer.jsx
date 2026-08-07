@@ -78,6 +78,7 @@ export default function QuestionRenderer({
 
   switch (type) {
     case "multiple-choice":
+    case "mcq":
       return <MCQ {...commonProps} />;
 
     case "true-false-not-given":

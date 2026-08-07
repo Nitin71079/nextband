@@ -587,8 +587,8 @@ export default function MockReading({
           </div>
 
           <div className="ielts-passage-body">
-            {currentPassage.content ? (
-              currentPassage.content
+            {(currentPassage.content || currentPassage.text) ? (
+              (currentPassage.content || currentPassage.text)
                 .trim()
                 .split("\n\n")
                 .map((para, i) => (
@@ -600,7 +600,7 @@ export default function MockReading({
                   <div className="ielts-passage-section-heading">
                     {text.id}. {text.title}
                   </div>
-                  {text.content
+                  {(text.content || text.text)
                     .trim()
                     .split("\n\n")
                     .map((para, i) => (
