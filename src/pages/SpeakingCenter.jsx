@@ -27,7 +27,6 @@ export default function SpeakingCenter() {
       icon="🎤"
       route="/mock/speaking"
       tests={tests}
-      freeLimit={3}
     />
   );
 }

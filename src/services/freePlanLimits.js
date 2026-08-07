@@ -23,29 +23,19 @@ import writingTests   from "../data/writing/tests";
 import speakingTests  from "../data/speaking/tests";
 
 export function isReadingTestLocked(testId, isGeneral, premium) {
-  if (premium) return false;
-  const pool  = isGeneral ? generalTests : academicTests;
-  const limit = isGeneral ? FREE_LIMITS.generalReading : FREE_LIMITS.academicReading;
-  const idx   = pool.findIndex((t) => String(t.id) === String(testId));
-  return idx === -1 || idx >= limit;
+  return false;
 }
 
 export function isListeningTestLocked(testId, premium) {
-  if (premium) return false;
-  const idx = listeningTests.findIndex((t) => t.id === testId);
-  return idx === -1 || idx >= FREE_LIMITS.listening;
+  return false;
 }
 
 export function isWritingTestLocked(testId, premium) {
-  if (premium) return false;
-  const idx = writingTests.findIndex((t) => t.id === testId);
-  return idx === -1 || idx >= FREE_LIMITS.writing;
+  return false;
 }
 
 export function isSpeakingTestLocked(testId, premium) {
-  if (premium) return false;
-  const idx = speakingTests.findIndex((t) => t.id === testId);
-  return idx === -1 || idx >= FREE_LIMITS.speaking;
+  return false;
 }
 
 /* ── Full mock attempts (localStorage) ── */

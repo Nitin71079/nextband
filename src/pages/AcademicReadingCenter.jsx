@@ -20,7 +20,6 @@ export default function AcademicReadingCenter() {
       theme="reading"
       route="/mock/reading"
       tests={tests}
-      freeLimit={3}
     />
   );
 }
