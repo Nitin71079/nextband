@@ -6103,6 +6103,1407 @@ const writingTests = [
       question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
     }
   }
+,
+  {
+    id: 101,
+    title: "Writing Test 101",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test1,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 102,
+    title: "Writing Test 102",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test2,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 103,
+    title: "Writing Test 103",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test3,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 104,
+    title: "Writing Test 104",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test4,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 105,
+    title: "Writing Test 105",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test5,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 106,
+    title: "Writing Test 106",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test6,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 107,
+    title: "Writing Test 107",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test7,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 108,
+    title: "Writing Test 108",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test8,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 109,
+    title: "Writing Test 109",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test9,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 110,
+    title: "Writing Test 110",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test10,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 111,
+    title: "Writing Test 111",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test11,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 112,
+    title: "Writing Test 112",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test12,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 113,
+    title: "Writing Test 113",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test13,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 114,
+    title: "Writing Test 114",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test14,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 115,
+    title: "Writing Test 115",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test15,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 116,
+    title: "Writing Test 116",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test16,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 117,
+    title: "Writing Test 117",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test17,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 118,
+    title: "Writing Test 118",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test18,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 119,
+    title: "Writing Test 119",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test19,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 120,
+    title: "Writing Test 120",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test20,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 121,
+    title: "Writing Test 121",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test21,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 122,
+    title: "Writing Test 122",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test22,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 123,
+    title: "Writing Test 123",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test23,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 124,
+    title: "Writing Test 124",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test24,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 125,
+    title: "Writing Test 125",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test25,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 126,
+    title: "Writing Test 126",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test26,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 127,
+    title: "Writing Test 127",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test27,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 128,
+    title: "Writing Test 128",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test28,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 129,
+    title: "Writing Test 129",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test29,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 130,
+    title: "Writing Test 130",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test30,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 131,
+    title: "Writing Test 131",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test31,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 132,
+    title: "Writing Test 132",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test32,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 133,
+    title: "Writing Test 133",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test33,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 134,
+    title: "Writing Test 134",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test34,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 135,
+    title: "Writing Test 135",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test35,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 136,
+    title: "Writing Test 136",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test36,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 137,
+    title: "Writing Test 137",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test37,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 138,
+    title: "Writing Test 138",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test38,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 139,
+    title: "Writing Test 139",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test39,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 140,
+    title: "Writing Test 140",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test40,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 141,
+    title: "Writing Test 141",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test41,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 142,
+    title: "Writing Test 142",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test42,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 143,
+    title: "Writing Test 143",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test43,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 144,
+    title: "Writing Test 144",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test44,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 145,
+    title: "Writing Test 145",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test45,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 146,
+    title: "Writing Test 146",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test46,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 147,
+    title: "Writing Test 147",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test47,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 148,
+    title: "Writing Test 148",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test48,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 149,
+    title: "Writing Test 149",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test49,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 150,
+    title: "Writing Test 150",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test50,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 151,
+    title: "Writing Test 151",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test51,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 152,
+    title: "Writing Test 152",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test52,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 153,
+    title: "Writing Test 153",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test53,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 154,
+    title: "Writing Test 154",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test54,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 155,
+    title: "Writing Test 155",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test55,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 156,
+    title: "Writing Test 156",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test56,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 157,
+    title: "Writing Test 157",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test57,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 158,
+    title: "Writing Test 158",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test58,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 159,
+    title: "Writing Test 159",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test59,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 160,
+    title: "Writing Test 160",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test60,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 161,
+    title: "Writing Test 161",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test61,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 162,
+    title: "Writing Test 162",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test62,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 163,
+    title: "Writing Test 163",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test63,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 164,
+    title: "Writing Test 164",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test64,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 165,
+    title: "Writing Test 165",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test65,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 166,
+    title: "Writing Test 166",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test66,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 167,
+    title: "Writing Test 167",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test67,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 168,
+    title: "Writing Test 168",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test68,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 169,
+    title: "Writing Test 169",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test69,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 170,
+    title: "Writing Test 170",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test70,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 171,
+    title: "Writing Test 171",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test71,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 172,
+    title: "Writing Test 172",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test72,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 173,
+    title: "Writing Test 173",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test73,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 174,
+    title: "Writing Test 174",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test74,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 175,
+    title: "Writing Test 175",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test75,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 176,
+    title: "Writing Test 176",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test76,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 177,
+    title: "Writing Test 177",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test77,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 178,
+    title: "Writing Test 178",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test78,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 179,
+    title: "Writing Test 179",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test79,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 180,
+    title: "Writing Test 180",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test80,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 181,
+    title: "Writing Test 181",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test81,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 182,
+    title: "Writing Test 182",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test82,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 183,
+    title: "Writing Test 183",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test83,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 184,
+    title: "Writing Test 184",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test84,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 185,
+    title: "Writing Test 185",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test85,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 186,
+    title: "Writing Test 186",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test86,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 187,
+    title: "Writing Test 187",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test87,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 188,
+    title: "Writing Test 188",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test88,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 189,
+    title: "Writing Test 189",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test89,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 190,
+    title: "Writing Test 190",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test90,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 191,
+    title: "Writing Test 191",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test91,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 192,
+    title: "Writing Test 192",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test92,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 193,
+    title: "Writing Test 193",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test93,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 194,
+    title: "Writing Test 194",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test94,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 195,
+    title: "Writing Test 195",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test95,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 196,
+    title: "Writing Test 196",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test96,
+      type: "Line Graph",
+      question: "Task 1: The graph below shows the percentage of electricity generated from renewable sources in four European countries between 2000 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people believe that university education should be free for all students regardless of income, while others argue that students should pay for their tuition. Discuss both views and give your opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 197,
+    title: "Writing Test 197",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test97,
+      type: "Bar Chart",
+      question: "Task 1: The chart compares the annual consumption of meat, fish, and dairy products per person in three countries in 2021. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: In many countries, governments are spending significant funds on space exploration. Some argue that this money should instead be spent on pressing social issues on Earth. Do you agree or disagree? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 198,
+    title: "Writing Test 198",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test98,
+      type: "Pie Chart",
+      question: "Task 1: The pie charts illustrate the distribution of household expenditure on housing, food, transportation, and savings in 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: With the rise of artificial intelligence and automation, many traditional jobs may disappear. What problems might this cause, and what measures can governments take to mitigate these impacts? Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 199,
+    title: "Writing Test 199",
+    duration: 60,
+    difficulty: "Hard",
+    task1: {
+      image: test99,
+      type: "Process Diagram",
+      question: "Task 1: The diagram shows the multi-stage industrial process of recycling plastic bottles into synthetic fleece fabric. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Modern technology allows people to work from home. While some think this benefits employees and companies, others argue it weakens team collaboration and workplace relationships. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  },
+  {
+    id: 200,
+    title: "Writing Test 200",
+    duration: 60,
+    difficulty: "Medium",
+    task1: {
+      image: test100,
+      type: "Map Comparison",
+      question: "Task 1: The maps illustrate planned redevelopment changes for a coastal town harbor area between 2015 and 2025. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. (Write at least 150 words)"
+    },
+    task2: {
+      question: "Task 2: Some people argue that advertising aimed at children should be banned because it encourages consumerism, while others believe it helps children learn about products. Discuss both views. Give reasons for your answer and include any relevant examples from your own knowledge or experience. (Write at least 250 words)"
+    }
+  }
 ];
 
 export default writingTests;
