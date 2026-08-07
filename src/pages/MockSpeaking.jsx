@@ -1,7 +1,7 @@
 import "../styles/exam/shared.css";
 
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 import speakingTests from "../data/speaking/tests";
 import { useAuth } from "../context/AuthContext";
@@ -44,7 +44,17 @@ export default function MockSpeaking({
 
   const { testId: paramTestId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { premium } = useAuth();
+
+  const isFullMockOrCBT = Boolean(
+    onComplete ||
+    forcedTestId !== undefined ||
+    location.pathname.includes("/cbt") ||
+    location.pathname.includes("/mock/academic") ||
+    location.pathname.includes("/mock/general") ||
+    location.search.includes("fullMock=true")
+  );
 
   const {
 
@@ -75,6 +85,12 @@ export default function MockSpeaking({
   }, [test.id, premium, forcedTestId]); // eslint-disable-line
 
   const [testMode, setTestMode] = useState("interactive"); // "interactive" | "practice"
+
+  useEffect(() => {
+    if (isFullMockOrCBT) {
+      setTestMode("interactive");
+    }
+  }, [isFullMockOrCBT]);
 
   const [
     currentPart,
@@ -333,10 +349,10 @@ flexWrap:"wrap",
 </div>
 
 {/* ===========================================
-                MODE SWITCHER TABS (Standalone Mode Only)
+                MODE SWITCHER TABS (Standalone Practice Mode Only)
 =========================================== */}
 
-{!onComplete && forcedTestId === undefined && (
+{!isFullMockOrCBT && !onComplete && forcedTestId === undefined && (
 <div className="writing-tabs" style={{ marginBottom: "25px" }}>
 
 <button
