@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import ReadingStructureBreakdown from "../components/ReadingStructureBreakdown";
 import "../styles/testCenter.css";
 
 export default function ReadingCenter() {
@@ -18,6 +19,8 @@ export default function ReadingCenter() {
           </div>
         </div>
       </div>
+
+      <ReadingStructureBreakdown initialOpen={true} />
 
       <div
         style={{

@@ -13,6 +13,7 @@ import { isReadingTestLocked } from "../services/freePlanLimits";
 import QuestionRenderer from "../components/QuestionRenderer";
 import QuestionPalette from "../components/QuestionPalette";
 import TestFeedbackModal from "../components/TestFeedbackModal";
+import ReadingStructureBreakdown from "../components/ReadingStructureBreakdown";
 import scoreReading from "../utils/scoreReading";
 
 import "../styles/mock-reading.css";
@@ -79,6 +80,7 @@ export default function MockReading({
   const [currentQ,     setCurrentQ]     = useState(null);
   const [submitting,   setSubmitting]   = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showBreakdownModal, setShowBreakdownModal] = useState(false);
 
   const questionRefs = useRef({});
   const questionsScrollRef = useRef(null);
@@ -473,6 +475,9 @@ export default function MockReading({
         </div>
 
         <div className="ielts-bar-right">
+          <button className="ielts-btn-outline" onClick={() => setShowBreakdownModal(true)}>
+            📊 Format Breakdown
+          </button>
           {mode === "practice" && (
             <button className="ielts-btn-outline" onClick={restartTest}>
               Restart
@@ -493,6 +498,40 @@ export default function MockReading({
           )}
         </div>
       </div>
+
+      {/* ── Test Format Breakdown Modal ───────────────── */}
+      {showBreakdownModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(15, 23, 42, 0.75)",
+            backdropFilter: "blur(6px)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+          }}
+          onClick={() => setShowBreakdownModal(false)}
+        >
+          <div
+            style={{
+              maxWidth: "960px",
+              width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              borderRadius: "24px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ReadingStructureBreakdown initialOpen={true} />
+          </div>
+        </div>
+      )}
 
       {/* ── Passage Tabs (desktop) ───────────────────────── */}
       <div className="ielts-passage-tabs">

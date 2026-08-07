@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Trophy, BookOpen, Clock3, BarChart3, Lock, Crown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import ReadingStructureBreakdown from "./ReadingStructureBreakdown";
 import "../styles/testCenter.css";
+
 export default function TestCenter({
 
 title,
@@ -46,8 +48,6 @@ tests.find(t=>!t.completed) || tests[0];
 return(
 
 <div className="test-center">
-
-{/* HERO */}
 
 {/* HERO */}
 
