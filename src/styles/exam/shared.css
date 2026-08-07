@@ -565,19 +565,41 @@ font-size:16px;
 
 [data-theme="dark"] .exam-card,
 [data-theme="dark"] .exam-toolbar,
-[data-theme="dark"] .question-block {
-  background: var(--surface, #151c2c);
-  border-color: var(--border, #26334d);
-  color: var(--text, #f8fafc);
+[data-theme="dark"] .question-block,
+[data-theme="dark"] .writing-tabs,
+[data-theme="dark"] .question-box,
+[data-theme="dark"] .writing-editor,
+[data-theme="dark"] .editor-footer,
+[data-theme="dark"] .writing-toolbar {
+  background: var(--surface, #151c2c) !important;
+  border-color: var(--border, #26334d) !important;
+  color: var(--text, #f8fafc) !important;
+}
+
+[data-theme="dark"] .writing-tab {
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .writing-tab:hover {
+  background: var(--surface-2, #1e293b);
 }
 
 [data-theme="dark"] .exam-title,
-[data-theme="dark"] .question-text {
-  color: var(--text, #f8fafc);
+[data-theme="dark"] .question-text,
+[data-theme="dark"] .question-header h2,
+[data-theme="dark"] .editor-header h2,
+[data-theme="dark"] .editor-footer strong {
+  color: var(--text, #f8fafc) !important;
 }
 
-[data-theme="dark"] .exam-subtitle {
-  color: var(--text-muted, #94a3b8);
+[data-theme="dark"] .exam-subtitle,
+[data-theme="dark"] .question-header p,
+[data-theme="dark"] .editor-header p {
+  color: var(--text-muted, #94a3b8) !important;
+}
+
+[data-theme="dark"] .question-panel {
+  border-right-color: var(--border, #26334d);
 }
 
 [data-theme="dark"] .secondary-btn {
@@ -588,4 +610,49 @@ font-size:16px;
 
 [data-theme="dark"] .secondary-btn:hover {
   background: var(--border, #26334d);
+}
+
+/* ==================================================
+   RESPONSIVE EXAM BREAKPOINTS
+================================================== */
+@media (max-width: 900px) {
+  .question-panel {
+    padding-right: 0;
+    border-right: none;
+  }
+  .writing-editor {
+    height: 400px;
+    padding: 16px;
+    font-size: 15px;
+  }
+  .writing-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 768px) {
+  .exam-page {
+    padding: 16px 12px;
+  }
+  .exam-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .exam-title {
+    font-size: 24px;
+  }
+  .writing-tabs {
+    flex-wrap: wrap;
+    height: auto;
+  }
+  .writing-tab {
+    height: 46px;
+    font-size: 14px;
+  }
+  .editor-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
 }

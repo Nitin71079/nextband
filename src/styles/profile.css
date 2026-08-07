@@ -4,8 +4,14 @@
 
 .profile-page {
   min-height: 100vh;
-  background: #f6f8fc;
+  background: var(--bg, #f6f8fc);
+  color: var(--text, #0f172a);
   font-family: Inter, sans-serif;
+}
+
+[data-theme="dark"] .profile-page {
+  background: var(--bg, #030712);
+  color: var(--text, #f8fafc);
 }
 
 /* ── Hero banner ─────────────────────────────────────── */

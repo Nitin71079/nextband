@@ -1127,23 +1127,32 @@ linear-gradient(
 }
 
 [data-theme="dark"] .test-card,
-[data-theme="dark"] .stat-card {
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .progress-section {
   background: var(--surface, #151c2c);
   border-color: var(--border, #26334d);
   color: var(--text, #f8fafc);
 }
 
 [data-theme="dark"] .test-card h3,
+[data-theme="dark"] .card-top h2,
 [data-theme="dark"] .stat-number,
+[data-theme="dark"] .stat-card h2,
 [data-theme="dark"] .stat-card h3,
+[data-theme="dark"] .progress-title,
 [data-theme="dark"] .section-header h2 {
   color: var(--text, #f8fafc);
 }
 
 [data-theme="dark"] .test-card p,
 [data-theme="dark"] .stat-card p,
+[data-theme="dark"] .card-info,
 [data-theme="dark"] .section-header p {
   color: var(--text-muted, #94a3b8);
+}
+
+[data-theme="dark"] .band-section {
+  border-color: var(--border, #26334d);
 }
 
 [data-theme="dark"] .hero-card p {
@@ -1159,4 +1168,41 @@ linear-gradient(
 [data-theme="dark"] .filter-btn.active {
   background: #2563eb;
   color: #ffffff;
+}
+
+/* ===========================================
+   RESPONSIVE MOBILE BREAKPOINTS
+=========================================== */
+@media (max-width: 768px) {
+  .test-center {
+    padding: 24px 16px;
+  }
+  .hero-card {
+    padding: 24px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .hero-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .hero-card h1 {
+    font-size: 32px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .test-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }

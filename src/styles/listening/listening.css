@@ -20,6 +20,17 @@
   --l-glow:      0 0 24px rgba(79,142,247,.22);
 }
 
+[data-theme="light"] .listening-page {
+  --l-bg:        #f8fafc;
+  --l-surface:   #ffffff;
+  --l-card:      #ffffff;
+  --l-border:    #e2e8f0;
+  --l-text:      #0f172a;
+  --l-muted:     #64748b;
+  --l-shadow:    0 10px 30px rgba(15, 23, 42, 0.08);
+  --l-shadow-sm: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
 /* ============================================================
    PAGE SHELL
 ============================================================ */

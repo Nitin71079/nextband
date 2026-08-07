@@ -24,6 +24,17 @@
   --in-shadow-sm: 0 4px 16px rgba(0,0,0,.28);
 }
 
+[data-theme="light"] .insights-page {
+  --in-bg:        #f8fafc;
+  --in-surface:   #ffffff;
+  --in-card:      #ffffff;
+  --in-border:    #e2e8f0;
+  --in-text:      #0f172a;
+  --in-muted:     #64748b;
+  --in-shadow:    0 10px 30px rgba(15, 23, 42, 0.08);
+  --in-shadow-sm: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
 /* ── Page shell ── */
 .insights-page {
   min-height: 100vh;
