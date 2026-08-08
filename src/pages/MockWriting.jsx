@@ -480,15 +480,13 @@ Recommended Time • 20 Minutes
 
 </div>
 
-<img
-
-src={test.task1.image}
-
-alt="Task 1"
-
-className="writing-image"
-
-/>
+{test?.task1?.image && (
+  <img
+    src={test.task1.image}
+    alt="Task 1"
+    className="writing-image"
+  />
+)}
 
 </div>
 
