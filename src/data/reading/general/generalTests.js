@@ -98,7 +98,6 @@ import generalTest097 from "./generalTest097";
 import generalTest098 from "./generalTest098";
 import generalTest099 from "./generalTest099";
 import generalTest100 from "./generalTest100";
-import general_101_200 from "../../generated_101_200/general_101_200.json";
 
 const generalTests = [
   generalTest001,
@@ -200,8 +199,7 @@ const generalTests = [
   generalTest097,
   generalTest098,
   generalTest099,
-  generalTest100,
-  ...general_101_200
+  generalTest100
 ];
 
 export default generalTests;

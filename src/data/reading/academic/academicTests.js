@@ -98,7 +98,6 @@ import academicTest097 from "./academicTest097";
 import academicTest098 from "./academicTest098";
 import academicTest099 from "./academicTest099";
 import academicTest100 from "./academicTest100";
-import academic_101_200 from "../../generated_101_200/academic_101_200.json";
 
 const academicTests = [
   academicTest001,
@@ -200,8 +199,7 @@ const academicTests = [
   academicTest097,
   academicTest098,
   academicTest099,
-  academicTest100,
-  ...academic_101_200
+  academicTest100
 ];
 
 export default academicTests;
