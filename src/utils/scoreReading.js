@@ -10,17 +10,40 @@ function normalize(value) {
 }
 
 function compareAnswers(userAnswer, correctAnswer) {
+  if (userAnswer === undefined || userAnswer === null || userAnswer === "") return false;
+
+  const normUser = normalize(userAnswer);
+  const extractLetter = (str) => {
+    const match = String(str).trim().match(/^([a-z0-9]+)[.\)]\s*/i);
+    return match ? match[1].toLowerCase() : null;
+  };
+
+  const isMatch = (cand, target) => {
+    const normTarget = normalize(target);
+    if (normUser === normTarget) return true;
+    
+    // Check if one is just option letter (e.g. "B") and target is "B. Option Text"
+    const targetLetter = extractLetter(target);
+    const userLetter = extractLetter(cand) || normUser;
+
+    if (targetLetter && (userLetter === targetLetter || normUser === targetLetter)) {
+      return true;
+    }
+
+    // Strip leading option letter from target and compare text body
+    const targetText = String(target).replace(/^[a-z0-9]+[.\)]\s*/i, "").trim();
+    if (normUser === normalize(targetText)) {
+      return true;
+    }
+
+    return false;
+  };
+
   if (Array.isArray(correctAnswer)) {
-    return correctAnswer.some(
-      (answer) =>
-        normalize(answer) === normalize(userAnswer)
-    );
+    return correctAnswer.some((ans) => isMatch(userAnswer, ans));
   }
 
-  return (
-    normalize(userAnswer) ===
-    normalize(correctAnswer)
-  );
+  return isMatch(userAnswer, correctAnswer);
 }
 
 export default function scoreReading(

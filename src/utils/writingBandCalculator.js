@@ -11,37 +11,40 @@ export function countWords(text = "") {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+export function roundIELTSBand(score) {
+  const num = Number(score) || 0;
+  if (num <= 0) return 0;
+  const floor = Math.floor(num);
+  const diff = num - floor;
+
+  if (diff < 0.25) {
+    return floor;
+  } else if (diff < 0.75) {
+    return floor + 0.5;
+  } else {
+    return floor + 1.0;
+  }
+}
+
 /**
  * Calculates official IELTS writing band from Task 1 and Task 2 band scores.
- * Task 1 = 33% weight, Task 2 = 67% weight.
+ * Task 1 = 33.33% weight, Task 2 = 66.67% weight.
  * Official IELTS rounding rule:
  * - Fractional part < 0.25 -> round down to integer (.0)
  * - Fractional part >= 0.25 and < 0.75 -> round to half band (.5)
- * - Fractional part >= 0.75 -> round up to next whole band (ceil)
+ * - Fractional part >= 0.75 -> round up to next whole band
  */
 export function calculateIELTSTotalWritingBand(task1Band = 0, task2Band = 0) {
   const t1 = Number(task1Band) || 0;
   const t2 = Number(task2Band) || 0;
   
   if (t1 === 0 && t2 === 0) return 0;
+  if (t1 === 0) return roundIELTSBand(t2);
+  if (t2 === 0) return roundIELTSBand(t1);
 
-  // Weighted raw score: 33.33% Task 1 + 66.67% Task 2
+  // Weighted raw score: 1/3 Task 1 + 2/3 Task 2
   const rawWeighted = (t1 * (1 / 3)) + (t2 * (2 / 3));
-
-  const integerPart = Math.floor(rawWeighted);
-  const decimalPart = rawWeighted - integerPart;
-
-  let roundedBand = integerPart;
-  if (decimalPart >= 0.75) {
-    roundedBand = integerPart + 1.0;
-  } else if (decimalPart >= 0.25) {
-    roundedBand = integerPart + 0.5;
-  } else {
-    roundedBand = integerPart + 0.0;
-  }
-
-  // IELTS bands are capped between 1.0 and 9.0
-  const finalBand = Math.min(9.0, Math.max(1.0, roundedBand));
+  const finalBand = Math.min(9.0, Math.max(1.0, roundIELTSBand(rawWeighted)));
   return Number(finalBand.toFixed(1));
 }
 
