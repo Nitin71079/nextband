@@ -20,14 +20,13 @@ export default function ReadingCenter() {
         </div>
       </div>
 
-      <ReadingStructureBreakdown initialOpen={true} />
-
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px,1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
           gap: "25px",
-          marginTop: "40px",
+          marginTop: "24px",
+          marginBottom: "30px",
         }}
       >
         <div className="test-card reading">
@@ -60,6 +59,8 @@ export default function ReadingCenter() {
           </button>
         </div>
       </div>
+
+      <ReadingStructureBreakdown initialOpen={true} />
     </div>
   );
 }
