@@ -7,12 +7,24 @@ export default function DETResultsPage() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const scores = calculateDETPracticeScores([
-    { skill: "literacy", accuracy: 0.9, difficulty: 110 },
-    { skill: "comprehension", accuracy: 0.85, difficulty: 115 },
-    { skill: "conversation", accuracy: 0.8, difficulty: 105 },
-    { skill: "production", accuracy: 0.85, difficulty: 110 },
-  ]);
+  let storedResponses = [];
+  try {
+    const raw = sessionStorage.getItem(`det_result_${id}`);
+    if (raw) storedResponses = JSON.parse(raw);
+  } catch (e) {
+    console.error("Could not parse DET session responses:", e);
+  }
+
+  const scores = calculateDETPracticeScores(
+    storedResponses.length > 0
+      ? storedResponses
+      : [
+          { skill: "literacy", accuracy: 0.85, difficulty: 100 },
+          { skill: "comprehension", accuracy: 0.9, difficulty: 110 },
+          { skill: "conversation", accuracy: 0.8, difficulty: 95 },
+          { skill: "production", accuracy: 0.85, difficulty: 105 },
+        ]
+  );
 
   return (
     <div className="det-container">

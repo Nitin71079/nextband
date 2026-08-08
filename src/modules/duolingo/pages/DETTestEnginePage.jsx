@@ -34,16 +34,27 @@ export default function DETTestEnginePage() {
     setCurrentItem(newEngine.start());
   }, [id]);
 
-  const handleSubmitAnswer = (itemId, answer) => {
+  const handleSubmitAnswer = (itemId, answer, accuracy = 0.85) => {
     if (!engine) return;
     setSubmitting(true);
 
     setTimeout(() => {
-      const next = engine.submitItemResponse(itemId, answer, 0.85);
+      const next = engine.submitItemResponse(itemId, answer, accuracy);
       setSubmitting(false);
 
       if (engine.isComplete || !next) {
-        navigate(`/duolingo/results/${id || "completed"}`);
+        const itemResponses = Object.keys(engine.itemScores).map((k) => {
+          const item = detItemBank.find((i) => i.id === k);
+          return {
+            itemId: k,
+            skill: item ? item.skill : "literacy",
+            difficulty: item ? item.difficultyValue : 85,
+            accuracy: engine.itemScores[k].accuracy,
+            answer: engine.itemScores[k].answer,
+          };
+        });
+        sessionStorage.setItem(`det_result_${id || "latest"}`, JSON.stringify(itemResponses));
+        navigate(`/duolingo/results/${id || "latest"}`);
       } else {
         setCurrentItem(next);
       }

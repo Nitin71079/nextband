@@ -1,5 +1,5 @@
-import { getGroqCompletion } from "../../../services/aiService";
-import { parseAIResponse } from "../../../utils/parseAIResponse";
+import { askGroqJSON } from "../../../services/aiService";
+import { parseAIResponse } from "../../../services/parseAIResponse";
 
 /**
  * Evaluates DET Writing Response using Groq API
@@ -25,7 +25,7 @@ Return ONLY a valid JSON object strictly matching this schema:
   const userPrompt = `PROMPT: ${promptText}\n\nCANDIDATE RESPONSE:\n${candidateResponse}`;
 
   try {
-    const rawRes = await getGroqCompletion(systemPrompt, userPrompt);
+    const rawRes = await askGroqJSON(systemPrompt, userPrompt);
     const parsed = parseAIResponse(rawRes);
 
     return {
@@ -73,7 +73,7 @@ Return ONLY a valid JSON object strictly matching this schema:
   const userPrompt = `SPEAKING PROMPT: ${promptText}\n\nTRANSCRIPT:\n${transcriptText}`;
 
   try {
-    const rawRes = await getGroqCompletion(systemPrompt, userPrompt);
+    const rawRes = await askGroqJSON(systemPrompt, userPrompt);
     const parsed = parseAIResponse(rawRes);
 
     return {

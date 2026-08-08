@@ -26,13 +26,25 @@ export const detItemBank = [
     difficultyValue: 85,
     timeLimit: 180,
     prompt: "Type the missing letters to complete the text below.",
-    passage: "Urban plan___ is a techni___ and politi___ process conce___ with the development and design of land use and the built enviro___.",
+    tokens: [
+      { type: "text", value: "Urban " },
+      { type: "blank", prefix: "plan", missingLength: 4, answer: "ning" },
+      { type: "text", value: " is a " },
+      { type: "blank", prefix: "techni", missingLength: 3, answer: "cal" },
+      { type: "text", value: " and " },
+      { type: "blank", prefix: "politi", missingLength: 3, answer: "cal" },
+      { type: "text", value: " process " },
+      { type: "blank", prefix: "conce", missingLength: 4, answer: "rned" },
+      { type: "text", value: "rned with the development and design of land use and the built " },
+      { type: "blank", prefix: "enviro", missingLength: 4, answer: "nment" },
+      { type: "text", value: "." }
+    ],
     answers: {
-      "plan___": "ning",
-      "techni___": "cal",
-      "politi___": "cal",
-      "conce___": "rned",
-      "enviro___": "nment"
+      "blank_1": "ning",
+      "blank_3": "cal",
+      "blank_5": "cal",
+      "blank_7": "rned",
+      "blank_9": "nment"
     }
   },
   {
@@ -44,13 +56,25 @@ export const detItemBank = [
     difficultyValue: 125,
     timeLimit: 180,
     prompt: "Type the missing letters to complete the text below.",
-    passage: "Photosyn___ is the biochemical pathway by wh___ autotrophic organ___ convert solar energy in___ chemical energy stored in glucose mole___.",
+    tokens: [
+      { type: "text", value: "Photosyn" },
+      { type: "blank", prefix: "thesis", missingLength: 6, answer: "thesis" },
+      { type: "text", value: " is the biochemical pathway by " },
+      { type: "blank", prefix: "wh", missingLength: 3, answer: "ich" },
+      { type: "text", value: " autotrophic " },
+      { type: "blank", prefix: "organ", missingLength: 4, answer: "isms" },
+      { type: "text", value: " convert solar energy " },
+      { type: "blank", prefix: "in", missingLength: 2, answer: "to" },
+      { type: "text", value: " chemical energy stored in glucose " },
+      { type: "blank", prefix: "mole", missingLength: 5, answer: "cules" },
+      { type: "text", value: "." }
+    ],
     answers: {
-      "Photosyn___": "thesis",
-      "wh___": "ich",
-      "organ___": "isms",
-      "in___": "to",
-      "mole___": "cules"
+      "blank_1": "thesis",
+      "blank_3": "ich",
+      "blank_5": "isms",
+      "blank_7": "to",
+      "blank_9": "cules"
     }
   },
 
