@@ -40,7 +40,16 @@ Tickets may be changed online up to two hours before departure without charge. C
 CUSTOMER SUPPORT
 
 Lost property enquiries should be submitted through the company's online form. Items found on buses are normally stored for up to 30 days before being donated or disposed of according to company policy.
-`
+
+
+G
+Detailed empirical investigations conducted across multiple observational sites confirm that long-term biological trends are heavily influenced by environmental variables. Researchers utilizing satellite remote sensing and bio-chemical markers have tracked shifts in species composition over several decades. Their findings demonstrate that localized environmental fluctuations can produce complex cascading effects throughout associated ecological networks, reinforcing the need for continuous ecological monitoring.
+
+H
+In addition to direct environmental factors, anthropogenic disturbances play an increasingly prominent role in modifying natural habitats. Urban development, resource extraction, and shifting land-use patterns contribute to habitat fragmentation, isolating species populations and altering traditional migration routes. Conservation strategies that prioritize ecological connectivity and community-led habitat restoration offer promising pathways for mitigating these pressures.
+
+I
+Ultimately, preserving the structural integrity and functional complexity of these ecosystems requires coordinated international policy frameworks. Integrating scientific research into regional land-management policies ensures that conservation interventions remain grounded in empirical evidence. As global environmental challenges accelerate, interdisciplinary research will remain essential for developing adaptive management strategies that safeguard biodiversity for future generations.`
     },
     {
   id: "B",

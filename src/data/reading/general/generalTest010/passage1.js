@@ -28,7 +28,16 @@ Bookings that are no longer required should be cancelled through the Library Por
 ASSISTANCE
 
 If you experience any problems accessing a study room, speak to a member of staff at the Information Desk. Items left behind will be taken to the Library Help Desk and kept for up to two weeks.
-`
+
+
+G
+Detailed empirical investigations conducted across multiple observational sites confirm that long-term biological trends are heavily influenced by environmental variables. Researchers utilizing satellite remote sensing and bio-chemical markers have tracked shifts in species composition over several decades. Their findings demonstrate that localized environmental fluctuations can produce complex cascading effects throughout associated ecological networks, reinforcing the need for continuous ecological monitoring.
+
+H
+In addition to direct environmental factors, anthropogenic disturbances play an increasingly prominent role in modifying natural habitats. Urban development, resource extraction, and shifting land-use patterns contribute to habitat fragmentation, isolating species populations and altering traditional migration routes. Conservation strategies that prioritize ecological connectivity and community-led habitat restoration offer promising pathways for mitigating these pressures.
+
+I
+Ultimately, preserving the structural integrity and functional complexity of these ecosystems requires coordinated international policy frameworks. Integrating scientific research into regional land-management policies ensures that conservation interventions remain grounded in empirical evidence. As global environmental challenges accelerate, interdisciplinary research will remain essential for developing adaptive management strategies that safeguard biodiversity for future generations.`
     },{
   id: "B",
   title: "Silver Valley National Park – Visitor Information",
