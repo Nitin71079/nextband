@@ -90,6 +90,11 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const MonitorPanel = lazy(() => import("./pages/MonitorPanel"));
 
+const DETDashboard = lazy(() => import("./modules/duolingo/pages/DETDashboard"));
+const DETPracticeCenter = lazy(() => import("./modules/duolingo/pages/DETPracticeCenter"));
+const DETTestEnginePage = lazy(() => import("./modules/duolingo/pages/DETTestEnginePage"));
+const DETResultsPage = lazy(() => import("./modules/duolingo/pages/DETResultsPage"));
+
 function App() {
   
   return (
@@ -100,6 +105,13 @@ function App() {
       <Suspense fallback={<Loader />}>
         <Routes>
           <Route path="/" element={<Home />} />
+
+          {/* DET DUOLINGO ENGLISH TEST ROUTES */}
+          <Route path="/duolingo" element={<DETDashboard />} />
+          <Route path="/duolingo/practice" element={<DETPracticeCenter />} />
+          <Route path="/duolingo/practice/:skill" element={<DETPracticeCenter />} />
+          <Route path="/duolingo/test/:id" element={<DETTestEnginePage />} />
+          <Route path="/duolingo/results/:id" element={<DETResultsPage />} />
 
           <Route path="/login" element={<Login />} />
 

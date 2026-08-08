@@ -1,0 +1,203 @@
+/* ── DET Digital-First Design System ────────────────────────────── */
+:root {
+  --det-primary: #58cc02;
+  --det-primary-dark: #46a302;
+  --det-surface: #ffffff;
+  --det-surface-2: #f7f9fa;
+  --det-border: #e5e7eb;
+  --det-text: #0f172a;
+  --det-text-muted: #64748b;
+  --det-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  --det-accent-blue: #1cb0f6;
+  --det-accent-purple: #ce82ff;
+  --det-accent-orange: #ff9600;
+}
+
+[data-theme="dark"] {
+  --det-surface: #0f172a;
+  --det-surface-2: #1e293b;
+  --det-border: #334155;
+  --det-text: #f8fafc;
+  --det-text-muted: #94a3b8;
+  --det-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.det-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--det-text);
+}
+
+/* ── Hero Banner ────────────────────────────────────────────────── */
+.det-hero {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 28px;
+  padding: 40px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 36px;
+  box-shadow: var(--det-card-shadow);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.det-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(88, 204, 2, 0.2);
+  color: #58cc02;
+  border: 1px solid rgba(88, 204, 2, 0.4);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.det-hero h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.5px;
+}
+
+.det-hero p {
+  color: #94a3b8;
+  font-size: 16px;
+  margin: 0 0 24px 0;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.det-btn-primary {
+  background: var(--det-primary);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 0 #46a302;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.det-btn-primary:hover {
+  transform: translateY(-2px);
+  background: #61df02;
+  box-shadow: 0 6px 0 #46a302;
+}
+
+.det-btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #46a302;
+}
+
+/* ── Score Cards ────────────────────────────────────────────────── */
+.det-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.det-stat-card {
+  background: var(--det-surface);
+  border: 1px solid var(--det-border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--det-card-shadow);
+  transition: transform 0.2s ease;
+}
+
+.det-stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.det-stat-val {
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--det-primary);
+  margin-top: 8px;
+}
+
+.det-subscore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.det-subscore-card {
+  background: var(--det-surface-2);
+  border: 1px solid var(--det-border);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.det-subscore-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(88, 204, 2, 0.15);
+  color: var(--det-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+/* ── Practice Item Renderer UI ──────────────────────────────────── */
+.det-test-card {
+  background: var(--det-surface);
+  border: 1px solid var(--det-border);
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: var(--det-card-shadow);
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.det-input-field {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: 2px solid var(--det-border);
+  background: var(--det-surface-2);
+  color: var(--det-text);
+  font-size: 16px;
+  margin-top: 16px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.det-input-field:focus {
+  border-color: var(--det-primary);
+}
+
+/* ── Mobile Breakpoints ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .det-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+  }
+  .det-hero h1 {
+    font-size: 28px;
+  }
+  .det-test-card {
+    padding: 20px;
+  }
+}

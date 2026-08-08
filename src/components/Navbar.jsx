@@ -54,6 +54,11 @@ const NAV_ITEMS_PUBLIC = [
     path: "/",
   },
   {
+    label: "DET Prep",
+    path: "/duolingo",
+    icon: Sparkles,
+  },
+  {
     label: "Community",
     path: "/community",
     icon: Users,
@@ -83,6 +88,11 @@ const NAV_ITEMS_PRIVATE = [
     label: "Dashboard",
     path: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    label: "DET Prep",
+    path: "/duolingo",
+    icon: Sparkles,
   },
   {
     label: "AI Studio",
