@@ -373,6 +373,10 @@ element={<ExamHistory/>}
   path="/mock/writing/:testId"
   element={<MockWriting />}
 />
+<Route
+  path="/mock/general-writing/:testId"
+  element={<MockWriting />}
+/>
 
 <Route path="/mock/speaking/:id" element={<MockSpeaking />} />
         

@@ -14,8 +14,9 @@ import MockSpeaking from "./MockSpeaking";
 
 import academicTests from "../data/reading/academic/academicTests";
 import generalTests from "../data/reading/general/generalTests";
+import academicWritingTests from "../data/writing/academic/academicWritingTests";
+import generalWritingTests from "../data/writing/general/generalWritingTests";
 import listeningTests from "../data/listening/tests";
-import writingTests from "../data/writing/tests";
 import speakingTests from "../data/speaking/tests";
 
 import { saveExamSession } from "../services/examSession";
@@ -47,12 +48,17 @@ export default function CBTExamEngine({ examType = "academic" }) {
   }, [examType, premium]); // eslint-disable-line
 
   // Pick random tests once on mount
-  const testIds = useMemo(() => ({
-    readingIndex:   rand(examType === "academic" ? academicTests : generalTests),
-    listeningIndex: rand(listeningTests),
-    writingId:      writingTests[rand(writingTests)].id,
-    speakingId:     speakingTests[rand(speakingTests)].id,
-  }), [examType]);
+  const testIds = useMemo(() => {
+    const readingList = examType === "general" ? generalTests : academicTests;
+    const writingList = examType === "general" ? generalWritingTests : academicWritingTests;
+
+    return {
+      readingIndex: rand(readingList),
+      listeningIndex: rand(listeningTests),
+      writingId: writingList[rand(writingList)].id,
+      speakingId: speakingTests[rand(speakingTests)].id,
+    };
+  }, [examType]);
 
   const [stage, setStage] = useState("briefing");
   const [results, setResults] = useState({ listening: null, reading: null, writing: null, speaking: null });
@@ -144,6 +150,7 @@ export default function CBTExamEngine({ examType = "academic" }) {
         <SectionBanner section={SECTIONS[2]} current={3} total={4} />
         <MockWriting
           forcedTestId={testIds.writingId}
+          forcedExamType={examType}
           onComplete={(band) => advance("writing", band)}
         />
       </>

@@ -4,15 +4,16 @@ export function buildWritingPrompt({
   task1Type = "Chart/Diagram",
   task1Question = "",
   task2Question = "",
+  examType = "academic",
 }) {
   return `
-You are an expert, certified IELTS Writing Examiner.
+You are an expert, certified senior IELTS Writing Examiner evaluating an ${examType.toUpperCase()} Writing test.
 
-Evaluate the candidate's IELTS Writing performance for both Task 1 and Task 2.
+Evaluate the candidate's IELTS Writing performance for both Task 1 and Task 2 according to official IELTS band descriptors.
 
 ### TASK 1 DETAILS:
-- Chart/Diagram Type: ${task1Type}
-- Question Prompt: ${task1Question || "Academic Task 1 Report"}
+- Task 1 Type: ${task1Type}
+- Question Prompt: ${task1Question || "IELTS Task 1 Prompt"}
 - Candidate's Task 1 Response:
 """
 ${task1Text}
@@ -21,7 +22,7 @@ ${task1Text}
 ---
 
 ### TASK 2 DETAILS:
-- Question Prompt: ${task2Question || "Academic Task 2 Essay"}
+- Question Prompt: ${task2Question || "IELTS Task 2 Prompt"}
 - Candidate's Task 2 Response:
 """
 ${task2Text}
@@ -29,12 +30,28 @@ ${task2Text}
 
 ---
 
-### EVALUATION CRITERIA & WEIGHTING RULES:
-1. Evaluate Task 1 separately using 4 criteria (Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy). Calculate Task 1 overall band (1.0 to 9.0).
-2. Evaluate Task 2 separately using 4 criteria (Task Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy). Calculate Task 2 overall band (1.0 to 9.0).
-3. Weighting Formula for Final Overall Writing Band:
-   Final Overall Band = (Task 1 Band * 0.3333) + (Task 2 Band * 0.6667)
-   Round according to official IELTS rules (fraction >= 0.25 rounds to .5, fraction >= 0.75 rounds to next whole band).
+### EVALUATION CRITERIA & TASK-SPECIFIC GUIDELINES:
+
+1. **TASK 1 EVALUATION (Weight: 33.3%)**:
+   - If Academic Task 1 (Line Graph, Bar Chart, Pie Chart, Table, Process Diagram, Map):
+     * Line Graph: Evaluate overall trend description, key comparisons, and significant fluctuations.
+     * Bar Chart: Evaluate category comparisons, highest/lowest values, and key contrasts.
+     * Pie Chart: Evaluate proportion comparisons, major changes, and avoidance of raw figure listing.
+     * Table: Evaluate data comparisons, grouping of similar figures, and structural patterns.
+     * Process Diagram: Evaluate stage ordering, passive voice usage, and sequential logic.
+     * Map: Evaluate spatial additions, removals, layout comparisons, and overall development.
+   - If General Training Task 1 (Formal Letter, Semi-formal Letter, Informal Letter):
+     * Formal Letter: Evaluate formal salutation ("Dear Sir or Madam,"), professional complaint/application/inquiry conventions, and tone.
+     * Semi-formal Letter: Evaluate professional salutation ("Dear Mr Smith,"), workplace/landlord/manager courtesy, and clear request handling.
+     * Informal Letter: Evaluate friendly salutation ("Dear John,"), personal tone, and invitation/thanks/advice conventions.
+   - Grade 4 sub-criteria: Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy (1.0 to 9.0).
+
+2. **TASK 2 EVALUATION (Weight: 66.7%)**:
+   - Recognized Essay Types: Opinion (Agree/Disagree), Discussion (Both views + opinion), Advantages & Disadvantages, Problem & Solution, Two-Part Question.
+   - Evaluate Task Response (addressing all parts of prompt, clear position throughout), Coherence & Cohesion (paragraphing, cohesive devices), Lexical Resource, Grammatical Range & Accuracy.
+
+3. **OVERALL BAND COMPUTATION**:
+   Final Overall Band = (Task 1 Band * 0.3333) + (Task 2 Band * 0.6667), rounded using official IELTS half-band rounding rules (>= 0.25 rounds to .5, >= 0.75 rounds to next whole band).
 
 Respond ONLY with valid JSON in the following exact format:
 
@@ -50,14 +67,13 @@ Respond ONLY with valid JSON in the following exact format:
     "lexicalResource": 6.0,
     "grammarRangeAccuracy": 6.0,
     "strengths": [
-      "Clear overview presenting main trends.",
-      "Accurate reporting of key data points."
+      "Clear overview presenting main trends or appropriate letter opening."
     ],
     "weaknesses": [
-      "Minor grammatical slips in complex comparisons."
+      "Minor grammatical slips or imprecise data reporting/tone shift."
     ],
     "recommendations": [
-      "Vary comparative vocabulary (e.g., 'substantially higher' vs 'dramatically increased')."
+      "Vary comparative structures or refine formal letter salutations."
     ]
   },
   "task2": {
@@ -68,18 +84,17 @@ Respond ONLY with valid JSON in the following exact format:
     "lexicalResource": 7.0,
     "grammarRangeAccuracy": 7.0,
     "strengths": [
-      "Well-developed argument with relevant supporting examples.",
-      "Logical paragraph structure with clear topic sentences."
+      "Well-developed argument directly addressing prompt questions."
     ],
     "weaknesses": [
-      "Slight repetition of vocabulary in the third body paragraph."
+      "Slight repetition of vocabulary in body paragraphs."
     ],
     "recommendations": [
-      "Use broader academic collocations to enhance Lexical Resource."
+      "Use broader academic collocations to elevate Lexical Resource."
     ]
   },
-  "improvedTask1": "A refined, Band 9 version of Task 1...",
-  "improvedTask2": "A refined, Band 9 version of Task 2..."
+  "improvedTask1": "A refined, Band 9 model answer for Task 1...",
+  "improvedTask2": "A refined, Band 9 model answer for Task 2..."
 }
 `;
 }

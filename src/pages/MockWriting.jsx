@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
+import academicWritingTests from "../data/writing/academic/academicWritingTests";
+import generalWritingTests from "../data/writing/general/generalWritingTests";
 import writingTests from "../data/writing/tests";
 import { useAuth } from "../context/AuthContext";
 import { isWritingTestLocked } from "../services/freePlanLimits";
@@ -33,16 +34,24 @@ import {
 export default function MockWriting({
   onComplete,
   forcedTestId,
+  forcedExamType,
 }) {
   const { testId: paramTestId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { premium } = useAuth();
-  const resolvedTestId = forcedTestId !== undefined ? forcedTestId : Number(paramTestId);
+  const resolvedTestId = forcedTestId !== undefined ? Number(forcedTestId) : Number(paramTestId || 1);
+
+  const isGeneral = forcedExamType
+    ? forcedExamType === "general"
+    : location.pathname.includes("general");
+
+  const writingList = isGeneral ? generalWritingTests : academicWritingTests;
 
   const test =
-    writingTests.find(
+    writingList.find(
       (t) => t.id === resolvedTestId
-    ) || writingTests[0];
+    ) || writingList[0];
 
   /* ── Free plan gate ── */
   useEffect(() => {
@@ -231,9 +240,10 @@ export default function MockWriting({
       const result = await evaluateWritingGPT({
         task1Text: task1,
         task2Text: task2,
-        task1Type: test?.task1?.type || "Chart/Diagram",
+        task1Type: test?.task1?.type || (isGeneral ? "Letter" : "Chart/Diagram"),
         task1Question: test?.task1?.question || "",
         task2Question: test?.task2?.question || "",
+        examType: isGeneral ? "general" : "academic",
       });
 
       trackAIUsage();
