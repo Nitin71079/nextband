@@ -50,7 +50,11 @@ ${task2Text}
    - Recognized Essay Types: Opinion (Agree/Disagree), Discussion (Both views + opinion), Advantages & Disadvantages, Problem & Solution, Two-Part Question.
    - Evaluate Task Response (addressing all parts of prompt, clear position throughout), Coherence & Cohesion (paragraphing, cohesive devices), Lexical Resource, Grammatical Range & Accuracy.
 
-3. **OVERALL BAND COMPUTATION**:
+3. **CRITICAL PENALTY & ACCURACY MANDATE (VERY IMPORTANT)**:
+   - If the candidate submits random words, keyboard mashing, repeated words, or nonsensical text that fails to form meaningful English sentences addressing the prompt, YOU MUST AWARD LOW BAND SCORES (Band 1.0 to Band 3.0) for Task Achievement/Response, Coherence & Cohesion, Lexical Resource, and Grammatical Range & Accuracy!
+   - DO NOT AWARD Band 5.0, 6.0, or 7.0 for low-quality, repetitive, or nonsensical submissions under any circumstances! Band 6.0 requires functional sentence control, relevant main ideas, and logical paragraphing.
+
+4. **OVERALL BAND COMPUTATION**:
    Final Overall Band = (Task 1 Band * 0.3333) + (Task 2 Band * 0.6667), rounded using official IELTS half-band rounding rules (>= 0.25 rounds to .5, >= 0.75 rounds to next whole band).
 
 Respond ONLY with valid JSON in the following exact format:

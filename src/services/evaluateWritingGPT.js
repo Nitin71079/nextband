@@ -24,18 +24,23 @@ export async function evaluateWritingGPT({
     const aiResult = await callOpenAI(prompt);
 
     if (aiResult && aiResult.success && aiResult.task1 && aiResult.task2) {
+      const parseScore = (val) => {
+        const n = Number(val);
+        return !isNaN(n) && n >= 1.0 && n <= 9.0 ? n : 1.0;
+      };
+
       // Calculate Task 1 band from sub-criteria
-      const t1_ta = Number(aiResult.task1.taskAchievement ?? aiResult.task1.taskResponse) || 6.0;
-      const t1_cc = Number(aiResult.task1.coherenceCohesion) || 6.0;
-      const t1_lr = Number(aiResult.task1.lexicalResource) || 6.0;
-      const t1_gra = Number(aiResult.task1.grammarRangeAccuracy) || 6.0;
+      const t1_ta = parseScore(aiResult.task1.taskAchievement ?? aiResult.task1.taskResponse);
+      const t1_cc = parseScore(aiResult.task1.coherenceCohesion);
+      const t1_lr = parseScore(aiResult.task1.lexicalResource);
+      const t1_gra = parseScore(aiResult.task1.grammarRangeAccuracy);
       const t1Band = roundIELTSBand((t1_ta + t1_cc + t1_lr + t1_gra) / 4);
 
       // Calculate Task 2 band from sub-criteria
-      const t2_tr = Number(aiResult.task2.taskResponse ?? aiResult.task2.taskAchievement) || 6.0;
-      const t2_cc = Number(aiResult.task2.coherenceCohesion) || 6.0;
-      const t2_lr = Number(aiResult.task2.lexicalResource) || 6.0;
-      const t2_gra = Number(aiResult.task2.grammarRangeAccuracy) || 6.0;
+      const t2_tr = parseScore(aiResult.task2.taskResponse ?? aiResult.task2.taskAchievement);
+      const t2_cc = parseScore(aiResult.task2.coherenceCohesion);
+      const t2_lr = parseScore(aiResult.task2.lexicalResource);
+      const t2_gra = parseScore(aiResult.task2.grammarRangeAccuracy);
       const t2Band = roundIELTSBand((t2_tr + t2_cc + t2_lr + t2_gra) / 4);
 
       const finalOverall = calculateIELTSTotalWritingBand(t1Band, t2Band);
