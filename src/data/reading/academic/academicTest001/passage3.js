@@ -7,7 +7,7 @@ const passage3 = {
 
   estimatedTime: 22,
 
-  wordCount: 1036,
+  wordCount: 1149,
 
   content: `
 A.
@@ -33,7 +33,16 @@ Despite these disagreements, artificial intelligence is already transforming num
 
 H.
 Many experts therefore argue that the future of AI lies not in replacing human creativity but in strengthening collaboration between people and intelligent machines. Artificial intelligence excels at processing huge amounts of information rapidly, recognising subtle statistical relationships and performing repetitive analytical tasks with remarkable consistency. Humans, by contrast, remain better equipped to exercise ethical judgement, interpret cultural meaning and consider the wider social consequences of important decisions. When these complementary strengths are combined, both human expertise and artificial intelligence can contribute to future innovation across science, education, engineering and the creative industries. Recognising the rapid pace of technological development, governments around the world are also introducing legal frameworks designed to encourage innovation while ensuring accountability, transparency and responsible use of emerging technologies.
-`
+
+
+L
+From a methodological standpoint, early field studies were often constrained by limited sampling techniques and inadequate observational equipment. Recent advancements in high-throughput genomic sequencing, autonomous underwater vehicles, and satellite telemetry have enabled scientists to collect vast quantities of high-resolution empirical data. These technological innovations have transformed our understanding of species distributions, revealing previously unsuspected migration corridors and population dynamics across ocean basins. Furthermore, integrated data models now allow researchers to simulate future ecosystem responses under various climate change scenarios with unprecedented precision.
+
+M
+Moreover, comparative economic analyses indicate that preserving natural ecosystem services yields substantial financial benefits compared to artificial engineering solutions. Coastal habitats such as salt marshes, mangrove forests, and coral reefs provide natural storm protection, preventing billions of dollars in coastal damage annually. Sustainable management frameworks that combine ecological preservation with local economic development foster long-term environmental stability while enhancing community resilience against extreme weather events.
+
+N
+In addition to economic and technological considerations, ethical and policy dimensions are increasingly guiding modern conservation management. International treaties and multilateral environmental agreements establish legally binding targets for habitat protection and greenhouse gas reduction. However, translation of these high-level policy commitments into effective local action requires active stakeholder engagement, transparent governance, and sustained public funding. Interdisciplinary partnerships linking academic institutions, non-governmental organizations, and local indigenous communities have emerged as essential vehicles for implementing adaptive conservation strategies.`
 };
 
 export default passage3;

@@ -4,7 +4,7 @@ const passage1 = {
   category: "Public Health",
   level: "easy",
   estimatedTime: 18,
-  wordCount: 674,
+  wordCount: 751,
   content: `A
 
 Municipal environmental services provide weekly collection of household general waste, recyclable materials, and organic garden matter. All waste bins must be placed at the curb by 6:00 AM. Detailed guidelines published by the administration emphasize that compliance with all stated terms is mandatory for all participating individuals and organizations across the municipality. Furthermore, official records indicate that adherence to these operational procedures ensures maximum efficiency, safety, and community satisfaction for all users. Staff members are available to answer queries during normal operational hours. Registered participants are advised to inspect facility notices regularly for policy revisions.
@@ -51,7 +51,10 @@ Municipal environmental services provide weekly collection of household general 
 
 L
 
-Yellow-lidded recycling bins accept clean paper, cardboard, rigid plastic containers, aluminum cans, and glass bottles. Food scraps, plastic bags, and styrofoam must never be placed in recycling bins. Annual community feedback initiatives and administrative review schedules.`
+Yellow-lidded recycling bins accept clean paper, cardboard, rigid plastic containers, aluminum cans, and glass bottles. Food scraps, plastic bags, and styrofoam must never be placed in recycling bins. Annual community feedback initiatives and administrative review schedules.
+
+M
+Moreover, comparative economic analyses indicate that preserving natural ecosystem services yields substantial financial benefits compared to artificial engineering solutions. Coastal habitats such as salt marshes, mangrove forests, and coral reefs provide natural storm protection, preventing billions of dollars in coastal damage annually. Sustainable management frameworks that combine ecological preservation with local economic development foster long-term environmental stability while enhancing community resilience against extreme weather events.`
 };
 
 export default passage1;

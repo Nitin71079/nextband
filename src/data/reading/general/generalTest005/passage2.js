@@ -80,7 +80,10 @@ All employees are required to complete online information security training once
 FURTHER ASSISTANCE
 
 Employees who require advice on any aspect of information security should contact the IT Help Desk during normal office hours. Following these procedures helps protect both company information and customers' personal data.
-`
+
+
+L
+From a methodological standpoint, early field studies were often constrained by limited sampling techniques and inadequate observational equipment. Recent advancements in high-throughput genomic sequencing, autonomous underwater vehicles, and satellite telemetry have enabled scientists to collect vast quantities of high-resolution empirical data. These technological innovations have transformed our understanding of species distributions, revealing previously unsuspected migration corridors and population dynamics across ocean basins. Furthermore, integrated data models now allow researchers to simulate future ecosystem responses under various climate change scenarios with unprecedented precision.`
 }
   ]
 };

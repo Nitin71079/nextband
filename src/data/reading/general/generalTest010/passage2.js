@@ -84,7 +84,10 @@ Health and safety training is provided for all new employees during induction. R
 FURTHER INFORMATION
 
 Employees who have questions about any aspect of workplace safety should speak to their supervisor or contact the Health and Safety Officer. Following these procedures helps create a safer working environment for everyone.
-`
+
+
+L
+From a methodological standpoint, early field studies were often constrained by limited sampling techniques and inadequate observational equipment. Recent advancements in high-throughput genomic sequencing, autonomous underwater vehicles, and satellite telemetry have enabled scientists to collect vast quantities of high-resolution empirical data. These technological innovations have transformed our understanding of species distributions, revealing previously unsuspected migration corridors and population dynamics across ocean basins. Furthermore, integrated data models now allow researchers to simulate future ecosystem responses under various climate change scenarios with unprecedented precision.`
 }
   ]
 };

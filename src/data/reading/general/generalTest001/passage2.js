@@ -184,7 +184,10 @@ Supervisors conduct weekly inspections of work areas, machinery and emergency eq
 Employees are encouraged to report hazards and suggest practical improvements that could make the workplace safer.
 
 BrightWave believes that maintaining a strong safety culture depends on cooperation between management and staff. Following established procedures protects employees, visitors, customers and company property while helping everyone return home safely at the end of each working day.
- `.trim(),
+ 
+
+L
+From a methodological standpoint, early field studies were often constrained by limited sampling techniques and inadequate observational equipment. Recent advancements in high-throughput genomic sequencing, autonomous underwater vehicles, and satellite telemetry have enabled scientists to collect vast quantities of high-resolution empirical data. These technological innovations have transformed our understanding of species distributions, revealing previously unsuspected migration corridors and population dynamics across ocean basins. Furthermore, integrated data models now allow researchers to simulate future ecosystem responses under various climate change scenarios with unprecedented precision.`.trim(),
 };
 
 export default passage2;

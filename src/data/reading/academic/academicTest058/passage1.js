@@ -4,7 +4,7 @@ const passage1 = {
   category: "Marine Biology",
   level: "easy",
   estimatedTime: 18,
-  wordCount: 655,
+  wordCount: 740,
   content: `A
 Bioluminescence—the capacity of living organisms to produce light through biochemical reactions—is one of the most fascinating phenomena in the natural world. While light-emitting organisms exist on land, such as fireflies and certain species of fungi, bioluminescence is overwhelmingly an oceanic phenomenon. In the deep ocean, where sunlight fails to penetrate beyond a depth of 200 meters, bioluminescence serves as the primary source of illumination, playing a pivotal role in survival, communication, and predation.
 
@@ -36,7 +36,10 @@ J
 From an organizational perspective, understanding the broader societal and economic impacts of workplace policies is vital for sustainable development. Recent workforce surveys reveal that employees operating within supportive, flexible work environments report significantly higher job satisfaction and lower rates of burnout. Managers who proactively integrate well-being initiatives into daily operational routines foster organizational loyalty while simultaneously boosting overall productivity and retention rates.
 
 K
-Looking toward the future, professional institutions must continuously adapt their training programs to keep pace with rapid technological advancements. Digital transformation has reshaped traditional skill requirements across virtually every industrial sector. Consequently, lifelong learning initiatives and structured professional development courses have evolved from optional career enhancements into essential prerequisites for long-term employability and career advancement in an increasingly competitive global economy.`
+Looking toward the future, professional institutions must continuously adapt their training programs to keep pace with rapid technological advancements. Digital transformation has reshaped traditional skill requirements across virtually every industrial sector. Consequently, lifelong learning initiatives and structured professional development courses have evolved from optional career enhancements into essential prerequisites for long-term employability and career advancement in an increasingly competitive global economy.
+
+L
+From a methodological standpoint, early field studies were often constrained by limited sampling techniques and inadequate observational equipment. Recent advancements in high-throughput genomic sequencing, autonomous underwater vehicles, and satellite telemetry have enabled scientists to collect vast quantities of high-resolution empirical data. These technological innovations have transformed our understanding of species distributions, revealing previously unsuspected migration corridors and population dynamics across ocean basins. Furthermore, integrated data models now allow researchers to simulate future ecosystem responses under various climate change scenarios with unprecedented precision.`
 };
 
 export default passage1;

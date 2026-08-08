@@ -80,7 +80,10 @@ All employees receive fire safety training during their induction. Fire evacuati
 FURTHER INFORMATION
 
 Employees with questions about fire safety procedures should contact the Fire Safety Officer or their department manager. By following these procedures, everyone can help maintain a safe working environment.
-`
+
+
+L
+From a methodological standpoint, early field studies were often constrained by limited sampling techniques and inadequate observational equipment. Recent advancements in high-throughput genomic sequencing, autonomous underwater vehicles, and satellite telemetry have enabled scientists to collect vast quantities of high-resolution empirical data. These technological innovations have transformed our understanding of species distributions, revealing previously unsuspected migration corridors and population dynamics across ocean basins. Furthermore, integrated data models now allow researchers to simulate future ecosystem responses under various climate change scenarios with unprecedented precision.`
 }
   ]
 };
