@@ -142,32 +142,32 @@ export default function WelcomeGreeting() {
   return (
     <div style={{
       position: "fixed",
-      top: "76px",
-      right: "24px",
+      top: "68px",
+      right: "16px",
       zIndex: 99999,
-      width: "440px",
-      maxWidth: "calc(100vw - 32px)",
+      width: "360px",
+      maxWidth: "calc(100vw - 24px)",
     }}>
       {/* TOP ARROW POINTER POINTING TO PROFILE ICON */}
       <div style={{
         position: "absolute",
-        top: "-10px",
-        right: "28px",
+        top: "-8px",
+        right: "24px",
         width: 0,
         height: 0,
-        borderLeft: "10px solid transparent",
-        borderRight: "10px solid transparent",
-        borderBottom: "10px solid #f59e0b",
+        borderLeft: "8px solid transparent",
+        borderRight: "8px solid transparent",
+        borderBottom: "8px solid #f59e0b",
         zIndex: 2,
       }} />
 
       {/* POPOVER CARD CONTAINER */}
       <div style={{
         background: "linear-gradient(145deg, #172036, #121826, #0e1320)",
-        border: "2px solid #f59e0b",
-        borderRadius: 24,
-        padding: "24px 20px",
-        boxShadow: "0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.2)",
+        border: "1.5px solid #f59e0b",
+        borderRadius: 18,
+        padding: "16px 14px",
+        boxShadow: "0 15px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.15)",
         position: "relative",
         color: "#ffffff",
       }}>
@@ -176,50 +176,50 @@ export default function WelcomeGreeting() {
           onClick={handleClose}
           style={{
             position: "absolute",
-            top: 20,
-            right: 20,
+            top: 12,
+            right: 12,
             background: "rgba(255, 255, 255, 0.08)",
             border: "1px solid rgba(255, 255, 255, 0.12)",
             color: "#94a3b8",
-            borderRadius: 14,
-            width: 36,
-            height: 36,
+            borderRadius: 10,
+            width: 28,
+            height: 28,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             cursor: "pointer",
           }}
         >
-          <X size={18} />
+          <X size={14} />
         </button>
 
         {/* TOP HEADER */}
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <div style={{ textAlign: "left", marginBottom: 12, paddingRight: 28 }}>
           <div style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: 8,
-            padding: "6px 16px",
+            gap: 6,
+            padding: "3px 10px",
             borderRadius: 999,
             background: "rgba(245, 158, 11, 0.12)",
             border: "1px solid rgba(245, 158, 11, 0.3)",
             color: "#fbbf24",
-            fontSize: 12,
+            fontSize: 10,
             fontWeight: 800,
             textTransform: "uppercase",
             letterSpacing: 0.5,
-            marginBottom: 12,
+            marginBottom: 6,
           }}>
-            <Crown size={15} style={{ color: "#f59e0b" }} />
-            <span>Daily Welcome Challenge • Win +100 EXP</span>
+            <Crown size={12} style={{ color: "#f59e0b" }} />
+            <span>Daily Challenge • +100 EXP</span>
           </div>
 
-          <h2 style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)", fontWeight: 900, color: "#ffffff", margin: 0, marginBottom: 6 }}>
+          <h2 style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff", margin: 0, marginBottom: 4 }}>
             {greeting}, {displayName}! 👋
           </h2>
 
-          <p style={{ fontSize: 14, color: "#94a3b8", margin: 0, maxWidth: 520, margin: "0 auto", lineHeight: 1.5 }}>
-            {subtext} Solve today's IELTS challenge below to claim your Leaderboard points!
+          <p style={{ fontSize: 11, color: "#94a3b8", margin: 0, lineHeight: 1.4 }}>
+            {subtext}
           </p>
         </div>
 
@@ -227,25 +227,25 @@ export default function WelcomeGreeting() {
         <div style={{
           background: "rgba(15, 23, 42, 0.7)",
           border: "1px solid rgba(245, 158, 11, 0.25)",
-          borderRadius: 24,
-          padding: 24,
-          marginBottom: 24,
+          borderRadius: 14,
+          padding: 12,
+          marginBottom: 12,
         }}>
-          <div style={{ display: "flex", alignItems: "center", justifyBetween: "space-between", marginBottom: 12 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", color: "#fbbf24", letterSpacing: 0.5 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "#fbbf24", letterSpacing: 0.5 }}>
               🧠 {selectedRiddle.category}
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b" }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8" }}>
               Reward: <strong style={{ color: "#fbbf24" }}>+100 EXP</strong>
             </span>
           </div>
 
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#f8fafc", lineHeight: 1.5, margin: 0, marginBottom: 18 }}>
+          <h3 style={{ fontSize: 12, fontWeight: 700, color: "#f8fafc", lineHeight: 1.4, margin: 0, marginBottom: 10 }}>
             "{selectedRiddle.question}"
           </h3>
 
-          {/* OPTIONS GRID */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+          {/* OPTIONS LIST */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {selectedRiddle.options.map((opt, i) => {
               const isSelected = selectedOption === opt;
               let bg = "rgba(30, 41, 59, 0.6)";
@@ -255,11 +255,11 @@ export default function WelcomeGreeting() {
               if (hasAnswered) {
                 if (opt.isCorrect) {
                   bg = "rgba(34, 197, 94, 0.2)";
-                  border = "2px solid #22c55e";
+                  border = "1.5px solid #22c55e";
                   color = "#4ade80";
                 } else if (isSelected) {
                   bg = "rgba(239, 68, 68, 0.2)";
-                  border = "2px solid #ef4444";
+                  border = "1.5px solid #ef4444";
                   color = "#fca5a5";
                 }
               }
@@ -270,23 +270,23 @@ export default function WelcomeGreeting() {
                   onClick={() => handleSelectOption(opt)}
                   disabled={hasAnswered}
                   style={{
-                    padding: "14px 16px",
-                    borderRadius: 16,
+                    padding: "8px 10px",
+                    borderRadius: 10,
                     background: bg,
                     border: border,
                     color: color,
-                    fontWeight: 700,
-                    fontSize: 13,
+                    fontWeight: 600,
+                    fontSize: 11,
                     textAlign: "left",
                     cursor: hasAnswered ? "default" : "pointer",
-                    transition: "all 0.2s",
+                    transition: "all 0.15s",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                   }}
                 >
                   <span>{opt.text}</span>
-                  {hasAnswered && opt.isCorrect && <CheckCircle2 size={18} style={{ color: "#22c55e" }} />}
+                  {hasAnswered && opt.isCorrect && <CheckCircle2 size={14} style={{ color: "#22c55e" }} />}
                 </button>
               );
             })}
@@ -295,16 +295,16 @@ export default function WelcomeGreeting() {
           {/* EXPLANATION AFTER ANSWERING */}
           {hasAnswered && (
             <div style={{
-              marginTop: 18,
-              padding: 14,
-              borderRadius: 16,
+              marginTop: 10,
+              padding: 10,
+              borderRadius: 10,
               background: selectedOption.isCorrect ? "rgba(34, 197, 94, 0.12)" : "rgba(245, 158, 11, 0.12)",
               border: selectedOption.isCorrect ? "1px solid rgba(34, 197, 94, 0.3)" : "1px solid rgba(245, 158, 11, 0.3)",
-              fontSize: 13,
-              lineHeight: 1.5,
+              fontSize: 11,
+              lineHeight: 1.4,
             }}>
               <div style={{ fontWeight: 800, color: selectedOption.isCorrect ? "#4ade80" : "#fbbf24", marginBottom: 2 }}>
-                {selectedOption.isCorrect ? "🎉 Excellent Job! +100 EXP Claimed!" : `⭐ Nice Effort! +${earnedEXP} EXP Earned!`}
+                {selectedOption.isCorrect ? "🎉 Correct! +100 EXP Claimed!" : `⭐ +${earnedEXP} EXP Earned!`}
               </div>
               <div style={{ color: "#cbd5e1" }}>{selectedRiddle.explanation}</div>
             </div>
@@ -312,30 +312,30 @@ export default function WelcomeGreeting() {
         </div>
 
         {/* FOOTER CTA */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#94a3b8" }}>
-            <Trophy size={16} style={{ color: "#fbbf24" }} />
-            <span>Leaderboard Points: <strong style={{ color: "#fbbf24" }}>+{earnedEXP} EXP</strong></span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#94a3b8" }}>
+            <Trophy size={14} style={{ color: "#fbbf24" }} />
+            <span>EXP: <strong style={{ color: "#fbbf24" }}>+{earnedEXP}</strong></span>
           </div>
 
           <button
             onClick={handleClose}
             style={{
-              padding: "14px 28px",
-              borderRadius: 18,
+              padding: "8px 16px",
+              borderRadius: 12,
               background: "linear-gradient(135deg, #f59e0b, #d97706)",
               color: "#0f172a",
               border: "none",
-              fontWeight: 900,
-              fontSize: 14,
+              fontWeight: 800,
+              fontSize: 12,
               cursor: "pointer",
-              boxShadow: "0 10px 25px rgba(245, 158, 11, 0.3)",
+              boxShadow: "0 6px 15px rgba(245, 158, 11, 0.3)",
               display: "flex",
               alignItems: "center",
-              gap: 8,
+              gap: 6,
             }}
           >
-            Enter Dashboard & Practice <ArrowRight size={16} />
+            Continue <ArrowRight size={14} />
           </button>
         </div>
 
