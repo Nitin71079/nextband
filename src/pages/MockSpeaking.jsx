@@ -42,7 +42,7 @@ export default function MockSpeaking({
 
 }) {
 
-  const { testId: paramTestId } = useParams();
+  const { id: paramId, testId: paramTestId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { premium } = useAuth();
@@ -62,18 +62,12 @@ export default function MockSpeaking({
 
   } = useExam();
 
-  const resolvedTestId = forcedTestId !== undefined ? forcedTestId : Number(paramTestId);
+  const rawId = forcedTestId !== undefined ? forcedTestId : (paramTestId || paramId || 1);
 
   const test =
-
     speakingTests.find(
-
-      t =>
-
-        t.id === resolvedTestId
-
+      (t) => String(t.id) === String(rawId) || Number(t.id) === Number(rawId)
     ) ||
-
     speakingTests[0];
 
   /* ── Free plan gate ── */

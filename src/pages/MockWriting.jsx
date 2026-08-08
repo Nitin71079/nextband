@@ -36,11 +36,11 @@ export default function MockWriting({
   forcedTestId,
   forcedExamType,
 }) {
-  const { testId: paramTestId } = useParams();
+  const { id: paramId, testId: paramTestId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { premium } = useAuth();
-  const resolvedTestId = forcedTestId !== undefined ? Number(forcedTestId) : Number(paramTestId || 1);
+  const rawId = forcedTestId !== undefined ? forcedTestId : (paramTestId || paramId || 1);
 
   const isGeneral = forcedExamType
     ? forcedExamType === "general"
@@ -50,7 +50,7 @@ export default function MockWriting({
 
   const test =
     writingList.find(
-      (t) => t.id === resolvedTestId
+      (t) => String(t.id) === String(rawId) || Number(t.id) === Number(rawId)
     ) || writingList[0];
 
   /* ── Free plan gate ── */

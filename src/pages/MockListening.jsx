@@ -59,7 +59,7 @@ export default function MockListening({
 
   const test =
     urlId
-      ? listeningTests.find((t) => t.id === urlId) ??
+      ? listeningTests.find((t) => String(t.id) === String(urlId) || Number(t.id) === Number(urlId)) ??
         listeningTests[testIdProp] ??
         listeningTests[0]
       : listeningTests[testIdProp] ?? listeningTests[0];
