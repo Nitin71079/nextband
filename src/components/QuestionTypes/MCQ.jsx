@@ -1,12 +1,17 @@
 export default function MCQ({ question, value, onChange }) {
+  const options = Array.isArray(question?.options) ? question.options : [];
+
   return (
     <div className="ielts-radio-group">
-      {question.options.map((option, i) => {
+      {options.map((option, i) => {
         const letter = String.fromCharCode(65 + i); // A, B, C, D
-        const selected = value === option;
+        const hasPrefix = /^[A-Z][.\)]\s*/i.test(String(option).trim());
+        const displayLabel = hasPrefix ? option : `${letter}. ${option}`;
+        const selected = value === option || value === displayLabel || (hasPrefix && value === String(option).replace(/^[A-Z][.\)]\s*/i, "").trim());
+
         return (
           <label
-            key={option}
+            key={i}
             className={`ielts-radio-option${selected ? " selected" : ""}`}
           >
             <input
@@ -15,8 +20,7 @@ export default function MCQ({ question, value, onChange }) {
               onChange={() => onChange(question.id, option)}
             />
             <span className="ielts-radio-label">
-              <strong style={{ marginRight: "6px", color: "#64748b" }}>{letter}.</strong>
-              {option}
+              {displayLabel}
             </span>
           </label>
         );

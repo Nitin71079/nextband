@@ -54,6 +54,7 @@ export default function QuestionRenderer({
 
   const aliases = {
     "diagram-labels": "diagram-label",
+    "diagram-label-completion": "diagram-label",
     "flowchart-completion": "flow-chart-completion",
   };
 

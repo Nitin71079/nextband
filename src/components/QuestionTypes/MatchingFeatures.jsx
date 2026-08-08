@@ -1,4 +1,6 @@
 export default function MatchingFeatures({ question, value, onChange }) {
+  const options = Array.isArray(question?.options) ? question.options : [];
+
   return (
     <select
       value={value || ""}
@@ -6,8 +8,8 @@ export default function MatchingFeatures({ question, value, onChange }) {
       className={`ielts-select${value ? " has-value" : ""}`}
     >
       <option value="">— Select the matching feature —</option>
-      {question.options.map((option) => (
-        <option key={option} value={option}>{option}</option>
+      {options.map((option, i) => (
+        <option key={i} value={option}>{option}</option>
       ))}
     </select>
   );
