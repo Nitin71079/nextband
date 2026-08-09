@@ -25,6 +25,7 @@ import Navbar from "./components/Navbar";
 import MobileNav from "./components/MobileNav";
 import ReferralPopup from "./components/ReferralPopup";
 import PwaInstallPrompt from "./components/PwaInstallPrompt";
+import PeriodicFeedbackModal from "./components/PeriodicFeedbackModal";
 import WelcomeGreeting from "./components/WelcomeGreeting";
 import Footer from "./components/home/Footer";
 import Loader from "./components/Loader";
@@ -198,6 +199,7 @@ element={<ExamHistory/>}
     <PaymentCancelled />
   }
 />
+
 <Route
   path="/experts-corner"
   element={<Navigate to="/dashboard" replace />}
@@ -610,6 +612,7 @@ element={<ExamHistory/>}
   <MobileNav />
   <ReferralPopup />
   <PwaInstallPrompt />
+  <PeriodicFeedbackModal />
 </>
 );
 }

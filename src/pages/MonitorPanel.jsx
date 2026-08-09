@@ -9,13 +9,14 @@ import {
   Search, RefreshCw, TrendingUp, Calendar, ChevronDown, ChevronUp,
   Activity, Award, Eye, X, CheckCircle, XCircle, Clock,
   Gamepad2, BrainCircuit, Globe, MousePointer, Navigation, Wifi,
-  Timer, Compass, Layers, ExternalLink, Sparkles
+  Timer, Compass, Layers, ExternalLink, Sparkles, Star, MessageSquare, ThumbsUp, ThumbsDown
 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   CartesianGrid, LineChart, Line, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { getRouteLabel } from "../services/telemetryService";
+import { getAllUserFeedback } from "../services/feedbackService";
 
 const db = getFirestore(app);
 
@@ -137,9 +138,10 @@ function SectionHeader({ title, icon: Icon, color = ACCENT.blue }) {
 }
 
 // ─── User detail modal ────────────────────────────────────────────────────────
-function UserModal({ user, results, telemetryDoc, onClose }) {
+function UserModal({ user, results, telemetryDoc, feedbacks = [], onClose }) {
   if (!user) return null;
   const userResults = results.filter(r => r.userId === user.id);
+  const userFeedbacks = feedbacks.filter(f => f.userId === user.id || f.userEmail === user.email);
   const modules = ["reading", "listening", "writing", "speaking"];
   const avgByModule = modules.map(m => {
     const r = userResults.filter(x => x.module === m || x.type === m);
@@ -162,7 +164,7 @@ function UserModal({ user, results, telemetryDoc, onClose }) {
         onClick={e => e.stopPropagation()}
         style={{
           background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24,
-          padding: 32, width: "100%", maxWidth: 720, maxHeight: "85vh",
+          padding: 32, width: "100%", maxWidth: 740, maxHeight: "88vh",
           overflowY: "auto", position: "relative",
           boxShadow: "0 30px 80px rgba(0,0,0,.25)",
         }}
@@ -211,6 +213,48 @@ function UserModal({ user, results, telemetryDoc, onClose }) {
               <div style={{ fontSize: 13, fontWeight: 800, color: ACCENT.green, marginTop: 4 }}>{tInfo.topTimeSpent}</div>
             </div>
           </div>
+        </div>
+
+        {/* Feedback Submissions */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+            <MessageSquare size={16} color={ACCENT.amber} /> User Feedbacks Registered ({userFeedbacks.length})
+          </div>
+          {userFeedbacks.length === 0 ? (
+            <div style={{ padding: "16px", borderRadius: 12, background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)", fontSize: 13, textAlign: "center" }}>
+              No feedback submitted by this user yet.
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {userFeedbacks.map((f, i) => (
+                <div key={f.id || i} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: "14px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 13, color: "#f59e0b", letterSpacing: 1 }}>
+                        {"★".repeat(f.rating || 5)}{"☆".repeat(5 - (f.rating || 5))}
+                      </span>
+                      <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 6, background: "rgba(37,99,235,.1)", color: ACCENT.blue, fontWeight: 700 }}>
+                        {f.type === "periodic" ? "5-Min Pulse Check" : "Test Feedback"}
+                      </span>
+                      {f.category && <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>· {f.category}</span>}
+                    </div>
+                    <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{ago(f.createdAt)}</span>
+                  </div>
+                  {f.feedbackText ? (
+                    <div style={{ fontSize: 13, color: "var(--text)", marginTop: 4, lineHeight: 1.4, background: "var(--card)", padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)" }}>
+                      "{f.feedbackText}"
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 12, color: "var(--text-secondary)", italic: "true" }}>No text comments provided</div>
+                  )}
+                  <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 11, color: "var(--text-secondary)" }}>
+                    {f.pathName && <span>Submitted on: {getRouteLabel(f.pathName)}</span>}
+                    {f.recommend !== undefined && <span>Recommend: {f.recommend ? "Yes 👍" : "No 👎"}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Module stats */}
@@ -262,6 +306,7 @@ export default function MonitorPanel() {
   const [users, setUsers] = useState([]);
   const [results, setResults] = useState([]);
   const [telemetry, setTelemetry] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
@@ -269,7 +314,11 @@ export default function MonitorPanel() {
   const [sortBy, setSortBy] = useState("joined"); // joined | name | tests | band | stay
   const [sortDir, setSortDir] = useState("desc");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview"); // overview | users | engagement | results | traffic
+  const [activeTab, setActiveTab] = useState("overview"); // overview | users | engagement | results | feedback | traffic
+
+  // Feedback tab filter
+  const [feedbackSearch, setFeedbackSearch] = useState("");
+  const [feedbackRatingFilter, setFeedbackRatingFilter] = useState("all");
 
   // GA4 traffic data
   const [trafficData, setTrafficData] = useState(null);
@@ -280,14 +329,16 @@ export default function MonitorPanel() {
     if (!silent) setLoading(true);
     else setRefreshing(true);
     try {
-      const [usersSnap, resultsSnap, telemetrySnap] = await Promise.all([
+      const [usersSnap, resultsSnap, telemetrySnap, allFeedbacks] = await Promise.all([
         getDocs(collection(db, "users")),
         getDocs(collection(db, "results")),
         getDocs(collection(db, "telemetry")),
+        getAllUserFeedback(),
       ]);
       setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       setResults(resultsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       setTelemetry(telemetrySnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setFeedbacks(allFeedbacks);
     } catch (e) {
       console.error("MonitorPanel fetch error:", e);
     } finally {
@@ -510,11 +561,12 @@ export default function MonitorPanel() {
         </div>
 
         {/* Nav Tabs */}
-        <div style={{ display: "flex", gap: 8, background: "var(--card)", border: "1px solid var(--border)", borderRadius: 999, padding: 4, width: "fit-content", marginBottom: 28 }}>
+        <div style={{ display: "flex", gap: 8, background: "var(--card)", border: "1px solid var(--border)", borderRadius: 999, padding: 4, width: "fit-content", marginBottom: 28, flexWrap: "wrap" }}>
           <button style={TAB_STYLE("overview")} onClick={() => setActiveTab("overview")}>Overview</button>
           <button style={TAB_STYLE("users")} onClick={() => setActiveTab("users")}>Users &amp; Stay Time ({users.length})</button>
           <button style={TAB_STYLE("engagement")} onClick={() => setActiveTab("engagement")}>Page Engagement</button>
           <button style={TAB_STYLE("results")} onClick={() => setActiveTab("results")}>Test Results ({results.length})</button>
+          <button style={TAB_STYLE("feedback")} onClick={() => setActiveTab("feedback")}>User Feedback ({feedbacks.length})</button>
           <button style={TAB_STYLE("traffic")} onClick={() => setActiveTab("traffic")}>GA4 Web Traffic</button>
         </div>
 
@@ -818,6 +870,187 @@ export default function MonitorPanel() {
           </motion.div>
         )}
 
+        {/* ══════════ USER FEEDBACK TAB ══════════ */}
+        {activeTab === "feedback" && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            
+            {/* Feedback Stats cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+              <StatCard
+                label="Total Submissions"
+                value={feedbacks.length}
+                sub="Every single user detail registered"
+                icon={MessageSquare}
+                color={ACCENT.blue}
+              />
+              <StatCard
+                label="Average Star Rating"
+                value={
+                  feedbacks.length
+                    ? (feedbacks.reduce((s, f) => s + Number(f.rating || 5), 0) / feedbacks.length).toFixed(1) + " ★"
+                    : "—"
+                }
+                sub="Out of 5.0 rating score"
+                icon={Star}
+                color={ACCENT.amber}
+              />
+              <StatCard
+                label="Recommendation Rate"
+                value={
+                  feedbacks.length
+                    ? Math.round((feedbacks.filter(f => f.recommend === true).length / feedbacks.length) * 100) + "%"
+                    : "—"
+                }
+                sub="Users who recommend Knarrow"
+                icon={ThumbsUp}
+                color={ACCENT.green}
+              />
+              <StatCard
+                label="5-Min Routine Check-ins"
+                value={feedbacks.filter(f => f.type === "periodic").length}
+                sub="Live 5-min candidate pulse"
+                icon={Timer}
+                color={ACCENT.purple}
+              />
+            </div>
+
+            {/* Filter Bar */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ position: "relative", flex: "1 1 260px" }}>
+                <Search size={15} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
+                <input
+                  value={feedbackSearch}
+                  onChange={e => setFeedbackSearch(e.target.value)}
+                  placeholder="Search feedback comments, user, email or route…"
+                  style={{ width: "100%", padding: "10px 14px 10px 38px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <select
+                value={feedbackRatingFilter}
+                onChange={e => setFeedbackRatingFilter(e.target.value)}
+                style={{ padding: "10px 14px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, cursor: "pointer" }}
+              >
+                <option value="all">All Ratings</option>
+                <option value="5">5 Stars ★★★★★</option>
+                <option value="4">4 Stars ★★★★☆</option>
+                <option value="3">3 Stars ★★★☆☆</option>
+                <option value="2">2 Stars ★★☆☆☆</option>
+                <option value="1">1 Star ★☆☆☆☆</option>
+              </select>
+            </div>
+
+            {/* Feedback items list */}
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+              <SectionHeader title="Live Candidate Feedback Stream" icon={MessageSquare} color={ACCENT.amber} />
+
+              {feedbacks.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text-secondary)", fontSize: 14 }}>
+                  No feedback submissions recorded yet. Logged-in users will automatically see the 5-minute pulse check modal.
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {feedbacks
+                    .filter(f => {
+                      if (feedbackRatingFilter !== "all" && String(f.rating) !== feedbackRatingFilter) return false;
+                      if (feedbackSearch.trim()) {
+                        const q = feedbackSearch.toLowerCase();
+                        const text = (f.feedbackText || "").toLowerCase();
+                        const name = (f.userName || "").toLowerCase();
+                        const email = (f.userEmail || "").toLowerCase();
+                        const path = (f.pathName || "").toLowerCase();
+                        return text.includes(q) || name.includes(q) || email.includes(q) || path.includes(q);
+                      }
+                      return true;
+                    })
+                    .map((f, i) => {
+                      const candidate = users.find(u => u.id === f.userId || u.email === f.userEmail);
+                      return (
+                        <div key={f.id || i} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16, padding: 18 }}>
+                          {/* Top Row: User info & Rating */}
+                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 14 }}>
+                                {(f.userName || f.userEmail || "C")[0].toUpperCase()}
+                              </div>
+                              <div>
+                                <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>
+                                  {f.userName || f.userEmail || "Candidate"}
+                                </div>
+                                <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                                  {f.userEmail || "Anonymous"} {candidate?.premium ? " · 👑 Premium" : ""}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <div style={{ textAlign: "right" }}>
+                                <div style={{ fontSize: 15, color: "#f59e0b", letterSpacing: 1 }}>
+                                  {"★".repeat(f.rating || 5)}{"☆".repeat(5 - (f.rating || 5))}
+                                </div>
+                                <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
+                                  {ago(f.createdAt)} · {fmtDate(f.createdAt)} {fmtTime(f.createdAt)}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Category & Badges */}
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 8, background: f.type === "periodic" ? "rgba(37,99,235,.1)" : "rgba(139,92,246,.1)", color: f.type === "periodic" ? ACCENT.blue : ACCENT.purple }}>
+                              {f.type === "periodic" ? "⚡ 5-Min Pulse Check" : "📝 Test Specific"}
+                            </span>
+                            {f.category && (
+                              <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 8, background: "rgba(245,158,11,.1)", color: "#d97706" }}>
+                                Category: {f.category}
+                              </span>
+                            )}
+                            {f.satisfaction && (
+                              <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 8, background: "rgba(34,197,94,.1)", color: ACCENT.green }}>
+                                Satisfaction: {f.satisfaction}
+                              </span>
+                            )}
+                            {f.difficulty && (
+                              <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 8, background: "rgba(239,68,68,.1)", color: ACCENT.red }}>
+                                Difficulty: {f.difficulty}
+                              </span>
+                            )}
+                            {f.recommend !== undefined && (
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 8, background: f.recommend ? "#dcfce7" : "#fee2e2", color: f.recommend ? "#166534" : "#991b1b" }}>
+                                {f.recommend ? "Recommends 👍" : "Needs Work 👎"}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Feedback Text Body */}
+                          <div style={{ background: "var(--card)", padding: 14, borderRadius: 12, border: "1px solid var(--border)", fontSize: 13, color: "var(--text)", lineHeight: 1.5, wordBreak: "break-word" }}>
+                            {f.feedbackText ? `"${f.feedbackText}"` : <span style={{ color: "var(--text-secondary)", italic: true }}>User submitted star rating &amp; metrics without additional written notes.</span>}
+                          </div>
+
+                          {/* Meta footer: Path & Device */}
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginTop: 12, fontSize: 11, color: "var(--text-secondary)" }}>
+                            <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                              {f.pathName && <span><strong>Submitted from Page:</strong> {getRouteLabel(f.pathName)} (<code style={{ background: "var(--card)", padding: "1px 5px", borderRadius: 4 }}>{f.pathName}</code>)</span>}
+                              {f.deviceInfo && <span><strong>Device/Display:</strong> {f.deviceInfo}</span>}
+                            </div>
+                            {candidate && (
+                              <button
+                                onClick={() => setSelectedUser(candidate)}
+                                style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "4px 10px", color: "var(--primary)", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
+                              >
+                                <Eye size={12} /> Candidate Profile
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
       </div>
 
       {/* Detail Modal */}
@@ -827,6 +1060,7 @@ export default function MonitorPanel() {
             user={selectedUser}
             results={results}
             telemetryDoc={telemetryMap[selectedUser.id]}
+            feedbacks={feedbacks}
             onClose={() => setSelectedUser(null)}
           />
         )}
