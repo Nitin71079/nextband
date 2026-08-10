@@ -9,6 +9,8 @@ import InteractiveWritingRenderer from "./renderers/InteractiveWritingRenderer";
 import InteractiveSpeakingRenderer from "./renderers/InteractiveSpeakingRenderer";
 import WritingSampleRenderer from "./renderers/WritingSampleRenderer";
 import SpeakingSampleRenderer from "./renderers/SpeakingSampleRenderer";
+import DescribeImageRenderer from "./renderers/DescribeImageRenderer";
+import InteractiveListeningRenderer from "./renderers/InteractiveListeningRenderer";
 
 export default function DETQuestionRenderer({ item, onSubmitResponse, submitting }) {
   if (!item) return <div>No DET item loaded.</div>;
@@ -47,6 +49,11 @@ export default function DETQuestionRenderer({ item, onSubmitResponse, submitting
         />
       );
 
+    case "describe-image":
+    case "write-about-image":
+    case "speak-about-image":
+      return <DescribeImageRenderer item={item} onSubmit={handleSub} submitting={submitting} />;
+
     case "listen-and-type":
       return <ListenAndTypeRenderer item={item} onSubmit={handleSub} submitting={submitting} />;
 
@@ -55,6 +62,9 @@ export default function DETQuestionRenderer({ item, onSubmitResponse, submitting
 
     case "interactive-reading":
       return <InteractiveReadingRenderer item={item} onSubmit={handleSub} submitting={submitting} />;
+
+    case "interactive-listening":
+      return <InteractiveListeningRenderer item={item} onSubmit={handleSub} submitting={submitting} />;
 
     case "interactive-writing":
       return <InteractiveWritingRenderer item={item} onSubmit={handleSub} submitting={submitting} />;

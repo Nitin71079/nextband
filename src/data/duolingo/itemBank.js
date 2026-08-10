@@ -1,14 +1,20 @@
 /**
- * DET Item Bank — Item Data Model for Duolingo English Test Adaptive Engine
- * Tagged by skill, question type, difficulty tier (low: 10-60, medium: 65-100, high: 105-160), and subscores.
+ * Knarrow DET Suite — 100% Original Item Bank & Data Models for DET Adaptive Engine
+ * Fully aligned with official DET subscores (Literacy, Comprehension, Conversation, Production)
+ * and CEFR proficiency bands (A1 to C2, 10 to 160 score scale).
  */
 
 export const DET_QUESTION_TYPES = {
+  SINGLE_WORD_READ_SELECT: "single-word-read-select",
+  FILL_IN_THE_BLANKS: "fill-in-the-blanks",
   READ_AND_COMPLETE: "read-and-complete",
   READ_AND_SELECT: "read-and-select",
   LISTEN_AND_TYPE: "listen-and-type",
   READ_ALOUD: "read-aloud",
+  DESCRIBE_IMAGE: "describe-image",
+  SPEAK_ABOUT_IMAGE: "speak-about-image",
   INTERACTIVE_READING: "interactive-reading",
+  INTERACTIVE_LISTENING: "interactive-listening",
   INTERACTIVE_WRITING: "interactive-writing",
   INTERACTIVE_SPEAKING: "interactive-speaking",
   WRITING_SAMPLE: "writing-sample",
@@ -16,7 +22,118 @@ export const DET_QUESTION_TYPES = {
 };
 
 export const detItemBank = [
-  // ── 1. READ AND COMPLETE (C-Test fill in missing letters) ──────────────
+  // ── 1. SINGLE WORD READ AND SELECT ──────────────────────────────────────
+  {
+    id: "swrs-001",
+    type: "single-word-read-select",
+    skill: "literacy",
+    subscores: ["Literacy", "Comprehension"],
+    difficulty: "medium",
+    difficultyValue: 85,
+    timeLimit: 5,
+    word: "handen",
+    isReal: false,
+    prompt: "Is this a real English word?"
+  },
+  {
+    id: "swrs-002",
+    type: "single-word-read-select",
+    skill: "literacy",
+    subscores: ["Literacy", "Comprehension"],
+    difficulty: "medium",
+    difficultyValue: 95,
+    timeLimit: 5,
+    word: "meticulous",
+    isReal: true,
+    prompt: "Is this a real English word?"
+  },
+
+  // ── 2. FILL IN THE BLANKS ────────────────────────────────────────────────
+  {
+    id: "fitb-001",
+    type: "fill-in-the-blanks",
+    skill: "literacy",
+    subscores: ["Literacy", "Comprehension"],
+    difficulty: "medium",
+    difficultyValue: 90,
+    timeLimit: 20,
+    sentenceBefore: "The number of website error reports we are receiving is ",
+    targetWord: "alarming",
+    sentenceAfter: ", so we must fix them right away.",
+    prompt: "Complete the sentence with the correct word."
+  },
+  {
+    id: "fitb-002",
+    type: "fill-in-the-blanks",
+    skill: "literacy",
+    subscores: ["Literacy", "Comprehension"],
+    difficulty: "high",
+    difficultyValue: 120,
+    timeLimit: 20,
+    sentenceBefore: "Renewable energy adoption has grown at an ",
+    targetWord: "unprecedented",
+    sentenceAfter: " pace over the past decade.",
+    prompt: "Complete the sentence with the correct word."
+  },
+
+  // ── 3. DESCRIBE IMAGE (WRITE & SPEAK) ────────────────────────────────────
+  {
+    id: "di-001",
+    type: "describe-image",
+    mode: "writing",
+    skill: "production",
+    subscores: ["Production", "Literacy"],
+    difficulty: "medium",
+    difficultyValue: 90,
+    timeLimit: 60,
+    prompt: "Write a description of the image below for 1 minute.",
+    imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+    imageAlt: "Students collaborating on laptops in a university library"
+  },
+  {
+    id: "sai-001",
+    type: "speak-about-image",
+    mode: "speaking",
+    skill: "production",
+    subscores: ["Production", "Conversation"],
+    difficulty: "high",
+    difficultyValue: 110,
+    timeLimit: 90,
+    prompt: "Speak about the image below for 90 seconds.",
+    imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
+    imageAlt: "Team presentation in a modern conference room"
+  },
+
+  // ── 4. INTERACTIVE LISTENING (5-STAGE SCENARIO) ──────────────────────────
+  {
+    id: "il-001",
+    type: "interactive-listening",
+    skill: "comprehension",
+    subscores: ["Comprehension", "Conversation"],
+    difficulty: "medium",
+    difficultyValue: 95,
+    timeLimit: 420,
+    title: "University Laboratory Collaboration",
+    scenarioText: "You are speaking with a fellow research student about coordinating your lab schedules for an upcoming chemistry project.",
+    scenarioAudioText: "Hi, I wanted to discuss our lab schedule for next week. We need to reserve the spectroscopy machine before Tuesday.",
+    questions: [
+      {
+        id: "il-001-q1",
+        prompt: "What machine do you need to reserve before Tuesday?",
+        options: ["Spectroscopy machine", "Centrifuge unit", "Electron microscope", "Thermal cycler"],
+        answer: "Spectroscopy machine"
+      },
+      {
+        id: "il-001-q2",
+        prompt: "What is the primary topic of your discussion?",
+        options: ["Coordinating lab schedules for chemistry project", "Submitting final grades", "Booking lecture halls", "Ordering glassware"],
+        answer: "Coordinating lab schedules for chemistry project"
+      }
+    ],
+    passageSummary: "Over the past term, collaborative research projects have given students hands-on technical skills in modern laboratory environments."
+  },
+
+  // ── 5. READ AND COMPLETE (C-Test) ────────────────────────────────────────
   {
     id: "rc-001",
     type: "read-and-complete",
@@ -35,7 +152,7 @@ export const detItemBank = [
       { type: "blank", prefix: "politi", missingLength: 3, answer: "cal" },
       { type: "text", value: " process " },
       { type: "blank", prefix: "conce", missingLength: 4, answer: "rned" },
-      { type: "text", value: "rned with the development and design of land use and the built " },
+      { type: "text", value: " with the development and design of land use and the built " },
       { type: "blank", prefix: "enviro", missingLength: 4, answer: "nment" },
       { type: "text", value: "." }
     ],
@@ -47,38 +164,8 @@ export const detItemBank = [
       "blank_9": "nment"
     }
   },
-  {
-    id: "rc-002",
-    type: "read-and-complete",
-    skill: "literacy",
-    subscores: ["Literacy", "Comprehension"],
-    difficulty: "high",
-    difficultyValue: 125,
-    timeLimit: 180,
-    prompt: "Type the missing letters to complete the text below.",
-    tokens: [
-      { type: "text", value: "Photosyn" },
-      { type: "blank", prefix: "thesis", missingLength: 6, answer: "thesis" },
-      { type: "text", value: " is the biochemical pathway by " },
-      { type: "blank", prefix: "wh", missingLength: 3, answer: "ich" },
-      { type: "text", value: " autotrophic " },
-      { type: "blank", prefix: "organ", missingLength: 4, answer: "isms" },
-      { type: "text", value: " convert solar energy " },
-      { type: "blank", prefix: "in", missingLength: 2, answer: "to" },
-      { type: "text", value: " chemical energy stored in glucose " },
-      { type: "blank", prefix: "mole", missingLength: 5, answer: "cules" },
-      { type: "text", value: "." }
-    ],
-    answers: {
-      "blank_1": "thesis",
-      "blank_3": "ich",
-      "blank_5": "isms",
-      "blank_7": "to",
-      "blank_9": "cules"
-    }
-  },
 
-  // ── 2. READ AND SELECT (Vocabulary recognition) ─────────────────────────
+  // ── 6. READ AND SELECT (Word Bank) ───────────────────────────────────────
   {
     id: "rs-001",
     type: "read-and-select",
@@ -100,7 +187,7 @@ export const detItemBank = [
     ]
   },
 
-  // ── 3. LISTEN AND TYPE (Dictation) ──────────────────────────────────────
+  // ── 7. LISTEN AND TYPE (Dictation) ──────────────────────────────────────
   {
     id: "lt-001",
     type: "listen-and-type",
@@ -114,7 +201,7 @@ export const detItemBank = [
     prompt: "Type the statement that you hear."
   },
 
-  // ── 4. READ ALOUD (Pronunciation & Fluency) ─────────────────────────────
+  // ── 8. READ ALOUD ────────────────────────────────────────────────────────
   {
     id: "ra-001",
     type: "read-aloud",
@@ -127,7 +214,7 @@ export const detItemBank = [
     prompt: "Record yourself reading the sentence below out loud."
   },
 
-  // ── 5. INTERACTIVE READING (Passage + Multiple questions) ───────────────
+  // ── 9. INTERACTIVE READING ───────────────────────────────────────────────
   {
     id: "ir-001",
     type: "interactive-reading",
@@ -155,7 +242,7 @@ export const detItemBank = [
     ]
   },
 
-  // ── 6. INTERACTIVE WRITING (Prompt + Follow-up) ──────────────────────────
+  // ── 10. INTERACTIVE WRITING ──────────────────────────────────────────────
   {
     id: "iw-001",
     type: "interactive-writing",
@@ -168,7 +255,7 @@ export const detItemBank = [
     followUpPrompt: "In your previous response, you discussed your journey. How has that experience influenced your perspective on traveling today? Write for 3 minutes."
   },
 
-  // ── 7. INTERACTIVE SPEAKING (Prompt + Follow-up) ─────────────────────────
+  // ── 11. INTERACTIVE SPEAKING ─────────────────────────────────────────────
   {
     id: "is-001",
     type: "interactive-speaking",
@@ -181,7 +268,7 @@ export const detItemBank = [
     followUpPrompt: "Based on what you just shared, what advice would you give to someone setting a similar personal goal today? Speak for 45 seconds."
   },
 
-  // ── 8. WRITING SAMPLE (Extended Writing) ───────────────────────────────
+  // ── 12. WRITING SAMPLE ───────────────────────────────────────────────────
   {
     id: "ws-001",
     type: "writing-sample",
@@ -193,7 +280,7 @@ export const detItemBank = [
     prompt: "Some people believe that artificial intelligence will transform higher education for the better, while others worry it will diminish critical thinking. Discuss your view with examples. Write at least 150 words."
   },
 
-  // ── 9. SPEAKING SAMPLE (Extended Speaking) ──────────────────────────────
+  // ── 13. SPEAKING SAMPLE ──────────────────────────────────────────────────
   {
     id: "ss-001",
     type: "speaking-sample",

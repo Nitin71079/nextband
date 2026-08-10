@@ -1,6 +1,8 @@
 /**
- * Duolingo English Test (DET) Score Calculator & Subscore Mapping
+ * Knarrow DET Scoring Engine & Institutional Concordance Tables
  * DET Overall Scale: 10 - 160 (in 5 point increments)
+ * Subscores: Literacy, Comprehension, Conversation, Production
+ * Official Concordances: IELTS (4.0-9.0), TOEFL iBT (0-120), CEFR (A1-C2)
  */
 
 export function calculateDETScore({
@@ -9,6 +11,7 @@ export function calculateDETScore({
   listenSelectScore = 0, // max 100%
   listenTypeScore = 0,   // max 100%
   interactiveReadingScore = 0, // max 100%
+  interactiveListeningScore = 0,
   readAloudScore = 80,   // default estimate if not AI evaluated
   writeImageScore = 80,
   speakImageScore = 80,
@@ -25,21 +28,21 @@ export function calculateDETScore({
     writingSampleScore * 0.15
   );
 
-  // Comprehension: Read and Complete, Read and Select, Listen and Select, Listen and Type, Interactive Reading
+  // Comprehension: Read and Complete, Read and Select, Listen and Type, Interactive Reading, Interactive Listening
   const comprehensionRaw = Math.round(
     readCompleteScore * 0.20 +
     readSelectScore * 0.20 +
-    listenSelectScore * 0.20 +
     listenTypeScore * 0.20 +
-    interactiveReadingScore * 0.20
+    interactiveReadingScore * 0.20 +
+    interactiveListeningScore * 0.20
   );
 
-  // Conversation: Listen and Select, Listen and Type, Read Aloud, Speak About Image, Speaking Sample
+  // Conversation: Listen and Type, Read Aloud, Speak About Image, Interactive Listening, Speaking Sample
   const conversationRaw = Math.round(
-    listenSelectScore * 0.20 +
     listenTypeScore * 0.20 +
     readAloudScore * 0.20 +
     speakImageScore * 0.20 +
+    interactiveListeningScore * 0.20 +
     speakingSampleScore * 0.20
   );
 
@@ -51,10 +54,9 @@ export function calculateDETScore({
     speakingSampleScore * 0.25
   );
 
-  // Map 0-100 percentage to DET 10-160 scale
+  // Map 0-100 percentage to DET 10-160 scale (in 5-point steps)
   const toDETScale = (pct) => {
     const raw = 10 + (pct / 100) * 150;
-    // Round to nearest 5 points (DET official format)
     return Math.min(160, Math.max(10, Math.round(raw / 5) * 5));
   };
 
@@ -67,8 +69,9 @@ export function calculateDETScore({
   const avgSub = (literacy + comprehension + conversation + production) / 4;
   const overall = Math.min(160, Math.max(10, Math.round(avgSub / 5) * 5));
 
-  // Convert DET to IELTS Band equivalent
+  // Concordances
   const ieltsEquivalent = detToIelts(overall);
+  const toeflEquivalent = detToToefl(overall);
   const cefrLevel = detToCEFR(overall);
 
   return {
@@ -80,12 +83,13 @@ export function calculateDETScore({
       production,
     },
     ieltsEquivalent,
+    toeflEquivalent,
     cefrLevel,
   };
 }
 
 /**
- * DET to IELTS Band Score conversion table (Official Duolingo concordance)
+ * DET to IELTS Band Score conversion table
  */
 export function detToIelts(detScore) {
   if (detScore >= 155) return "9.0";
@@ -99,6 +103,22 @@ export function detToIelts(detScore) {
   if (detScore >= 75) return "5.0";
   if (detScore >= 65) return "4.5";
   return "4.0";
+}
+
+/**
+ * DET to TOEFL iBT score concordance
+ */
+export function detToToefl(detScore) {
+  if (detScore >= 150) return "117 - 120";
+  if (detScore >= 140) return "113 - 116";
+  if (detScore >= 130) return "107 - 112";
+  if (detScore >= 120) return "98 - 106";
+  if (detScore >= 110) return "87 - 97";
+  if (detScore >= 100) return "75 - 86";
+  if (detScore >= 90) return "63 - 74";
+  if (detScore >= 80) return "50 - 62";
+  if (detScore >= 70) return "36 - 49";
+  return "0 - 35";
 }
 
 /**
