@@ -94,6 +94,10 @@ const DETDashboard = lazy(() => import("./modules/duolingo/pages/DETDashboard"))
 const DETPracticeCenter = lazy(() => import("./modules/duolingo/pages/DETPracticeCenter"));
 const DETTestEnginePage = lazy(() => import("./modules/duolingo/pages/DETTestEnginePage"));
 const DETResultsPage = lazy(() => import("./modules/duolingo/pages/DETResultsPage"));
+const DETCenter = lazy(() => import("./pages/DETCenter"));
+const MockDET = lazy(() => import("./pages/MockDET"));
+const DETSubskillCenter = lazy(() => import("./pages/DETSubskillCenter"));
+const DETExamResults = lazy(() => import("./pages/DETExamResults"));
 
 function App() {
   
@@ -112,6 +116,12 @@ function App() {
           <Route path="/duolingo/practice/:skill" element={<DETPracticeCenter />} />
           <Route path="/duolingo/test/:id" element={<DETTestEnginePage />} />
           <Route path="/duolingo/results/:id" element={<DETResultsPage />} />
+
+          <Route path="/det" element={<DETCenter />} />
+          <Route path="/det/practice/:type" element={<DETSubskillCenter />} />
+          <Route path="/det/results" element={<DETExamResults />} />
+          <Route path="/det/results/:resultId" element={<DETExamResults />} />
+          <Route path="/mock/det/:id" element={<MockDET />} />
 
           <Route path="/login" element={<Login />} />
 
