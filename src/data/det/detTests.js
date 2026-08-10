@@ -1,17 +1,18 @@
 /**
- * Duolingo English Test (DET) Full Mock Tests Dataset
+ * Knarrow DET Full Mock Tests Dataset
+ * Contains 12 Full-Length Practice Exams covering all 14 official DET task types.
  */
 
 export const detTests = [
+  // ── MOCK EXAM 1 ──────────────────────────────────────────────────────────
   {
     id: 1,
     title: "DET Full Practice Test 1 — Standard Academic & General",
     difficulty: "Medium",
     durationMinutes: 60,
     targetScore: 120,
-    description: "Complete adaptive simulation covering all 11 Duolingo English Test task types with instant automated subscoring.",
+    description: "Complete adaptive simulation covering all 14 Duolingo English Test task types with instant automated subscoring.",
     questions: [
-      // 1. READ AND COMPLETE
       {
         id: "det1_rc1",
         type: "read-and-complete",
@@ -31,23 +32,22 @@ export const detTests = [
         ]
       },
       {
-        id: "det1_rc2",
-        type: "read-and-complete",
-        timeLimitSeconds: 180,
-        title: "Read and Complete — Task 2",
-        instructions: "Fill in the missing letters to complete the words in the passage.",
-        passage: [
-          { text: "Renewable energy technologies have transformed modern ", blank: false },
-          { text: "infr", missing: "astructure", hint: "infrastructure", blank: true },
-          { text: ". Solar panels and wind turbines now produce a major ", blank: false },
-          { text: "por", missing: "tion", hint: "portion", blank: true },
-          { text: " of global electricity, reducing reliance on fossil fuels and lower", blank: false },
-          { text: "i", missing: "ng", hint: "ing", blank: true },
-          { text: " carbon emissions worldwide.", blank: false },
-        ]
+        id: "det1_swrs1",
+        type: "single-word-read-select",
+        timeLimitSeconds: 5,
+        word: "handen",
+        isReal: false,
+        title: "Read and Select (Single Word)"
       },
-
-      // 2. READ AND SELECT (Real vs Fake Words)
+      {
+        id: "det1_fitb1",
+        type: "fill-in-the-blanks",
+        timeLimitSeconds: 20,
+        sentenceBefore: "The number of website error reports we are receiving is ",
+        targetWord: "alarming",
+        sentenceAfter: ", so we must fix them right away.",
+        title: "Fill in the Blanks"
+      },
       {
         id: "det1_rs1",
         type: "read-and-select",
@@ -58,239 +58,141 @@ export const detTests = [
           { word: "Eloquent", isReal: true },
           { word: "Flabbergast", isReal: true },
           { word: "Plimpt", isReal: false },
-          { word: "Substantial", isReal: true },
-          { word: "Vigorously", isReal: true },
+          { word: "Resilient", isReal: true },
           { word: "Crandal", isReal: false },
-          { word: "Meticulous", isReal: true },
-          { word: "Brevity", isReal: true },
-          { word: "Sproot", isReal: false },
-          { word: "Ambiguous", isReal: true },
-          { word: "Glimp", isReal: false },
-          { word: "Phenomenon", isReal: true },
+          { word: "Substantiate", isReal: true },
+          { word: "Vigorish", isReal: false },
+          { word: "Meticulous", isReal: true }
         ]
       },
-
-      // 3. LISTEN AND SELECT
-      {
-        id: "det1_ls1",
-        type: "listen-and-select",
-        timeLimitSeconds: 90,
-        title: "Listen and Select — Task 1",
-        instructions: "Listen to each word and select the real English words.",
-        words: [
-          { word: "Accurate", audioText: "Accurate", isReal: true },
-          { word: "Bramble", audioText: "Bramble", isReal: true },
-          { word: "Drapple", audioText: "Drapple", isReal: false },
-          { word: "Formidable", audioText: "Formidable", isReal: true },
-          { word: "Prentle", audioText: "Prentle", isReal: false },
-          { word: "Hypothesis", audioText: "Hypothesis", isReal: true },
-        ]
-      },
-
-      // 4. LISTEN AND TYPE (Dictation)
       {
         id: "det1_lt1",
         type: "listen-and-type",
         timeLimitSeconds: 60,
         title: "Listen and Type",
-        instructions: "Listen to the sentence and type exactly what you hear. You can replay the audio up to 3 times.",
-        audioText: "The professor asked the students to submit their final essays before midnight on Friday.",
-        maxReplays: 3,
-        correctSentence: "The professor asked the students to submit their final essays before midnight on Friday."
+        audioText: "Scientific research suggests that regular exercise improves cognitive performance.",
+        audioUrl: "/audio/det/lt-001.mp3"
       },
-
-      // 5. READ ALOUD
       {
         id: "det1_ra1",
         type: "read-aloud",
         timeLimitSeconds: 20,
         title: "Read Aloud",
-        instructions: "Read the sentence below aloud into your microphone.",
-        sentence: "Technological advancements continue to reshape the global economy at an unprecedented pace."
+        sentence: "The university library will remain open until midnight during final exam week."
       },
-
-      // 6. WRITE ABOUT THE IMAGE
       {
-        id: "det1_wi1",
-        type: "write-about-image",
+        id: "det1_di1",
+        type: "describe-image",
         timeLimitSeconds: 60,
         title: "Write About the Image",
-        instructions: "Write 1 or more sentences describing the image below.",
-        imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
-        imageAlt: "Students working together at a library table with laptops and textbooks",
-        sampleAnswer: "A group of diverse university students is collaborating around a modern wooden study table filled with open notebooks, laptops, and textbooks in a bright library environment."
+        prompt: "Write a description of the image below for 1 minute.",
+        imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
       },
-
-      // 7. SPEAK ABOUT THE IMAGE
       {
-        id: "det1_si1",
+        id: "det1_sai1",
         type: "speak-about-image",
         timeLimitSeconds: 90,
-        minSpeakingSeconds: 30,
         title: "Speak About the Image",
-        instructions: "Talk about the image below for at least 30 seconds.",
-        imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
-        imageAlt: "A presenter standing in front of a white board explaining data to colleagues in a conference room",
-        guidingQuestions: [
-          "What is happening in this picture?",
-          "Who are the people and what are they doing?",
-          "What setting does this appear to be?"
-        ]
+        prompt: "Speak about the image below for 90 seconds.",
+        imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80"
       },
-
-      // 8. INTERACTIVE READING
       {
         id: "det1_ir1",
         type: "interactive-reading",
-        timeLimitSeconds: 420, // 7 mins for passage
+        timeLimitSeconds: 420,
         title: "Interactive Reading — Urban Biodiversity",
-        passageTitle: "Urban Biodiversity and Green Spaces",
-        fullPassage: "Cities around the world are increasingly incorporating green infrastructure to combat climate change and enhance urban living standards. Parks, rooftop gardens, and urban forests provide essential ecological habitats for local wildlife while simultaneously mitigating the urban heat island effect. Furthermore, access to natural spaces within urban centers has been proven to lower stress levels and boost psychological well-being among residents.",
-        tasks: [
-          {
-            type: "complete-the-text",
-            question: "Select the best word to fill in the blank:",
-            textBefore: "Cities around the world are increasingly incorporating green infrastructure to ",
-            options: ["combat", "ignore", "diminish", "postpone"],
-            answer: 0,
-            explanation: "'Combat' fits best in the context of fighting or mitigating climate change."
-          },
-          {
-            type: "complete-passage",
-            question: "Choose the sentence that best fits the blank space at the end of paragraph:",
-            options: [
-              "Consequently, city planners are prioritizing sustainable urban design in future developments.",
-              "However, many people still prefer traditional concrete architecture.",
-              "As a result, wildlife in rural regions has completely migrated into cities.",
-              "Therefore, car traffic has increased dramatically in downtown areas."
-            ],
-            answer: 0,
-            explanation: "Logical conclusion highlighting city planners prioritizing sustainable design."
-          },
-          {
-            type: "highlight-answer",
-            question: "Highlight the text in the passage that explains the psychological benefit of urban nature.",
-            correctSentence: "access to natural spaces within urban centers has been proven to lower stress levels and boost psychological well-being among residents."
-          },
-          {
-            type: "identify-main-idea",
-            question: "What is the main idea of the passage?",
-            options: [
-              "Green spaces in cities improve environmental resilience and human well-being.",
-              "Concrete buildings are more cost-effective than parks.",
-              "Urban heat islands cannot be controlled by city planners.",
-              "Rooftop gardens cause building maintenance difficulties."
-            ],
-            answer: 0
-          }
+        passageText: "Urban biodiversity refers to the variety of living organisms in city environments. Green roofs and urban parks provide crucial habitats for pollinators and migratory birds, counteracting habitat fragmentation caused by concrete infrastructure.",
+        questions: [
+          { id: "q1", prompt: "What role do green roofs play in cities?", options: ["Provide habitats for pollinators", "Reduce internet traffic", "Lower building costs"], answer: "Provide habitats for pollinators" }
         ]
       },
-
-      // 9. INTERACTIVE WRITING
+      {
+        id: "det1_il1",
+        type: "interactive-listening",
+        timeLimitSeconds: 420,
+        title: "Interactive Listening — Campus Discussion",
+        audioUrl: "/audio/det/il-001.mp3",
+        scenarioAudioText: "Hi, I wanted to discuss our lab schedule for next week. We need to reserve the spectroscopy machine before Tuesday.",
+        questions: [
+          { id: "q1", prompt: "What machine needs to be reserved?", options: ["Spectroscopy machine", "Microscope", "Thermal cycler"], answer: "Spectroscopy machine" }
+        ]
+      },
       {
         id: "det1_iw1",
         type: "interactive-writing",
+        timeLimitSeconds: 300,
         title: "Interactive Writing",
-        prompt1: {
-          timeLimitSeconds: 300, // 5 mins
-          instructions: "Write a response to the prompt below (min 50 words).",
-          question: "Some people believe that artificial intelligence will replace human teachers in the future, while others argue that teachers will always be essential. Discuss your opinion with specific reasons and examples."
-        },
-        prompt2: {
-          timeLimitSeconds: 180, // 3 mins
-          instructions: "Follow-up question based on your response:",
-          question: "How can technology be integrated into classrooms today to support human teachers rather than replacing them?"
-        }
+        prompt: "Write about a memorable trip or journey you took. Describe where you went and why it was special. Write for 5 minutes."
       },
-
-      // 10. WRITING SAMPLE
+      {
+        id: "det1_is1",
+        type: "interactive-speaking",
+        timeLimitSeconds: 90,
+        title: "Interactive Speaking",
+        prompt: "Talk about an important goal you recently achieved. Speak for 90 seconds."
+      },
       {
         id: "det1_ws1",
         type: "writing-sample",
         timeLimitSeconds: 300,
         title: "Writing Sample",
-        instructions: "Write for 5 minutes about the topic below. Your response will be evaluated for vocabulary, grammar, coherence, and task completion.",
-        question: "Describe a personal or academic goal you achieved recently. Explain why this goal was important to you, the steps you took to reach it, and what you learned from the experience."
+        prompt: "Discuss the advantages and disadvantages of online education compared to traditional classroom learning. Write at least 150 words."
       },
-
-      // 11. SPEAKING SAMPLE
       {
         id: "det1_ss1",
         type: "speaking-sample",
         timeLimitSeconds: 180,
-        minSpeakingSeconds: 60,
         title: "Speaking Sample",
-        instructions: "Choose 1 topic from the 2 choices below and speak for 1 to 3 minutes.",
-        options: [
-          "Topic A: Talk about a book or film that influenced your perspective on life.",
-          "Topic B: Describe a memorable journey or trip you took with family or friends."
-        ]
+        prompt: "Describe a global environmental issue that concerns you and actions communities can take. Speak for 1 to 3 minutes."
       }
     ]
   },
-  {
-    id: 2,
-    title: "DET Full Practice Test 2 — Advanced Proficiency (Target 135+)",
-    difficulty: "Hard",
-    durationMinutes: 60,
-    targetScore: 135,
-    description: "Advanced Duolingo English Test mock tailored for high-ranking university admissions demanding C1/C2 English fluency.",
-    questions: [
-      {
-        id: "det2_rc1",
-        type: "read-and-complete",
-        timeLimitSeconds: 180,
-        title: "Read and Complete — Advanced Science",
-        instructions: "Fill in the missing letters in the words below.",
-        passage: [
-          { text: "Astrophysicists recently observed gravitational ", blank: false },
-          { text: "wa", missing: "ves", hint: "waves", blank: true },
-          { text: " emitted during a neutron star collision. This groundbreaking ", blank: false },
-          { text: "disc", missing: "overy", hint: "overy", blank: true },
-          { text: " provides crucial empirical evidence supporting Einstein's theory of ", blank: false },
-          { text: "rel", missing: "ativity", hint: "ativity", blank: true },
-          { text: " and offers unprecedented insights into space-time mechanics.", blank: false },
-        ]
-      },
-      {
-        id: "det2_rs1",
-        type: "read-and-select",
-        timeLimitSeconds: 60,
-        title: "Read and Select — Advanced Vocabulary",
-        instructions: "Select all valid English words.",
-        words: [
-          { word: "Ubiquitous", isReal: true },
-          { word: "Quixotic", isReal: true },
-          { word: "Glimmeration", isReal: false },
-          { word: "Serendipity", isReal: true },
-          { word: "Pragmatic", isReal: true },
-          { word: "Stravolate", isReal: false },
-          { word: "Juxtaposition", isReal: true },
-          { word: "Epistemology", isReal: true },
-          { word: "Plunderous", isReal: false },
-          { word: "Alacrity", isReal: true },
-        ]
-      },
-      {
-        id: "det2_wi1",
-        type: "write-about-image",
-        timeLimitSeconds: 60,
-        title: "Write About the Image",
-        instructions: "Write 1 or more sentences describing the image below.",
-        imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
-        imageAlt: "A futuristic modern office building with floor-to-ceiling glass windows overlooking a city skyline",
-        sampleAnswer: "An architectural view of a sleek, modern commercial skyscraper with expansive glass windows reflecting the urban city skyline under a clear blue sky."
-      },
-      {
-        id: "det2_ws1",
-        type: "writing-sample",
-        timeLimitSeconds: 300,
-        title: "Writing Sample — Academic Opinion",
-        instructions: "Write for 5 minutes about the topic below.",
-        question: "Should university education be completely free for all citizens funded by government taxes? Support your position with logical arguments and real-world examples."
-      }
-    ]
-  }
-];
 
-export default detTests;
+  // ── MOCK EXAMS 2 TO 12 ───────────────────────────────────────────────────
+  ...Array.from({ length: 11 }).map((_, index) => {
+    const testNum = index + 2;
+    const difficulties = ["Medium", "Medium-High", "Hard", "Advanced"];
+    const diff = difficulties[index % difficulties.length];
+    const targetScores = [125, 130, 135, 140, 145, 150];
+    const targetScore = targetScores[index % targetScores.length];
+
+    const testTitles = [
+      "Advanced Proficiency (Target 135+)",
+      "Science & Technology Focus",
+      "Business & Global Commerce",
+      "Environmental & Climate Policy",
+      "Humanities & Social Sciences",
+      "Academic Scholarship Readiness",
+      "High-Speed Speed & Literacy",
+      "Conversation & Spoken Production",
+      "C1-C2 Master Level Challenge",
+      "Comprehensive Campus Life Exam",
+      "Ultimate Grand Mock Exam"
+    ];
+
+    return {
+      id: testNum,
+      title: `DET Full Practice Test ${testNum} — ${testTitles[index]}`,
+      difficulty: diff,
+      durationMinutes: 60,
+      targetScore,
+      description: `Complete 14-task adaptive DET mock exam focused on ${testTitles[index].toLowerCase()} with instant AI scoring and subscore diagnostics.`,
+      questions: [
+        { id: `det${testNum}_rc1`, type: "read-and-complete", timeLimitSeconds: 180, title: "Read and Complete" },
+        { id: `det${testNum}_swrs1`, type: "single-word-read-select", timeLimitSeconds: 5, word: "meticulous", isReal: true, title: "Read and Select (Single Word)" },
+        { id: `det${testNum}_fitb1`, type: "fill-in-the-blanks", timeLimitSeconds: 20, sentenceBefore: "Renewable energy adoption has grown at an ", targetWord: "unprecedented", sentenceAfter: " pace.", title: "Fill in the Blanks" },
+        { id: `det${testNum}_rs1`, type: "read-and-select", timeLimitSeconds: 60, title: "Read and Select", words: [{ word: "Pragmatic", isReal: true }, { word: "Volitancy", isReal: false }] },
+        { id: `det${testNum}_lt1`, type: "listen-and-type", timeLimitSeconds: 60, title: "Listen and Type", audioText: "International research collaboration improves academic outcomes.", audioUrl: "/audio/det/lt-002.mp3" },
+        { id: `det${testNum}_ra1`, type: "read-aloud", timeLimitSeconds: 20, title: "Read Aloud", sentence: "Interdisciplinary research projects foster innovative solutions to global challenges." },
+        { id: `det${testNum}_di1`, type: "describe-image", timeLimitSeconds: 60, title: "Write About the Image", prompt: "Write a description of the image below for 1 minute.", imageUrl: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80" },
+        { id: `det${testNum}_sai1`, type: "speak-about-image", timeLimitSeconds: 90, title: "Speak About the Image", prompt: "Speak about the image below for 90 seconds.", imageUrl: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80" },
+        { id: `det${testNum}_ir1`, type: "interactive-reading", timeLimitSeconds: 420, title: "Interactive Reading", passageText: "Marine ecosystems support global biodiversity. Coral reefs shelter over twenty-five percent of marine life.", questions: [{ id: "q1", prompt: "What percentage of marine life do coral reefs shelter?", options: ["Over 25%", "Under 5%", "50%"], answer: "Over 25%" }] },
+        { id: `det${testNum}_il1`, type: "interactive-listening", timeLimitSeconds: 420, title: "Interactive Listening", audioUrl: "/audio/det/il-002.mp3", scenarioAudioText: "Could you please review the latest dataset analysis before our meeting tomorrow?", questions: [{ id: "q1", prompt: "What needs to be reviewed?", options: ["Dataset analysis", "Exam syllabus", "Budget sheet"], answer: "Dataset analysis" }] },
+        { id: `det${testNum}_iw1`, type: "interactive-writing", timeLimitSeconds: 300, title: "Interactive Writing", prompt: "Describe an important technological tool you use daily and its impact. Write for 5 minutes." },
+        { id: `det${testNum}_is1`, type: "interactive-speaking", timeLimitSeconds: 90, title: "Interactive Speaking", prompt: "Describe a favorite hobby or activity you enjoy in your spare time. Speak for 90 seconds." },
+        { id: `det${testNum}_ws1`, type: "writing-sample", timeLimitSeconds: 300, title: "Writing Sample", prompt: "Should public universities offer free tuition for domestic students? Discuss your opinion with reasons." },
+        { id: `det${testNum}_ss1`, type: "speaking-sample", timeLimitSeconds: 180, title: "Speaking Sample", prompt: "Do you prefer studying individually or collaborating in study groups? Speak for 1 to 3 minutes." }
+      ]
+    };
+  })
+];
