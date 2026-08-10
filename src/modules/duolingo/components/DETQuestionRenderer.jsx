@@ -1,5 +1,7 @@
 import ReadAndCompleteRenderer from "./renderers/ReadAndCompleteRenderer";
 import ReadAndSelectRenderer from "./renderers/ReadAndSelectRenderer";
+import SingleWordReadAndSelectRenderer from "./renderers/SingleWordReadAndSelectRenderer";
+import FillInTheBlanksRenderer from "./renderers/FillInTheBlanksRenderer";
 import ListenAndTypeRenderer from "./renderers/ListenAndTypeRenderer";
 import ReadAloudRenderer from "./renderers/ReadAloudRenderer";
 import InteractiveReadingRenderer from "./renderers/InteractiveReadingRenderer";
@@ -23,6 +25,27 @@ export default function DETQuestionRenderer({ item, onSubmitResponse, submitting
 
     case "read-and-select":
       return <ReadAndSelectRenderer item={item} onSubmit={handleSub} submitting={submitting} />;
+
+    case "single-word-read-select":
+      return (
+        <SingleWordReadAndSelectRenderer
+          word={item.word || "handen"}
+          isReal={item.isReal || false}
+          timeRemaining={item.timeRemaining || "0:03"}
+          onSelectAnswer={(choice) => handleSub(choice, choice === item.isReal ? 1.0 : 0.0)}
+        />
+      );
+
+    case "fill-in-the-blanks":
+      return (
+        <FillInTheBlanksRenderer
+          sentenceBefore={item.sentenceBefore || "The number of website error reports we are receiving is "}
+          targetWord={item.targetWord || "alarming"}
+          sentenceAfter={item.sentenceAfter || ", so we must fix them right away."}
+          timeRemaining={item.timeRemaining || "0:02"}
+          onSubmit={(val, isCorrect) => handleSub(val, isCorrect ? 1.0 : 0.0)}
+        />
+      );
 
     case "listen-and-type":
       return <ListenAndTypeRenderer item={item} onSubmit={handleSub} submitting={submitting} />;

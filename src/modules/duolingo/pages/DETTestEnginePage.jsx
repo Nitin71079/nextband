@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DETHeader from "../components/DETHeader";
 import DETQuestionRenderer from "../components/DETQuestionRenderer";
+import DETSectionIntroModal from "../components/DETSectionIntroModal";
 import { DETTestEngine } from "../engines/DETTestEngine";
 import { detMockTests } from "../../../data/duolingo/mockTests";
 import { detItemBank } from "../../../data/duolingo/itemBank";
@@ -14,6 +15,7 @@ export default function DETTestEnginePage() {
   const [engine, setEngine] = useState(null);
   const [currentItem, setCurrentItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showSectionIntro, setShowSectionIntro] = useState(true);
 
   useEffect(() => {
     const mock = detMockTests.find((m) => m.id === id);
@@ -72,6 +74,21 @@ export default function DETTestEnginePage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--det-surface-2)" }}>
+      {/* Section Transition Modal */}
+      {showSectionIntro && (
+        <DETSectionIntroModal
+          isOpen={showSectionIntro}
+          sectionNumber={currentItem.sectionIndex || 1}
+          totalSections={7}
+          title={currentItem.title || currentItem.type?.replace(/-/g, " ").toUpperCase() || "Read and Select"}
+          numQuestions={currentItem.numQuestions || "15 to 18"}
+          timePerQuestion={currentItem.timePerQuestion || "0:05"}
+          timeHeader="0:06"
+          onContinue={() => setShowSectionIntro(false)}
+          onClose={() => navigate("/duolingo")}
+        />
+      )}
+
       <DETHeader
         title={currentItem.skill ? `${currentItem.skill.toUpperCase()} Task` : "DET Adaptive Test"}
         timeLimit={currentItem.timeLimit || 120}
