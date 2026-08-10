@@ -1,18 +1,38 @@
-import { useState } from "react";
-import { Volume2, ArrowRight, RotateCcw } from "lucide-react";
+import { useState, useRef } from "react";
+import { Volume2, ArrowRight } from "lucide-react";
 
 export default function ListenAndTypeRenderer({ item, onSubmit, submitting }) {
   const [textInput, setTextInput] = useState("");
-  const [replaysLeft, setReplaysLeft] = useState(item.maxReplays || 2);
+  const [replaysLeft, setReplaysLeft] = useState(item?.maxReplays || 2);
+  const audioRef = useRef(null);
 
   if (!item) return null;
 
   const playAudio = () => {
     if (replaysLeft <= 0) return;
     setReplaysLeft((r) => r - 1);
-    const syn = new SpeechSynthesisUtterance(item.audioText || "The library is open.");
-    syn.rate = 0.9;
-    window.speechSynthesis.speak(syn);
+
+    if (item.audioUrl) {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => playSpeechFallback());
+      } else {
+        const audio = new Audio(item.audioUrl);
+        audioRef.current = audio;
+        audio.play().catch(() => playSpeechFallback());
+      }
+    } else {
+      playSpeechFallback();
+    }
+  };
+
+  const playSpeechFallback = () => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      const syn = new SpeechSynthesisUtterance(item.audioText || "The library is open.");
+      syn.rate = 0.9;
+      window.speechSynthesis.speak(syn);
+    }
   };
 
   const calculateAccuracy = () => {

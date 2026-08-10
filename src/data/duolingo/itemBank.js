@@ -114,6 +114,7 @@ export const detItemBank = [
     difficultyValue: 95,
     timeLimit: 420,
     title: "University Laboratory Collaboration",
+    audioUrl: "/audio/det/il-001.mp3",
     scenarioText: "You are speaking with a fellow research student about coordinating your lab schedules for an upcoming chemistry project.",
     scenarioAudioText: "Hi, I wanted to discuss our lab schedule for next week. We need to reserve the spectroscopy machine before Tuesday.",
     questions: [
@@ -197,6 +198,7 @@ export const detItemBank = [
     difficultyValue: 80,
     timeLimit: 60,
     maxReplays: 2,
+    audioUrl: "/audio/det/lt-001.mp3",
     audioText: "Scientific research suggests that regular exercise improves cognitive performance.",
     prompt: "Type the statement that you hear."
   },

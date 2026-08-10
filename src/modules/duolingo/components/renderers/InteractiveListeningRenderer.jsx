@@ -1,15 +1,31 @@
-import React, { useState } from "react";
-import { Volume2, Clock, CheckCircle2, MessageSquare, ArrowRight, PenTool } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Volume2, Clock, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function InteractiveListeningRenderer({ item, onSubmit, submitting }) {
   const [stage, setStage] = useState(0); // 0: Listen, 1: Questions, 2: Complete Passage, 3: Conversation, 4: Summary
   const [answers, setAnswers] = useState({});
   const [summaryText, setSummaryText] = useState("");
+  const audioRef = useRef(null);
 
   if (!item) return null;
 
   function playAudio(text) {
+    if (item.audioUrl) {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => playSpeechFallback(text));
+      } else {
+        const audio = new Audio(item.audioUrl);
+        audioRef.current = audio;
+        audio.play().catch(() => playSpeechFallback(text));
+      }
+    } else {
+      playSpeechFallback(text);
+    }
+  }
+
+  function playSpeechFallback(text) {
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -151,7 +167,7 @@ export default function InteractiveListeningRenderer({ item, onSubmit, submittin
             Select the correct words to complete the summary of the conversation.
           </p>
           <div style={{ padding: "20px", background: "var(--surface, #f8fafc)", borderRadius: "16px", border: "1px solid var(--border, #e2e8f0)", lineHeight: "1.8", fontSize: "14px" }}>
-            {item.passageSummary || "Over the past two decades, technological developments have given way to broad changes in communications and information technology."}
+            {item.passageSummary || "Over the past term, collaborative research projects have given students hands-on technical skills in modern laboratory environments."}
           </div>
         </div>
       )}
