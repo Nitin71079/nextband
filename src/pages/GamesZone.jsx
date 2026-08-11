@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Swords, Lock, Gamepad2, Zap, Trophy, Users } from "lucide-react";
+import { Swords, Lock, Gamepad2, Zap, Trophy, Users, Sparkles, Layers, Volume2 } from "lucide-react";
+import { useExam } from "../context/ExamContext";
 
 const games = [
   {
@@ -147,6 +148,36 @@ const games = [
 
 export default function GamesZone() {
   const navigate = useNavigate();
+  const { activeTrack } = useExam();
+
+  const detGames = [
+    {
+      id: "det-word-blitz",
+      icon: "⚡",
+      title: "Real vs Fake Word Blitz",
+      subtitle: "5s Speed Decision",
+      description: "Test your vocabulary recognition under official DET 5-second timers per word. Instant scoring.",
+      path: "/det/practice/single-word-read-select",
+      color: "#10b981",
+    },
+    {
+      id: "det-dictation-sniper",
+      icon: "🎧",
+      title: "DET Dictation Sniper",
+      subtitle: "Listen & Type",
+      description: "Listen to native audio statements and transcribe with 100% spelling precision.",
+      path: "/det/practice/listen-and-type",
+      color: "#8b5cf6",
+    },
+    {
+      id: "det-fill-blanks",
+      icon: "🧩",
+      title: "Letter Slot Fillers",
+      subtitle: "C-Test & Blanks",
+      description: "Fill in missing letters in passage contexts against adaptive difficulty timers.",
+      path: "/det/practice/fill-in-the-blanks",
+    },
+  ];
 
   return (
     <div
@@ -269,6 +300,42 @@ export default function GamesZone() {
             ))}
           </div>
         </motion.div>
+
+        {/* DET Track Specific Speed Games */}
+        {activeTrack === "DET" && (
+          <div style={{ marginBottom: "56px" }}>
+            <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#10b981", margin: "0 0 16px 0", display: "flex", alignItems: "center", gap: "10px" }}>
+              <Sparkles size={22} /> Duolingo English Test (DET) Speed Games
+            </h2>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+              {detGames.map((g) => (
+                <div
+                  key={g.id}
+                  onClick={() => navigate(g.path)}
+                  style={{
+                    background: "rgba(16, 185, 129, 0.08)",
+                    border: "1px solid rgba(16, 185, 129, 0.3)",
+                    borderRadius: "20px",
+                    padding: "24px",
+                    cursor: "pointer",
+                    transition: "transform 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                >
+                  <div style={{ fontSize: "36px", marginBottom: "12px" }}>{g.icon}</div>
+                  <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#ffffff", margin: "0 0 4px 0" }}>{g.title}</h3>
+                  <div style={{ fontSize: "12px", fontWeight: "800", color: "#10b981", textTransform: "uppercase", marginBottom: "8px" }}>{g.subtitle}</div>
+                  <p style={{ fontSize: "13px", color: "#94a3b8", margin: "0 0 16px 0", lineHeight: "1.5" }}>{g.description}</p>
+                  <div style={{ fontSize: "13px", fontWeight: "800", color: "#60a5fa", display: "flex", alignItems: "center", gap: "6px" }}>
+                    Play DET Speed Game →
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Games grid */}
         <div

@@ -57,6 +57,9 @@ const MySessions =
     )
   );
 const Home = lazy(() => import("./pages/Home"));
+const TOEFLCenter = lazy(() => import("./pages/TOEFLCenter"));
+const GRECenter = lazy(() => import("./pages/GRECenter"));
+const CATCenter = lazy(() => import("./pages/CATCenter"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -438,6 +441,9 @@ element={<ExamHistory/>}
             path="/full-mocks"
             element={<FullMocks />}
           />
+          <Route path="/toefl" element={<TOEFLCenter />} />
+          <Route path="/gre" element={<GRECenter />} />
+          <Route path="/cat" element={<CATCenter />} />
 
           <Route
             path="/admin"
