@@ -62,6 +62,9 @@ const MySessions =
     )
   );
 const Home = lazy(() => import("./pages/Home"));
+const TOEFLCenter = lazy(() => import("./pages/TOEFLCenter"));
+const GRECenter = lazy(() => import("./pages/GRECenter"));
+const CATCenter = lazy(() => import("./pages/CATCenter"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -98,6 +101,15 @@ const VideoCommercialAd = lazy(() => import("./pages/VideoCommercialAd"));
 
 import { useTelemetryTracker } from "./hooks/useTelemetryTracker";
 
+const DETDashboard = lazy(() => import("./modules/duolingo/pages/DETDashboard"));
+const DETPracticeCenter = lazy(() => import("./modules/duolingo/pages/DETPracticeCenter"));
+const DETTestEnginePage = lazy(() => import("./modules/duolingo/pages/DETTestEnginePage"));
+const DETResultsPage = lazy(() => import("./modules/duolingo/pages/DETResultsPage"));
+const DETCenter = lazy(() => import("./pages/DETCenter"));
+const MockDET = lazy(() => import("./pages/MockDET"));
+const DETSubskillCenter = lazy(() => import("./pages/DETSubskillCenter"));
+const DETExamResults = lazy(() => import("./pages/DETExamResults"));
+
 function App() {
   useTelemetryTracker();
 
@@ -111,6 +123,19 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/commercial" element={<VideoCommercialAd />} />
+
+          {/* DET DUOLINGO ENGLISH TEST ROUTES */}
+          <Route path="/duolingo" element={<DETDashboard />} />
+          <Route path="/duolingo/practice" element={<DETPracticeCenter />} />
+          <Route path="/duolingo/practice/:skill" element={<DETPracticeCenter />} />
+          <Route path="/duolingo/test/:id" element={<DETTestEnginePage />} />
+          <Route path="/duolingo/results/:id" element={<DETResultsPage />} />
+
+          <Route path="/det" element={<DETCenter />} />
+          <Route path="/det/practice/:type" element={<DETSubskillCenter />} />
+          <Route path="/det/results" element={<DETExamResults />} />
+          <Route path="/det/results/:resultId" element={<DETExamResults />} />
+          <Route path="/mock/det/:id" element={<MockDET />} />
 
           <Route path="/login" element={<Login />} />
 
@@ -433,6 +458,9 @@ element={<ExamHistory/>}
             path="/full-mocks"
             element={<FullMocks />}
           />
+          <Route path="/toefl" element={<TOEFLCenter />} />
+          <Route path="/gre" element={<GRECenter />} />
+          <Route path="/cat" element={<CATCenter />} />
 
           <Route
             path="/admin"

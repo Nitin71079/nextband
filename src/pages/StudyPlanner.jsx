@@ -4,6 +4,7 @@ import {
 } from "firebase/firestore";
 import { app } from "../firebase";
 import { useAuth } from "../context/AuthContext";
+import { useExam } from "../context/ExamContext";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import {
@@ -161,31 +162,51 @@ export default function StudyPlanner() {
     }
   }
 
+  const { activeTrack } = useExam();
+
   async function generatePlan() {
     if (!currentBand || !targetBand) return;
     setAiPlan("");
     setStreaming(true);
 
-    const prompt = `
-Create a detailed, personalized IELTS study plan for a student with the following profile:
-- Current Band Score: ${currentBand}
-- Target Band Score: ${targetBand}
+    const isDET = activeTrack === "DET";
+    const trackTitle = isDET ? "Duolingo English Test (DET)" : `${activeTrack} Prep`;
+
+    const prompt = isDET ? `
+Create a detailed, personalized Duolingo English Test (DET) study plan for a student with the following profile:
+- Current DET Score: ${currentBand} (10 to 160 scale)
+- Target DET Score: ${targetBand} (10 to 160 scale)
+- Available Preparation Window: ${weeksAvail || "4"} weeks
+- Priority Subscore Focus Area: ${focusArea || "Literacy, Comprehension, Conversation, Production"}
+
+Generate a week-by-week plan with:
+1. Daily study tasks and time allocation
+2. Specific exercises across DET 14 task types (Single Word Read & Select, Fill in the Blanks, Read & Complete, Dictation, Read Aloud, Interactive Reading, Interactive Listening, Interactive Writing, Interactive Speaking, Writing & Speaking Samples)
+3. DET Computer-Adaptive Mock Test schedule
+4. Weekly subscore milestones
+5. Tips to bridge the gap from ${currentBand} to ${targetBand} on the 10-160 scale.
+
+Make it practical, motivating, and DET-specific.
+`.trim() : `
+Create a detailed, personalized ${trackTitle} study plan for a student with the following profile:
+- Current Score / Level: ${currentBand}
+- Target Score / Level: ${targetBand}
 - Available Study Time: ${weeksAvail || "8"} weeks
 - Priority Focus Area: ${focusArea || "all sections equally"}
 
 Generate a week-by-week plan with:
 1. Daily study tasks and time allocation
-2. Specific exercises per section (Reading, Listening, Writing, Speaking)
-3. Mock test schedule
+2. Specific exercises per section
+3. Full Mock test schedule
 4. Weekly milestones and how to measure progress
 5. Tips to bridge the gap from ${currentBand} to ${targetBand}
 
-Make it practical, motivating, and IELTS-specific.
+Make it practical, motivating, and ${trackTitle}-specific.
 `.trim();
 
     try {
       await aiService.stream({
-        systemPrompt: `You are an expert IELTS coach. Create structured, practical study plans using markdown with clear headings (##), bullet points, and weekly breakdowns. Be specific and encouraging.`,
+        systemPrompt: `You are an expert ${trackTitle} coach. Create structured, practical study plans using markdown with clear headings (##), bullet points, and weekly breakdowns. Be specific and encouraging.`,
         messages: [{ role: "user", content: prompt }],
         onToken: (_, full) => setAiPlan(full),
       });

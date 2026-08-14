@@ -1,27 +1,29 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
+import { useExam } from "../../context/ExamContext";
 import {
   ArrowRight, Sparkles, BrainCircuit, Trophy, TrendingUp,
   Users, PlayCircle, ShieldCheck, BookOpen, Mic, BarChart3,
-  Star, CheckCircle2, Zap, Target,
+  Star, CheckCircle2, Zap, Target, Layers
 } from "lucide-react";
 import "./Hero.css";
 
 export default function Hero() {
   const { user } = useAuth();
+  const { activeTrack } = useExam();
 
   const dashboardStats = [
     { title: "Study Streak", value: "18 Days", change: "+3 this week", color: "orange" },
-    { title: "Predicted Band", value: "7.5", change: "+0.4", color: "blue" },
+    { title: "Predicted Score", value: activeTrack === "DET" ? "130 DET" : "7.5 Band", change: "+0.4", color: "blue" },
     { title: "Weekly Progress", value: "82%", change: "4 / 5 Tasks", color: "green" },
   ];
 
   const features = [
-    { icon: BookOpen, text: "Real IELTS CBT" },
+    { icon: BookOpen, text: "IELTS & DET CBT" },
     { icon: Mic, text: "AI Speaking" },
-    { icon: BrainCircuit, text: "AI Writing" },
-    { icon: BarChart3, text: "Analytics" },
+    { icon: BrainCircuit, text: "Groq AI Writing" },
+    { icon: BarChart3, text: "Subscore Analytics" },
   ];
 
   return (
@@ -39,36 +41,34 @@ export default function Hero() {
 
           <motion.div className="hero-badge" whileHover={{ scale: 1.03 }}>
             <Sparkles size={15} />
-            <span>Premium AI-Powered IELTS Platform</span>
+            <span>Multi-Exam AI Prep Platform — IELTS · DET · TOEFL · GRE · CAT</span>
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            Reach Your
-            <span>Target IELTS Band</span>
+            Master Your
+            <span>Target Exam Score</span>
             Faster With
-            <span className="gradient-text">Smarter AI Learning</span>
+            <span className="gradient-text">Adaptive AI Intelligence</span>
           </motion.h1>
 
           <motion.p className="hero-description" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
-            Master Reading, Listening, Writing and Speaking using realistic CBT simulations,
-            AI-powered evaluation, personalized study plans and detailed performance
-            analytics—all in one premium platform.
+            Experience realistic computer-based simulations, instant Groq AI scoring, personalized study planners, and subscore diagnostics for IELTS, DET, TOEFL, GRE, and CAT.
           </motion.p>
 
           <motion.div className="hero-buttons" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
-            <Link to={user ? "/dashboard" : "/register"}>
+            <Link to={user ? (activeTrack === "DET" ? "/duolingo" : "/dashboard") : "/register"}>
               <motion.button className="hero-primary-btn" whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}>
                 <Zap size={18} />
-                {user ? "Go to Dashboard" : "Start Free Today"}
+                {user ? `Enter ${activeTrack} Prep` : "Start Free Practice"}
                 <ArrowRight size={18} />
               </motion.button>
             </Link>
-            <Link to="/pricing">
+            <a href="#score-converter">
               <motion.button className="hero-secondary-btn" whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}>
                 <PlayCircle size={18} />
-                View Premium
+                Explore Tracks
               </motion.button>
-            </Link>
+            </a>
           </motion.div>
 
           <motion.div className="hero-feature-list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
@@ -86,8 +86,7 @@ export default function Hero() {
           <motion.div className="hero-trust" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
             <Users size={18} />
             <span>
-              Join learners preparing for their dream IELTS score with AI-powered practice,
-              detailed insights and realistic CBT simulations.
+              Join 10,000+ candidates preparing for their dream university admission scores with Knarrow AI.
             </span>
           </motion.div>
         </motion.div>
@@ -97,10 +96,12 @@ export default function Hero() {
           <div className="hero-dashboard">
             <div className="dashboard-top">
               <div>
-                <span>Knarrow Dashboard</span>
-                <h3>AI Progress Overview</h3>
+                <span>Knarrow AI Platform</span>
+                <h3>Adaptive Progress Overview</h3>
               </div>
-              <motion.div className="band-chip" whileHover={{ scale: 1.05 }}>⭐ Band 7.5</motion.div>
+              <motion.div className="band-chip" whileHover={{ scale: 1.05 }}>
+                {activeTrack === "DET" ? "🦉 DET 130/160" : "⭐ Band 7.5"}
+              </motion.div>
             </div>
 
             <div className="dashboard-grid">
@@ -120,8 +121,8 @@ export default function Hero() {
 
             <motion.div className="dashboard-chart" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}>
               <div className="chart-header">
-                <span>Band Prediction</span>
-                <strong>+0.4</strong>
+                <span>Score Prediction Growth</span>
+                <strong>+15 pts</strong>
               </div>
               <div className="chart-bars">
                 {[{ h: "45%", d: 1.5 }, { h: "58%", d: 1.6 }, { h: "70%", d: 1.7 }, { h: "82%", d: 1.8, active: true }].map((b, i) => (
@@ -137,8 +138,8 @@ export default function Hero() {
                 <BrainCircuit size={22} />
                 <span>AI Recommendation</span>
               </div>
-              <h3>Complete one Listening mock today</h3>
-              <p>Based on your recent performance, your Listening score has the highest improvement potential this week.</p>
+              <h3>Complete 1 Adaptive Mock Today</h3>
+              <p>Based on your performance analytics, your Literacy &amp; Production subscores have high growth potential this week.</p>
               <div className="dashboard-progress">
                 <div className="dashboard-progress-header">
                   <span>Weekly Goal</span>
@@ -152,12 +153,12 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Floating danglers */}
+          {/* Floating cards */}
           <motion.div className="floating-card floating-card-1"
             animate={{ y: [0, -12, 0], rotate: [0, 1, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
             <TrendingUp size={18} />
-            <div><strong>+0.4</strong><span>Predicted Growth</span></div>
+            <div><strong>+15 Pts</strong><span>Predicted Growth</span></div>
           </motion.div>
 
           <motion.div className="floating-card floating-card-2"
@@ -171,25 +172,17 @@ export default function Hero() {
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
             <Star size={18} />
-            <div><strong>96%</strong><span>Student Satisfaction</span></div>
+            <div><strong>98%</strong><span>Candidate Pass Rate</span></div>
           </motion.div>
 
           <motion.div className="floating-card floating-card-4"
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}>
             <CheckCircle2 size={18} />
-            <div><strong>AI Ready</strong><span>Instant Evaluation</span></div>
+            <div><strong>Groq AI</strong><span>Instant Evaluation</span></div>
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div className="scroll-indicator" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }}>
-        <span>Scroll</span>
-        <motion.div className="mouse" animate={{ y: [0, 8, 0] }} transition={{ duration: 1.8, repeat: Infinity }}>
-          <motion.div className="wheel" animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }} />
-        </motion.div>
-      </motion.div>
     </motion.section>
   );
 }
