@@ -3,7 +3,6 @@ import { Download, X, Share, PlusSquare, Sparkles, MoreVertical } from "lucide-r
 import "./PwaInstallPrompt.css";
 
 const DISPLAY_DURATION_MS = 30000; // 30 seconds
-const REPEAT_INTERVAL_MS = 120000; // 2 minutes (120 seconds)
 
 export default function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -14,17 +13,14 @@ export default function PwaInstallPrompt() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   const displayTimerRef = useRef(null);
-  const repeatIntervalRef = useRef(null);
 
   useEffect(() => {
-    // Check if app is running in standalone mode OR if user already installed/dismissed it
-    const checkStandaloneOrInstalled = () => {
+    const checkStandalone = () => {
       const isStandalone = (
         window.matchMedia("(display-mode: standalone)").matches ||
         window.matchMedia("(display-mode: window-controls-overlay)").matches ||
         window.navigator.standalone === true ||
-        localStorage.getItem("knarrow_pwa_installed") === "true" ||
-        localStorage.getItem("knarrow_pwa_dismissed") === "true"
+        localStorage.getItem("knarrow_pwa_installed") === "true"
       );
 
       if (
@@ -37,10 +33,9 @@ export default function PwaInstallPrompt() {
       return isStandalone;
     };
 
-    if (checkStandaloneOrInstalled()) {
+    if (checkStandalone()) {
       setIsInstalled(true);
       setShowPrompt(false);
-      return;
     }
 
     const ua = window.navigator.userAgent;
@@ -53,6 +48,7 @@ export default function PwaInstallPrompt() {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      window.deferredPwaPrompt = e;
     };
 
     const handleAppInstalled = () => {
@@ -64,43 +60,47 @@ export default function PwaInstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    const triggerPromptFor30s = () => {
-      if (checkStandaloneOrInstalled()) {
-        setShowPrompt(false);
-        return;
+    // Global trigger function accessible from anywhere in the app
+    window.triggerPwaInstall = async () => {
+      const activePrompt = deferredPrompt || window.deferredPwaPrompt;
+      if (activePrompt) {
+        try {
+          activePrompt.prompt();
+          const { outcome } = await activePrompt.userChoice;
+          if (outcome === "accepted") {
+            localStorage.setItem("knarrow_pwa_installed", "true");
+            setIsInstalled(true);
+            setShowPrompt(false);
+          }
+        } catch (err) {
+          console.error("PWA Install error:", err);
+        }
+      } else {
+        setShowPrompt(true);
+        setShowGuide(true);
       }
-
-      setShowPrompt(true);
-
-      if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
-
-      displayTimerRef.current = setTimeout(() => {
-        setShowPrompt(false);
-      }, DISPLAY_DURATION_MS);
     };
 
-    const initialTimer = setTimeout(() => {
-      triggerPromptFor30s();
-    }, 2000);
-
-    repeatIntervalRef.current = setInterval(() => {
-      triggerPromptFor30s();
-    }, REPEAT_INTERVAL_MS);
+    // Auto-show prompt banner after 3 seconds if not dismissed
+    if (!checkStandalone() && localStorage.getItem("knarrow_pwa_dismissed") !== "true") {
+      const t = setTimeout(() => {
+        setShowPrompt(true);
+      }, 3000);
+      return () => clearTimeout(t);
+    }
 
     return () => {
-      clearTimeout(initialTimer);
-      if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
-      if (repeatIntervalRef.current) clearInterval(repeatIntervalRef.current);
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, []);
+  }, [deferredPrompt]);
 
   const handleInstallClick = async () => {
-    if (deferredPrompt) {
+    const activePrompt = deferredPrompt || window.deferredPwaPrompt;
+    if (activePrompt) {
       try {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
+        activePrompt.prompt();
+        const { outcome } = await activePrompt.userChoice;
         if (outcome === "accepted") {
           localStorage.setItem("knarrow_pwa_installed", "true");
           setIsInstalled(true);
@@ -109,19 +109,14 @@ export default function PwaInstallPrompt() {
       } catch (err) {
         console.error("Install prompt error:", err);
       }
-      setDeferredPrompt(null);
     } else {
-      // Toggle visual guide if native prompt event hasn't fired
       setShowGuide((prev) => !prev);
     }
   };
 
   const handleDismiss = () => {
     localStorage.setItem("knarrow_pwa_dismissed", "true");
-    setIsInstalled(true);
     setShowPrompt(false);
-    if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
-    if (repeatIntervalRef.current) clearInterval(repeatIntervalRef.current);
   };
 
   if (isInstalled || !showPrompt) return null;
@@ -129,9 +124,6 @@ export default function PwaInstallPrompt() {
   return (
     <div className="pwa-prompt-container">
       <div className="pwa-prompt-card">
-        {/* 30-second Countdown Progress Bar */}
-        <div className="pwa-progress-bar" key={Date.now()} />
-
         {/* Icon & App Information */}
         <div className="pwa-prompt-left">
           <div className="pwa-prompt-icon-wrapper">
@@ -140,11 +132,11 @@ export default function PwaInstallPrompt() {
 
           <div className="pwa-prompt-text">
             <div className="pwa-prompt-badge">
-              <Sparkles size={12} /> Add to Home Screen
+              <Sparkles size={12} /> Fast 1-Tap Access
             </div>
             <h4 className="pwa-prompt-title">Install Knarrow App</h4>
             <p className="pwa-prompt-desc">
-              1-tap launch, offline IELTS practice &amp; full CBT mock environment.
+              Instant launch, offline practice &amp; real-time test alerts.
             </p>
           </div>
         </div>
@@ -153,7 +145,7 @@ export default function PwaInstallPrompt() {
         <div className="pwa-prompt-right">
           <button className="pwa-install-btn" onClick={handleInstallClick}>
             {isIos ? <Share size={16} /> : <Download size={16} />}
-            {deferredPrompt ? "Install App Now" : "How to Install"}
+            {deferredPrompt || window.deferredPwaPrompt ? "Install 1-Click" : "How to Install"}
           </button>
 
           <button className="pwa-dismiss-btn" onClick={handleDismiss} aria-label="Close app install banner">
@@ -168,7 +160,7 @@ export default function PwaInstallPrompt() {
               <>
                 <div className="pwa-ios-step">
                   <span className="pwa-ios-step-num">1</span>
-                  <span>Tap <strong>Share</strong> <Share size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> at the bottom of Safari</span>
+                  <span>Tap <strong>Share</strong> <Share size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> in Safari</span>
                 </div>
                 <div className="pwa-ios-step">
                   <span className="pwa-ios-step-num">2</span>
@@ -179,28 +171,27 @@ export default function PwaInstallPrompt() {
               <>
                 <div className="pwa-ios-step">
                   <span className="pwa-ios-step-num">1</span>
-                  <span>Tap the <strong>3 dots (⋮)</strong> <MoreVertical size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> in the top right corner of Chrome</span>
+                  <span>Tap <strong>3 dots (⋮)</strong> <MoreVertical size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> in Chrome</span>
                 </div>
                 <div className="pwa-ios-step">
                   <span className="pwa-ios-step-num">2</span>
-                  <span>Select <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></span>
+                  <span>Select <strong>"Add to Home screen"</strong></span>
                 </div>
               </>
             ) : (
               <>
                 <div className="pwa-ios-step">
                   <span className="pwa-ios-step-num">1</span>
-                  <span>Look at the <strong>Top Right</strong> of your browser address bar</span>
+                  <span>Look at your browser address bar</span>
                 </div>
                 <div className="pwa-ios-step">
                   <span className="pwa-ios-step-num">2</span>
-                  <span>Click the <strong>Install Icon</strong> <Download size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> or <strong>3 dots (⋮) → Install Knarrow</strong></span>
+                  <span>Click <strong>Install Icon</strong> <Download size={13} style={{ verticalAlign: "middle", color: "#38bdf8" }} /> or <strong>3 dots (⋮) → Install Knarrow</strong></span>
                 </div>
               </>
             )}
           </div>
         )}
-
       </div>
     </div>
   );

@@ -316,8 +316,12 @@ export default function Pricing() {
           </div>
           <button
             onClick={() => {
-              localStorage.removeItem("knarrow_pwa_dismissed");
-              window.location.reload();
+              if (window.triggerPwaInstall) {
+                window.triggerPwaInstall();
+              } else {
+                localStorage.removeItem("knarrow_pwa_dismissed");
+                window.location.reload();
+              }
             }}
             style={{
               background: "var(--primary, #2563eb)",

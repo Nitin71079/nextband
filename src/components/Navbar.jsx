@@ -47,6 +47,7 @@ import {
   PenSquare,
   Mic,
   FileText,
+  Download,
 } from "lucide-react";
 
 import "../styles/navbar.css";
@@ -898,9 +899,46 @@ export default function Navbar() {
   </div>
 )}
 
-{/* ==========================================================
-    THEME TOGGLE
-========================================================== */}
+        {/* ==========================================================
+            PWA INSTALL BUTTON
+        ========================================================== */}
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.94 }}
+          className="kn-nav-install-btn"
+          type="button"
+          onClick={() => {
+            if (window.triggerPwaInstall) {
+              window.triggerPwaInstall();
+            } else {
+              localStorage.removeItem("knarrow_pwa_dismissed");
+              window.location.reload();
+            }
+          }}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "7px 13px",
+            borderRadius: "10px",
+            background: "linear-gradient(135deg, #2563eb, #3b82f6)",
+            color: "#ffffff",
+            fontWeight: "700",
+            fontSize: "13px",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(37,99,235,0.25)",
+            marginRight: "4px",
+          }}
+          title="Install Knarrow App on Desktop / Mobile"
+        >
+          <Download size={15} />
+          <span>Install App</span>
+        </motion.button>
+
+        {/* ==========================================================
+            THEME TOGGLE
+        ========================================================== */}
 
 <motion.button
   whileTap={{
