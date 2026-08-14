@@ -5,11 +5,12 @@
 =========================================================== */
 
 :root {
-  /* Backgrounds */
+  /* Light Theme Variables — Crisp Slate & Grey Contrast */
   --bg: #f8fafc;
   --surface: #ffffff;
   --surface-2: #f1f5f9;
   --card: #ffffff;
+  --card-sub: #f8fafc;
 
   /* Typography */
   --text: #0f172a;
@@ -17,8 +18,8 @@
   --text-muted: #64748b;
 
   /* Borders */
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
+  --border: #cbd5e1;
+  --border-light: #e2e8f0;
 
   /* Brand */
   --primary: #2563eb;
@@ -35,26 +36,23 @@
   --radius: 24px;
 }
 
-/* ===========================================================
-   DARK THEME VARIABLES (ULTRA HIGH-CONTRAST & ELEGANT)
-=========================================================== */
-
+/* Dark Theme Variables — Elegant Deep Slate & High-Contrast Grey Surface */
 [data-theme="dark"] {
-  /* Backgrounds */
-  --bg: #030712;
-  --surface: #0f172a;
-  --surface-2: #1e293b;
-  --card: #0f172a;
-  --card-hover: #1e293b;
+  --bg: #090d16;
+  --surface: #111827;
+  --surface-2: #1f2937;
+  --card: #111827;
+  --card-sub: #1f2937;
+  --card-hover: #1f2937;
 
   /* Typography */
   --text: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
   /* Borders */
-  --border: #334155;
-  --border-light: #1e293b;
+  --border: #374151;
+  --border-light: #1f2937;
 
   /* Brand */
   --primary: #3b82f6;
@@ -106,60 +104,106 @@ body {
    THEME COMPONENT OVERRIDES & CONTRAST HARMONY
 =========================================================== */
 
-[data-theme="dark"] {
-  color-scheme: dark;
-}
+/* ===========================================================
+   UNIVERSAL THEME COMPONENT & CONTRAST ENFORCER
+=========================================================== */
 
+/* --- Light Mode (Slate Navy & Grey Surfaces) --- */
 [data-theme="light"] {
   color-scheme: light;
 }
 
-/* Light Theme Explicit Hero & Cards */
-[data-theme="light"] .dashboard-hero {
-  background: linear-gradient(135deg, #ffffff, #f8fafc) !important;
-  border-color: #e2e8f0 !important;
+[data-theme="light"] body,
+[data-theme="light"] #root,
+[data-theme="light"] main,
+[data-theme="light"] .page-wrapper {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="light"] h1:not([class*="gradient"]),
+[data-theme="light"] h2:not([class*="gradient"]),
+[data-theme="light"] h3:not([class*="gradient"]),
+[data-theme="light"] h4:not([class*="gradient"]),
+[data-theme="light"] h5:not([class*="gradient"]),
+[data-theme="light"] h6:not([class*="gradient"]) {
   color: #0f172a !important;
 }
 
-[data-theme="light"] .dashboard-hero h1 {
-  color: #0f172a !important;
+[data-theme="light"] p:not([class*="btn"]):not([class*="badge"]),
+[data-theme="light"] label,
+[data-theme="light"] li {
+  color: #334155 !important;
 }
 
-[data-theme="light"] .dashboard-hero p {
-  color: #475569 !important;
+[data-theme="light"] .text-muted,
+[data-theme="light"] .text-secondary,
+[data-theme="light"] .subtext,
+[data-theme="light"] .desc {
+  color: #64748b !important;
 }
 
-[data-theme="light"] .hero-progress-card,
-[data-theme="light"] .hero-stat-card,
+[data-theme="light"] .card,
 [data-theme="light"] .dashboard-card,
 [data-theme="light"] .test-card,
 [data-theme="light"] .stat-card,
 [data-theme="light"] .insight-card,
 [data-theme="light"] .help-card,
 [data-theme="light"] .quick-card,
-[data-theme="light"] .activity-card {
+[data-theme="light"] .activity-card,
+[data-theme="light"] .hero-progress-card,
+[data-theme="light"] .hero-stat-card,
+[data-theme="light"] .st-card,
+[data-theme="light"] .pr-faq-card {
   background: #ffffff !important;
-  border-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
   color: #0f172a !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
 }
 
-/* Dark Theme Explicit Hero & Cards */
-[data-theme="dark"] .dashboard-hero {
-  background: linear-gradient(180deg, #0f172a, #0b0e17) !important;
-  border-color: #334155 !important;
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* --- Dark Mode (Ultra Deep Slate & Grey Surfaces) --- */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] #root,
+[data-theme="dark"] main,
+[data-theme="dark"] .page-wrapper {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="dark"] h1:not([class*="gradient"]),
+[data-theme="dark"] h2:not([class*="gradient"]),
+[data-theme="dark"] h3:not([class*="gradient"]),
+[data-theme="dark"] h4:not([class*="gradient"]),
+[data-theme="dark"] h5:not([class*="gradient"]),
+[data-theme="dark"] h6:not([class*="gradient"]) {
   color: #f8fafc !important;
 }
 
-[data-theme="dark"] .dashboard-hero h1 {
-  color: #f8fafc !important;
-}
-
-[data-theme="dark"] .dashboard-hero p {
+[data-theme="dark"] p:not([class*="btn"]):not([class*="badge"]),
+[data-theme="dark"] label,
+[data-theme="dark"] li {
   color: #cbd5e1 !important;
 }
 
-[data-theme="dark"] .hero-progress-card,
-[data-theme="dark"] .hero-stat-card,
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .text-secondary,
+[data-theme="dark"] .subtext,
+[data-theme="dark"] .desc {
+  color: #94a3b8 !important;
+}
+
 [data-theme="dark"] .card,
 [data-theme="dark"] .dashboard-card,
 [data-theme="dark"] .test-card,
@@ -167,37 +211,28 @@ body {
 [data-theme="dark"] .insight-card,
 [data-theme="dark"] .help-card,
 [data-theme="dark"] .quick-card,
-[data-theme="dark"] .activity-card {
-  background: var(--surface) !important;
-  border-color: var(--border) !important;
-  color: var(--text) !important;
+[data-theme="dark"] .activity-card,
+[data-theme="dark"] .hero-progress-card,
+[data-theme="dark"] .hero-stat-card,
+[data-theme="dark"] .st-card,
+[data-theme="dark"] .pr-faq-card {
+  background: #111827 !important;
+  border-color: #374151 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
 }
 
 [data-theme="dark"] input,
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
-  background-color: var(--surface-2) !important;
-  color: var(--text) !important;
-  border-color: var(--border) !important;
+  background-color: #1f2937 !important;
+  color: #f8fafc !important;
+  border-color: #374151 !important;
 }
 
 [data-theme="dark"] input::placeholder,
 [data-theme="dark"] textarea::placeholder {
-  color: var(--text-muted) !important;
-}
-
-/* Precise typography targeting — preserves text gradients, buttons & status badges */
-[data-theme="dark"] h1:not([class*="gradient"]):not([class*="title-gradient"]),
-[data-theme="dark"] h2:not([class*="gradient"]):not([class*="title-gradient"]),
-[data-theme="dark"] h3:not([class*="gradient"]):not([class*="title-gradient"]),
-[data-theme="dark"] h4:not([class*="gradient"]):not([class*="title-gradient"]),
-[data-theme="dark"] .section-title:not([class*="gradient"]) {
-  color: var(--text);
-}
-
-[data-theme="dark"] p:not([class*="btn"]):not([class*="badge"]),
-[data-theme="dark"] .section-subtitle {
-  color: var(--text-secondary);
+  color: #64748b !important;
 }
 
 [data-theme="dark"] table,
