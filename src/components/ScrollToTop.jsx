@@ -1,40 +1,74 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { useLocation, useNavigationType } from "react-router-dom";
+
+// Global in-memory cache of route scroll positions
+const scrollPositions = new Map();
 
 export default function ScrollToTop() {
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const navType = useNavigationType(); // 'POP' (back/forward), 'PUSH', or 'REPLACE'
+  const prevPathRef = useRef(location.pathname);
 
+  // Continuously record scroll position of the active page
   useEffect(() => {
-    // 1. Reset the window / document scroll
-    try {
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    } catch {
-      window.scrollTo(0, 0);
-    }
-
-    // 2. Reset every overflow scroll container in the page.
-    //    Some pages (e.g. exam panels, modals) use their own
-    //    scrollable divs that window.scrollTo can't reach.
-    const resetContainers = () => {
-      const scrollables = document.querySelectorAll(
-        "[style*='overflow'], .overflow-y-auto, .overflow-auto, " +
-        ".ielts-passage-panel, .ielts-questions-panel, " +
-        ".mock-reading-passage, .mock-reading-questions, " +
-        ".listening-panel, .exam-scroll-container"
-      );
-      scrollables.forEach((el) => {
-        el.scrollTop = 0;
-      });
+    const handleScroll = () => {
+      if (location.pathname) {
+        scrollPositions.set(location.pathname, window.scrollY || document.documentElement.scrollTop || 0);
+      }
     };
 
-    // Run immediately and also after a short tick so lazy-loaded
-    // pages have had time to mount their containers.
-    resetContainers();
-    const t = setTimeout(resetContainers, 50);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [location.pathname]);
+
+  // Handle scroll behavior on route change
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const savedPos = scrollPositions.get(currentPath);
+
+    // Save position of previous path before switching
+    if (prevPathRef.current && prevPathRef.current !== currentPath) {
+      const currentY = window.scrollY || document.documentElement.scrollTop || 0;
+      scrollPositions.set(prevPathRef.current, currentY);
+    }
+    prevPathRef.current = currentPath;
+
+    // Disable browser's automatic default scroll restoration to avoid jump-to-bottom bugs
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    const restoreOrReset = () => {
+      // If returning to a page with a saved scroll position (e.g. Back/Forward or back to Dashboard)
+      if (savedPos !== undefined && (navType === "POP" || currentPath === "/dashboard")) {
+        window.scrollTo({ top: savedPos, left: 0, behavior: "instant" });
+        document.documentElement.scrollTop = savedPos;
+        document.body.scrollTop = savedPos;
+      } else {
+        // Fresh navigation: reset smoothly to top
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+
+        // Reset scrollable containers if any
+        const scrollables = document.querySelectorAll(
+          "[style*='overflow'], .overflow-y-auto, .overflow-auto, " +
+          ".ielts-passage-panel, .ielts-questions-panel, " +
+          ".mock-reading-passage, .mock-reading-questions, " +
+          ".listening-panel, .exam-scroll-container"
+        );
+        scrollables.forEach((el) => {
+          el.scrollTop = 0;
+        });
+      }
+    };
+
+    restoreOrReset();
+    const t = setTimeout(restoreOrReset, 40);
     return () => clearTimeout(t);
-  }, [pathname]);
+  }, [location.pathname, navType]);
 
   return null;
 }
