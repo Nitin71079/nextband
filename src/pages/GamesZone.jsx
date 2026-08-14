@@ -197,8 +197,8 @@ export default function GamesZone() {
     <div
       style={{
         minHeight: "100vh",
-        background:
-          "radial-gradient(circle at 15% 10%, rgba(37,99,235,.12), transparent 40%), radial-gradient(circle at 85% 85%, rgba(139,92,246,.10), transparent 40%), #060d1f",
+        background: "var(--bg)",
+        color: "var(--text)",
         fontFamily: "Inter, sans-serif",
         padding: "80px 24px 60px",
       }}

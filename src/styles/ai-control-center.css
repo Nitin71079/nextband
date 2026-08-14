@@ -2,20 +2,19 @@
    Knarrow AI CONTROL CENTER
 ========================================================== */
 
-.ai-page{
+.ai-page {
+  min-height: 100vh;
+  background: var(--bg, #f8fafc);
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text, #0f172a);
+  padding: 40px;
+  overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
 
-min-height:100vh;
-
-background:#020617;
-
-font-family:Inter,system-ui,sans-serif;
-
-color:white;
-
-padding:40px;
-
-overflow-x:hidden;
-
+[data-theme="dark"] .ai-page {
+  background: #020617;
+  color: white;
 }
 
 /* ==========================================================

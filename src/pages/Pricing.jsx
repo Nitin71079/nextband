@@ -274,6 +274,67 @@ export default function Pricing() {
           )}
         </div>
 
+        {/* 📱 PWA APP INSTALL TRIGGER CARD */}
+        <div
+          style={{
+            maxWidth: "680px",
+            margin: "0 auto 40px auto",
+            background: "var(--card, #ffffff)",
+            border: "1px solid var(--border, #e2e8f0)",
+            borderRadius: "20px",
+            padding: "20px 24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "16px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "14px",
+                background: "rgba(37,99,235,0.1)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "22px",
+              }}
+            >
+              📲
+            </div>
+            <div>
+              <div style={{ fontSize: "15px", fontWeight: "800", color: "var(--text)" }}>
+                Install Knarrow Desktop &amp; Mobile App
+              </div>
+              <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                Fast 1-tap launcher, offline practice &amp; real-time test notifications.
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem("knarrow_pwa_dismissed");
+              window.location.reload();
+            }}
+            style={{
+              background: "var(--primary, #2563eb)",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "12px",
+              padding: "10px 18px",
+              fontSize: "13px",
+              fontWeight: "800",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Get App Now ⬇
+          </button>
+        </div>
+
         <div className="pr-plans-grid">
 
           <PricingCard

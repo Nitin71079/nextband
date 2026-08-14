@@ -7,56 +7,39 @@
    NAVBAR
 ========================================================== */
 
-.kn-navbar{
-    position:sticky;
-    top:0;
-    z-index:9999;
-
-    width:100%;
-    padding:14px 24px;
-
-    background:
-        rgba(255,255,255,.78);
-
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
-
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.28);
-
-    transition:
-        background .35s ease,
-        padding .35s ease,
-        box-shadow .35s ease,
-        border-color .35s ease;
-
-    will-change:
-        background,
-        transform;
-
-    animation:
-        navbarFade .45s ease;
+.kn-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    width: 100%;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-theme="dark"] .kn-navbar{
-
-    background:
-        rgba(2,6,23,.82);
-
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.06);
-
+[data-theme="dark"] .kn-navbar {
+    background: rgba(9, 14, 28, 0.75);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.kn-navbar.scrolled{
+.kn-navbar.scrolled {
+    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
 
-    padding:11px 24px;
-
-    box-shadow:
-        var(--shadow);
-
+[data-theme="dark"] .kn-navbar.scrolled {
+    background: rgba(6, 10, 22, 0.68);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ==========================================================
@@ -1820,4 +1803,45 @@
 @keyframes kn-pill-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,.4); }
   50%       { box-shadow: 0 0 0 5px rgba(37,99,235,0); }
+}
+
+/* ==========================================================
+   EXPLICIT NAV LINK & TOOLS DROPDOWN ACTIVE STYLES
+========================================================== */
+.kn-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .kn-nav-link {
+  color: #94a3b8;
+}
+
+.kn-nav-link:hover {
+  color: var(--primary, #2563eb);
+  background: rgba(37, 99, 235, 0.08);
+  opacity: 1 !important;
+}
+
+.kn-nav-link.active {
+  color: var(--primary, #2563eb) !important;
+  font-weight: 700 !important;
+  background: rgba(37, 99, 235, 0.12) !important;
+  opacity: 1 !important;
+}
+
+.kn-nav-link.active svg {
+  color: var(--primary, #2563eb) !important;
+  opacity: 1 !important;
 }

@@ -33,11 +33,36 @@ export default function Hero() {
       <div className="hero-bg-gradient" />
       <div className="hero-glow hero-glow-1" />
       <div className="hero-glow hero-glow-2" />
-      <div className="hero-noise" />
-
       <div className="hero-container">
         {/* ── LEFT ── */}
         <motion.div className="hero-left" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+
+          {user && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                background: "linear-gradient(135deg, rgba(37,99,235,0.12), rgba(139,92,246,0.12))",
+                border: "1px solid rgba(37,99,235,0.25)",
+                borderRadius: "16px",
+                padding: "12px 18px",
+                marginBottom: "18px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+              }}
+            >
+              <div style={{ fontSize: "22px" }}>👋</div>
+              <div>
+                <div style={{ fontSize: "14px", fontWeight: "800", color: "var(--text)" }}>
+                  Welcome back, {name || user?.email?.split("@")[0] || "Candidate"}!
+                </div>
+                <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                  Ready to boost your IELTS Band score today? Continue your AI prep below.
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           <motion.div className="hero-badge" whileHover={{ scale: 1.03 }}>
             <Sparkles size={15} />

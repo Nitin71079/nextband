@@ -637,7 +637,6 @@ element={<ExamHistory/>}
   </Suspense>
 
   <Footer />
-  <MobileNav />
   <ReferralPopup />
   <PwaInstallPrompt />
   <PeriodicFeedbackModal />

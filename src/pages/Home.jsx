@@ -1,6 +1,7 @@
 import Hero from "../components/home/Hero";
 import Stats from "../components/home/Stats";
 import Features from "../components/home/Features";
+import KnarrowJourney from "../components/home/KnarrowJourney";
 import GamesShowcase from "../components/home/GamesShowcase";
 import WhyKnarrow from "../components/home/WhyKnarrow";
 import DashboardPreview from "../components/home/DashboardPreview";
@@ -14,6 +15,7 @@ export default function Home() {
       <Hero />
       <Stats />
       <Features />
+      <KnarrowJourney />
       <GamesShowcase />
       <WhyKnarrow />
       <DashboardPreview />
