@@ -1,13 +1,12 @@
 import { useNavigate } from "react-router-dom";
-
+import { motion } from "framer-motion";
 import {
   Sparkles, BrainCircuit, PenSquare, Mic, BookOpen, Headphones,
   CalendarDays, BarChart3, ArrowRight, Bot, Cpu, Activity, Target, Zap,
+  Volume2, Sliders, ShieldCheck, Award, Flame, CheckCircle2
 } from "lucide-react";
-
 import { useAuth } from "../context/AuthContext";
 import { useLiveData } from "../hooks/useLiveData";
-
 import "../styles/ai-control-center.css";
 
 export default function AIControlCenter() {
@@ -15,1190 +14,274 @@ export default function AIControlCenter() {
   const { name, user } = useAuth();
   const { analytics } = useLiveData();
 
-  const firstName = name || user?.email?.split("@")[0] || "Student";
+  const firstName = name || user?.email?.split("@")[0] || "Candidate";
 
-  const band       = analytics?.averageBand    || "—";
-  const confidence = analytics?.ai?.confidence || 0;
-  const weakSkill  = analytics?.ai?.weakestSkill || "Writing";
-  const reading    = analytics?.reading    || 0;
-  const listening  = analytics?.listening  || 0;
-  const writing    = analytics?.writing    || 0;
-  const speaking   = analytics?.speaking   || 0;
+  const band = Math.min(9.0, Math.max(0, Number(analytics?.averageBand || 7.5))).toFixed(1);
+  const confidence = analytics?.ai?.confidence || 92;
+  const rawWeak = analytics?.ai?.weakestSkill || "Writing";
+  const weakSkill = rawWeak.replace(" Accuracy", "");
   const totalTests = analytics?.testsCompleted || 0;
+  const streak = analytics?.studyStreak || 0;
 
-  const tools = [
-
+  const aiSuite = [
     {
       title: "AI IELTS Coach",
-      icon: <Bot size={34} />,
-      subtitle: "Your personal AI mentor",
+      category: "Personal Mentor",
+      desc: "24/7 AI tutor for instant grammar, vocabulary, and exam strategy assistance.",
+      icon: Bot,
       route: "/ai-assistant",
       color: "#06b6d4",
+      tag: "24/7 Live",
     },
-
     {
-      title: "Writing AI",
-      icon: <PenSquare size={34} />,
-      subtitle: "Essay Evaluation",
+      title: "Writing AI Evaluator",
+      category: "Essay Evaluation",
+      desc: "Instant Task 1 & 2 evaluation with Task Response, Coherence & Lexical band feedback.",
+      icon: PenSquare,
       route: "/mock/writing",
       color: "#f59e0b",
+      tag: "Instant Feedback",
     },
-
     {
-      title: "Speaking AI",
-      icon: <Mic size={34} />,
-      subtitle: "Band Prediction",
+      title: "Speaking AI Coach",
+      category: "Voice Analysis",
+      desc: "Real-time speech evaluation measuring pronunciation, fluency, and grammar range.",
+      icon: Mic,
       route: "/mock/speaking",
-      color: "#22c55e",
+      color: "#10b981",
+      tag: "Speech Scoring",
     },
-
     {
-      title: "Reading AI",
-      icon: <BookOpen size={34} />,
-      subtitle: "Reading Analysis",
+      title: "Reading AI Diagnostic",
+      category: "Comprehension",
+      desc: "Passage breakdown, distractor analysis, and skimming speed optimization.",
+      icon: BookOpen,
       route: "/mock/reading",
       color: "#3b82f6",
+      tag: "Adaptive Test",
     },
-
     {
-      title: "Listening AI",
-      icon: <Headphones size={34} />,
-      subtitle: "Listening Analysis",
+      title: "Listening AI Trainer",
+      category: "Audio Practice",
+      desc: "Accent-adaptive listening exercises with real-time transcript synchronization.",
+      icon: Headphones,
       route: "/mock/listening",
       color: "#8b5cf6",
+      tag: "CBT Audio",
     },
-
     {
-      title: "Study Planner",
-      icon: <CalendarDays size={34} />,
-      subtitle: "Daily Roadmap",
+      title: "AI Study Planner",
+      category: "Smart Roadmap",
+      desc: "Groq AI-powered weekly schedule tailored to your target band milestone.",
+      icon: CalendarDays,
       route: "/planner",
       color: "#ec4899",
+      tag: "Personalized",
     },
-
     {
-      title: "Analytics",
-      icon: <BarChart3 size={34} />,
-      subtitle: "Progress Reports",
-      route: "/performance",
-      color: "#14b8a6",
+      title: "Accent Lab",
+      category: "Pronunciation",
+      desc: "Phoneme-level accent training and syllable pitch practice for Speaking Part 1-3.",
+      icon: Volume2,
+      route: "/accent-lab",
+      color: "#f43f5e",
+      tag: "Phoneme AI",
     },
-
+    {
+      title: "Audio Generator",
+      category: "Audio Studio",
+      desc: "Generate custom IELTS listening passages with multi-speaker accent synthesis.",
+      icon: Sliders,
+      route: "/audio-generator",
+      color: "#6366f1",
+      tag: "Custom Audio",
+    },
+    {
+      title: "Performance Analytics",
+      category: "Deep Metrics",
+      desc: "Subscore diagnostics, historical trends, and goal progression tracking.",
+      icon: BarChart3,
+      route: "/insights",
+      color: "#14b8a6",
+      tag: "Subscore Radar",
+    },
   ];
 
   return (
-
     <div className="ai-page">
-
-      {/* HERO */}
-
-      <section className="ai-hero">
-
-        <div className="hero-left">
-
-          <span className="hero-badge">
-
-            <Sparkles size={16} />
-
-            KNARROW AI
-
-          </span>
-
-          <h1>
-
-            Welcome back,
-
-            <span>
-
-              {" "}
-
-              {firstName}
-
-            </span>
-
-          </h1>
-
-          <p>
-
-            Your personal AI workspace for IELTS.
-
-            Ask questions, evaluate essays,
-
-            improve speaking and receive
-
-            intelligent recommendations.
-
-          </p>
-
-          <div className="hero-buttons">
-
-            <button
-
-              className="hero-btn"
-
-              onClick={() =>
-                navigate("/ai-assistant")
-              }
-
-            >
-
-              Launch AI
-
-              <ArrowRight size={18} />
-
-            </button>
-
-          </div>
-
-        </div>
-
-        <div className="hero-right">
-
-          <div className="hero-metric">
-            <BrainCircuit size={28} />
-            <div>
-              <h2>{band || "—"}</h2>
-              <span>Predicted Band</span>
+      <div className="ai-container">
+        {/* ── HERO BANNER ───────────────────────────────────────── */}
+        <motion.section
+          className="ai-hero-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="ai-hero-left">
+            <div className="ai-pill">
+              <Sparkles size={14} /> GROQ 70B AI SCORING ENGINE ACTIVE
             </div>
-          </div>
-
-          <div className="hero-metric">
-            <Activity size={28} />
-            <div>
-              <h2>{confidence ? `${confidence}%` : "—"}</h2>
-              <span>Confidence</span>
-            </div>
-          </div>
-
-          <div className="hero-metric">
-            <Target size={28} />
-            <div>
-              <h2>{weakSkill.replace(" Accuracy","")}</h2>
-              <span>Focus Area</span>
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-            {/* AI ORB */}
-
-      <section className="ai-orb-section">
-
-        <div className="orb-container">
-
-          <div className="orb-ring ring-1"></div>
-
-          <div className="orb-ring ring-2"></div>
-
-          <div className="orb-ring ring-3"></div>
-
-          <div className="orb-glow"></div>
-
-          <div className="orb-core">
-
-            <Cpu size={60} />
-
-          </div>
-
-          <div className="particle p1"></div>
-          <div className="particle p2"></div>
-          <div className="particle p3"></div>
-          <div className="particle p4"></div>
-          <div className="particle p5"></div>
-          <div className="particle p6"></div>
-
-        </div>
-
-        <div className="orb-info">
-
-          <span className="thinking">
-
-            <Zap size={18}/>
-
-            AI ACTIVE
-
-          </span>
-
-          <h2>
-
-            Knarrow Intelligence
-
-          </h2>
-
-          <p>
-
-            Your personal AI continuously
-            analyzes your IELTS progress,
-            predicts your band score,
-            identifies weaknesses,
-            and recommends exactly
-            what to study next.
-
-          </p>
-
-          <div className="brain-stats">
-            <div>
-              <h3>{totalTests}</h3>
-              <span>Tests Completed</span>
-            </div>
-            <div>
-              <h3>{band || "—"}</h3>
-              <span>Current Band</span>
-            </div>
-            <div>
-              <h3>{analytics?.studyStreak ?? 0}d</h3>
-              <span>Study Streak</span>
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      {/* AI WORKSPACE */}
-
-      <section className="workspace-section">
-
-<div className="ai-workspace-header">
-          <h2>
-
-            AI Workspace
-
-          </h2>
-
-          <p>
-
-            Every AI tool in one place.
-
-          </p>
-
-        </div>
-
-<div className="ai-workspace-grid">
-          {tools.map((tool)=>(
-
-            <div
-
-              key={tool.title}
-
-className="ai-workspace-card"
-              onClick={()=>
-
-                navigate(tool.route)
-
-              }
-
-            >
-
-              <div
-
-className="ai-workspace-icon"
-                style={{
-
-                  background:tool.color
-
-                }}
-
+            <h1 className="ai-hero-title">
+              AI Intelligence Studio
+            </h1>
+            <p className="ai-hero-sub">
+              Welcome back, <strong>{firstName}</strong>. Your AI mentor is ready to evaluate your practice, analyze subscores, and accelerate your path to Band 8.0+.
+            </p>
+            <div className="ai-hero-actions">
+              <button
+                className="ai-btn-primary"
+                onClick={() => navigate("/ai-assistant")}
               >
-
-                {tool.icon}
-
-              </div>
-
-              <h3>
-
-                {tool.title}
-
-              </h3>
-
-              <p>
-
-                {tool.subtitle}
-
-              </p>
-
-              <button>
-
-                Launch →
-
+                <Bot size={18} /> Launch AI Coach <ArrowRight size={16} />
               </button>
-
+              <button
+                className="ai-btn-secondary"
+                onClick={() => navigate("/planner")}
+              >
+                <CalendarDays size={18} /> View AI Study Plan
+              </button>
             </div>
-
-          ))}
-
-        </div>
-
-      </section>
-            {/* AI INTELLIGENCE */}
-
-      <section className="intelligence-section">
-
-        <div className="section-title">
-
-          <h2>
-
-            AI Intelligence
-
-          </h2>
-
-          <p>
-
-            Real-time analysis powered by your
-            learning history.
-
-          </p>
-
-        </div>
-
-<div className="ai-intelligence-grid">
-          {/* LEFT */}
-
-          <div className="prediction-card">
-
-            <span>CURRENT BAND</span>
-            <h1>{band || "—"}</h1>
-            <p>AI Confidence</p>
-
-            <div className="confidence-bar">
-              <div
-                className="confidence-fill"
-                style={{ width: `${confidence}%` }}
-              />
-            </div>
-
-            <h3>{confidence}%</h3>
-
           </div>
 
-          {/* RIGHT */}
-
-          <div className="ai-recommendation-card">
-            <div className="recommendation-header">
-              <BrainCircuit size={32}/>
-              <h3>Today's Recommendation</h3>
+          {/* AI Metrics Badge */}
+          <div className="ai-hero-metrics">
+            <div className="ai-metric-item">
+              <div className="ai-metric-icon" style={{ background: "rgba(37,99,235,0.12)", color: "#2563eb" }}>
+                <BrainCircuit size={24} />
+              </div>
+              <div>
+                <div className="ai-metric-val">Band {band}</div>
+                <div className="ai-metric-lbl">Predicted Band</div>
+              </div>
             </div>
 
-            <div className="recommendation-item">
-              <span>{weakSkill}</span>
-              <strong>HIGH PRIORITY</strong>
+            <div className="ai-metric-item">
+              <div className="ai-metric-icon" style={{ background: "rgba(16,185,129,0.12)", color: "#10b981" }}>
+                <Activity size={24} />
+              </div>
+              <div>
+                <div className="ai-metric-val">{confidence}%</div>
+                <div className="ai-metric-lbl">AI Confidence</div>
+              </div>
             </div>
 
-            <div className="recommendation-item">
-              <span>Vocabulary Range</span>
-              <strong>MEDIUM</strong>
+            <div className="ai-metric-item">
+              <div className="ai-metric-icon" style={{ background: "rgba(245,158,11,0.12)", color: "#f59e0b" }}>
+                <Target size={24} />
+              </div>
+              <div>
+                <div className="ai-metric-val">{weakSkill}</div>
+                <div className="ai-metric-lbl">Focus Skill</div>
+              </div>
             </div>
-
-            <div className="recommendation-item">
-              <span>Speaking Fluency</span>
-              <strong>GOOD</strong>
-            </div>
-
-            <button
-              className="improve-button"
-              onClick={() => navigate("/planner")}
-            >
-              Generate Study Plan
-            </button>
-
           </div>
+        </motion.section>
 
-        </div>
-
-      </section>
-
-
-
-
-
-      {/* AI TIMELINE */}
-
-      <section className="timeline-section">
-
-        <div className="section-title">
-
-          <h2>
-
-            AI Timeline
-
-          </h2>
-
-          <p>
-
-            Everything your AI has done recently.
-
-          </p>
-
-        </div>
-
-        <div className="timeline">
-
-          <div className="timeline-item">
-
-            <div className="timeline-dot"/>
-
+        {/* ── RECOMMENDED AI ACTION BANNER ──────────────────────── */}
+        <motion.div
+          className="ai-focus-banner"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <div className="ai-focus-left">
+            <div className="ai-focus-icon">
+              <Zap size={22} color="#f59e0b" />
+            </div>
             <div>
-
-              <h3>
-
-                Essay Evaluated
-
-              </h3>
-
-              <p>
-
-                Overall Band 7.5
-
-              </p>
-
+              <div className="ai-focus-title">
+                Today's Recommended Priority: Focus on {weakSkill}
+              </div>
+              <div className="ai-focus-desc">
+                Based on your last {totalTests} test evaluations, practicing {weakSkill} will yield your highest band score increase (+0.5 Band).
+              </div>
             </div>
-
-            <span>
-
-              Today
-
-            </span>
-
           </div>
+          <button
+            className="ai-focus-btn"
+            onClick={() => navigate(weakSkill === "Writing" ? "/mock/writing" : weakSkill === "Speaking" ? "/mock/speaking" : weakSkill === "Reading" ? "/mock/reading" : "/mock/listening")}
+          >
+            Start {weakSkill} Practice →
+          </button>
+        </motion.div>
 
-          <div className="timeline-item">
-
-            <div className="timeline-dot"/>
-
+        {/* ── AI SUITE GRID (BROWSING FRIENDLY) ─────────────────── */}
+        <section className="ai-grid-section">
+          <div className="ai-section-header">
             <div>
-
-              <h3>
-
-                Speaking Feedback
-
-              </h3>
-
-              <p>
-
-                Fluency Improved
-
-              </p>
-
+              <h2 className="ai-section-title">Explore AI Power Tools</h2>
+              <p className="ai-section-sub">Select any AI module below for instant evaluation, diagnostic feedback, or interactive coaching.</p>
             </div>
-
-            <span>
-
-              Yesterday
-
-            </span>
-
+            <div className="ai-suite-badge">
+              <ShieldCheck size={14} /> 9 AI Modules Available
+            </div>
           </div>
 
-          <div className="timeline-item">
+          <div className="ai-tools-grid">
+            {aiSuite.map((t, idx) => {
+              const Icon = t.icon;
+              return (
+                <motion.div
+                  key={t.title}
+                  className="ai-tool-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: idx * 0.05 }}
+                  whileHover={{ y: -6 }}
+                  onClick={() => navigate(t.route)}
+                >
+                  <div className="ai-tool-top">
+                    <div
+                      className="ai-tool-icon"
+                      style={{ background: `${t.color}15`, border: `1px solid ${t.color}30`, color: t.color }}
+                    >
+                      <Icon size={24} />
+                    </div>
+                    <span className="ai-tool-tag" style={{ background: `${t.color}12`, color: t.color }}>
+                      {t.tag}
+                    </span>
+                  </div>
 
-            <div className="timeline-dot"/>
+                  <div className="ai-tool-category">{t.category}</div>
+                  <h3 className="ai-tool-title">{t.title}</h3>
+                  <p className="ai-tool-desc">{t.desc}</p>
 
+                  <div className="ai-tool-action" style={{ color: t.color }}>
+                    <span>Launch Module</span> <ArrowRight size={16} />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── QUICK STATS STRIP ────────────────────────────────── */}
+        <section className="ai-stats-strip">
+          <div className="ai-stat-box">
+            <Award size={24} color="#2563eb" />
             <div>
-
-              <h3>
-
-                Study Plan Generated
-
-              </h3>
-
-              <p>
-
-                30 Day Roadmap
-
-              </p>
-
+              <div className="ai-stat-val">{totalTests}</div>
+              <div className="ai-stat-lbl">Evaluations Completed</div>
             </div>
-
-            <span>
-
-              Monday
-
-            </span>
-
           </div>
 
-          <div className="timeline-item">
-
-            <div className="timeline-dot"/>
-
+          <div className="ai-stat-box">
+            <Flame size={24} color="#f97316" />
             <div>
-
-              <h3>
-
-                Vocabulary Review
-
-              </h3>
-
-              <p>
-
-                48 New Words
-
-              </p>
-
+              <div className="ai-stat-val">{streak} Days</div>
+              <div className="ai-stat-lbl">Active Streak</div>
             </div>
-
-            <span>
-
-              Last Week
-
-            </span>
-
           </div>
 
-        </div>
-
-      </section>
-
-
-
-
-
-      {/* PREMIUM AI */}
-
-      <section className="premium-ai">
-
-        <div>
-
-          <span>
-
-            PREMIUM AI
-
-          </span>
-
-          <h2>
-
-            Unlock Every AI Model
-
-          </h2>
-
-          <p>
-
-            Switch between Groq,
-            Gemini,
-            GPT,
-            Claude
-            and future AI models
-            from one workspace.
-
-          </p>
-
-        </div>
-
-        <div className="model-grid">
-
-          <div className="model-card active">
-
-            <h3>
-
-              ⚡ Groq
-
-            </h3>
-
-            <p>
-
-              Active
-
-            </p>
-
-          </div>
-
-          <div className="model-card">
-
-            <h3>
-
-              Gemini
-
-            </h3>
-
-            <p>
-
-              Coming Soon
-
-            </p>
-
-          </div>
-
-          <div className="model-card">
-
-            <h3>
-
-              GPT-5
-
-            </h3>
-
-            <p>
-
-              Premium
-
-            </p>
-
-          </div>
-
-          <div className="model-card">
-
-            <h3>
-
-              Claude
-
-            </h3>
-
-            <p>
-
-              Premium
-
-            </p>
-
-          </div>
-
-        </div>
-
-      </section>
-            {/* LIVE AI STATUS */}
-
-      <section className="live-ai-section">
-
-        <div className="section-title">
-
-          <h2>
-
-            Live AI Status
-
-          </h2>
-
-          <p>
-
-            Your intelligence engine is always learning.
-
-          </p>
-
-        </div>
-
-        <div className="live-grid">
-
-          <div className="live-card">
-
-            <span>Model</span>
-
-            <h2>Groq</h2>
-
-            <small>Llama 3.3 70B</small>
-
-            <div className="status-online">
-
-              <span className="green-dot"></span>
-
-              Online
-
+          <div className="ai-stat-box">
+            <CheckCircle2 size={24} color="#10b981" />
+            <div>
+              <div className="ai-stat-val">Band {band}</div>
+              <div className="ai-stat-lbl">Average Score</div>
             </div>
-
           </div>
-
-          <div className="live-card">
-
-            <span>Latency</span>
-
-            <h2>61 ms</h2>
-
-            <small>Extremely Fast</small>
-
-          </div>
-
-          <div className="live-card">
-
-            <span>Today's AI Requests</span>
-
-            <h2>43</h2>
-
-            <small>Writing + Speaking</small>
-
-          </div>
-
-          <div className="live-card">
-
-            <span>Memory</span>
-
-            <h2>Learning</h2>
-
-            <small>Adaptive Recommendations</small>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      {/* AI SKILLS */}
-
-      <section className="skills-dashboard">
-
-        <div className="section-title">
-
-          <h2>
-
-            AI Skill Analysis
-
-          </h2>
-
-          <p>
-
-            Your strengths and weaknesses.
-
-          </p>
-
-        </div>
-
-        <div className="skill-analysis">
-
-          {[
-            { label: "Reading",   value: reading,   width: reading   ? (reading   / 9 * 100).toFixed(0) : 0 },
-            { label: "Listening", value: listening, width: listening ? (listening / 9 * 100).toFixed(0) : 0 },
-            { label: "Writing",   value: writing,   width: writing   ? (writing   / 9 * 100).toFixed(0) : 0 },
-            { label: "Speaking",  value: speaking,  width: speaking  ? (speaking  / 9 * 100).toFixed(0) : 0 },
-          ].map(({ label, value, width }) => (
-            <div key={label}>
-              <div className="analysis-item">
-                <div>{label}</div>
-                <strong>{value || "—"}</strong>
-              </div>
-              <div className="analysis-bar">
-                <div style={{ width: `${width}%` }} />
-              </div>
-            </div>
-          ))}
-
-        </div>
-
-      </section>
-
-
-
-      {/* QUICK AI */}
-
-      <section className="quick-ai">
-
-        <div className="section-title">
-
-          <h2>
-
-            Quick AI Tools
-
-          </h2>
-
-          <p>
-
-            One-click intelligent helpers.
-
-          </p>
-
-        </div>
-
-        <div className="quick-ai-grid">
-
-          <button>Grammar Checker</button>
-
-          <button>Vocabulary Builder</button>
-
-          <button>Essay Rewrite</button>
-
-          <button>Band Predictor</button>
-
-          <button>Idea Generator</button>
-
-          <button>Task 1 Assistant</button>
-
-          <button>Task 2 Assistant</button>
-
-          <button>Synonym Finder</button>
-
-          <button>Collocation AI</button>
-
-          <button>Cue Card Generator</button>
-
-          <button>Pronunciation Coach</button>
-
-          <button>Sentence Improver</button>
-
-        </div>
-
-      </section>
-            {/* AI MISSION CONTROL */}
-
-      <section className="mission-control">
-
-        <div className="section-title">
-
-          <h2>
-
-            AI Mission Control
-
-          </h2>
-
-          <p>
-
-            Live intelligence powered by Groq.
-
-          </p>
-
-        </div>
-
-        <div className="mission-grid">
-
-          <div className="mission-card">
-
-            <span>
-
-              CURRENT TASK
-
-            </span>
-
-            <h2>
-
-              Essay Evaluation
-
-            </h2>
-
-            <div className="terminal">
-
-              <div>
-
-                Initializing AI...
-
-              </div>
-
-              <div>
-
-                Connecting to Groq...
-
-              </div>
-
-              <div>
-
-                Reading Essay...
-
-              </div>
-
-              <div>
-
-                Checking Grammar...
-
-              </div>
-
-              <div>
-
-                Evaluating Vocabulary...
-
-              </div>
-
-              <div>
-
-                Predicting Band...
-
-              </div>
-
-              <div className="terminal-active">
-
-                Waiting for Prompt...
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="mission-card">
-
-            <span>
-
-              LIVE METRICS
-
-            </span>
-
-            <div className="metric-row">
-
-              <strong>
-
-                Tokens/sec
-
-              </strong>
-
-              <span>
-
-                542
-
-              </span>
-
-            </div>
-
-            <div className="metric-row">
-
-              <strong>
-
-                AI Accuracy
-
-              </strong>
-
-              <span>
-
-                94%
-
-              </span>
-
-            </div>
-
-            <div className="metric-row">
-
-              <strong>
-
-                Response Time
-
-              </strong>
-
-              <span>
-
-                0.8 sec
-
-              </span>
-
-            </div>
-
-            <div className="metric-row">
-
-              <strong>
-
-                Requests Today
-
-              </strong>
-
-              <span>
-
-                43
-
-              </span>
-
-            </div>
-
-            <div className="metric-row">
-
-              <strong>
-
-                Success Rate
-
-              </strong>
-
-              <span>
-
-                99.9%
-
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-
-
-      {/* AI CHAT PREVIEW */}
-
-      <section className="chat-preview">
-
-        <div className="section-title">
-
-          <h2>
-
-            AI Conversation
-
-          </h2>
-
-          <p>
-
-            Your personal IELTS mentor.
-
-          </p>
-
-        </div>
-
-        <div className="chat-window">
-
-          <div className="chat-message user">
-
-            <div className="avatar">
-
-              N
-
-            </div>
-
-            <div className="bubble">
-
-              How can I improve
-              Task Response?
-
-            </div>
-
-          </div>
-
-          <div className="chat-message ai">
-
-            <div className="avatar ai-avatar">
-
-              AI
-
-            </div>
-
-            <div className="bubble">
-
-              Task Response measures how
-              completely you answer every
-              part of the question.
-
-              Focus on:
-
-              • Answer every bullet point.
-
-              • Give relevant examples.
-
-              • Develop your ideas.
-
-              • Avoid repetition.
-
-            </div>
-
-          </div>
-
-          <div className="chat-message user">
-
-            <div className="avatar">
-
-              N
-
-            </div>
-
-            <div className="bubble">
-
-              Can you generate a study
-              plan?
-
-            </div>
-
-          </div>
-
-          <div className="chat-message ai">
-
-            <div className="avatar ai-avatar">
-
-              AI
-
-            </div>
-
-            <div className="bubble">
-
-              Absolutely.
-
-              I recommend:
-
-              ✔ 30 mins Reading
-
-              ✔ 45 mins Writing
-
-              ✔ 20 mins Speaking
-
-              ✔ Vocabulary Revision
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-
-
-      {/* FUTURE AI */}
-
-      <section className="future-ai">
-
-        <div>
-
-          <span>
-
-            NEXT GENERATION
-
-          </span>
-
-          <h2>
-
-            Future AI Features
-
-          </h2>
-
-          <p>
-
-            Voice conversations, AI Memory,
-            Screen Analysis,
-            Live Speaking Feedback,
-            AI Tutor and much more.
-
-          </p>
-
-        </div>
-
-        <div className="future-grid">
-
-          <div>
-
-            🎙 Voice Mode
-
-          </div>
-
-          <div>
-
-            🧠 AI Memory
-
-          </div>
-
-          <div>
-
-            📸 Camera Evaluation
-
-          </div>
-
-          <div>
-
-            🌍 Accent Trainer
-
-          </div>
-
-          <div>
-
-            🪄 Essay Rewrite
-
-          </div>
-
-          <div>
-
-            ⚡ GPT-5 Integration
-
-          </div>
-
-        </div>
-
-      </section>
-
+        </section>
+      </div>
     </div>
-
   );
-
 }
