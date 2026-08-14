@@ -424,15 +424,16 @@ export default function Navbar() {
       >
         <motion.div
           whileHover={{
-            rotate: -8,
-            scale: 1.08,
+            rotate: -6,
+            scale: 1.06,
           }}
           whileTap={{
-            scale: 0.92,
+            scale: 0.94,
           }}
           className="kn-logo-icon"
+          style={{ background: "none", overflow: "hidden", boxShadow: "0 4px 14px rgba(0,0,0,0.2)" }}
         >
-          K
+          <img src="/logo.png" alt="Knarrow" style={{ width: "100%", height: "100%", borderRadius: "14px", objectFit: "cover" }} />
         </motion.div>
 
         <div className="kn-logo-text">

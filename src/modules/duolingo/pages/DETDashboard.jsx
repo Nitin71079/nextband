@@ -180,21 +180,17 @@ export default function DETDashboard() {
       >
         {/* Knarrow Brand Emblem */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }} onClick={() => navigate("/")}>
-          <div
+          <img
+            src="/logo.png"
+            alt="Knarrow"
             style={{
               width: "36px",
               height: "36px",
               borderRadius: "10px",
-              background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#ffffff",
-              boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
+              objectFit: "cover",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
             }}
-          >
-            <Sparkles size={20} />
-          </div>
+          />
           <div>
             <span style={{ fontSize: "18px", fontWeight: "900", color: "#1e293b", letterSpacing: "-0.5px" }}>
               knarrow
