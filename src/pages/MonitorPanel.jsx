@@ -9,28 +9,33 @@ import {
   Search, RefreshCw, TrendingUp, Calendar, ChevronDown, ChevronUp,
   Activity, Award, Eye, X, CheckCircle, XCircle, Clock,
   Gamepad2, BrainCircuit, Globe, MousePointer, Navigation, Wifi,
-  Timer, Compass, Layers, ExternalLink, Sparkles, Star, MessageSquare, ThumbsUp, ThumbsDown
+  Timer, Compass, Layers, ExternalLink, Sparkles, Star, MessageSquare,
+  ThumbsUp, ThumbsDown, Download, Target, ShieldAlert, Zap, Filter,
+  PieChart as PieIcon, LineChart as LineIcon, Flame, ArrowUpRight
 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   CartesianGrid, LineChart, Line, PieChart, Pie, Cell, Legend,
+  AreaChart, Area, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from "recharts";
 import { getRouteLabel } from "../services/telemetryService";
 import { getAllUserFeedback } from "../services/feedbackService";
 
 const db = getFirestore(app);
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 function fmtDate(val) {
   if (!val) return "—";
   const d = val?.toDate ? val.toDate() : new Date(val);
   return isNaN(d) ? "—" : d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
+
 function fmtTime(val) {
   if (!val) return "—";
   const d = val?.toDate ? val.toDate() : new Date(val);
   return isNaN(d) ? "—" : d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
 }
+
 function ago(val) {
   if (!val) return "—";
   const d = val?.toDate ? val.toDate() : new Date(val);
@@ -51,7 +56,7 @@ function fmtDuration(totalSeconds) {
 }
 
 function getTelemetryInfo(tDoc) {
-  if (!tDoc) return { minutesStr: "0 mins", totalMins: 0, topVisited: "—", topTimeSpent: "—", lastPath: "—" };
+  if (!tDoc) return { minutesStr: "0 mins", totalMins: 0, topVisited: "—", topTimeSpent: "—", lastPath: "—", lastActive: null };
 
   const totalSecs = tDoc.totalSeconds || 0;
   const totalMins = Math.round(totalSecs / 60);
@@ -90,6 +95,7 @@ function getTelemetryInfo(tDoc) {
     topVisited,
     topTimeSpent,
     lastPath: getRouteLabel(tDoc.lastPath),
+    lastActive: tDoc.lastUpdated || tDoc.updatedAt || null,
   };
 }
 
@@ -98,46 +104,63 @@ function bandColor(b) {
   const n = Math.floor(Number(b));
   return BAND_COLORS[String(n)] || "#94a3b8";
 }
-const ACCENT = { blue: "#2563eb", purple: "#8b5cf6", green: "#22c55e", amber: "#f59e0b", red: "#ef4444", cyan: "#06b6d4" };
+
+const ACCENT = {
+  blue: "#2563eb",
+  purple: "#8b5cf6",
+  green: "#22c55e",
+  amber: "#f59e0b",
+  red: "#ef4444",
+  cyan: "#06b6d4",
+  pink: "#ec4899",
+  indigo: "#6366f1"
+};
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
-function StatCard({ label, value, sub, icon: Icon, color, trend }) {
+function StatCard({ label, value, sub, icon: Icon, color, badgeText, badgeColor }) {
   return (
     <div style={{
       background: "var(--card)", border: "1px solid var(--border)",
-      borderRadius: "20px", padding: "24px",
+      borderRadius: "20px", padding: "22px 24px",
       boxShadow: "0 4px 20px rgba(0,0,0,.06)",
+      position: "relative", overflow: "hidden"
     }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
-        <div style={{ width: 42, height: 42, borderRadius: "12px", background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Icon size={20} color={color} />
+        <div style={{ width: 44, height: 44, borderRadius: "14px", background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon size={22} color={color} />
         </div>
-        {trend !== undefined && (
-          <span style={{ fontSize: 12, fontWeight: 700, color: trend >= 0 ? ACCENT.green : ACCENT.red }}>
-            {trend >= 0 ? "▲" : "▼"} {Math.abs(trend)}%
+        {badgeText && (
+          <span style={{ fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 999, background: badgeColor || `${color}18`, color: color }}>
+            {badgeText}
           </span>
         )}
       </div>
-      <div style={{ fontSize: 28, fontWeight: 900, color: "var(--text)", lineHeight: 1.1, wordBreak: "break-word" }}>{value}</div>
+      <div style={{ fontSize: 30, fontWeight: 900, color: "var(--text)", lineHeight: 1.1, wordBreak: "break-word" }}>{value}</div>
       <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 6, fontWeight: 600 }}>{label}</div>
-      {sub && <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 3 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4, opacity: 0.85 }}>{sub}</div>}
     </div>
   );
 }
 
 // ─── Section header ────────────────────────────────────────────────────────────
-function SectionHeader({ title, icon: Icon, color = ACCENT.blue }) {
+function SectionHeader({ title, subtitle, icon: Icon, color = ACCENT.blue, rightElement }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-      <div style={{ width: 36, height: 36, borderRadius: 10, background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <Icon size={17} color={color} />
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon size={20} color={color} />
+        </div>
+        <div>
+          <h2 style={{ fontSize: 17, fontWeight: 900, color: "var(--text)", margin: 0 }}>{title}</h2>
+          {subtitle && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "2px 0 0 0" }}>{subtitle}</p>}
+        </div>
       </div>
-      <h2 style={{ fontSize: 16, fontWeight: 800, color: "var(--text)", margin: 0 }}>{title}</h2>
+      {rightElement}
     </div>
   );
 }
 
-// ─── User detail modal ────────────────────────────────────────────────────────
+// ─── User Detail Modal ────────────────────────────────────────────────────────
 function UserModal({ user, results, telemetryDoc, feedbacks = [], onClose }) {
   if (!user) return null;
   const userResults = results.filter(r => r.userId === user.id);
@@ -155,7 +178,7 @@ function UserModal({ user, results, telemetryDoc, feedbacks = [], onClose }) {
 
   return (
     <div style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,.65)", backdropFilter: "blur(6px)",
+      position: "fixed", inset: 0, background: "rgba(0,0,0,.70)", backdropFilter: "blur(8px)",
       zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
     }} onClick={onClose}>
       <motion.div
@@ -163,145 +186,112 @@ function UserModal({ user, results, telemetryDoc, feedbacks = [], onClose }) {
         exit={{ opacity: 0, scale: .94, y: 16 }}
         onClick={e => e.stopPropagation()}
         style={{
-          background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24,
-          padding: 32, width: "100%", maxWidth: 740, maxHeight: "88vh",
+          background: "var(--card)", border: "1px solid var(--border)", borderRadius: 26,
+          padding: 32, width: "100%", maxWidth: 780, maxHeight: "88vh",
           overflowY: "auto", position: "relative",
-          boxShadow: "0 30px 80px rgba(0,0,0,.25)",
+          boxShadow: "0 30px 90px rgba(0,0,0,.35)",
         }}
       >
-        <button onClick={onClose} style={{ position: "absolute", top: 18, right: 18, background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}>
-          <X size={20} />
+        <button onClick={onClose} style={{ position: "absolute", top: 20, right: 20, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "50%", width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--text-secondary)" }}>
+          <X size={18} />
         </button>
 
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24 }}>
-          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg,#4f46e5,#06b6d4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <span style={{ fontSize: 20, fontWeight: 900, color: "#fff" }}>
+        {/* Candidate Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24, paddingBottom: 20, borderBottom: "1px solid var(--border)" }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <span style={{ fontSize: 22, fontWeight: 900, color: "#fff" }}>
               {(user.displayName || user.email || "?")[0].toUpperCase()}
             </span>
           </div>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "var(--text)" }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 20, fontWeight: 900, color: "var(--text)" }}>
               {user.displayName || user.email?.split("@")[0] || "Unknown Candidate"}
             </div>
-            <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{user.email}</div>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>Joined {fmtDate(user.createdAt)}</div>
+            <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{user.email} • UID: <code style={{ fontSize: 11, background: "var(--surface)", padding: "1px 6px", borderRadius: 4 }}>{user.id}</code></div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 3 }}>
+              Joined {fmtDate(user.createdAt)} ({ago(user.createdAt)})
+            </div>
           </div>
-          <div style={{ marginLeft: "auto" }}>
-            <span style={{ fontSize: 12, fontWeight: 700, padding: "5px 14px", borderRadius: 999, background: user.premium ? "#dcfce7" : "#fee2e2", color: user.premium ? "#166534" : "#991b1b" }}>
-              {user.premium ? "👑 Premium" : "Free"}
+          <div>
+            <span style={{ fontSize: 12, fontWeight: 800, padding: "6px 16px", borderRadius: 999, background: user.premium ? "#dcfce7" : "#fee2e2", color: user.premium ? "#166534" : "#991b1b" }}>
+              {user.premium ? "👑 Premium Plan" : "Free Plan"}
             </span>
           </div>
         </div>
 
         {/* Telemetry Engagement Box */}
-        <div style={{ background: "rgba(37,99,235,.06)", border: "1px solid rgba(37,99,235,.2)", borderRadius: 16, padding: 18, marginBottom: 24 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: "var(--primary)", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
-            <Timer size={16} /> User App Telemetry &amp; Time Stayed
+        <div style={{ background: "rgba(37,99,235,.06)", border: "1px solid rgba(37,99,235,.2)", borderRadius: 18, padding: 20, marginBottom: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--primary)", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+            <Timer size={18} /> Candidate App Engagement &amp; Telemetry
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12 }}>
-            <div style={{ background: "var(--card)", padding: 12, borderRadius: 12, border: "1px solid var(--border)" }}>
-              <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>Total Time Stayed</div>
-              <div style={{ fontSize: 18, fontWeight: 900, color: ACCENT.blue, marginTop: 4 }}>{tInfo.minutesStr}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+            <div style={{ background: "var(--card)", padding: 14, borderRadius: 14, border: "1px solid var(--border)" }}>
+              <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>Total App Stay Time</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: ACCENT.blue, marginTop: 4 }}>{tInfo.minutesStr}</div>
             </div>
-            <div style={{ background: "var(--card)", padding: 12, borderRadius: 12, border: "1px solid var(--border)" }}>
+            <div style={{ background: "var(--card)", padding: 14, borderRadius: 14, border: "1px solid var(--border)" }}>
               <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>Most Visited Page</div>
               <div style={{ fontSize: 13, fontWeight: 800, color: ACCENT.purple, marginTop: 4 }}>{tInfo.topVisited}</div>
             </div>
-            <div style={{ background: "var(--card)", padding: 12, borderRadius: 12, border: "1px solid var(--border)" }}>
+            <div style={{ background: "var(--card)", padding: 14, borderRadius: 14, border: "1px solid var(--border)" }}>
               <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>Most Time Spent Page</div>
               <div style={{ fontSize: 13, fontWeight: 800, color: ACCENT.green, marginTop: 4 }}>{tInfo.topTimeSpent}</div>
             </div>
           </div>
         </div>
 
-        {/* Feedback Submissions */}
+        {/* Module Performance Grid */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
-            <MessageSquare size={16} color={ACCENT.amber} /> User Feedbacks Registered ({userFeedbacks.length})
+          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+            <Award size={16} color={ACCENT.cyan} /> IELTS Module Subscore Averages
           </div>
-          {userFeedbacks.length === 0 ? (
-            <div style={{ padding: "16px", borderRadius: 12, background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)", fontSize: 13, textAlign: "center" }}>
-              No feedback submitted by this user yet.
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {userFeedbacks.map((f, i) => (
-                <div key={f.id || i} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: "14px 16px" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 13, color: "#f59e0b", letterSpacing: 1 }}>
-                        {"★".repeat(f.rating || 5)}{"☆".repeat(5 - (f.rating || 5))}
-                      </span>
-                      <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 6, background: "rgba(37,99,235,.1)", color: ACCENT.blue, fontWeight: 700 }}>
-                        {f.type === "periodic" ? "5-Min Pulse Check" : "Test Feedback"}
-                      </span>
-                      {f.category && <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>· {f.category}</span>}
-                    </div>
-                    <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{ago(f.createdAt)}</span>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+            {avgByModule.map(({ module, avg, count }) => {
+              const Icon = icons[module];
+              return (
+                <div key={module} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "16px", display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: `${colors[module]}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Icon size={18} color={colors[module]} />
                   </div>
-                  {f.feedbackText ? (
-                    <div style={{ fontSize: 13, color: "var(--text)", marginTop: 4, lineHeight: 1.4, background: "var(--card)", padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)" }}>
-                      "{f.feedbackText}"
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: 12, color: "var(--text-secondary)", italic: "true" }}>No text comments provided</div>
-                  )}
-                  <div style={{ display: "flex", gap: 14, marginTop: 8, fontSize: 11, color: "var(--text-secondary)" }}>
-                    {f.pathName && <span>Submitted on: {getRouteLabel(f.pathName)}</span>}
-                    {f.recommend !== undefined && <span>Recommend: {f.recommend ? "Yes 👍" : "No 👎"}</span>}
+                  <div>
+                    <div style={{ fontSize: 12, color: "var(--text-secondary)", textTransform: "capitalize", fontWeight: 700 }}>{module}</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: avg ? bandColor(avg) : "var(--text-secondary)" }}>{avg ? `Band ${avg}` : "No Score"}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{count} test{count !== 1 ? "s" : ""} completed</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Submissions Timeline */}
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)", marginBottom: 12 }}>Completed Tests ({userResults.length} total)</div>
+          {userResults.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "30px 0", color: "var(--text-secondary)", fontSize: 14, background: "var(--surface)", borderRadius: 14, border: "1px solid var(--border)" }}>No test submissions recorded yet</div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 220, overflowY: "auto" }}>
+              {userResults.slice(0, 15).map((r, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "12px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: colors[r.module?.toLowerCase()] || "var(--primary)", textTransform: "capitalize" }}>{r.module || r.type || "—"}</span>
+                    <span style={{ fontSize: 13, color: "var(--text)", fontWeight: 600 }}>{r.testTitle || r.testId || "CBT Practice Test"}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <span style={{ fontSize: 16, fontWeight: 900, color: bandColor(r.band || r.score) }}>{r.band ? `Band ${r.band}` : (r.score || "—")}</span>
+                    <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{ago(r.completedAt)}</span>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-
-        {/* Module stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, marginBottom: 24 }}>
-          {avgByModule.map(({ module, avg, count }) => {
-            const Icon = icons[module];
-            return (
-              <div key={module} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: `${colors[module]}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Icon size={16} color={colors[module]} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: "var(--text-secondary)", textTransform: "capitalize", fontWeight: 600 }}>{module}</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: avg ? bandColor(avg) : "var(--text-secondary)" }}>{avg ?? "—"}</div>
-                  <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{count} test{count !== 1 ? "s" : ""}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Recent results */}
-        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 10 }}>Recent Activity ({userResults.length} total)</div>
-        {userResults.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "30px 0", color: "var(--text-secondary)", fontSize: 14 }}>No test results recorded</div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {userResults.slice(0, 12).map((r, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "10px 14px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", textTransform: "capitalize", minWidth: 70 }}>{r.module || r.type || "—"}</span>
-                  <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>{r.testTitle || r.testId || "—"}</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: bandColor(r.band || r.score) }}>{r.band || r.score || "—"}</span>
-                  <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{ago(r.completedAt)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </motion.div>
     </div>
   );
 }
 
-// ─── Main component ────────────────────────────────────────────────────────────
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function MonitorPanel() {
   const [users, setUsers] = useState([]);
   const [results, setResults] = useState([]);
@@ -309,18 +299,21 @@ export default function MonitorPanel() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Filters & Tabs
   const [search, setSearch] = useState("");
   const [filterPlan, setFilterPlan] = useState("all"); // all | premium | free
+  const [timeRange, setTimeRange] = useState("all"); // all | 30d | 7d | today
   const [sortBy, setSortBy] = useState("joined"); // joined | name | tests | band | stay
   const [sortDir, setSortDir] = useState("desc");
   const [selectedUser, setSelectedUser] = useState(null);
   const [activeTab, setActiveTab] = useState("overview"); // overview | users | engagement | results | feedback | traffic
 
-  // Feedback tab filter
+  // Feedback Tab Filter
   const [feedbackSearch, setFeedbackSearch] = useState("");
   const [feedbackRatingFilter, setFeedbackRatingFilter] = useState("all");
 
-  // GA4 traffic data
+  // GA4 Traffic Data
   const [trafficData, setTrafficData] = useState(null);
   const [trafficLoading, setTrafficLoading] = useState(false);
   const [trafficError, setTrafficError] = useState(null);
@@ -369,7 +362,7 @@ export default function MonitorPanel() {
     }
   }, [activeTab]); // eslint-disable-line
 
-  // Map telemetry by User ID
+  // Map Telemetry by User ID
   const telemetryMap = useMemo(() => {
     const map = {};
     telemetry.forEach(t => {
@@ -436,7 +429,7 @@ export default function MonitorPanel() {
     };
   }, [telemetry, users]);
 
-  // Derived stats
+  // Derived Stats & Deep Metrics
   const premiumCount = useMemo(() => users.filter(u => u.premium).length, [users]);
   const freeCount = users.length - premiumCount;
 
@@ -445,16 +438,81 @@ export default function MonitorPanel() {
     return valid.length ? (valid.reduce((s, r) => s + Number(r.band), 0) / valid.length).toFixed(1) : "—";
   }, [results]);
 
+  const targetAchieversCount = useMemo(() => {
+    return results.filter(r => Number(r.band) >= 7.0).length;
+  }, [results]);
+
+  const band7PlusRate = useMemo(() => {
+    const valid = results.filter(r => Number(r.band) > 0);
+    if (!valid.length) return "0%";
+    return Math.round((targetAchieversCount / valid.length) * 100) + "%";
+  }, [results, targetAchieversCount]);
+
+  // Band Score Histogram (4.0 to 9.0)
+  const bandHistogram = useMemo(() => {
+    const bands = ["9.0", "8.5", "8.0", "7.5", "7.0", "6.5", "6.0", "5.5", "5.0"];
+    const counts = {};
+    bands.forEach(b => counts[b] = 0);
+    results.forEach(r => {
+      if (r.band) {
+        const val = Number(r.band).toFixed(1);
+        if (counts[val] !== undefined) counts[val]++;
+      }
+    });
+    return bands.map(b => ({ band: b, count: counts[b] }));
+  }, [results]);
+
+  // Radar Data for Module Skill Diagnostics
+  const skillRadarData = useMemo(() => {
+    const m = { reading: [], listening: [], writing: [], speaking: [] };
+    results.forEach(r => {
+      const k = (r.module || r.type || "").toLowerCase();
+      if (m[k] && Number(r.band) > 0) m[k].push(Number(r.band));
+    });
+    const avg = k => m[k].length ? +(m[k].reduce((a, b) => a + b, 0) / m[k].length).toFixed(1) : 6.0;
+    return [
+      { module: "Reading", score: avg("reading"), target: 7.5 },
+      { module: "Listening", score: avg("listening"), target: 7.5 },
+      { module: "Writing", score: avg("writing"), target: 7.0 },
+      { module: "Speaking", score: avg("speaking"), target: 7.0 },
+    ];
+  }, [results]);
+
   const moduleBreakdown = useMemo(() => {
     const m = { reading: 0, listening: 0, writing: 0, speaking: 0 };
     results.forEach(r => { const k = (r.module || r.type || "").toLowerCase(); if (m[k] !== undefined) m[k]++; });
     return [
-      { name: "Reading",   count: m.reading,   color: ACCENT.cyan },
+      { name: "Reading", count: m.reading, color: ACCENT.cyan },
       { name: "Listening", count: m.listening, color: ACCENT.purple },
-      { name: "Writing",   count: m.writing,   color: ACCENT.amber },
-      { name: "Speaking",  count: m.speaking,  color: ACCENT.green },
+      { name: "Writing", count: m.writing, color: ACCENT.amber },
+      { name: "Speaking", count: m.speaking, color: ACCENT.green },
     ];
   }, [results]);
+
+  // Daily Signup vs Active Trend (Last 7 Days)
+  const dailyActivityTrend = useMemo(() => {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const label = d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric" });
+      const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const dayEnd = dayStart + 86400000;
+
+      const signups = users.filter(u => {
+        const t = u.createdAt?.toDate ? u.createdAt.toDate().getTime() : new Date(u.createdAt || 0).getTime();
+        return t >= dayStart && t < dayEnd;
+      }).length;
+
+      const submissions = results.filter(r => {
+        const t = r.completedAt?.toDate ? r.completedAt.toDate().getTime() : new Date(r.completedAt || 0).getTime();
+        return t >= dayStart && t < dayEnd;
+      }).length;
+
+      days.push({ label, signups, submissions });
+    }
+    return days;
+  }, [users, results]);
 
   // Per-user result counts + avg bands
   const userStats = useMemo(() => {
@@ -468,7 +526,7 @@ export default function MonitorPanel() {
     return map;
   }, [results]);
 
-  // Filtered / sorted user list
+  // Filtered / Sorted User List
   const filteredUsers = useMemo(() => {
     let list = [...users];
     if (filterPlan === "premium") list = list.filter(u => u.premium);
@@ -507,18 +565,48 @@ export default function MonitorPanel() {
   }
   const SortIcon = ({ col }) => sortBy === col ? (sortDir === "asc" ? <ChevronUp size={13} /> : <ChevronDown size={13} />) : null;
 
+  // Export Candidate Data CSV
+  function exportCSV() {
+    const headers = ["UID", "Name", "Email", "Plan", "Joined Date", "Total Stay Mins", "Top Page Visited", "Tests Completed", "Avg Band"];
+    const rows = filteredUsers.map(u => {
+      const st = userStats[u.id] || { count: 0, bands: [] };
+      const tInfo = getTelemetryInfo(telemetryMap[u.id]);
+      const avgB = st.bands.length ? (st.bands.reduce((a, b) => a + b, 0) / st.bands.length).toFixed(1) : "N/A";
+      return [
+        u.id,
+        `"${u.displayName || u.email?.split("@")[0] || ""}"`,
+        `"${u.email || ""}"`,
+        u.premium ? "Premium" : "Free",
+        fmtDate(u.createdAt),
+        tInfo.totalMins,
+        `"${tInfo.topVisited}"`,
+        st.count,
+        avgB
+      ].join(",");
+    });
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Knarrow_Candidates_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg)" }}>
       <div style={{ textAlign: "center", color: "var(--text-secondary)" }}>
-        <RefreshCw size={32} style={{ animation: "spin .8s linear infinite", marginBottom: 12 }} />
-        <div>Loading monitor data…</div>
+        <RefreshCw size={36} color="var(--primary)" style={{ animation: "spin .8s linear infinite", marginBottom: 14 }} />
+        <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)" }}>Fetching Live Deep Analytics…</div>
+        <div style={{ fontSize: 13, marginTop: 4 }}>Connecting to Firestore Telemetry &amp; Test Streams</div>
       </div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
   const TAB_STYLE = (t) => ({
-    padding: "8px 18px", borderRadius: 999, fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
+    padding: "9px 20px", borderRadius: 999, fontSize: 13, fontWeight: 800, border: "none", cursor: "pointer",
     background: activeTab === t ? "var(--primary)" : "transparent",
     color: activeTab === t ? "#fff" : "var(--text-secondary)",
     transition: "all .2s",
@@ -526,65 +614,167 @@ export default function MonitorPanel() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)", fontFamily: "Inter, sans-serif" }}>
-      <div style={{ maxWidth: 1300, margin: "0 auto", padding: "60px 24px 80px" }}>
+      <div style={{ maxWidth: 1340, margin: "0 auto", padding: "60px 24px 80px" }}>
 
-        {/* Header */}
+        {/* ─── Top Live Control Header ───────────────────────────────────────── */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginBottom: 36 }}>
           <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "5px 14px", borderRadius: 999, background: "rgba(37,99,235,.10)", color: "var(--primary)", fontSize: 12, fontWeight: 700, marginBottom: 10 }}>
-              <Eye size={13} /> MONITORING PANEL
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, background: "rgba(34,197,94,.12)", border: "1px solid rgba(34,197,94,.3)", color: "#16a34a", fontSize: 12, fontWeight: 800, marginBottom: 12 }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 8px #22c55e" }} />
+              LIVE MONITORING STREAM • REAL-TIME FIRESTORE
             </div>
-            <h1 style={{ fontSize: "clamp(1.6rem,3vw,2.4rem)", fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-1px" }}>
-              User Analytics &amp; Time Engagement
+            <h1 style={{ fontSize: "clamp(1.8rem,3.2vw,2.5rem)", fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-1px" }}>
+              Knarrow Executive Deep Analytics
             </h1>
-            <p style={{ color: "var(--text-secondary)", marginTop: 6, fontSize: 14 }}>
-              {users.length} registered candidates · {platformEngagement.totalHoursSum} hrs total stay time · {results.length} test submissions
+            <p style={{ color: "var(--text-secondary)", marginTop: 6, fontSize: 14, fontWeight: 500 }}>
+              {users.length} Candidates • {platformEngagement.totalHoursSum} Total Stay Hours • {results.length} Test Submissions • {feedbacks.length} Live Feedbacks
             </p>
           </div>
-          <button onClick={() => fetchData(true)} style={{
-            display: "flex", alignItems: "center", gap: 7, padding: "10px 18px", borderRadius: 14,
-            border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)",
-            fontSize: 13, fontWeight: 700, cursor: "pointer",
-          }}>
-            <RefreshCw size={15} style={{ animation: refreshing ? "spin .8s linear infinite" : "none" }} />
-            Refresh Data
-          </button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <button onClick={exportCSV} style={{
+              display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 14,
+              border: "1px solid rgba(37,99,235,.3)", background: "rgba(37,99,235,.1)", color: "var(--primary)",
+              fontSize: 13, fontWeight: 800, cursor: "pointer", transition: "all .2s"
+            }}>
+              <Download size={16} /> Export Candidates CSV
+            </button>
+
+            <button onClick={() => fetchData(true)} style={{
+              display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 14,
+              border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)",
+              fontSize: 13, fontWeight: 800, cursor: "pointer",
+            }}>
+              <RefreshCw size={15} style={{ animation: refreshing ? "spin .8s linear infinite" : "none" }} />
+              Refresh Analytics
+            </button>
+          </div>
         </div>
 
-        {/* Stat cards overview */}
+        {/* ─── Top KPI Cards Grid ────────────────────────────────────────────── */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginBottom: 36 }}>
-          <StatCard label="Total App Stay Time" value={`${platformEngagement.totalMinutesSum} m`} sub={`${platformEngagement.totalHoursSum} hours across candidates`} icon={Timer} color={ACCENT.blue} />
-          <StatCard label="Most Visited Page" value={platformEngagement.mostVisited.label} sub={`${platformEngagement.mostVisited.visits} total visits`} icon={Compass} color={ACCENT.purple} />
-          <StatCard label="Most Time Spent Page" value={platformEngagement.mostTimeSpent.label} sub={`${platformEngagement.mostTimeSpent.minutes} mins spent total`} icon={Clock} color={ACCENT.green} />
-          <StatCard label="Avg Stay per User" value={`${platformEngagement.avgUserMins} m`} sub="Average minutes per candidate" icon={Users} color={ACCENT.amber} />
-          <StatCard label="Avg Platform Band" value={avgBand} sub="Across all test modules" icon={Award} color={ACCENT.cyan} />
+          <StatCard label="Total Candidate Stay" value={`${platformEngagement.totalMinutesSum} m`} sub={`${platformEngagement.totalHoursSum} total hours in-app`} icon={Timer} color={ACCENT.blue} badgeText="App Telemetry" />
+          <StatCard label="Platform Avg Band" value={`Band ${avgBand}`} sub={`${band7PlusRate} score Band 7.0+`} icon={Award} color={ACCENT.green} badgeText="AI Evaluated" />
+          <StatCard label="Candidate Base" value={users.length} sub={`${premiumCount} Premium · ${freeCount} Free`} icon={Users} color={ACCENT.purple} badgeText="Registered" />
+          <StatCard label="Total Test Runs" value={results.length} sub={`${(results.length / Math.max(users.length, 1)).toFixed(1)} tests / candidate`} icon={BookOpen} color={ACCENT.amber} badgeText="Submissions" />
+          <StatCard label="User Feedback Score" value={feedbacks.length ? (feedbacks.reduce((s, f) => s + Number(f.rating || 5), 0) / feedbacks.length).toFixed(1) + " ★" : "—"} sub={`${feedbacks.length} live pulse check-ins`} icon={Star} color={ACCENT.pink} badgeText="Pulse Checks" />
         </div>
 
-        {/* Nav Tabs */}
-        <div style={{ display: "flex", gap: 8, background: "var(--card)", border: "1px solid var(--border)", borderRadius: 999, padding: 4, width: "fit-content", marginBottom: 28, flexWrap: "wrap" }}>
-          <button style={TAB_STYLE("overview")} onClick={() => setActiveTab("overview")}>Overview</button>
-          <button style={TAB_STYLE("users")} onClick={() => setActiveTab("users")}>Users &amp; Stay Time ({users.length})</button>
-          <button style={TAB_STYLE("engagement")} onClick={() => setActiveTab("engagement")}>Page Engagement</button>
-          <button style={TAB_STYLE("results")} onClick={() => setActiveTab("results")}>Test Results ({results.length})</button>
-          <button style={TAB_STYLE("feedback")} onClick={() => setActiveTab("feedback")}>User Feedback ({feedbacks.length})</button>
+        {/* ─── Navigation Tabs ──────────────────────────────────────────────── */}
+        <div style={{ display: "flex", gap: 8, background: "var(--card)", border: "1px solid var(--border)", borderRadius: 999, padding: 5, width: "fit-content", marginBottom: 32, flexWrap: "wrap", boxShadow: "0 2px 10px rgba(0,0,0,.04)" }}>
+          <button style={TAB_STYLE("overview")} onClick={() => setActiveTab("overview")}>Executive Overview</button>
+          <button style={TAB_STYLE("users")} onClick={() => setActiveTab("users")}>Candidate Inspector ({users.length})</button>
+          <button style={TAB_STYLE("engagement")} onClick={() => setActiveTab("engagement")}>Page &amp; Route Telemetry</button>
+          <button style={TAB_STYLE("results")} onClick={() => setActiveTab("results")}>Test Submissions ({results.length})</button>
+          <button style={TAB_STYLE("feedback")} onClick={() => setActiveTab("feedback")}>Live Feedback Stream ({feedbacks.length})</button>
           <button style={TAB_STYLE("traffic")} onClick={() => setActiveTab("traffic")}>GA4 Web Traffic</button>
         </div>
 
-        {/* ══════════ OVERVIEW TAB ══════════ */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* OVERVIEW TAB (DEEP ANALYTICS & DIAGNOSTICS)                          */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
         {activeTab === "overview" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 20 }}>
-              {/* Page Engagement Ranking */}
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                <SectionHeader title="Top Time-Spent Pages" icon={Clock} color={ACCENT.green} />
+            {/* Row 1: Skill Diagnostic Radar + Band Distribution Histogram */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
+              
+              {/* Skill Subscore Health Diagnostic Radar */}
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+                <SectionHeader title="IELTS Skill Subscore Health Diagnostic" subtitle="Real-time average score vs. Target Band 7.5 across modules" icon={Target} color={ACCENT.purple} />
+                <ResponsiveContainer width="100%" height={260}>
+                  <RadarChart cx="50%" cy="50%" outerRadius="75%" data={skillRadarData}>
+                    <PolarGrid stroke="var(--border)" />
+                    <PolarAngleAxis dataKey="module" tick={{ fill: "var(--text)", fontSize: 12, fontWeight: 700 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 9]} tick={{ fill: "var(--text-secondary)", fontSize: 10 }} />
+                    <Radar name="Platform Candidate Avg" dataKey="score" stroke={ACCENT.purple} fill={ACCENT.purple} fillOpacity={0.35} />
+                    <Radar name="Target Band Threshold" dataKey="target" stroke={ACCENT.green} fill={ACCENT.green} fillOpacity={0.1} />
+                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
+                    <Legend />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Candidate Band Score Distribution Histogram */}
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+                <SectionHeader title="Candidate Band Score Distribution" subtitle="Histogram of student performance from Band 5.0 to 9.0" icon={BarChart3} color={ACCENT.cyan} />
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={bandHistogram}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                    <XAxis dataKey="band" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
+                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
+                    <Bar dataKey="count" radius={[6, 6, 0, 0]} name="Candidates Count">
+                      {bandHistogram.map((entry, idx) => (
+                        <Cell key={idx} fill={bandColor(entry.band)} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+            </div>
+
+            {/* Row 2: 7-Day Activity & Growth Trend + Module Breakdown */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
+              
+              {/* Daily Signups & Test Submissions Trend */}
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+                <SectionHeader title="Candidate Signups &amp; Daily Test Runs" subtitle="7-day activity velocity across platform" icon={TrendingUp} color={ACCENT.blue} />
+                <ResponsiveContainer width="100%" height={240}>
+                  <AreaChart data={dailyActivityTrend}>
+                    <defs>
+                      <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={ACCENT.blue} stopOpacity={0.4} />
+                        <stop offset="95%" stopColor={ACCENT.blue} stopOpacity={0.0} />
+                      </linearGradient>
+                      <linearGradient id="colorTests" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={ACCENT.green} stopOpacity={0.4} />
+                        <stop offset="95%" stopColor={ACCENT.green} stopOpacity={0.0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
+                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
+                    <Area type="monotone" dataKey="signups" stroke={ACCENT.blue} fillOpacity={1} fill="url(#colorSignups)" name="New Signups" />
+                    <Area type="monotone" dataKey="submissions" stroke={ACCENT.green} fillOpacity={1} fill="url(#colorTests)" name="Test Submissions" />
+                    <Legend />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Module Breakdown */}
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+                <SectionHeader title="Submissions Volume by IELTS Skill" subtitle="Distribution of candidate attempts per module" icon={BookOpen} color={ACCENT.amber} />
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={moduleBreakdown} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: "var(--text-secondary)", fontWeight: 700 }} width={80} />
+                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
+                    <Bar dataKey="count" radius={[0, 8, 8, 0]} name="Test Submissions">
+                      {moduleBreakdown.map((m, i) => <Cell key={i} fill={m.color} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+            </div>
+
+            {/* Row 3: Top Time-Spent Pages + Top Candidates by Stay Time */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
+              
+              {/* Top Time-Spent Pages */}
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+                <SectionHeader title="Top Time-Spent Pages" subtitle="Routes where candidates spend maximum practice time" icon={Clock} color={ACCENT.green} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {platformEngagement.pageList.slice(0, 6).map((item, idx) => (
-                    <div key={item.path} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ fontSize: 12, fontWeight: 900, color: ACCENT.blue, width: 18 }}>#{idx + 1}</span>
+                    <div key={item.path} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontSize: 13, fontWeight: 900, color: ACCENT.blue, width: 20 }}>#{idx + 1}</span>
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{item.label}</div>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>{item.label}</div>
                           <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{item.path} · {item.visits} visits</div>
                         </div>
                       </div>
@@ -597,130 +787,124 @@ export default function MonitorPanel() {
                 </div>
               </div>
 
-              {/* Module breakdown */}
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-                <SectionHeader title="Tests by Module" icon={BookOpen} color={ACCENT.amber} />
-                <ResponsiveContainer width="100%" height={230}>
-                  <BarChart data={moduleBreakdown} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: "var(--text-secondary)" }} width={70} />
-                    <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
-                    <Bar dataKey="count" radius={[0, 6, 6, 0]} name="Tests">
-                      {moduleBreakdown.map((m, i) => <Cell key={i} fill={m.color} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+              {/* Top Candidates by Stay Time */}
+              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+                <SectionHeader title="Most Engaged Candidates" subtitle="Candidates with highest overall app practice stay duration" icon={Flame} color={ACCENT.amber} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {[...users].sort((a, b) => (telemetryMap[b.id]?.totalSeconds || 0) - (telemetryMap[a.id]?.totalSeconds || 0)).slice(0, 6).map((u, i) => {
+                    const tInfo = getTelemetryInfo(telemetryMap[u.id]);
+                    const st = userStats[u.id] || { count: 0 };
+                    return (
+                      <div key={u.id} onClick={() => setSelectedUser(u)}
+                        style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, cursor: "pointer", transition: "border-color .2s" }}
+                        onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
+                        onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                      >
+                        <div style={{ width: 30, height: 30, borderRadius: "50%", background: `rgba(37,99,235,.15)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 900, color: "var(--primary)", flexShrink: 0 }}>
+                          {i + 1}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {u.displayName || u.email?.split("@")[0] || u.id.slice(0, 8)}
+                          </div>
+                          <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{u.email}</div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 14, flexShrink: 0 }}>
+                          <div style={{ textAlign: "right" }}>
+                            <div style={{ fontSize: 14, fontWeight: 900, color: ACCENT.blue }}>{tInfo.minutesStr}</div>
+                            <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{st.count} tests</div>
+                          </div>
+                          <span style={{ fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 999, background: u.premium ? "#dcfce7" : "#fee2e2", color: u.premium ? "#166534" : "#991b1b" }}>
+                            {u.premium ? "Premium" : "Free"}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
+
             </div>
 
-            {/* Top users by stay time */}
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-              <SectionHeader title="Top Candidates by App Stay Time" icon={Timer} color={ACCENT.blue} />
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[...users].sort((a, b) => (telemetryMap[b.id]?.totalSeconds || 0) - (telemetryMap[a.id]?.totalSeconds || 0)).slice(0, 8).map((u, i) => {
-                  const tInfo = getTelemetryInfo(telemetryMap[u.id]);
-                  const st = userStats[u.id] || { count: 0 };
-                  return (
-                    <div key={u.id} onClick={() => setSelectedUser(u)}
-                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, cursor: "pointer", transition: "border-color .2s" }}
-                      onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
-                      onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                    >
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: `rgba(37,99,235,.15)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "var(--primary)", flexShrink: 0 }}>
-                        {i + 1}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {u.displayName || u.email?.split("@")[0] || u.id.slice(0, 8)}
-                        </div>
-                        <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{u.email}</div>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-                        <div style={{ textAlign: "right" }}>
-                          <div style={{ fontSize: 14, fontWeight: 900, color: ACCENT.blue }}>{tInfo.minutesStr}</div>
-                          <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Top: {tInfo.topTimeSpent}</div>
-                        </div>
-                        <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: u.premium ? "#dcfce7" : "#fee2e2", color: u.premium ? "#166534" : "#991b1b" }}>
-                          {u.premium ? "Premium" : "Free"}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
           </motion.div>
         )}
 
-        {/* ══════════ USERS & STAY TIME TAB ══════════ */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* USERS & CANDIDATE INSPECTOR TAB                                      */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
         {activeTab === "users" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }}>
 
-            {/* Filters row */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
-              <div style={{ position: "relative", flex: "1 1 240px" }}>
-                <Search size={15} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
-                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email or UID…"
-                  style={{ width: "100%", padding: "10px 14px 10px 38px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, outline: "none", boxSizing: "border-box" }} />
+            {/* Filter Bar */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 24, alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", gap: 12, flex: "1 1 300px", flexWrap: "wrap" }}>
+                <div style={{ position: "relative", flex: "1 1 240px" }}>
+                  <Search size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search candidate by name, email or UID…"
+                    style={{ width: "100%", padding: "11px 14px 11px 40px", borderRadius: 14, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, outline: "none", boxSizing: "border-box" }} />
+                </div>
+                <select value={filterPlan} onChange={e => setFilterPlan(e.target.value)}
+                  style={{ padding: "11px 16px", borderRadius: 14, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>
+                  <option value="all">All Plans ({users.length})</option>
+                  <option value="premium">👑 Premium ({premiumCount})</option>
+                  <option value="free">Free Candidates ({freeCount})</option>
+                </select>
               </div>
-              <select value={filterPlan} onChange={e => setFilterPlan(e.target.value)}
-                style={{ padding: "10px 14px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, cursor: "pointer" }}>
-                <option value="all">All Plans</option>
-                <option value="premium">Premium</option>
-                <option value="free">Free</option>
-              </select>
+
+              <div style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600 }}>
+                Showing <strong>{filteredUsers.length}</strong> candidates
+              </div>
             </div>
 
-            {/* Table */}
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, overflow: "hidden" }}>
-              {/* Table header */}
-              <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 100px 1.2fr 1.2fr 80px 80px", gap: 8, padding: "12px 20px", background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
-                {[["Candidate Name", "name"], ["Joined", "joined"], ["Time Stayed", "stay"], ["Most Visited Page", null], ["Most Time Spent Page", null], ["Tests", "tests"], ["Actions", null]].map(([label, col]) => (
+            {/* Candidate Table */}
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,.04)" }}>
+              {/* Header */}
+              <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 100px 1.2fr 1.2fr 80px 90px", gap: 10, padding: "14px 22px", background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
+                {[["Candidate Name", "name"], ["Joined Date", "joined"], ["Stay Time", "stay"], ["Top Visited Page", null], ["Top Time Spent Page", null], ["Tests", "tests"], ["Actions", null]].map(([label, col]) => (
                   <div key={label} onClick={col ? () => toggleSort(col) : undefined}
-                    style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: ".5px", cursor: col ? "pointer" : "default", display: "flex", alignItems: "center", gap: 4, userSelect: "none" }}>
+                    style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: ".5px", cursor: col ? "pointer" : "default", display: "flex", alignItems: "center", gap: 4, userSelect: "none" }}>
                     {label} <SortIcon col={col} />
                   </div>
                 ))}
               </div>
 
-              {/* Table rows */}
-              <div style={{ maxHeight: 580, overflowY: "auto" }}>
+              {/* Rows */}
+              <div style={{ maxHeight: 620, overflowY: "auto" }}>
                 {filteredUsers.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text-secondary)", fontSize: 14 }}>No users match the filter</div>
+                  <div style={{ textAlign: "center", padding: "50px 0", color: "var(--text-secondary)", fontSize: 14 }}>No candidates match the search filters</div>
                 ) : (
                   filteredUsers.map(u => {
                     const st = userStats[u.id] || { count: 0, bands: [] };
                     const tInfo = getTelemetryInfo(telemetryMap[u.id]);
                     return (
                       <div key={u.id}
-                        style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 100px 1.2fr 1.2fr 80px 80px", gap: 8, padding: "14px 20px", borderBottom: "1px solid var(--border)", alignItems: "center", transition: "background .15s" }}
+                        style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 100px 1.2fr 1.2fr 80px 90px", gap: 10, padding: "16px 22px", borderBottom: "1px solid var(--border)", alignItems: "center", transition: "background .15s" }}
                         onMouseEnter={e => e.currentTarget.style.background = "var(--surface)"}
                         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                       >
                         <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {u.displayName || u.email?.split("@")[0] || "Candidate"}
                           </div>
                           <div style={{ fontSize: 12, color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.email}</div>
                         </div>
                         <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
                           <div>{fmtDate(u.createdAt)}</div>
-                          <div style={{ fontSize: 11 }}>{ago(u.createdAt)}</div>
+                          <div style={{ fontSize: 11, opacity: 0.8 }}>{ago(u.createdAt)}</div>
                         </div>
                         <div>
-                          <span style={{ fontSize: 13, fontWeight: 800, color: ACCENT.blue }}>{tInfo.minutesStr}</span>
+                          <span style={{ fontSize: 13, fontWeight: 900, color: ACCENT.blue }}>{tInfo.minutesStr}</span>
                         </div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {tInfo.topVisited}
                         </div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: ACCENT.green, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: ACCENT.green, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {tInfo.topTimeSpent}
                         </div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>{st.count}</div>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>{st.count}</div>
                         <div>
                           <button onClick={() => setSelectedUser(u)}
-                            style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "none", color: "var(--primary)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                            style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, border: "1px solid var(--border)", background: "var(--card)", color: "var(--primary)", fontSize: 12, fontWeight: 800, cursor: "pointer" }}>
                             <Eye size={13} /> View
                           </button>
                         </div>
@@ -729,34 +913,35 @@ export default function MonitorPanel() {
                   })
                 )}
               </div>
-              <div style={{ padding: "10px 20px", background: "var(--surface)", borderTop: "1px solid var(--border)", fontSize: 12, color: "var(--text-secondary)" }}>
-                Showing {filteredUsers.length} of {users.length} candidates
-              </div>
             </div>
           </motion.div>
         )}
 
-        {/* ══════════ PAGE ENGAGEMENT TAB ══════════ */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* PAGE ENGAGEMENT TAB                                                   */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
         {activeTab === "engagement" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24, marginBottom: 24 }}>
-              <SectionHeader title="Page Engagement Breakdown (Time Spent &amp; Visits)" icon={Layers} color={ACCENT.purple} />
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", borderBottom: "1px solid var(--border)", borderRadius: 10, marginBottom: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Page Name / Route</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Visits</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Time Spent</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Avg Mins / Visit</div>
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }}>
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26, marginBottom: 24 }}>
+              <SectionHeader title="Page &amp; Route Telemetry Breakdown" subtitle="Detailed time spent and visit counts per application path" icon={Layers} color={ACCENT.purple} />
+              
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "14px 20px", background: "var(--surface)", borderBottom: "1px solid var(--border)", borderRadius: 12, marginBottom: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Page / Application Route</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Visits</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Time Stayed</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Avg Stay / Visit</div>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {platformEngagement.pageList.map((item) => (
-                  <div key={item.path} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, alignItems: "center" }}>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {platformEngagement.pageList.map((item, idx) => (
+                  <div key={item.path} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "14px 20px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, alignItems: "center" }}>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>{item.label}</div>
-                      <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{item.path}</div>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text)" }}>#{idx + 1} {item.label}</div>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}><code style={{ background: "var(--card)", padding: "2px 6px", borderRadius: 4 }}>{item.path}</code></div>
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: ACCENT.purple }}>{item.visits} visits</div>
-                    <div style={{ fontSize: 15, fontWeight: 900, color: ACCENT.green }}>{item.minutes} mins</div>
-                    <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{item.avgMins}m / visit</div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: ACCENT.purple }}>{item.visits} visits</div>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: ACCENT.green }}>{item.minutes} mins</div>
+                    <div style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 700 }}>{item.avgMins}m / visit</div>
                   </div>
                 ))}
               </div>
@@ -764,25 +949,28 @@ export default function MonitorPanel() {
           </motion.div>
         )}
 
-        {/* ══════════ RESULTS TAB ══════════ */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* TEST RESULTS TAB                                                      */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
         {activeTab === "results" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14, marginBottom: 24 }}>
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }}>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 24 }}>
               {moduleBreakdown.map(m => (
-                <div key={m.name} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 16, padding: "18px 20px" }}>
-                  <div style={{ fontSize: 28, fontWeight: 900, color: m.color }}>{m.count}</div>
-                  <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 4, fontWeight: 600 }}>{m.name} tests</div>
+                <div key={m.name} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 18, padding: "20px 22px" }}>
+                  <div style={{ fontSize: 32, fontWeight: 900, color: m.color }}>{m.count}</div>
+                  <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 4, fontWeight: 700 }}>{m.name} Submissions</div>
                 </div>
               ))}
             </div>
 
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, overflow: "hidden" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.5fr 90px 90px 110px 100px", padding: "12px 20px", background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
-                {["Module", "User", "Band", "Score", "Completed", "Time"].map(h => (
-                  <div key={h} style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: ".5px" }}>{h}</div>
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, overflow: "hidden" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.5fr 90px 90px 110px 100px", padding: "14px 22px", background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
+                {["Module", "Candidate", "Band", "Score", "Date", "Time Ago"].map(h => (
+                  <div key={h} style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: ".5px" }}>{h}</div>
                 ))}
               </div>
-              <div style={{ maxHeight: 600, overflowY: "auto" }}>
+              <div style={{ maxHeight: 620, overflowY: "auto" }}>
                 {[...results].sort((a, b) => {
                   const at = a.completedAt?.toDate ? a.completedAt.toDate().getTime() : new Date(a.completedAt || 0).getTime();
                   const bt = b.completedAt?.toDate ? b.completedAt.toDate().getTime() : new Date(b.completedAt || 0).getTime();
@@ -792,12 +980,12 @@ export default function MonitorPanel() {
                   const mod = (r.module || r.type || "—").toLowerCase();
                   const modColors = { reading: ACCENT.cyan, listening: ACCENT.purple, writing: ACCENT.amber, speaking: ACCENT.green };
                   return (
-                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.2fr 1.5fr 90px 90px 110px 100px", padding: "12px 20px", borderBottom: "1px solid var(--border)", alignItems: "center" }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: modColors[mod] || "var(--text)", textTransform: "capitalize" }}>{r.module || r.type || "—"}</div>
-                      <div style={{ fontSize: 13, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {u?.displayName || u?.email?.split("@")[0] || r.userId || "Anonymous"}
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.2fr 1.5fr 90px 90px 110px 100px", padding: "14px 22px", borderBottom: "1px solid var(--border)", alignItems: "center" }}>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: modColors[mod] || "var(--text)", textTransform: "capitalize" }}>{r.module || r.type || "—"}</div>
+                      <div style={{ fontSize: 13, color: "var(--text)", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {u?.displayName || u?.email?.split("@")[0] || r.userId || "Candidate"}
                       </div>
-                      <div style={{ fontSize: 15, fontWeight: 800, color: bandColor(r.band || r.score) }}>{r.band || "—"}</div>
+                      <div style={{ fontSize: 16, fontWeight: 900, color: bandColor(r.band || r.score) }}>{r.band ? `Band ${r.band}` : "—"}</div>
                       <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{r.rawScore !== undefined ? `${r.rawScore}/${r.totalQuestions || 40}` : "—"}</div>
                       <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{fmtDate(r.completedAt)}</div>
                       <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{ago(r.completedAt)}</div>
@@ -809,129 +997,30 @@ export default function MonitorPanel() {
           </motion.div>
         )}
 
-        {/* ══════════ TRAFFIC TAB ══════════ */}
-        {activeTab === "traffic" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            
-            {/* Live Native Web Traffic Header */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
-              <StatCard label="Live Tracked Candidates" value={telemetry.length || users.length} sub="Active candidate sessions" icon={Users} color={ACCENT.blue} />
-              <StatCard label="Total Screen Page Views" value={platformEngagement.pageList.reduce((s, p) => s + p.visits, 0)} sub="Across all app routes" icon={Globe} color={ACCENT.purple} />
-              <StatCard label="Total Platform Stay Time" value={`${platformEngagement.totalMinutesSum} m`} sub={`${platformEngagement.totalHoursSum} total stay hours`} icon={Clock} color={ACCENT.green} />
-              <StatCard label="Avg Stay / Candidate" value={`${platformEngagement.avgUserMins} m`} sub="Minutes spent per candidate" icon={Activity} color={ACCENT.amber} />
-            </div>
-
-            {/* Daily Traffic Chart */}
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-              <SectionHeader title="Daily Candidate Traffic &amp; Test Activity (Last 7 Days)" icon={TrendingUp} color={ACCENT.cyan} />
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={signupChart}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
-                  <YAxis tick={{ fontSize: 11, fill: "var(--text-secondary)" }} allowDecimals={false} />
-                  <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10 }} />
-                  <Line type="monotone" dataKey="count" stroke={ACCENT.blue} strokeWidth={3} dot={{ r: 5, fill: ACCENT.blue }} name="New Signups" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Top Visited Pages Table */}
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-              <SectionHeader title="Most Visited Web Pages &amp; Time Spent" icon={Navigation} color={ACCENT.purple} />
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", borderBottom: "1px solid var(--border)", borderRadius: 10, marginBottom: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Page Title / Route</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Page Views</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Time Spent</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase" }}>Avg Stay / Visit</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {platformEngagement.pageList.map((item, idx) => (
-                  <div key={item.path} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "12px 16px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, alignItems: "center" }}>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>{idx + 1}. {item.label}</div>
-                      <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{item.path}</div>
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: ACCENT.purple }}>{item.visits} views</div>
-                    <div style={{ fontSize: 14, fontWeight: 900, color: ACCENT.green }}>{item.minutes} mins</div>
-                    <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{item.avgMins}m</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Optional GA4 Sync Notice */}
-            <div style={{ padding: "14px 18px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, fontSize: 12, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 10 }}>
-              <Globe size={16} color="var(--primary)" />
-              <span>
-                <strong>Native Live Analytics Active:</strong> Tracking real-time user stay duration and page views. To optionally connect external Google Analytics 4, add <code style={{ background: "var(--card)", padding: "2px 6px", borderRadius: 4 }}>GA4_PROPERTY_ID</code>, <code style={{ background: "var(--card)", padding: "2px 6px", borderRadius: 4 }}>GA4_CLIENT_EMAIL</code>, and <code style={{ background: "var(--card)", padding: "2px 6px", borderRadius: 4 }}>GA4_PRIVATE_KEY</code> to your environment variables.
-              </span>
-            </div>
-
-          </motion.div>
-        )}
-
-        {/* ══════════ USER FEEDBACK TAB ══════════ */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* LIVE FEEDBACK STREAM TAB                                              */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
         {activeTab === "feedback" && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             
-            {/* Feedback Stats cards */}
+            {/* Feedback Stats */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
-              <StatCard
-                label="Total Submissions"
-                value={feedbacks.length}
-                sub="Every single user detail registered"
-                icon={MessageSquare}
-                color={ACCENT.blue}
-              />
-              <StatCard
-                label="Average Star Rating"
-                value={
-                  feedbacks.length
-                    ? (feedbacks.reduce((s, f) => s + Number(f.rating || 5), 0) / feedbacks.length).toFixed(1) + " ★"
-                    : "—"
-                }
-                sub="Out of 5.0 rating score"
-                icon={Star}
-                color={ACCENT.amber}
-              />
-              <StatCard
-                label="Recommendation Rate"
-                value={
-                  feedbacks.length
-                    ? Math.round((feedbacks.filter(f => f.recommend === true).length / feedbacks.length) * 100) + "%"
-                    : "—"
-                }
-                sub="Users who recommend Knarrow"
-                icon={ThumbsUp}
-                color={ACCENT.green}
-              />
-              <StatCard
-                label="5-Min Routine Check-ins"
-                value={feedbacks.filter(f => f.type === "periodic").length}
-                sub="Live 5-min candidate pulse"
-                icon={Timer}
-                color={ACCENT.purple}
-              />
+              <StatCard label="Total Feedbacks" value={feedbacks.length} sub="Registered candidate reviews" icon={MessageSquare} color={ACCENT.blue} />
+              <StatCard label="Average Rating" value={feedbacks.length ? (feedbacks.reduce((s, f) => s + Number(f.rating || 5), 0) / feedbacks.length).toFixed(1) + " ★" : "—"} sub="Out of 5.0 score" icon={Star} color={ACCENT.amber} />
+              <StatCard label="NPS Recommend Rate" value={feedbacks.length ? Math.round((feedbacks.filter(f => f.recommend === true).length / feedbacks.length) * 100) + "%" : "—"} sub="Candidates who recommend" icon={ThumbsUp} color={ACCENT.green} />
+              <StatCard label="Routine Check-ins" value={feedbacks.filter(f => f.type === "periodic").length} sub="5-minute candidate pulse" icon={Timer} color={ACCENT.purple} />
             </div>
 
             {/* Filter Bar */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               <div style={{ position: "relative", flex: "1 1 260px" }}>
                 <Search size={15} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
-                <input
-                  value={feedbackSearch}
-                  onChange={e => setFeedbackSearch(e.target.value)}
-                  placeholder="Search feedback comments, user, email or route…"
-                  style={{ width: "100%", padding: "10px 14px 10px 38px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, outline: "none", boxSizing: "border-box" }}
-                />
+                <input value={feedbackSearch} onChange={e => setFeedbackSearch(e.target.value)} placeholder="Search feedback text, user email or page route…"
+                  style={{ width: "100%", padding: "11px 14px 11px 40px", borderRadius: 14, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, outline: "none", boxSizing: "border-box" }} />
               </div>
-
-              <select
-                value={feedbackRatingFilter}
-                onChange={e => setFeedbackRatingFilter(e.target.value)}
-                style={{ padding: "10px 14px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, cursor: "pointer" }}
-              >
-                <option value="all">All Ratings</option>
+              <select value={feedbackRatingFilter} onChange={e => setFeedbackRatingFilter(e.target.value)}
+                style={{ padding: "11px 16px", borderRadius: 14, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>
+                <option value="all">All Rating Scores</option>
                 <option value="5">5 Stars ★★★★★</option>
                 <option value="4">4 Stars ★★★★☆</option>
                 <option value="3">3 Stars ★★★☆☆</option>
@@ -940,14 +1029,12 @@ export default function MonitorPanel() {
               </select>
             </div>
 
-            {/* Feedback items list */}
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
-              <SectionHeader title="Live Candidate Feedback Stream" icon={MessageSquare} color={ACCENT.amber} />
+            {/* Stream List */}
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+              <SectionHeader title="Live Candidate Pulse &amp; Feedback Stream" subtitle="Direct candidate feedback submitted via 5-minute pulse checks" icon={MessageSquare} color={ACCENT.amber} />
 
               {feedbacks.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text-secondary)", fontSize: 14 }}>
-                  No feedback submissions recorded yet. Logged-in users will automatically see the 5-minute pulse check modal.
-                </div>
+                <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text-secondary)", fontSize: 14 }}>No candidate feedbacks recorded yet</div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {feedbacks
@@ -966,81 +1053,25 @@ export default function MonitorPanel() {
                     .map((f, i) => {
                       const candidate = users.find(u => u.id === f.userId || u.email === f.userEmail);
                       return (
-                        <div key={f.id || i} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16, padding: 18 }}>
-                          {/* Top Row: User info & Rating */}
-                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 14 }}>
+                        <div key={f.id || i} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 18, padding: 20 }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <div style={{ width: 42, height: 42, borderRadius: "50%", background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 15 }}>
                                 {(f.userName || f.userEmail || "C")[0].toUpperCase()}
                               </div>
                               <div>
-                                <div style={{ fontSize: 14, fontWeight: 800, color: "var(--text)" }}>
-                                  {f.userName || f.userEmail || "Candidate"}
-                                </div>
-                                <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                                  {f.userEmail || "Anonymous"} {candidate?.premium ? " · 👑 Premium" : ""}
-                                </div>
+                                <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text)" }}>{f.userName || f.userEmail || "Candidate"}</div>
+                                <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{f.userEmail || "Anonymous"} {candidate?.premium ? " • 👑 Premium" : ""}</div>
                               </div>
                             </div>
-
-                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                              <div style={{ textAlign: "right" }}>
-                                <div style={{ fontSize: 15, color: "#f59e0b", letterSpacing: 1 }}>
-                                  {"★".repeat(f.rating || 5)}{"☆".repeat(5 - (f.rating || 5))}
-                                </div>
-                                <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
-                                  {ago(f.createdAt)} · {fmtDate(f.createdAt)} {fmtTime(f.createdAt)}
-                                </div>
-                              </div>
+                            <div style={{ textAlign: "right" }}>
+                              <div style={{ fontSize: 16, color: "#f59e0b", letterSpacing: 1 }}>{"★".repeat(f.rating || 5)}{"☆".repeat(5 - (f.rating || 5))}</div>
+                              <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>{ago(f.createdAt)} • {fmtDate(f.createdAt)}</div>
                             </div>
                           </div>
 
-                          {/* Category & Badges */}
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 8, background: f.type === "periodic" ? "rgba(37,99,235,.1)" : "rgba(139,92,246,.1)", color: f.type === "periodic" ? ACCENT.blue : ACCENT.purple }}>
-                              {f.type === "periodic" ? "⚡ 5-Min Pulse Check" : "📝 Test Specific"}
-                            </span>
-                            {f.category && (
-                              <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 8, background: "rgba(245,158,11,.1)", color: "#d97706" }}>
-                                Category: {f.category}
-                              </span>
-                            )}
-                            {f.satisfaction && (
-                              <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 8, background: "rgba(34,197,94,.1)", color: ACCENT.green }}>
-                                Satisfaction: {f.satisfaction}
-                              </span>
-                            )}
-                            {f.difficulty && (
-                              <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 8, background: "rgba(239,68,68,.1)", color: ACCENT.red }}>
-                                Difficulty: {f.difficulty}
-                              </span>
-                            )}
-                            {f.recommend !== undefined && (
-                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 8, background: f.recommend ? "#dcfce7" : "#fee2e2", color: f.recommend ? "#166534" : "#991b1b" }}>
-                                {f.recommend ? "Recommends 👍" : "Needs Work 👎"}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Feedback Text Body */}
-                          <div style={{ background: "var(--card)", padding: 14, borderRadius: 12, border: "1px solid var(--border)", fontSize: 13, color: "var(--text)", lineHeight: 1.5, wordBreak: "break-word" }}>
-                            {f.feedbackText ? `"${f.feedbackText}"` : <span style={{ color: "var(--text-secondary)", italic: true }}>User submitted star rating &amp; metrics without additional written notes.</span>}
-                          </div>
-
-                          {/* Meta footer: Path & Device */}
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginTop: 12, fontSize: 11, color: "var(--text-secondary)" }}>
-                            <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                              {f.pathName && <span><strong>Submitted from Page:</strong> {getRouteLabel(f.pathName)} (<code style={{ background: "var(--card)", padding: "1px 5px", borderRadius: 4 }}>{f.pathName}</code>)</span>}
-                              {f.deviceInfo && <span><strong>Device/Display:</strong> {f.deviceInfo}</span>}
-                            </div>
-                            {candidate && (
-                              <button
-                                onClick={() => setSelectedUser(candidate)}
-                                style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "4px 10px", color: "var(--primary)", fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
-                              >
-                                <Eye size={12} /> Candidate Profile
-                              </button>
-                            )}
+                          <div style={{ background: "var(--card)", padding: 14, borderRadius: 12, border: "1px solid var(--border)", fontSize: 13, color: "var(--text)", lineHeight: 1.5 }}>
+                            {f.feedbackText ? `"${f.feedbackText}"` : <span style={{ color: "var(--text-secondary)", italic: true }}>User submitted star rating &amp; metrics without written comments.</span>}
                           </div>
                         </div>
                       );
@@ -1051,9 +1082,46 @@ export default function MonitorPanel() {
           </motion.div>
         )}
 
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {/* GA4 TRAFFIC TAB                                                       */}
+        {/* ═════════════════════════════════════════════════════════════════════ */}
+        {activeTab === "traffic" && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+              <StatCard label="Tracked Sessions" value={telemetry.length || users.length} sub="Active candidate sessions" icon={Users} color={ACCENT.blue} />
+              <StatCard label="Total Route Views" value={platformEngagement.pageList.reduce((s, p) => s + p.visits, 0)} sub="Across all app pages" icon={Globe} color={ACCENT.purple} />
+              <StatCard label="Total Platform Stay" value={`${platformEngagement.totalMinutesSum} m`} sub={`${platformEngagement.totalHoursSum} total hours`} icon={Clock} color={ACCENT.green} />
+              <StatCard label="Avg Stay / Candidate" value={`${platformEngagement.avgUserMins} m`} sub="Minutes spent per candidate" icon={Activity} color={ACCENT.amber} />
+            </div>
+
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 22, padding: 26 }}>
+              <SectionHeader title="Most Visited Application Pages &amp; Time Stayed" icon={Navigation} color={ACCENT.purple} />
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "14px 20px", background: "var(--surface)", borderBottom: "1px solid var(--border)", borderRadius: 12, marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Page Route</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Page Views</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Total Time Stayed</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-secondary)", textTransform: "uppercase" }}>Avg Stay / Visit</div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {platformEngagement.pageList.map((item, idx) => (
+                  <div key={item.path} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "14px 20px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text)" }}>#{idx + 1} {item.label}</div>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{item.path}</div>
+                    </div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: ACCENT.purple }}>{item.visits} views</div>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: ACCENT.green }}>{item.minutes} mins</div>
+                    <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{item.avgMins}m</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
       </div>
 
-      {/* Detail Modal */}
+      {/* Candidate Inspector Modal */}
       <AnimatePresence>
         {selectedUser && (
           <UserModal
