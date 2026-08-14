@@ -34,7 +34,7 @@
   overflow: hidden;
 }
 
-/* 30-second countdown bar */
+/* 15-second countdown bar */
 .pwa-progress-bar {
   position: absolute;
   top: 0;
@@ -44,7 +44,7 @@
   width: 100%;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  animation: pwaCountdown 30s linear forwards;
+  animation: pwaCountdown 15s linear forwards;
 }
 
 @keyframes pwaCountdown {
@@ -148,6 +148,24 @@
   transform: translateY(-1px) scale(1.02);
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.pwa-skip-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-secondary, #94a3b8);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwa-skip-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
 .pwa-dismiss-btn {

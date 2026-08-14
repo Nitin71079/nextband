@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Download, X, Share, PlusSquare, Sparkles, MoreVertical } from "lucide-react";
 import "./PwaInstallPrompt.css";
 
-const DISPLAY_DURATION_MS = 30000; // 30 seconds
+const DISPLAY_DURATION_MS = 15000;  // Stay for 15 seconds
+const REPEAT_INTERVAL_MS = 300000;  // Reappear every 5 minutes (300,000 ms)
 
 export default function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -13,6 +14,7 @@ export default function PwaInstallPrompt() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   const displayTimerRef = useRef(null);
+  const repeatIntervalRef = useRef(null);
 
   useEffect(() => {
     const checkStandalone = () => {
@@ -36,6 +38,7 @@ export default function PwaInstallPrompt() {
     if (checkStandalone()) {
       setIsInstalled(true);
       setShowPrompt(false);
+      return;
     }
 
     const ua = window.navigator.userAgent;
@@ -81,19 +84,42 @@ export default function PwaInstallPrompt() {
       }
     };
 
-    // Auto-show prompt banner after 3 seconds if not dismissed
-    if (!checkStandalone() && localStorage.getItem("knarrow_pwa_dismissed") !== "true") {
-      const t = setTimeout(() => {
-        setShowPrompt(true);
-      }, 3000);
-      return () => clearTimeout(t);
-    }
+    const triggerPromptFor15s = () => {
+      if (
+        checkStandalone() ||
+        localStorage.getItem("knarrow_pwa_dismissed") === "true" ||
+        localStorage.getItem("knarrow_pwa_installed") === "true"
+      ) {
+        setShowPrompt(false);
+        return;
+      }
+
+      setShowPrompt(true);
+
+      if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
+      displayTimerRef.current = setTimeout(() => {
+        setShowPrompt(false);
+      }, DISPLAY_DURATION_MS);
+    };
+
+    // First prompt appears 3 seconds after page load if not dismissed
+    const initialTimer = setTimeout(() => {
+      triggerPromptFor15s();
+    }, 3000);
+
+    // Reappear every 5 minutes if not skipped/dismissed
+    repeatIntervalRef.current = setInterval(() => {
+      triggerPromptFor15s();
+    }, REPEAT_INTERVAL_MS);
 
     return () => {
+      clearTimeout(initialTimer);
+      if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
+      if (repeatIntervalRef.current) clearInterval(repeatIntervalRef.current);
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [deferredPrompt]);
+  }, []);
 
   const handleInstallClick = async () => {
     const activePrompt = deferredPrompt || window.deferredPwaPrompt;
@@ -116,6 +142,8 @@ export default function PwaInstallPrompt() {
 
   const handleDismiss = () => {
     localStorage.setItem("knarrow_pwa_dismissed", "true");
+    if (displayTimerRef.current) clearTimeout(displayTimerRef.current);
+    if (repeatIntervalRef.current) clearInterval(repeatIntervalRef.current);
     setShowPrompt(false);
   };
 
@@ -148,7 +176,11 @@ export default function PwaInstallPrompt() {
             {deferredPrompt || window.deferredPwaPrompt ? "Install 1-Click" : "How to Install"}
           </button>
 
-          <button className="pwa-dismiss-btn" onClick={handleDismiss} aria-label="Close app install banner">
+          <button className="pwa-skip-btn" onClick={handleDismiss} title="Don't show install popup again">
+            Skip
+          </button>
+
+          <button className="pwa-dismiss-btn" onClick={handleDismiss} aria-label="Close app install banner" title="Don't show install popup again">
             <X size={18} />
           </button>
         </div>
