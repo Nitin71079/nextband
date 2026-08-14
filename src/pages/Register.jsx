@@ -105,6 +105,8 @@ export default function Register() {
     <div
       style={{
         minHeight: "100vh",
+        background: "var(--bg)",
+        color: "var(--text)",
         display: "grid",
         gridTemplateColumns:
           window.innerWidth < 900

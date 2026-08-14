@@ -244,6 +244,73 @@ body {
 }
 
 /* ===========================================================
+   UNIVERSAL 100% VISIBILITY ENFORCER FOR ALL PAGES & COMPONENTS
+=========================================================== */
+
+/* Light Mode Text & Surface High-Contrast Safeguard */
+[data-theme="light"] div,
+[data-theme="light"] p,
+[data-theme="light"] span,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6,
+[data-theme="light"] label,
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  color: var(--text);
+}
+
+[data-theme="light"] .text-muted,
+[data-theme="light"] .text-secondary,
+[data-theme="light"] [class*="muted"],
+[data-theme="light"] [class*="secondary"],
+[data-theme="light"] p.desc,
+[data-theme="light"] .subtitle {
+  color: var(--text-secondary) !important;
+}
+
+/* Dark Mode Text & Surface High-Contrast Safeguard */
+[data-theme="dark"] div,
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] label,
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  color: var(--text);
+}
+
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .text-secondary,
+[data-theme="dark"] [class*="muted"],
+[data-theme="dark"] [class*="secondary"],
+[data-theme="dark"] p.desc,
+[data-theme="dark"] .subtitle {
+  color: var(--text-secondary) !important;
+}
+
+/* Preserve button & badge styling */
+button,
+.btn,
+[class*="btn-primary"],
+[class*="btn-secondary"],
+[class*="badge"],
+[class*="pill"],
+[class*="tag"] {
+  color: inherit;
+}
+
+/* ===========================================================
    GLOBAL UI ELEMENTS
 =========================================================== */
 

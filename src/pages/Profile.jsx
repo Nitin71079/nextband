@@ -24,10 +24,11 @@ const glass = {
 };
 
 const lightCard = {
-  background: "white",
-  border: "1px solid #e2e8f0",
+  background: "var(--card)",
+  border: "1px solid var(--border)",
   borderRadius: "22px",
-  boxShadow: "0 4px 20px rgba(15,23,42,.06)",
+  boxShadow: "var(--shadow)",
+  color: "var(--text)",
 };
 
 function StatCard({ icon: Icon, label, value, color, delay = 0 }) {
@@ -42,8 +43,8 @@ function StatCard({ icon: Icon, label, value, color, delay = 0 }) {
       <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
         <Icon size={20} color={color} />
       </div>
-      <div style={{ fontSize: "2rem", fontWeight: 900, color: "#0f172a", letterSpacing: "-1px", lineHeight: 1 }}>{value}</div>
-      <div style={{ fontSize: ".82rem", color: "#64748b", fontWeight: 600, marginTop: "6px" }}>{label}</div>
+      <div style={{ fontSize: "2rem", fontWeight: 900, color: "var(--text)", letterSpacing: "-1px", lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: ".82rem", color: "var(--text-secondary)", fontWeight: 600, marginTop: "6px" }}>{label}</div>
     </motion.div>
   );
 }
@@ -163,7 +164,7 @@ export default function Profile() {
                 )}
               </div>
 
-              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#0f172a", margin: "0 0 4px", letterSpacing: "-0.5px" }}>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--text)", margin: "0 0 4px", letterSpacing: "-0.5px" }}>
                 {displayName}
               </h2>
 
@@ -172,12 +173,12 @@ export default function Profile() {
                 {planLabel}
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", marginTop: "16px", color: "#64748b", fontSize: ".83rem" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", marginTop: "16px", color: "var(--text-secondary)", fontSize: ".83rem" }}>
                 <Mail size={14} />
                 {user?.email}
               </div>
 
-              <div style={{ height: "1px", background: "#e2e8f0", margin: "20px 0" }} />
+              <div style={{ height: "1px", background: "var(--border)", margin: "20px 0" }} />
 
               {premium && premiumExpires && (
                 <div style={{ background: "rgba(245,158,11,.08)", border: "1px solid rgba(245,158,11,.2)", borderRadius: "12px", padding: "12px", fontSize: ".8rem", color: "#92400e", marginBottom: "16px" }}>

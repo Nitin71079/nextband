@@ -73,9 +73,9 @@ export default function Login() {
   return (
     <div
       style={{
-        minHeight:
-          "100vh",
-
+        minHeight: "100vh",
+        background: "var(--bg)",
+        color: "var(--text)",
         display: "grid",
 
         gridTemplateColumns:
