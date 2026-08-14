@@ -86,11 +86,6 @@ const NAV_ITEMS_PUBLIC = [
     icon: Mic,
   },
   {
-    label: "DET Prep",
-    path: "/duolingo",
-    icon: Sparkles,
-  },
-  {
     label: "Community",
     path: "/community",
     icon: Users,
@@ -135,11 +130,6 @@ const NAV_ITEMS_PRIVATE = [
     label: "Speaking",
     path: "/speaking",
     icon: Mic,
-  },
-  {
-    label: "DET Prep",
-    path: "/duolingo",
-    icon: Sparkles,
   },
   {
     label: "AI Studio",
@@ -693,89 +683,6 @@ export default function Navbar() {
       ========================================================== */}
 
       <div className="kn-right">
-        {/* ==========================================================
-            EXAM TRACK SWITCHER PILL
-        ========================================================== */}
-        <div ref={trackRef} style={{ position: "relative" }}>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setTrackMenuOpen((prev) => !prev)}
-            style={{
-              background: activeTrack === "DET" ? "rgba(16, 185, 129, 0.12)" : "rgba(37, 99, 235, 0.12)",
-              color: activeTrack === "DET" ? "#10b981" : "#2563eb",
-              border: `1px solid ${activeTrack === "DET" ? "rgba(16, 185, 129, 0.3)" : "rgba(37, 99, 235, 0.3)"}`,
-              padding: "6px 14px",
-              borderRadius: "999px",
-              fontWeight: "800",
-              fontSize: "12px",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              cursor: "pointer",
-            }}
-          >
-            <Sparkles size={14} />
-            {activeTrack === "DET" && "🦉 DET Prep"}
-            {activeTrack === "IELTS" && "🎓 IELTS Prep"}
-            {activeTrack === "TOEFL" && "📚 TOEFL Prep"}
-            {activeTrack === "GRE" && "🧠 GRE Prep"}
-            {activeTrack === "CAT" && "📈 CAT Prep"}
-            <ChevronDown size={14} />
-          </motion.button>
-
-          {trackMenuOpen && (
-            <div
-              style={{
-                position: "absolute",
-                top: "calc(100% + 8px)",
-                right: 0,
-                background: "var(--card, #ffffff)",
-                border: "1px solid var(--border, #e2e8f0)",
-                borderRadius: "16px",
-                padding: "8px",
-                width: "210px",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-                zIndex: 99999,
-              }}
-            >
-              {[
-                { id: "IELTS", label: "🎓 IELTS Academic/General" },
-                { id: "DET", label: "🦉 Duolingo English Test" },
-                { id: "TOEFL", label: "📚 TOEFL iBT Test" },
-                { id: "GRE", label: "🧠 GRE General Test" },
-                { id: "CAT", label: "📈 CAT MBA Entrance" },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => {
-                    selectTrack(t.id, navigate);
-                    setTrackMenuOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "10px 12px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: activeTrack === t.id ? "rgba(37, 99, 235, 0.1)" : "transparent",
-                    color: activeTrack === t.id ? "#2563eb" : "var(--text, #1e293b)",
-                    fontWeight: "800",
-                    fontSize: "13px",
-                    cursor: "pointer",
-                    marginBottom: "2px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>{t.label}</span>
-                  {activeTrack === t.id && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2563eb" }} />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* ==========================================================
             NOTIFICATIONS
         ========================================================== */}
