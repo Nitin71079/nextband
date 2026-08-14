@@ -12,12 +12,20 @@ export default function Footer() {
         {/* ── Brand ───────────────────────────────── */}
         <div className="footer-brand">
           <div className="footer-logo">
-            <div className="footer-logo-icon">
-              <BrainCircuit size={28} />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Knarrow"
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "12px",
+                objectFit: "cover",
+                boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+              }}
+            />
             <div>
               <h2>Knarrow</h2>
-              <span className="footer-tagline">AI Powered IELTS Platform</span>
+              <span className="footer-tagline">Official knarrow.in AI Platform</span>
             </div>
           </div>
 

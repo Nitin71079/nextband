@@ -41,25 +41,25 @@ export default function Hero() {
 
           <motion.div className="hero-badge" whileHover={{ scale: 1.03 }}>
             <Sparkles size={15} />
-            <span>Multi-Exam AI Prep Platform — IELTS · DET · TOEFL · GRE · CAT</span>
+            <span>Official AI-Powered IELTS Preparation Platform — knarrow.in</span>
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            Master Your
-            <span>Target Exam Score</span>
+            Reach Your
+            <span>Target IELTS Band 8.0+</span>
             Faster With
-            <span className="gradient-text">Adaptive AI Intelligence</span>
+            <span className="gradient-text">Smarter AI Learning</span>
           </motion.h1>
 
           <motion.p className="hero-description" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
-            Experience realistic computer-based simulations, instant Groq AI scoring, personalized study planners, and subscore diagnostics for IELTS, DET, TOEFL, GRE, and CAT.
+            Master Reading, Listening, Writing and Speaking using realistic CBT simulations, instant Groq AI Band scoring, personalized study plans, and detailed subscore analytics on official knarrow.in.
           </motion.p>
 
           <motion.div className="hero-buttons" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
-            <Link to={user ? (activeTrack === "DET" ? "/duolingo" : "/dashboard") : "/register"}>
+            <Link to={user ? "/dashboard" : "/register"}>
               <motion.button className="hero-primary-btn" whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}>
                 <Zap size={18} />
-                {user ? `Enter ${activeTrack} Prep` : "Start Free Practice"}
+                {user ? "Enter IELTS Dashboard" : "Start IELTS Prep Free"}
                 <ArrowRight size={18} />
               </motion.button>
             </Link>
