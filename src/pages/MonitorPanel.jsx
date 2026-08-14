@@ -434,8 +434,12 @@ export default function MonitorPanel() {
   const freeCount = users.length - premiumCount;
 
   const avgBand = useMemo(() => {
-    const valid = results.filter(r => Number(r.band) > 0);
-    return valid.length ? (valid.reduce((s, r) => s + Number(r.band), 0) / valid.length).toFixed(1) : "—";
+    const valid = results.map(r => {
+      let b = Number(r.band || 0);
+      if (b > 9) b = (b / 160) * 9;
+      return Math.min(9.0, Math.max(0, b));
+    }).filter(b => b > 0);
+    return valid.length ? Math.min(9.0, valid.reduce((s, b) => s + b, 0) / valid.length).toFixed(1) : "—";
   }, [results]);
 
   const targetAchieversCount = useMemo(() => {

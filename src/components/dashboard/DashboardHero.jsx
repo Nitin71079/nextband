@@ -35,8 +35,10 @@ export default function DashboardHero({
   const streak =
     analytics.studyStreak ?? 18;
 
-  const estimatedBand =
-    analytics.averageBand ?? 7.5;
+  const estimatedBand = Math.min(
+    9.0,
+    Math.max(0, Number(analytics.averageBand ?? 7.5))
+  );
 
   const weeklyGoal =
     analytics.weeklyProgress ?? 82;

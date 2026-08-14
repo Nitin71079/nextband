@@ -35,16 +35,30 @@ function timeAgo(ts) {
   return `${days} Days Ago`;
 }
 
+function sanitizeBand(raw) {
+  if (raw === null || raw === undefined || isNaN(raw)) return 0;
+  let val = Number(raw);
+  if (val > 9) {
+    // Convert DET scale (10-160) or percentage (0-100) to IELTS Band 1.0 - 9.0
+    val = (val / 160) * 9;
+  }
+  return Number(Math.min(9.0, Math.max(0, val)).toFixed(1));
+}
+
 function bandFromResults(results, type) {
   const typed = results.filter(r => r.type === type && r.band);
   if (!typed.length) return null;
-  return Number(typed[0].band);
+  return sanitizeBand(typed[0].band);
 }
 
 function avgBand(results) {
-  const bands = results.filter(r => r.band).map(r => Number(r.band));
+  const bands = results
+    .filter(r => r.band !== undefined && r.band !== null)
+    .map(r => sanitizeBand(r.band))
+    .filter(b => b > 0);
   if (!bands.length) return null;
-  return +(bands.reduce((a, b) => a + b, 0) / bands.length).toFixed(1);
+  const rawAvg = bands.reduce((a, b) => a + b, 0) / bands.length;
+  return Number(Math.min(9.0, Math.max(0, rawAvg)).toFixed(1));
 }
 
 function weeklyProgress(results) {
@@ -214,14 +228,14 @@ export function useLiveData() {
 
       setAnalytics({
         studyStreak:     streak,
-        averageBand:     avg || (lastCBT ? Number(lastCBT.overall || 0) : 0),
+        averageBand:     sanitizeBand(avg || (lastCBT ? Number(lastCBT.overall || 0) : 0)),
         weeklyProgress:  weekly,
         testsCompleted:  results.length + cbtHistory.length,
-        reading:         reading  ?? lastCBT?.reading  ?? 0,
-        listening:       listening ?? lastCBT?.listening ?? 0,
-        writing:         writing  ?? lastCBT?.writing  ?? 0,
-        speaking:        speaking ?? lastCBT?.speaking ?? 0,
-        bestBand:        bestCBT ?? avg,
+        reading:         sanitizeBand(reading  ?? lastCBT?.reading  ?? 0),
+        listening:       sanitizeBand(listening ?? lastCBT?.listening ?? 0),
+        writing:         sanitizeBand(writing  ?? lastCBT?.writing  ?? 0),
+        speaking:        sanitizeBand(speaking ?? lastCBT?.speaking ?? 0),
+        bestBand:        sanitizeBand(bestCBT ?? avg ?? 0),
         dailyGoal: {
           title:     todayResults.length === 0 ? "Complete a practice test today" : `Great! ${todayResults.length} test${todayResults.length > 1 ? "s" : ""} done today`,
           time:      "30 Minutes",

@@ -62,26 +62,22 @@ export async function saveResult(
         userData.testsTaken ||
         0;
 
-      const newAverage =
-        (
-          previousAverage *
-            testsTaken +
-          Number(band)
-        ) /
-        (testsTaken + 1);
+      let validBand = Number(band) || 0;
+      if (validBand > 9) {
+        validBand = (validBand / 160) * 9;
+      }
+      validBand = Math.min(9.0, Math.max(0, validBand));
+
+      const newAverage = Math.min(
+        9.0,
+        (previousAverage * testsTaken + validBand) / (testsTaken + 1)
+      );
 
       await updateDoc(
         userRef,
         {
-          averageBand:
-            Number(
-              newAverage.toFixed(
-                1
-              )
-            ),
-
-          testsTaken:
-            testsTaken + 1
+          averageBand: Number(newAverage.toFixed(1)),
+          testsTaken: testsTaken + 1
         }
       );
     }
