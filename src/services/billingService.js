@@ -19,34 +19,65 @@ function loadRazorpayScript() {
 
 export async function createOrder(plan, isTrial = false) {
   try {
-    const response = await fetch("/api/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ plan, isTrial }),
-    });
+    // In PWA / standalone mode, fetch from production API origin to get production Razorpay order & key
+    const primaryUrl = (typeof window !== "undefined" && window.location.origin.includes("knarrow.in"))
+      ? `${window.location.origin}/api/checkout`
+      : "https://knarrow.in/api/checkout";
+
+    let response = null;
+    try {
+      response = await fetch(primaryUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, isTrial }),
+      });
+    } catch (e) {
+      console.warn("Primary API URL fetch failed, trying fallback /api/checkout:", e);
+    }
+
+    if (!response || !response.ok) {
+      response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, isTrial }),
+      });
+    }
 
     const text = await response.text();
     if (!response.ok) {
-      throw new Error(`Checkout failed (${response.status}): ${text}`);
+      throw new Error(`Checkout API HTTP ${response.status}: ${text}`);
     }
     return JSON.parse(text);
   } catch (err) {
-    console.warn("createOrder warning:", err);
+    console.error("createOrder error:", err);
     return null;
   }
 }
 
 export async function verifyPayment(data) {
   try {
-    const response = await fetch("/api/verify-payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const primaryUrl = (typeof window !== "undefined" && window.location.origin.includes("knarrow.in"))
+      ? `${window.location.origin}/api/verify-payment`
+      : "https://knarrow.in/api/verify-payment";
+
+    let response = null;
+    try {
+      response = await fetch(primaryUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } catch (e) {
+      console.warn("Primary verify payment URL fetch failed, trying fallback:", e);
+    }
+
+    if (!response || !response.ok) {
+      response = await fetch("/api/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    }
 
     const result = await response.json();
     if (!response.ok) {
@@ -74,18 +105,24 @@ export async function startCheckout(plan, isTrial = false) {
     return;
   }
 
-  let orderData = await createOrder(plan, isTrial);
+  toast.loading("Connecting to secure payment gateway...", { id: "pwa-checkout-loading" });
 
-  const razorpayKey = orderData?.key || "rzp_test_knarrow_demo";
-  const amountPaise = isTrial ? 100 : (plan === "Premium 3 Months" ? 79900 : 29900);
+  const orderData = await createOrder(plan, isTrial);
+  toast.dismiss("pwa-checkout-loading");
 
+  if (!orderData || !orderData.order || !orderData.key) {
+    toast.error(orderData?.error || "Could not initialize checkout. Please check internet connection and try again.");
+    return;
+  }
+
+  const razorpayKey = orderData.key;
   const trialDescription = "2-day FREE trial — ₹1 authorization only. Auto-renews to 3-Month Premium after trial.";
 
   const options = {
     key: razorpayKey,
-    order_id: orderData?.order?.id,
-    amount: orderData?.order?.amount || amountPaise,
-    currency: orderData?.order?.currency || "INR",
+    order_id: orderData.order.id,
+    amount: orderData.order.amount,
+    currency: orderData.order.currency || "INR",
     name: "Knarrow",
     description: isTrial
       ? trialDescription
@@ -101,9 +138,9 @@ export async function startCheckout(plan, isTrial = false) {
           uid: user.uid,
           plan,
           isTrial,
-          razorpay_order_id: payment.razorpay_order_id || "",
-          razorpay_payment_id: payment.razorpay_payment_id || "",
-          razorpay_signature: payment.razorpay_signature || "",
+          razorpay_order_id: payment.razorpay_order_id,
+          razorpay_payment_id: payment.razorpay_payment_id,
+          razorpay_signature: payment.razorpay_signature,
         });
 
         // Ensure user document in Firestore updates with active plan
@@ -169,33 +206,38 @@ export async function startExpertCheckout({ sessionTitle, amountINR, user, onSuc
     return;
   }
 
-  const isLoaded = await loadRazorpayScript();
+  await loadRazorpayScript();
 
   try {
-    let order, key;
+    const primaryUrl = (typeof window !== "undefined" && window.location.origin.includes("knarrow.in"))
+      ? `${window.location.origin}/api/checkout`
+      : "https://knarrow.in/api/checkout";
+
+    let orderData = null;
     try {
-      const response = await fetch("/api/checkout", {
+      const response = await fetch(primaryUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ customAmount: amountINR, itemTitle: sessionTitle }),
       });
       if (response.ok) {
-        const data = await response.json();
-        order = data.order;
-        key = data.key;
+        orderData = await response.json();
       }
     } catch (e) {
-      console.warn("Backend order creation unavailable, fallback to Razorpay direct:", e);
+      console.warn("Backend order creation error:", e);
     }
 
-    const razorpayKey = key || "rzp_test_knarrow_demo";
-    const amountInPaise = amountINR * 100;
+    if (!orderData || !orderData.key || !orderData.order) {
+      toast.error("Could not initialize payment for Expert Session.");
+      if (onError) onError("Order creation failed");
+      return;
+    }
 
     const options = {
-      key: razorpayKey,
-      amount: order ? order.amount : amountInPaise,
+      key: orderData.key,
+      amount: orderData.order.amount,
       currency: "INR",
-      order_id: order ? order.id : undefined,
+      order_id: orderData.order.id,
       name: "Knarrow Experts Corner",
       description: `1-Hour Session: ${sessionTitle}`,
       theme: { color: "#2563eb" },
@@ -226,8 +268,8 @@ export async function startExpertCheckout({ sessionTitle, amountINR, user, onSuc
       const rzp = new window.Razorpay(options);
       rzp.open();
     } else {
-      toast.error("Razorpay SDK not available. Trying direct booking...");
-      if (onSuccess) onSuccess(`pay_direct_${Date.now()}`);
+      toast.error("Razorpay SDK not available.");
+      if (onError) onError("Razorpay SDK missing");
     }
   } catch (err) {
     console.error("Razorpay Checkout Error:", err);
