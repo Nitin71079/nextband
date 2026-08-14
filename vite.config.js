@@ -8,7 +8,7 @@ export default defineConfig({
 
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.png", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"],
+      includeAssets: ["favicon.png", "favicon.ico", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "logo.png"],
       workbox: {
         maximumFileSizeToCacheInBytes: 35 * 1024 * 1024, // 35MB limit
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}"],
@@ -19,8 +19,8 @@ export default defineConfig({
         short_name: "Knarrow",
         description:
           "Master IELTS with AI-powered Writing & Speaking evaluation, realistic CBT mock tests, Reading, Listening, and personalized analytics.",
-        theme_color: "#2563eb",
-        background_color: "#0f172a",
+        theme_color: "#000000",
+        background_color: "#000000",
         display: "standalone",
         orientation: "portrait-primary",
         start_url: "/",
