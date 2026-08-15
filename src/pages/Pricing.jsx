@@ -4,7 +4,7 @@ import AuroraBackground from "../components/AuroraBackground";
 import PricingCard from "../components/PricingCard";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { validateAndApplyCoupon } from "../services/couponService";
+import { validateReferralCode } from "../services/referralService";
 import "../styles/pricing.css";
 
 /* ── social proof numbers ── */
@@ -37,32 +37,28 @@ const COMPARE = [
 /* ── FAQ items ── */
 const FAQ = [
   {
-    q: "Is there a free trial?",
-    a: "Yes! The 3-Month Premium plan comes with a 2-day free trial. We charge just ₹1 to verify your payment method. After 2 days, the full ₹799 is charged and your 3-month plan begins. You can cancel before the trial ends to avoid the charge.",
+    q: "How does the First-Timers discount work?",
+    a: "If you are upgrading to Knarrow Premium for the very first time, you automatically get 50% OFF: Monthly is only ₹499 (instead of ₹999) and 3 Months is only ₹1249 (instead of ₹2499). When you return the second time, regular prices apply automatically.",
   },
   {
-    q: "Does the 3-Month plan auto-renew?",
-    a: "Yes. The 3-Month Premium plan auto-renews every 90 days at ₹799 for uninterrupted access. You will receive a reminder before each renewal. You can cancel anytime from your account settings.",
+    q: "How do I get ₹50 Bank Cashback with a Referral Code?",
+    a: "Enter a valid friend's referral code in the referral box on this page before checkout. As soon as your purchase completes, ₹50 instant cashback is credited directly to your bank account / balance.",
+  },
+  {
+    q: "What is included in the Lifetime Access plan?",
+    a: "The Lifetime Access plan is a one-time ₹4,999 payment that unlocks all current and future Knarrow CBT mock tests, AI evaluations, Study Planner, Accent Lab, and features forever with no recurring fees ever.",
+  },
+  {
+    q: "Is there a free trial for the 3-Month plan?",
+    a: "Yes! The 3-Month Premium plan comes with a 2-day free trial. We charge just ₹1 to verify your payment method. After 2 days, your 3-month plan begins.",
   },
   {
     q: "Is Premium activated immediately?",
     a: "Yes. Once Razorpay verifies your payment, Premium unlocks automatically within seconds.",
   },
   {
-    q: "Can I access Knarrow on multiple devices?",
-    a: "Absolutely. Sign in with the same account on any device — desktop, tablet, or mobile.",
-  },
-  {
     q: "Which payment methods are supported?",
-    a: "UPI, Debit / Credit Cards, Net Banking, and Wallets via Razorpay.",
-  },
-  {
-    q: "Will my Premium expire automatically?",
-    a: "Yes. Your subscription stays active until the expiry date shown in your account. The 3-Month plan auto-renews; the Monthly plan requires manual renewal.",
-  },
-  {
-    q: "What if I'm already on a plan?",
-    a: "Your current plan is highlighted on this page. You can upgrade anytime and the new period starts immediately.",
+    a: "UPI (GPay, PhonePe, Paytm), Debit / Credit Cards, Net Banking, and Wallets via Razorpay.",
   },
 ];
 
@@ -71,33 +67,39 @@ export default function Pricing() {
   const navigate = useNavigate();
   const pricingRef = useRef(null);
 
-  const [couponInput, setCouponInput] = useState("FIRST50");
-  const [couponApplied, setCouponApplied] = useState(false);
+  // Check if user is first-timer (has not purchased premium before)
+  const isFirstTime = user ? !user.hasPurchasedPremium : true;
 
-  async function handleApplyCoupon() {
-    if (!couponInput) {
-      toast.error("Please enter a coupon code.");
+  const [referralInput, setReferralInput] = useState("");
+  const [appliedReferralCode, setAppliedReferralCode] = useState("");
+  const [referralValid, setReferralValid] = useState(false);
+
+  async function handleApplyReferral() {
+    const code = referralInput.trim().toUpperCase();
+    if (!code) {
+      toast.error("Please enter a referral code.");
       return;
     }
-    const result = await validateAndApplyCoupon({
-      couponCode: couponInput,
-      user,
-      originalPrice: 299,
-    });
-    if (result.valid) {
-      setCouponApplied(true);
-      toast.success(result.message);
-    } else {
-      setCouponApplied(false);
-      toast.error(result.message);
+    try {
+      const res = await validateReferralCode(code);
+      if (res.valid) {
+        setAppliedReferralCode(code);
+        setReferralValid(true);
+        toast.success("🎉 Referral Code Applied! ₹50 Bank Cashback activated.");
+      } else {
+        setReferralValid(false);
+        toast.error(res.message || "Invalid referral code.");
+      }
+    } catch (err) {
+      setReferralValid(false);
+      toast.error(err.message || "Referral validation failed.");
     }
   }
 
-  /* figure out which card is "active" */
   const currentPlan = !user
     ? null
     : premium
-    ? premiumPlan || "Premium Monthly"   // fallback to monthly if plan not stored
+    ? premiumPlan || "Premium Monthly"
     : "Free";
 
   function scrollToPlans() {
@@ -108,12 +110,9 @@ export default function Pricing() {
     <div className="pricing-page">
       <AuroraBackground />
 
-      {/* ═══════════════════════════════════════
-          HERO
-      ═══════════════════════════════════════ */}
+      {/* HERO */}
       <section className="pr-hero">
         <div className="pr-hero-inner">
-
           <div className="pr-hero-pill">
             🚀 AI-Powered IELTS Preparation Platform
           </div>
@@ -148,13 +147,10 @@ export default function Pricing() {
             <span className="pr-stars">⭐⭐⭐⭐⭐</span>
             <span>Premium AI-powered IELTS Preparation</span>
           </div>
-
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════
-          STATS BAR
-      ═══════════════════════════════════════ */}
+      {/* STATS BAR */}
       <section className="pr-stats">
         {STATS.map((s) => (
           <div key={s.value} className="pr-stat-card">
@@ -164,9 +160,7 @@ export default function Pricing() {
         ))}
       </section>
 
-      {/* ═══════════════════════════════════════
-          ACTIVE PLAN BANNER
-      ═══════════════════════════════════════ */}
+      {/* ACTIVE PLAN BANNER */}
       {user && premium && (
         <div className="pr-active-banner">
           <div className="pr-active-banner-inner">
@@ -186,7 +180,7 @@ export default function Pricing() {
                         month: "long",
                         year: "numeric",
                       })}
-                      {autoRenew && !isTrial && " · Auto-renews every 3 months"}
+                      {autoRenew && !isTrial && " · Auto-renews"}
                     </p>
                   );
                 })()}
@@ -202,74 +196,75 @@ export default function Pricing() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════
-          PRICING CARDS
-      ═══════════════════════════════════════ */}
+      {/* PRICING CARDS SECTION */}
       <section id="pricing-section" className="pr-plans-section" ref={pricingRef}>
-
         <div className="pr-section-label">Simple, transparent pricing</div>
-
         <h2 className="pr-section-title">Choose Your Plan</h2>
-
         <p className="pr-section-sub">
-          Upgrade anytime and unlock the complete Knarrow experience.
+          {isFirstTime
+            ? "🎁 First-Time Buyer Special Deal: 50% OFF automatically applied below!"
+            : "Welcome back! Regular pricing applies for your renewal plan."}
         </p>
 
-        {/* 🎟 FIRST USER COUPON BANNER */}
+        {/* 🎁 REFERRAL CODE INPUT FIELD FOR ₹50 CASHBACK */}
         <div
           style={{
-            maxWidth: "680px",
-            margin: "0 auto 30px auto",
+            maxWidth: "720px",
+            margin: "0 auto 32px auto",
             background: "linear-gradient(135deg, #0284c7, #2563eb)",
             color: "#ffffff",
-            borderRadius: "20px",
-            padding: "20px 24px",
-            boxShadow: "0 10px 25px rgba(2, 132, 199, 0.25)",
+            borderRadius: "22px",
+            padding: "24px 28px",
+            boxShadow: "0 12px 30px rgba(2, 132, 199, 0.28)",
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "14px", fontWeight: "800", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "4px" }}>
-            🎉 FIRST TIME USER OFFER — 50% OFF!
+          <div style={{ fontSize: "15px", fontWeight: "900", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "6px" }}>
+            🎁 HAVE A REFERRAL CODE? GET ₹50 INSTANT BANK CASHBACK!
           </div>
-          <p style={{ fontSize: "14px", opacity: 0.95, margin: "4px 0 14px 0" }}>
-            Use coupon code <strong style={{ background: "rgba(255,255,255,0.2)", padding: "2px 8px", borderRadius: "6px" }}>FIRST50</strong> during checkout to get 50% OFF your first Premium plan!
+          <p style={{ fontSize: "14px", opacity: 0.95, margin: "4px 0 16px 0" }}>
+            Enter your friend's referral code below to receive <strong>₹50 instant bank cashback</strong> directly into your account upon completing your purchase.
           </p>
-          <div style={{ display: "flex", gap: "8px", maxWidth: "420px", margin: "0 auto" }}>
+          <div style={{ display: "flex", gap: "10px", maxWidth: "460px", margin: "0 auto", flexWrap: "wrap" }}>
             <input
               type="text"
-              placeholder="Enter coupon code (e.g. FIRST50)"
-              value={couponInput}
-              onChange={(e) => setCouponInput(e.target.value)}
+              placeholder="Enter Referral Code (e.g. KNARROW123)"
+              value={referralInput}
+              onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
               style={{
                 flex: 1,
-                padding: "10px 14px",
-                borderRadius: "12px",
+                minWidth: "200px",
+                padding: "12px 16px",
+                borderRadius: "14px",
                 border: "none",
                 fontSize: "14px",
                 color: "#0f172a",
-                fontWeight: "600",
+                fontWeight: "700",
                 outline: "none",
+                textTransform: "uppercase",
               }}
             />
             <button
-              onClick={handleApplyCoupon}
+              onClick={handleApplyReferral}
               style={{
-                background: "#ffffff",
-                color: "#0284c7",
+                background: referralValid ? "#22c55e" : "#ffffff",
+                color: referralValid ? "#ffffff" : "#0284c7",
                 border: "none",
-                borderRadius: "12px",
-                padding: "10px 18px",
+                borderRadius: "14px",
+                padding: "12px 20px",
                 fontWeight: "800",
                 fontSize: "14px",
                 cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                whiteSpace: "nowrap",
               }}
             >
-              Apply 50% OFF
+              {referralValid ? "✓ ₹50 Cashback Ready" : "Apply Referral Code"}
             </button>
           </div>
-          {couponApplied && (
-            <div style={{ marginTop: "10px", fontSize: "13px", fontWeight: "700", color: "#4ade80" }}>
-              ✓ Coupon FIRST50 Applied! 50% OFF enabled on plans below.
+          {referralValid && (
+            <div style={{ marginTop: "12px", fontSize: "13px", fontWeight: "800", color: "#4ade80" }}>
+              ✓ Referral Code Applied! ₹50 bank cashback will be credited to your account upon checkout.
             </div>
           )}
         </div>
@@ -277,7 +272,7 @@ export default function Pricing() {
         {/* 📱 PWA APP INSTALL TRIGGER CARD */}
         <div
           style={{
-            maxWidth: "680px",
+            maxWidth: "720px",
             margin: "0 auto 40px auto",
             background: "var(--card, #ffffff)",
             border: "1px solid var(--border, #e2e8f0)",
@@ -339,46 +334,58 @@ export default function Pricing() {
           </button>
         </div>
 
-        <div className="pr-plans-grid">
-
+        {/* PLANS GRID */}
+        <div className="pr-plans-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))", gap: "24px" }}>
+          {/* Free Plan */}
           <PricingCard
             title="Free"
             price="0"
             currentPlan={currentPlan}
           />
 
+          {/* Monthly Plan: ₹499 1st time / ₹999 regular */}
           <PricingCard
             title="Premium Monthly"
-            price={couponApplied ? "149.50" : "299"}
-            originalPrice="299"
-            couponApplied={couponApplied}
+            price={isFirstTime ? "499" : "999"}
+            originalPrice={isFirstTime ? "999" : null}
+            isFirstTime={isFirstTime}
+            appliedReferralCode={appliedReferralCode}
             currentPlan={currentPlan}
             expiresAt={premiumExpires}
           />
 
+          {/* 3-Month Plan: ₹1249 1st time / ₹2499 regular */}
           <PricingCard
             title="Premium 3 Months"
-            price={couponApplied ? "399.50" : "799"}
-            originalPrice="799"
-            couponApplied={couponApplied}
+            price={isFirstTime ? "1249" : "2499"}
+            originalPrice={isFirstTime ? "2499" : null}
+            isFirstTime={isFirstTime}
+            appliedReferralCode={appliedReferralCode}
             popular
             currentPlan={currentPlan}
             expiresAt={premiumExpires}
           />
 
+          {/* Lifetime Plan: ₹4999 */}
+          <PricingCard
+            title="Lifetime Access"
+            price="4999"
+            originalPrice="9999"
+            isFirstTime={isFirstTime}
+            appliedReferralCode={appliedReferralCode}
+            isLifetime
+            currentPlan={currentPlan}
+            expiresAt={premiumExpires}
+          />
         </div>
 
         <p className="pr-plans-footnote">
-          🔒 All payments are processed securely through Razorpay &nbsp;·&nbsp; Instant activation
+          🔒 All payments are processed securely through Razorpay &nbsp;·&nbsp; Instant activation &amp; ₹50 Referral Bank Cashback
         </p>
-
       </section>
 
-      {/* ═══════════════════════════════════════
-          BENEFITS
-      ═══════════════════════════════════════ */}
+      {/* BENEFITS */}
       <section id="pr-benefits" className="pr-benefits">
-
         <div className="pr-section-label">Why Knarrow</div>
         <h2 className="pr-section-title">Everything You Need to Score Higher</h2>
         <p className="pr-section-sub">
@@ -402,128 +409,52 @@ export default function Pricing() {
             </div>
           ))}
         </div>
-
       </section>
 
-      {/* ═══════════════════════════════════════
-          TRUST
-      ═══════════════════════════════════════ */}
-      <section className="pr-trust">
-        <div className="pr-trust-inner">
-          {[
-            { icon: "🔒", title: "100% Secure Payments",  desc: "Powered by Razorpay with industry-standard encryption and payment protection." },
-            { icon: "⚡", title: "Instant Premium Access", desc: "Your account upgrades automatically after successful payment verification." },
-            { icon: "💻", title: "Access Anywhere",        desc: "Practice from desktop, tablet or mobile using the same account." },
-          ].map((t) => (
-            <div key={t.title} className="pr-trust-card">
-              <div className="pr-trust-icon">{t.icon}</div>
-              <h3>{t.title}</h3>
-              <p>{t.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════
-          COMPARISON TABLE
-      ═══════════════════════════════════════ */}
+      {/* FEATURE COMPARISON */}
       <section className="pr-compare">
-
-        <div className="pr-section-label">Side by side</div>
+        <div className="pr-section-label">Detailed Breakdown</div>
         <h2 className="pr-section-title">Compare Plans</h2>
+        <p className="pr-section-sub">
+          See everything included in Free vs Premium.
+        </p>
 
-        <div className="pr-compare-table">
-
-          {/* header */}
-          <div className="pr-compare-row pr-compare-head">
-            <div>Feature</div>
-            <div>Free</div>
-            <div>Premium</div>
-          </div>
-
-          {COMPARE.map((row, i) => (
-            <div
-              key={i}
-              className={`pr-compare-row${i % 2 === 0 ? " pr-compare-even" : ""}`}
-            >
-              <div>{row.feature}</div>
-              <div className={row.free === "—" ? "pr-no" : "pr-yes"}>{row.free}</div>
-              <div className="pr-yes">{row.premium}</div>
-            </div>
-          ))}
-
+        <div className="pr-compare-table-wrapper">
+          <table className="pr-compare-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Free Plan</th>
+                <th>Premium Plan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {COMPARE.map((row, idx) => (
+                <tr key={idx}>
+                  <td>{row.feature}</td>
+                  <td className="free-cell">{row.free}</td>
+                  <td className="prem-cell">{row.premium}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
       </section>
 
-      {/* ═══════════════════════════════════════
-          FAQ
-      ═══════════════════════════════════════ */}
+      {/* FAQ */}
       <section className="pr-faq">
-
-        <div className="pr-section-label">Got questions?</div>
+        <div className="pr-section-label">Questions?</div>
         <h2 className="pr-section-title">Frequently Asked Questions</h2>
 
         <div className="pr-faq-grid">
-          {FAQ.map((item) => (
-            <div key={item.q} className="pr-faq-card">
+          {FAQ.map((item, idx) => (
+            <div key={idx} className="pr-faq-card">
               <h3>{item.q}</h3>
               <p>{item.a}</p>
             </div>
           ))}
         </div>
-
       </section>
-
-      {/* ═══════════════════════════════════════
-          FINAL CTA
-      ═══════════════════════════════════════ */}
-      <section className="pr-final-cta">
-        <div className="pr-cta-card">
-          <div className="pr-cta-badge">🚀 Start Your IELTS Journey Today</div>
-
-          <h2>
-            Ready to Reach <span>Band 8+</span> with Knarrow?
-          </h2>
-
-          <p>
-            Practice smarter with AI-powered evaluation, realistic CBT mock exams,
-            personalised analytics and everything you need to hit your target band.
-          </p>
-
-          <button className="pr-cta-btn" onClick={scrollToPlans}>
-            🚀 View Plans
-          </button>
-
-          <div className="pr-cta-trust">
-            <span>🔒 Secure Payments</span>
-            <span>⚡ Instant Activation</span>
-            <span>💳 Powered by Razorpay</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════
-          MOBILE STICKY CTA
-      ═══════════════════════════════════════ */}
-      {!premium && (
-        <div className="pr-mobile-sticky">
-          <button onClick={scrollToPlans}>🚀 Unlock Premium</button>
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════
-          FOOTER
-      ═══════════════════════════════════════ */}
-      <footer className="pr-footer">
-        <p>© 2026 Knarrow. All rights reserved.</p>
-        <div>
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
-          <a href="/support">Help Center</a>
-        </div>
-      </footer>
-
     </div>
   );
 }

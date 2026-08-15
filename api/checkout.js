@@ -11,11 +11,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { plan, isTrial, customAmount, itemTitle } = req.body;
+    const { plan, isTrial, customAmount, itemTitle, isFirstTime } = req.body;
 
     const prices = {
-      "Premium Monthly": 29900,
-      "Premium 3 Months": 79900,
+      "Premium Monthly": isFirstTime ? 49900 : 99900,
+      "Premium Monthly (First Time)": 49900,
+      "Premium 3 Months": isFirstTime ? 124900 : 249900,
+      "Premium 3 Months (First Time)": 124900,
+      "Premium Lifetime": 499900,
+      "Lifetime Access": 499900,
     };
 
     // Amount in paise
@@ -25,7 +29,7 @@ export default async function handler(req, res) {
     } else if (isTrial) {
       amount = 100;
     } else {
-      amount = prices[plan];
+      amount = prices[plan] || (isFirstTime ? 49900 : 99900);
     }
 
     if (!amount || isNaN(amount)) {
@@ -39,9 +43,9 @@ export default async function handler(req, res) {
       currency: "INR",
       receipt: `rcpt_${Date.now()}`,
       notes: {
-        plan: plan || itemTitle || "Expert Session",
+        plan: plan || itemTitle || "Knarrow Premium",
         isTrial: isTrial ? "true" : "false",
-        refundGuarantee: "50% Instant Refund on Expert Absence",
+        isFirstTime: isFirstTime ? "true" : "false",
       },
     });
 

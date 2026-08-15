@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { auth, app } from "../firebase";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { processReferralCommissionOnPremium } from "./referralService";
+import { processReferralCommissionOnPremium, applyReferralCode } from "./referralService";
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -17,19 +17,26 @@ function loadRazorpayScript() {
   });
 }
 
-export async function createOrder(plan, isTrial = false) {
+export async function createOrder(plan, isTrial = false, checkoutParams = {}) {
   try {
-    // In PWA / standalone mode, fetch from production API origin to get production Razorpay order & key
     const primaryUrl = (typeof window !== "undefined" && window.location.origin.includes("knarrow.in"))
       ? `${window.location.origin}/api/checkout`
       : "https://knarrow.in/api/checkout";
+
+    const payload = {
+      plan,
+      isTrial,
+      customAmount: checkoutParams.customAmount,
+      isFirstTime: checkoutParams.isFirstTime,
+      appliedReferralCode: checkoutParams.appliedReferralCode,
+    };
 
     let response = null;
     try {
       response = await fetch(primaryUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, isTrial }),
+        body: JSON.stringify(payload),
       });
     } catch (e) {
       console.warn("Primary API URL fetch failed, trying fallback /api/checkout:", e);
@@ -39,7 +46,7 @@ export async function createOrder(plan, isTrial = false) {
       response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, isTrial }),
+        body: JSON.stringify(payload),
       });
     }
 
@@ -90,7 +97,7 @@ export async function verifyPayment(data) {
   }
 }
 
-export async function startCheckout(plan, isTrial = false) {
+export async function startCheckout(plan, isTrial = false, checkoutParams = {}) {
   const user = auth.currentUser;
 
   if (!user) {
@@ -107,7 +114,7 @@ export async function startCheckout(plan, isTrial = false) {
 
   toast.loading("Connecting to secure payment gateway...", { id: "pwa-checkout-loading" });
 
-  const orderData = await createOrder(plan, isTrial);
+  const orderData = await createOrder(plan, isTrial, checkoutParams);
   toast.dismiss("pwa-checkout-loading");
 
   if (!orderData || !orderData.order || !orderData.key) {
@@ -126,9 +133,11 @@ export async function startCheckout(plan, isTrial = false) {
     name: "Knarrow",
     description: isTrial
       ? trialDescription
+      : plan === "Lifetime Access"
+      ? "Unlimited Lifetime Access — Full Mocks, AI Writing & Speaking Forever"
       : plan === "Premium Monthly"
       ? "Unlimited mocks · AI Writing & Speaking · Study Planner · Analytics"
-      : "Everything in Monthly · Unlimited AI · Accent Lab · Priority features · Save ₹98",
+      : "Everything in Monthly · Unlimited AI · Accent Lab · Priority features",
     theme: {
       color: "#2563eb",
     },
@@ -143,13 +152,15 @@ export async function startCheckout(plan, isTrial = false) {
           razorpay_signature: payment.razorpay_signature,
         });
 
-        // Ensure user document in Firestore updates with active plan
+        // Update user document in Firestore with active plan & set hasPurchasedPremium: true
         try {
           const db = getFirestore(app);
           const userRef = doc(db, "users", user.uid);
           const expiresAt = new Date();
           if (isTrial) {
             expiresAt.setDate(expiresAt.getDate() + 2);
+          } else if (plan === "Lifetime Access" || plan === "Premium Lifetime") {
+            expiresAt.setFullYear(expiresAt.getFullYear() + 99);
           } else if (plan === "Premium 3 Months") {
             expiresAt.setMonth(expiresAt.getMonth() + 3);
           } else {
@@ -158,21 +169,35 @@ export async function startCheckout(plan, isTrial = false) {
 
           await setDoc(userRef, {
             premium: true,
-            premiumPlan: plan,
+            premiumPlan: plan === "Lifetime Access" ? "Premium Lifetime" : plan,
             isTrial: isTrial,
+            hasPurchasedPremium: true, // Mark user as no longer first-timer
             premiumExpires: expiresAt.toISOString(),
           }, { merge: true });
+
+          // If referral code was applied during checkout, process ₹50 instant cashback
+          if (checkoutParams.appliedReferralCode) {
+            await applyReferralCode(user.uid, checkoutParams.appliedReferralCode).catch(console.error);
+            await setDoc(userRef, {
+              referralCashback: 50,
+              cashbackStatus: "CREDITED",
+              cashbackMessage: "₹50 Instant Bank Cashback via Referral",
+            }, { merge: true }).catch(console.error);
+            toast.success("🎉 ₹50 Bank Cashback Activated! Cashback credited to your referral balance.");
+          }
         } catch (dbErr) {
           console.error("Firestore user update error:", dbErr);
         }
 
         if (isTrial) {
           toast.success("🎉 2-Day Free Trial Started! Auto-renews to 3-Month Premium.");
+        } else if (plan === "Lifetime Access") {
+          toast.success("🎉 Lifetime Unlimited Access Activated!");
         } else {
           toast.success("🎉 Premium Activated!");
         }
 
-        const planPrice = plan === "Premium 3 Months" ? 799 : 299;
+        const planPrice = Number(checkoutParams.customAmount) || (plan === "Premium 3 Months" ? 1249 : 499);
         await processReferralCommissionOnPremium({
           userId: user.uid,
           planPrice: isTrial ? 1 : planPrice,

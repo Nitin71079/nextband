@@ -17,23 +17,18 @@ const FEATURES = {
     "Exam History",
   ],
   "Premium Monthly": [
-    "Unlimited Reading Mock Tests",
-    "Unlimited Listening Mock Tests",
+    "Unlimited Reading & Listening Mock Tests",
     "Full Academic & General CBT Mocks",
     "AI Writing Evaluation (band + detailed feedback)",
     "AI Speaking Evaluation (fluency, grammar, pronunciation)",
     "AI Study Planner — personalised weekly plan",
     "AI Assistant — 24/7 IELTS coach",
-    "AI Control Center",
-    "Audio Generator",
+    "AI Control Center & Audio Generator",
     "Accent Lab — pronunciation training",
-    "Performance Analytics Dashboard",
-    "Progress Analytics & Band Prediction",
-    "Evaluation History",
-    "Certificates on band achievement",
-    "Streaks & Achievements",
+    "Performance Analytics & Band Prediction",
+    "Certificates, Streaks & Achievements",
     "Mentors & Live Classes",
-    "Priority Support",
+    "Special First-Time Price (₹499 vs ₹999)",
   ],
   "Premium 3 Months": [
     "Everything in Premium Monthly",
@@ -42,21 +37,40 @@ const FEATURES = {
     "AI Study Planner + AI Assistant",
     "AI Control Center & Audio Generator",
     "Accent Lab — pronunciation training",
-    "Advanced Analytics & Performance Dashboard",
-    "Progress Analytics & Band Prediction",
+    "Advanced Analytics & Band Prediction",
     "Certificates, Streaks & Achievements",
     "Mentors & Live Classes",
-    "Priority Access to New Features",
-    "Premium Support",
-    "Best Value — Save ₹98 vs Monthly",
+    "Priority Support & Early Feature Access",
+    "Special First-Time Price (₹1249 vs ₹2499)",
+  ],
+  "Lifetime Access": [
+    "Unlimited Lifetime Access — One-Time Payment",
+    "Everything in Premium 3 Months Forever",
+    "All Future AI Features & CBT Tests Free",
+    "Unlimited AI Writing & Speaking Evaluations",
+    "Full CBT Mock Suite & AI Study Planner",
+    "1-on-1 Senior Expert Consultation Discount",
+    "VIP Priority Support & Private Forum Access",
+    "Best Value Lifetime Investment",
   ],
 };
 
-export default function PricingCard({ title, price, originalPrice, couponApplied, popular, currentPlan, expiresAt }) {
+export default function PricingCard({
+  title,
+  price,
+  originalPrice,
+  isFirstTime,
+  appliedReferralCode,
+  couponApplied,
+  popular,
+  isLifetime,
+  currentPlan,
+  expiresAt
+}) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const isCurrentPlan = currentPlan === title;
+  const isCurrentPlan = currentPlan === title || (title === "Lifetime Access" && currentPlan === "Premium Lifetime");
   const isFree = title === "Free";
   const is3Month = title === "Premium 3 Months";
   const features = FEATURES[title] || [];
@@ -65,6 +79,8 @@ export default function PricingCard({ title, price, originalPrice, couponApplied
     ? "/month"
     : title === "Premium 3 Months"
     ? "/3 months"
+    : title === "Lifetime Access"
+    ? " one-time"
     : "";
 
   async function handleCheckout(isTrial = false) {
@@ -79,7 +95,11 @@ export default function PricingCard({ title, price, originalPrice, couponApplied
     }
     try {
       setLoading(true);
-      await startCheckout(title, isTrial);
+      await startCheckout(title, isTrial, {
+        customAmount: price,
+        isFirstTime,
+        appliedReferralCode,
+      });
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Unable to start checkout.");
@@ -90,9 +110,11 @@ export default function PricingCard({ title, price, originalPrice, couponApplied
 
   /* expiry label */
   let expiryLabel = null;
-  if (isCurrentPlan && expiresAt && !isFree) {
+  if (isCurrentPlan && expiresAt && !isFree && title !== "Lifetime Access") {
     const d = expiresAt?.toDate ? expiresAt.toDate() : new Date(expiresAt);
     expiryLabel = `Active until ${d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`;
+  } else if (isCurrentPlan && title === "Lifetime Access") {
+    expiryLabel = "♾️ Lifetime Unlimited Access";
   }
 
   /* button label */
@@ -104,14 +126,18 @@ export default function PricingCard({ title, price, originalPrice, couponApplied
     ? "Opening Razorpay…"
     : popular
     ? "🚀 Upgrade Now — Best Value"
+    : isLifetime
+    ? "💎 Get Lifetime Access"
     : "Upgrade Now";
 
   return (
-    <div className={`pricing-card${popular ? " popular" : ""}${isCurrentPlan ? " current-plan" : ""}`}>
-
+    <div className={`pricing-card${popular ? " popular" : ""}${isLifetime ? " lifetime-card" : ""}${isCurrentPlan ? " current-plan" : ""}`}>
       {/* ribbons */}
       {popular && !isCurrentPlan && (
         <div className="popular-badge">MOST POPULAR</div>
+      )}
+      {isLifetime && !isCurrentPlan && (
+        <div className="popular-badge" style={{ background: "linear-gradient(135deg, #ec4899, #8b5cf6)" }}>VIP LIFETIME</div>
       )}
       {isCurrentPlan && (
         <div className="active-badge">
@@ -122,11 +148,11 @@ export default function PricingCard({ title, price, originalPrice, couponApplied
       <div className="card-header">
         <h2>{title}</h2>
 
-        {title === "Premium 3 Months" && !isCurrentPlan && !couponApplied && (
-          <span className="save-badge">🎉 Save ₹98</span>
+        {isFirstTime && originalPrice && !isCurrentPlan && (
+          <span className="save-badge" style={{ background: "#22c55e" }}>🎉 50% OFF FIRST TIMER</span>
         )}
-        {couponApplied && !isFree && (
-          <span className="save-badge" style={{ background: "#22c55e" }}>🎟 50% OFF</span>
+        {couponApplied && !isFree && !isFirstTime && (
+          <span className="save-badge" style={{ background: "#22c55e" }}>🎟 Coupon Applied</span>
         )}
       </div>
 
@@ -134,7 +160,7 @@ export default function PricingCard({ title, price, originalPrice, couponApplied
       <div className="price-section">
         {!isFree && <span className="currency">₹</span>}
         <span className="price">{isFree ? "Free" : price}</span>
-        {couponApplied && originalPrice && !isFree && (
+        {originalPrice && originalPrice !== price && !isFree && (
           <span style={{ textDecoration: "line-through", color: "#94a3b8", fontSize: "18px", marginLeft: "8px" }}>
             ₹{originalPrice}
           </span>
