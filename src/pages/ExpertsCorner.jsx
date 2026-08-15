@@ -386,7 +386,7 @@ export default function ExpertsCorner() {
                   <div style={{ fontSize: 16, fontWeight: 900, color: "#0284c7" }}>
                     {premium ? "FREE" : "₹349"}
                   </div>
-                  {!premium && <div style={{ fontSize: 10, color: "#94a3b8", textDecoration: "line-through" }}>₹799</div>}
+                  {!premium && <div style={{ fontSize: 10, color: "#94a3b8", textDecoration: "line-through" }}>₹999</div>}
                 </div>
               </div>
             </div>

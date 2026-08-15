@@ -131,7 +131,7 @@ export async function processReferralCommissionOnPremium({ userId, planPrice, pl
     if (userData.hasEarnedReferralCommission) return;
     if (!userData.referredByUid) return;
 
-    const priceNum = Number(planPrice) || (planName?.includes("3") ? 799 : 299);
+    const priceNum = Number(planPrice) || (planName?.includes("3") ? 1249 : 499);
     const commission = Number((priceNum * 0.20).toFixed(2)); // 20% of first premium plan
 
     const referrerUid = userData.referredByUid;
