@@ -203,10 +203,10 @@ export default function Pricing() {
         {/* 🎁 REFERRAL CODE BANNER FOR ₹50 CASHBACK */}
         <div className="referral-box-clean">
           <div className="referral-title">
-            🎁 HAVE A REFERRAL CODE? GET ₹50 INSTANT BANK CASHBACK!
+            🎁 HAVE A REFERRAL CODE? GET ₹50 INSTANT CASHBACK!
           </div>
           <p className="referral-subtitle">
-            Enter your friend's referral code below to receive <strong>₹50 instant bank cashback</strong> directly into your account upon completing your purchase.
+            Enter your friend's referral code below: <strong>you get ₹50 instant cashback</strong> into your account upon purchase, and <strong>your friend earns a 20% referral reward!</strong>
           </p>
           <div className="referral-form">
             <input
