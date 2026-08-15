@@ -148,6 +148,11 @@ const NAV_ITEMS_PRIVATE = [
     icon: Gamepad2,
   },
   {
+    label: "Leaderboard",
+    path: "/leaderboard",
+    icon: Trophy,
+  },
+  {
     label: "Pricing",
     path: "/pricing",
     icon: Crown,
@@ -610,7 +615,7 @@ export default function Navbar() {
             <button
               type="button"
               className={`kn-nav-link ${
-                ["/planner", "/games", "/community"].some((p) => location.pathname.startsWith(p))
+                ["/planner", "/games", "/leaderboard", "/community"].some((p) => location.pathname.startsWith(p))
                   ? "active"
                   : ""
               }`}
@@ -645,6 +650,13 @@ export default function Navbar() {
                     <div>
                       <div className="font-bold">Games Zone</div>
                       <div className="text-[11px] opacity-70">Gamified Vocab & Grammar</div>
+                    </div>
+                  </NavLink>
+                  <NavLink to="/leaderboard" className="kn-dropdown-item" onClick={() => setToolsOpen(false)}>
+                    <Trophy size={16} className="text-yellow-400" />
+                    <div>
+                      <div className="font-bold">Leaderboard</div>
+                      <div className="text-[11px] opacity-70">Live Rankings & Badges</div>
                     </div>
                   </NavLink>
                   <NavLink to="/community" className="kn-dropdown-item" onClick={() => setToolsOpen(false)}>
