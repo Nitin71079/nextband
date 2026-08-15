@@ -1123,3 +1123,213 @@
   margin: 10px 0 0 0;
   font-weight: 600;
 }
+
+/* ═════════════════════════════════════════════════════════
+   PRICING PAGE OVERHAUL — 4-COLUMN MATRIX & LUXURY UI
+═════════════════════════════════════════════════════════ */
+.referral-box-clean {
+  max-width: 720px;
+  margin: 0 auto 32px auto;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  border-radius: 22px;
+  padding: 24px 28px;
+  box-shadow: 0 12px 30px rgba(2, 132, 199, 0.28);
+  text-align: center;
+}
+.referral-title {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.referral-subtitle {
+  font-size: 14px;
+  opacity: 0.95;
+  margin: 4px 0 16px 0;
+}
+.referral-form {
+  display: flex;
+  gap: 10px;
+  max-width: 460px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+.referral-form input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: none;
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 700;
+  outline: none;
+  text-transform: uppercase;
+}
+.referral-form button {
+  background: #ffffff;
+  color: #0284c7;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  white-space: nowrap;
+  transition: transform 0.2s, background 0.2s;
+}
+.referral-form button:hover {
+  transform: translateY(-2px);
+}
+.referral-success {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #4ade80;
+}
+
+/* PWA App Install Banner */
+.pwa-banner-clean {
+  max-width: 720px;
+  margin: 0 auto 40px auto;
+  background: var(--card, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 20px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+.pwa-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.pwa-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(37,99,235,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.pwa-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text, #0f172a);
+}
+.pwa-sub {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+.pwa-banner-clean button {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 4-Card Pricing Grid */
+.pr-grid-neat {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* 4-COLUMN COMPARISON MATRIX TABLE */
+.matrix-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 24px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--card, #ffffff);
+  box-shadow: 0 10px 35px rgba(0,0,0,0.05);
+  margin-top: 24px;
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 720px;
+}
+
+.matrix-table th {
+  padding: 18px 20px;
+  font-size: 14px;
+  font-weight: 800;
+  border-bottom: 2px solid var(--border, #e2e8f0);
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.th-feature {
+  width: 32%;
+}
+
+.th-tier {
+  text-align: center;
+  width: 17%;
+}
+
+.th-tier.highlight {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.th-tier.vip {
+  background: #fdf2f8;
+  color: #ec4899;
+}
+
+.matrix-table td {
+  padding: 16px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border, #f1f5f9);
+  color: #334155;
+}
+
+.row-even {
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.matrix-table tr:hover {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.td-feature {
+  font-weight: 700;
+  color: var(--text, #0f172a);
+}
+
+.td-val {
+  text-align: center;
+  font-weight: 700;
+}
+
+.td-val.free {
+  color: #64748b;
+}
+
+.td-val.highlight {
+  color: #2563eb;
+  background: rgba(239, 246, 255, 0.4);
+}
+
+.td-val.vip {
+  color: #d946ef;
+  background: rgba(253, 242, 248, 0.4);
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AuroraBackground from "../components/AuroraBackground";
 import PricingCard from "../components/PricingCard";
@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import { validateReferralCode } from "../services/referralService";
 import "../styles/pricing.css";
 
-/* ── social proof numbers ── */
 const STATS = [
   { value: "20+",  label: "Reading & Listening Tests" },
   { value: "100+", label: "Writing & Speaking Tasks"  },
@@ -15,30 +14,26 @@ const STATS = [
   { value: "CBT",  label: "Real IELTS Exam Experience"},
 ];
 
-/* ── comparison rows ── */
-const COMPARE = [
-  { feature: "Academic Reading Tests", free: "1 Test",     premium: "Unlimited" },
-  { feature: "General Reading Tests",  free: "1 Test",     premium: "Unlimited" },
-  { feature: "Writing Practice Tests", free: "1 Test",     premium: "Unlimited" },
-  { feature: "Speaking Practice Tests",free: "1 Test",     premium: "Unlimited" },
-  { feature: "Listening Practice",     free: "🔒 Locked",  premium: "Unlimited" },
-  { feature: "Full CBT Mock Exams",    free: "🔒 Locked",  premium: "Unlimited" },
-  { feature: "Games Zone",             free: "3 Games",   premium: "All 10 Games" },
-  { feature: "Writing AI Evaluation",  free: "—",         premium: "✓"         },
-  { feature: "Speaking AI Evaluation", free: "—",         premium: "✓"         },
-  { feature: "Band Prediction",        free: "—",         premium: "✓"         },
-  { feature: "Performance Analytics",  free: "Basic",     premium: "Advanced"  },
-  { feature: "Study Planner",          free: "Basic",     premium: "AI Powered"},
-  { feature: "AI Study Coach",         free: "—",         premium: "✓"         },
-  { feature: "1-Hour AI Bot Live Coaching", free: "₹349/session", premium: "FREE Unlimited" },
-  { feature: "1-on-1 Senior Human Expert (60 Min)", free: "₹1,499", premium: "₹749 (50% OFF)" },
+const COMPARE_MATRIX = [
+  { feature: "Academic Reading Tests", free: "1 Test", monthly: "Unlimited", threeMonth: "Unlimited", lifetime: "Unlimited" },
+  { feature: "General Reading Tests", free: "1 Test", monthly: "Unlimited", threeMonth: "Unlimited", lifetime: "Unlimited" },
+  { feature: "Writing Practice Tests", free: "1 Test", monthly: "Unlimited", threeMonth: "Unlimited", lifetime: "Unlimited" },
+  { feature: "Speaking Practice Tests", free: "1 Test", monthly: "Unlimited", threeMonth: "Unlimited", lifetime: "Unlimited" },
+  { feature: "Listening Practice Tests", free: "🔒 Locked", monthly: "Unlimited", threeMonth: "Unlimited", lifetime: "Unlimited" },
+  { feature: "Full CBT Mock Exams", free: "🔒 Locked", monthly: "Unlimited", threeMonth: "Unlimited", lifetime: "Unlimited" },
+  { feature: "AI Writing Band Evaluation", free: "—", monthly: "✓ Included", threeMonth: "✓ Included", lifetime: "✓ Included" },
+  { feature: "AI Speaking Fluency Evaluation", free: "—", monthly: "✓ Included", threeMonth: "✓ Included", lifetime: "✓ Included" },
+  { feature: "AI Study Planner", free: "Basic", monthly: "✓ Personalised", threeMonth: "✓ Personalised", lifetime: "✓ Personalised" },
+  { feature: "Accent Lab & Pronunciation", free: "—", monthly: "✓ Included", threeMonth: "✓ Included", lifetime: "✓ Included" },
+  { feature: "Band Prediction Analytics", free: "Basic", monthly: "✓ Advanced", threeMonth: "✓ Advanced", lifetime: "✓ Advanced" },
+  { feature: "1-on-1 Senior Expert Coaching", free: "₹1,499", monthly: "₹749 (50% OFF)", threeMonth: "₹749 (50% OFF)", lifetime: "₹749 (50% OFF)" },
+  { feature: "Renewal Billing Fee", free: "Free", monthly: "₹999 / month", threeMonth: "₹2,499 / 3 mos", lifetime: "♾️ Zero (Never)" },
 ];
 
-/* ── FAQ items ── */
 const FAQ = [
   {
     q: "How does the First-Timers discount work?",
-    a: "If you are upgrading to Knarrow Premium for the very first time, you automatically get 50% OFF: Monthly is only ₹499 (instead of ₹999) and 3 Months is only ₹1249 (instead of ₹2499). When you return the second time, regular prices apply automatically.",
+    a: "If you are upgrading to Knarrow Premium for the first time, 50% OFF is automatically applied: Monthly is ₹499 (instead of ₹999) and 3 Months is ₹1,249 (instead of ₹2,499). When you return to renew, regular pricing applies automatically.",
   },
   {
     q: "How do I get ₹50 Bank Cashback with a Referral Code?",
@@ -67,7 +62,6 @@ export default function Pricing() {
   const navigate = useNavigate();
   const pricingRef = useRef(null);
 
-  // Check if user is first-timer (has not purchased premium before)
   const isFirstTime = user ? !user.hasPurchasedPremium : true;
 
   const [referralInput, setReferralInput] = useState("");
@@ -206,107 +200,39 @@ export default function Pricing() {
             : "Welcome back! Regular pricing applies for your renewal plan."}
         </p>
 
-        {/* 🎁 REFERRAL CODE INPUT FIELD FOR ₹50 CASHBACK */}
-        <div
-          style={{
-            maxWidth: "720px",
-            margin: "0 auto 32px auto",
-            background: "linear-gradient(135deg, #0284c7, #2563eb)",
-            color: "#ffffff",
-            borderRadius: "22px",
-            padding: "24px 28px",
-            boxShadow: "0 12px 30px rgba(2, 132, 199, 0.28)",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: "15px", fontWeight: "900", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "6px" }}>
+        {/* 🎁 REFERRAL CODE BANNER FOR ₹50 CASHBACK */}
+        <div className="referral-box-clean">
+          <div className="referral-title">
             🎁 HAVE A REFERRAL CODE? GET ₹50 INSTANT BANK CASHBACK!
           </div>
-          <p style={{ fontSize: "14px", opacity: 0.95, margin: "4px 0 16px 0" }}>
+          <p className="referral-subtitle">
             Enter your friend's referral code below to receive <strong>₹50 instant bank cashback</strong> directly into your account upon completing your purchase.
           </p>
-          <div style={{ display: "flex", gap: "10px", maxWidth: "460px", margin: "0 auto", flexWrap: "wrap" }}>
+          <div className="referral-form">
             <input
               type="text"
               placeholder="Enter Referral Code (e.g. KNARROW123)"
               value={referralInput}
               onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
-              style={{
-                flex: 1,
-                minWidth: "200px",
-                padding: "12px 16px",
-                borderRadius: "14px",
-                border: "none",
-                fontSize: "14px",
-                color: "#0f172a",
-                fontWeight: "700",
-                outline: "none",
-                textTransform: "uppercase",
-              }}
             />
-            <button
-              onClick={handleApplyReferral}
-              style={{
-                background: referralValid ? "#22c55e" : "#ffffff",
-                color: referralValid ? "#ffffff" : "#0284c7",
-                border: "none",
-                borderRadius: "14px",
-                padding: "12px 20px",
-                fontWeight: "800",
-                fontSize: "14px",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <button onClick={handleApplyReferral}>
               {referralValid ? "✓ ₹50 Cashback Ready" : "Apply Referral Code"}
             </button>
           </div>
           {referralValid && (
-            <div style={{ marginTop: "12px", fontSize: "13px", fontWeight: "800", color: "#4ade80" }}>
+            <div className="referral-success">
               ✓ Referral Code Applied! ₹50 bank cashback will be credited to your account upon checkout.
             </div>
           )}
         </div>
 
-        {/* 📱 PWA APP INSTALL TRIGGER CARD */}
-        <div
-          style={{
-            maxWidth: "720px",
-            margin: "0 auto 40px auto",
-            background: "var(--card, #ffffff)",
-            border: "1px solid var(--border, #e2e8f0)",
-            borderRadius: "20px",
-            padding: "20px 24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "16px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            <div
-              style={{
-                width: "44px",
-                height: "44px",
-                borderRadius: "14px",
-                background: "rgba(37,99,235,0.1)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "22px",
-              }}
-            >
-              📲
-            </div>
+        {/* 📱 PWA APP INSTALL TRIGGER BANNER */}
+        <div className="pwa-banner-clean">
+          <div className="pwa-left">
+            <div className="pwa-icon">📲</div>
             <div>
-              <div style={{ fontSize: "15px", fontWeight: "800", color: "var(--text)" }}>
-                Install Knarrow Desktop &amp; Mobile App
-              </div>
-              <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                Fast 1-tap launcher, offline practice &amp; real-time test notifications.
-              </div>
+              <div className="pwa-title">Install Knarrow Desktop &amp; Mobile App</div>
+              <div className="pwa-sub">Fast 1-tap launcher, offline practice &amp; real-time test notifications.</div>
             </div>
           </div>
           <button
@@ -318,32 +244,18 @@ export default function Pricing() {
                 window.location.reload();
               }
             }}
-            style={{
-              background: "var(--primary, #2563eb)",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "12px",
-              padding: "10px 18px",
-              fontSize: "13px",
-              fontWeight: "800",
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-            }}
           >
             Get App Now ⬇
           </button>
         </div>
 
-        {/* PLANS GRID */}
-        <div className="pr-plans-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))", gap: "24px" }}>
-          {/* Free Plan */}
+        {/* 4-CARD PRICING GRID */}
+        <div className="pr-grid-neat">
           <PricingCard
             title="Free"
             price="0"
             currentPlan={currentPlan}
           />
-
-          {/* Monthly Plan: ₹499 1st time / ₹999 regular */}
           <PricingCard
             title="Premium Monthly"
             price={isFirstTime ? "499" : "999"}
@@ -353,8 +265,6 @@ export default function Pricing() {
             currentPlan={currentPlan}
             expiresAt={premiumExpires}
           />
-
-          {/* 3-Month Plan: ₹1249 1st time / ₹2499 regular */}
           <PricingCard
             title="Premium 3 Months"
             price={isFirstTime ? "1249" : "2499"}
@@ -365,8 +275,6 @@ export default function Pricing() {
             currentPlan={currentPlan}
             expiresAt={premiumExpires}
           />
-
-          {/* Lifetime Plan: ₹4999 */}
           <PricingCard
             title="Lifetime Access"
             price="4999"
@@ -411,29 +319,33 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* FEATURE COMPARISON */}
+      {/* FEATURE COMPARISON MATRIX (4-COLUMN RESPONSIVE TABLE) */}
       <section className="pr-compare">
         <div className="pr-section-label">Detailed Breakdown</div>
-        <h2 className="pr-section-title">Compare Plans</h2>
+        <h2 className="pr-section-title">Compare All Plans</h2>
         <p className="pr-section-sub">
-          See everything included in Free vs Premium.
+          Transparent feature comparison across Free, Monthly, 3-Month, and Lifetime tiers.
         </p>
 
-        <div className="pr-compare-table-wrapper">
-          <table className="pr-compare-table">
+        <div className="matrix-table-wrapper">
+          <table className="matrix-table">
             <thead>
               <tr>
-                <th>Feature</th>
-                <th>Free Plan</th>
-                <th>Premium Plan</th>
+                <th className="th-feature">Feature / Capability</th>
+                <th className="th-tier">Free Tier</th>
+                <th className="th-tier">Monthly (₹499)</th>
+                <th className="th-tier highlight">3-Months (₹1,249)</th>
+                <th className="th-tier vip">Lifetime (₹4,999)</th>
               </tr>
             </thead>
             <tbody>
-              {COMPARE.map((row, idx) => (
-                <tr key={idx}>
-                  <td>{row.feature}</td>
-                  <td className="free-cell">{row.free}</td>
-                  <td className="prem-cell">{row.premium}</td>
+              {COMPARE_MATRIX.map((row, idx) => (
+                <tr key={idx} className={idx % 2 === 0 ? "row-even" : ""}>
+                  <td className="td-feature">{row.feature}</td>
+                  <td className="td-val free">{row.free}</td>
+                  <td className="td-val">{row.monthly}</td>
+                  <td className="td-val highlight">{row.threeMonth}</td>
+                  <td className="td-val vip">{row.lifetime}</td>
                 </tr>
               ))}
             </tbody>
