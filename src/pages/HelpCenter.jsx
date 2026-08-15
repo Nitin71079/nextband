@@ -226,7 +226,7 @@ const FAQS = [
   {
     category: "billing",
     q: "How much does Premium cost?",
-    a: "Knarrow offers two Premium plans: Monthly at ₹299/month and 3-Month at ₹799 (best value). Both give identical access to all Premium features.",
+    a: "Knarrow offers three Premium options: Monthly (₹499 for first-timers, ₹999 regular), 3-Month (₹1,249 for first-timers, ₹2,499 regular), and Lifetime Access (one-time ₹4,999 for unlimited lifetime access).",
   },
   {
     category: "billing",
