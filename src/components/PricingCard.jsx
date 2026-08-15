@@ -80,7 +80,7 @@ export default function PricingCard({
     : title === "Premium 3 Months"
     ? "/3 months"
     : title === "Lifetime Access"
-    ? " one-time"
+    ? "one-time"
     : "";
 
   async function handleCheckout(isTrial = false) {
@@ -131,111 +131,100 @@ export default function PricingCard({
     : "Upgrade Now";
 
   return (
-    <div className={`pricing-card${popular ? " popular" : ""}${isLifetime ? " lifetime-card" : ""}${isCurrentPlan ? " current-plan" : ""}`}>
-      {/* ribbons */}
-      {popular && !isCurrentPlan && (
-        <div className="popular-badge">MOST POPULAR</div>
-      )}
-      {isLifetime && !isCurrentPlan && (
-        <div className="popular-badge" style={{ background: "linear-gradient(135deg, #ec4899, #8b5cf6)" }}>VIP LIFETIME</div>
-      )}
-      {isCurrentPlan && (
-        <div className="active-badge">
-          <span className="active-dot" /> Currently Active
-        </div>
-      )}
+    <div className={`pricing-card-neat${popular ? " popular" : ""}${isLifetime ? " lifetime" : ""}${isCurrentPlan ? " active" : ""}`}>
+      {/* Sleek top badges */}
+      <div className="card-top-bar">
+        {isCurrentPlan && (
+          <span className="badge-active">✓ Currently Active</span>
+        )}
+        {popular && !isCurrentPlan && (
+          <span className="badge-popular">⭐ MOST POPULAR</span>
+        )}
+        {isLifetime && !isCurrentPlan && (
+          <span className="badge-lifetime">💎 VIP LIFETIME</span>
+        )}
+      </div>
 
-      <div className="card-header">
-        <h2>{title}</h2>
-
+      <div className="card-header-clean">
+        <h3 className="card-title-clean">{title}</h3>
         {isFirstTime && originalPrice && !isCurrentPlan && (
-          <span className="save-badge" style={{ background: "#22c55e" }}>🎉 50% OFF FIRST TIMER</span>
-        )}
-        {couponApplied && !isFree && !isFirstTime && (
-          <span className="save-badge" style={{ background: "#22c55e" }}>🎟 Coupon Applied</span>
+          <div className="badge-offer">🎉 50% OFF FIRST TIMER</div>
         )}
       </div>
 
-      {/* price */}
-      <div className="price-section">
-        {!isFree && <span className="currency">₹</span>}
-        <span className="price">{isFree ? "Free" : price}</span>
-        {originalPrice && originalPrice !== price && !isFree && (
-          <span style={{ textDecoration: "line-through", color: "#94a3b8", fontSize: "18px", marginLeft: "8px" }}>
-            ₹{originalPrice}
-          </span>
+      {/* Clean, perfectly spaced price layout */}
+      <div className="price-box-clean">
+        {isFree ? (
+          <div className="price-free-text">Free</div>
+        ) : (
+          <div className="price-row-clean">
+            <span className="price-currency">₹</span>
+            <span className="price-num">{price}</span>
+            <div className="price-sub-info">
+              {originalPrice && originalPrice !== price && (
+                <span className="price-strike">₹{originalPrice}</span>
+              )}
+              {periodLabel && <span className="price-period">{periodLabel}</span>}
+            </div>
+          </div>
         )}
-        {periodLabel && <span className="period">{periodLabel}</span>}
       </div>
 
-      {/* expiry */}
+      {/* Active Expiry Label */}
       {expiryLabel && (
-        <div className="expiry">
-          <span>🗓</span> {expiryLabel}
+        <div className="expiry-tag">
+          🗓 {expiryLabel}
         </div>
       )}
 
-      {/* 1-day free trial badge for 3-month plan */}
+      {/* 1-day free trial box for 3-month plan */}
       {is3Month && !isCurrentPlan && (
-        <div style={{
-          background: "linear-gradient(135deg, #10b981, #059669)",
-          color: "#fff",
-          borderRadius: "12px",
-          padding: "10px 14px",
-          marginBottom: "16px",
-          textAlign: "center",
-          fontSize: "13px",
-          fontWeight: "700",
-          boxShadow: "0 4px 14px rgba(16,185,129,0.30)",
-        }}>
+        <div className="trial-box-clean">
           🎁 Try FREE for 1 day — only ₹1 authorization
-          <div style={{ fontSize: "11px", fontWeight: 600, opacity: 0.9, marginTop: 3 }}>
+          <div className="trial-box-sub">
             Auto-renews to 3-Month plan after trial
           </div>
         </div>
       )}
 
-      {/* features */}
-      <ul className="feature-list">
+      {/* Feature list */}
+      <ul className="features-list-clean">
         {features.map((f, i) => (
-          <li key={i} className="feature-item">
-            <span className="tick">✓</span>
-            <span>{f}</span>
+          <li key={i} className="feature-row">
+            <span className="tick-circle">✓</span>
+            <span className="feature-text">{f}</span>
           </li>
         ))}
       </ul>
 
-      {/* CTA — trial button for 3-month plan */}
-      {is3Month && !isCurrentPlan && (
+      {/* Action buttons */}
+      <div className="card-actions">
+        {is3Month && !isCurrentPlan && (
+          <button
+            className="btn-trial"
+            onClick={() => handleCheckout(true)}
+            disabled={loading}
+          >
+            {loading ? "Opening Razorpay…" : "🎁 Start 1-Day Free Trial"}
+          </button>
+        )}
+
         <button
-          className="pricing-btn primary"
-          onClick={() => handleCheckout(true)}
-          disabled={loading}
-          style={{
-            marginBottom: "8px",
-            background: "linear-gradient(135deg, #10b981, #059669)",
-            boxShadow: "0 4px 14px rgba(16,185,129,0.35)",
-          }}
+          className={`btn-main ${isFree ? "secondary" : "primary"}${isCurrentPlan ? " active" : ""}`}
+          onClick={() => handleCheckout(false)}
+          disabled={loading || isCurrentPlan}
         >
-          {loading ? "Opening Razorpay…" : "🎁 Start 1-Day Free Trial"}
+          {btnLabel}
         </button>
-      )}
 
-      <button
-        className={`pricing-btn ${isFree ? "secondary" : "primary"}${isCurrentPlan ? " active-btn" : ""}`}
-        onClick={() => handleCheckout(false)}
-        disabled={loading || isCurrentPlan}
-      >
-        {btnLabel}
-      </button>
-
-      {!isFree && !isCurrentPlan && (
-        <p className="secure-text">
-          {is3Month
-            ? "🔒 Trial charges ₹1 · Auto-renews after 1 day · Cancel anytime"
-            : "🔒 Secured by Razorpay"}
-        </p>
-      )}
+        {!isFree && !isCurrentPlan && (
+          <p className="secure-footnote">
+            {is3Month
+              ? "🔒 Trial charges ₹1 · Auto-renews after 1 day · Cancel anytime"
+              : "🔒 Secured by Razorpay"}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
