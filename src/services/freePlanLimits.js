@@ -1,21 +1,25 @@
 /**
  * Free Plan Limits
  * ─────────────────────────────────────────────────────────
- * Centralised helpers for enforcing what free users can access.
+ * Centralised helpers for enforcing free tier access rules.
  *
- * Tests are 0-indexed in their respective arrays.
- * Limits are EXCLUSIVE — index < limit means allowed.
+ * Free Tier Gating Rules:
+ * - Full Mock Exams: Locked 100% until payment (0 free attempts).
+ * - Academic Reading: 1 Test free (Test 1), rest locked.
+ * - General Reading: 1 Test free (Test 1), rest locked.
+ * - Writing: 1 Test free (Test 1), rest locked.
+ * - Speaking: 1 Test free (Test 1), rest locked.
+ * - Listening: 0 Tests free (ALL listening tests locked until payment).
  */
 
 export const FREE_LIMITS = {
-  academicReading: 3,   // tests 0,1,2 free (index 0–2)
-  generalReading:  3,
-  writing:         3,
-  speaking:        3,
-  listening:       1,   // test 0 free
+  academicReading: 1,
+  generalReading:  1,
+  writing:         1,
+  speaking:        1,
+  listening:       0,
 };
 
-/* ── Reading ── */
 import academicTests from "../data/reading/academic/academicTests";
 import generalTests  from "../data/reading/general/generalTests";
 import listeningTests from "../data/listening/tests";
@@ -23,22 +27,30 @@ import writingTests   from "../data/writing/tests";
 import speakingTests  from "../data/speaking/tests";
 
 export function isReadingTestLocked(testId, isGeneral, premium) {
-  return false;
+  if (premium) return false;
+  const tests = isGeneral ? generalTests : academicTests;
+  const index = tests.findIndex((t) => String(t.id) === String(testId));
+  const limit = isGeneral ? FREE_LIMITS.generalReading : FREE_LIMITS.academicReading;
+  return index < 0 || index >= limit;
 }
 
 export function isListeningTestLocked(testId, premium) {
-  return false;
+  if (premium) return false;
+  return true; // All listening tests locked for free users until payment
 }
 
 export function isWritingTestLocked(testId, premium) {
-  return false;
+  if (premium) return false;
+  const index = writingTests.findIndex((t) => String(t.id) === String(testId));
+  return index < 0 || index >= FREE_LIMITS.writing;
 }
 
 export function isSpeakingTestLocked(testId, premium) {
-  return false;
+  if (premium) return false;
+  const index = speakingTests.findIndex((t) => String(t.id) === String(testId));
+  return index < 0 || index >= FREE_LIMITS.speaking;
 }
 
-/* ── Full mock attempts (localStorage) ── */
 const FULL_MOCK_KEY = "knarrow_full_mock_used";
 
 function getFullMockUsed() {
@@ -50,9 +62,7 @@ function getFullMockUsed() {
 }
 
 export function hasUsedFullMock(type) {
-  const used = getFullMockUsed();
-  // Free users get ONLY 1 full CBT mock attempt total (either academic OR general, only once)
-  return Object.keys(used).length > 0 || !!used.academic || !!used.general || !!used.any;
+  return true;
 }
 
 export function markFullMockUsed(type) {
@@ -64,5 +74,5 @@ export function markFullMockUsed(type) {
 
 export function isFullMockLocked(type, premium) {
   if (premium) return false;
-  return hasUsedFullMock(type);
+  return true; // Full mocks locked 100% until payment
 }

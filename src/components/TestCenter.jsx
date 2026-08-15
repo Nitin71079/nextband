@@ -265,7 +265,7 @@ width:`${progress}%`
 <div className="test-grid">
 
 {tests.map((test, index) => {
-  const isLocked = freeLimit && !premium && index >= freeLimit;
+  const isLocked = !premium && (freeLimit !== undefined ? index >= freeLimit : false);
   
   return (
     <div

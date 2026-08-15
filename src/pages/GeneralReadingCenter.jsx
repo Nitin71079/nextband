@@ -17,8 +17,9 @@ export default function GeneralReadingCenter() {
       title="General Reading"
       description="Practice IELTS General Training Reading with everyday and workplace passages."
       icon="📗"
-route="/mock/general-reading"
+      route="/mock/general-reading"
       tests={tests}
+      freeLimit={1}
     />
   );
 }

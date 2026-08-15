@@ -19,6 +19,7 @@ export default function AcademicWritingCenter() {
       icon="✍️"
       route="/mock/writing"
       tests={tests}
+      freeLimit={1}
     />
   );
 }

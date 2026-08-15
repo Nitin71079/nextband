@@ -55,7 +55,7 @@ export default function PricingPreview() {
         "Advanced Analytics & Performance Dashboard",
         "Certificates, Streaks & Achievements",
         "Mentors, Live Classes & Community",
-        "2-Day Free Trial Available",
+        "1-Day Free Trial Available",
       ],
     },
     {

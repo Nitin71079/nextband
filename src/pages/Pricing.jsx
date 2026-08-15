@@ -17,17 +17,17 @@ const STATS = [
 
 /* ── comparison rows ── */
 const COMPARE = [
-  { feature: "Academic Reading Tests", free: "3 Tests",   premium: "Unlimited" },
-  { feature: "General Reading Tests",  free: "3 Tests",   premium: "Unlimited" },
-  { feature: "Writing Practice Tests", free: "3 Tests",   premium: "Unlimited" },
-  { feature: "Speaking Practice Tests",free: "3 Tests",   premium: "Unlimited" },
-  { feature: "Listening Practice",     free: "1 Test",    premium: "Unlimited" },
+  { feature: "Academic Reading Tests", free: "1 Test",     premium: "Unlimited" },
+  { feature: "General Reading Tests",  free: "1 Test",     premium: "Unlimited" },
+  { feature: "Writing Practice Tests", free: "1 Test",     premium: "Unlimited" },
+  { feature: "Speaking Practice Tests",free: "1 Test",     premium: "Unlimited" },
+  { feature: "Listening Practice",     free: "🔒 Locked",  premium: "Unlimited" },
+  { feature: "Full CBT Mock Exams",    free: "🔒 Locked",  premium: "Unlimited" },
   { feature: "Games Zone",             free: "3 Games",   premium: "All 10 Games" },
   { feature: "Writing AI Evaluation",  free: "—",         premium: "✓"         },
   { feature: "Speaking AI Evaluation", free: "—",         premium: "✓"         },
   { feature: "Band Prediction",        free: "—",         premium: "✓"         },
   { feature: "Performance Analytics",  free: "Basic",     premium: "Advanced"  },
-  { feature: "Full CBT Mock Exams",    free: "—",         premium: "✓"         },
   { feature: "Study Planner",          free: "Basic",     premium: "AI Powered"},
   { feature: "AI Study Coach",         free: "—",         premium: "✓"         },
   { feature: "1-Hour AI Bot Live Coaching", free: "₹349/session", premium: "FREE Unlimited" },
@@ -50,7 +50,7 @@ const FAQ = [
   },
   {
     q: "Is there a free trial for the 3-Month plan?",
-    a: "Yes! The 3-Month Premium plan comes with a 2-day free trial. We charge just ₹1 to verify your payment method. After 2 days, your 3-month plan begins.",
+    a: "Yes! The 3-Month Premium plan comes with a 1-day free trial. We charge just ₹1 to verify your payment method. After 1 day, your 3-month plan begins.",
   },
   {
     q: "Is Premium activated immediately?",
@@ -167,7 +167,7 @@ export default function Pricing() {
             <div className="pr-active-banner-left">
               <span className="pr-active-crown">{isTrial ? "🎁" : "👑"}</span>
               <div>
-                <strong>{isTrial ? "2-Day Free Trial Active" : `You're on ${currentPlan}`}</strong>
+                <strong>{isTrial ? "1-Day Free Trial Active" : `You're on ${currentPlan}`}</strong>
                 {premiumExpires && (() => {
                   const d = premiumExpires?.toDate
                     ? premiumExpires.toDate()

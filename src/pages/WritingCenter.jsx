@@ -64,6 +64,7 @@ export default function WritingCenter() {
         icon="✍️"
         route={examType === "general" ? "/mock/general-writing" : "/mock/writing"}
         tests={tests}
+        freeLimit={1}
       />
     </div>
   );

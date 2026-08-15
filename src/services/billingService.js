@@ -123,7 +123,7 @@ export async function startCheckout(plan, isTrial = false, checkoutParams = {}) 
   }
 
   const razorpayKey = orderData.key;
-  const trialDescription = "2-day FREE trial — ₹1 authorization only. Auto-renews to 3-Month Premium after trial.";
+  const trialDescription = "1-day FREE trial — ₹1 authorization only. Auto-renews to 3-Month Premium after trial.";
 
   const options = {
     key: razorpayKey,
@@ -158,7 +158,7 @@ export async function startCheckout(plan, isTrial = false, checkoutParams = {}) 
           const userRef = doc(db, "users", user.uid);
           const expiresAt = new Date();
           if (isTrial) {
-            expiresAt.setDate(expiresAt.getDate() + 2);
+            expiresAt.setDate(expiresAt.getDate() + 1);
           } else if (plan === "Lifetime Access" || plan === "Premium Lifetime") {
             expiresAt.setFullYear(expiresAt.getFullYear() + 99);
           } else if (plan === "Premium 3 Months") {
@@ -190,7 +190,7 @@ export async function startCheckout(plan, isTrial = false, checkoutParams = {}) 
         }
 
         if (isTrial) {
-          toast.success("🎉 2-Day Free Trial Started! Auto-renews to 3-Month Premium.");
+          toast.success("🎉 1-Day Free Trial Started! Auto-renews to 3-Month Premium.");
         } else if (plan === "Lifetime Access") {
           toast.success("🎉 Lifetime Unlimited Access Activated!");
         } else {

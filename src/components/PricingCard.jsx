@@ -175,7 +175,7 @@ export default function PricingCard({
         </div>
       )}
 
-      {/* 2-day free trial badge for 3-month plan */}
+      {/* 1-day free trial badge for 3-month plan */}
       {is3Month && !isCurrentPlan && (
         <div style={{
           background: "linear-gradient(135deg, #10b981, #059669)",
@@ -188,7 +188,7 @@ export default function PricingCard({
           fontWeight: "700",
           boxShadow: "0 4px 14px rgba(16,185,129,0.30)",
         }}>
-          🎁 Try FREE for 2 days — only ₹1 authorization
+          🎁 Try FREE for 1 day — only ₹1 authorization
           <div style={{ fontSize: "11px", fontWeight: 600, opacity: 0.9, marginTop: 3 }}>
             Auto-renews to 3-Month plan after trial
           </div>
@@ -217,7 +217,7 @@ export default function PricingCard({
             boxShadow: "0 4px 14px rgba(16,185,129,0.35)",
           }}
         >
-          {loading ? "Opening Razorpay…" : "🎁 Start 2-Day Free Trial"}
+          {loading ? "Opening Razorpay…" : "🎁 Start 1-Day Free Trial"}
         </button>
       )}
 
@@ -232,7 +232,7 @@ export default function PricingCard({
       {!isFree && !isCurrentPlan && (
         <p className="secure-text">
           {is3Month
-            ? "🔒 Trial charges ₹1 · Auto-renews after 2 days · Cancel anytime"
+            ? "🔒 Trial charges ₹1 · Auto-renews after 1 day · Cancel anytime"
             : "🔒 Secured by Razorpay"}
         </p>
       )}

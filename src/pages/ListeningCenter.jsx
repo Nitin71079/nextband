@@ -58,7 +58,7 @@ export default function ListeningCenter() {
       icon="🎧"
       route="/mock/listening"
       tests={tests}
-      freeLimit={3}
+      freeLimit={0}
     />
   );
 }
