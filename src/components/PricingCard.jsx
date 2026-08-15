@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { startCheckout } from "../services/billingService";
 import { useAuth } from "../context/AuthContext";
+import "../styles/pricing.css";
 
 const FEATURES = {
   Free: [
