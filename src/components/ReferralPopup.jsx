@@ -134,11 +134,11 @@ export default function ReferralPopup() {
         </div>
 
         <h2 style={{ fontSize: "26px", fontWeight: "900", color: "#0f172a", marginBottom: "8px" }}>
-          Earn 20% Cash Commission!
+          Earn 5% Cash Commission!
         </h2>
 
         <p style={{ color: "#475569", fontSize: "14px", lineHeight: "1.6", marginBottom: "20px" }}>
-          Invite your friends to Knarrow! Whenever a friend redeems your referral code and avails their <strong>first Premium plan</strong>, you instantly receive <strong>20% of their plan price</strong> directly into your referral balance!
+          Invite your friends to Knarrow! Whenever a friend redeems your referral code and avails their <strong>first Premium plan</strong>, you instantly receive <strong>5% of their plan price</strong> directly into your referral balance!
         </p>
 
         {/* REFERRAL CODE BOX */}
@@ -200,7 +200,7 @@ export default function ReferralPopup() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Zap size={16} color="#0284c7" /> <span><strong>20% Commission</strong> credited per premium subscriber</span>
+            <Zap size={16} color="#0284c7" /> <span><strong>5% Commission</strong> credited per premium subscriber</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <Award size={16} color="#0284c7" /> <span>Unlimited referrals & reward accumulation</span>
@@ -222,7 +222,7 @@ export default function ReferralPopup() {
             boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
           }}
         >
-          Share & Claim 20% Commission 🚀
+          Share & Claim 5% Commission 🚀
         </button>
       </div>
     </div>
