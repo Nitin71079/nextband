@@ -235,7 +235,7 @@ export default function AIAssistant() {
                 <h1>Knarrow AI Coach</h1>
                 <span>
                   <Zap size={13} />
-                  Powered by Groq · Llama 3.3 70B
+                  Powered by Groq 70B AI Engine
                 </span>
               </div>
             </div>

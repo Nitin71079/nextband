@@ -112,7 +112,7 @@ export async function evaluateEssay({
     evaluation,
 
     aiModel:
-      "llama-3.3-70b-versatile",
+      "llama-3.3-70b-specdec",
 
     promptVersion: "v1",
 

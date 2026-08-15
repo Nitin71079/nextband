@@ -5,7 +5,15 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true,
 });
 
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+export const GROQ_MODELS = [
+  "llama-3.3-70b-specdec",
+  "llama-3.1-70b-versatile",
+  "llama3-70b-8192",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it",
+];
+
+const DEFAULT_MODEL = GROQ_MODELS[0];
 
 class AIService {
   constructor() {
@@ -24,16 +32,66 @@ class AIService {
     temperature = this.temperature,
     json = false,
   }) {
-    let retries = 0;
+    const modelsToTry = [this.model, ...GROQ_MODELS.filter((m) => m !== this.model)];
+    let lastError = null;
 
-    while (retries <= this.maxRetries) {
+    for (const modelCandidate of modelsToTry) {
+      let retries = 0;
+      while (retries <= this.maxRetries) {
+        try {
+          const completion = await groq.chat.completions.create({
+            model: modelCandidate,
+            temperature,
+            response_format: json ? { type: "json_object" } : undefined,
+            messages: [
+              {
+                role: "system",
+                content: systemPrompt,
+              },
+              ...messages,
+            ],
+          });
+
+          return completion.choices[0].message.content;
+        } catch (err) {
+          lastError = err;
+          console.warn(`Groq model ${modelCandidate} failed (attempt ${retries + 1}):`, err.message);
+
+          if (
+            err.status === 400 ||
+            err.status === 404 ||
+            err.message?.includes("decommissioned") ||
+            err.message?.includes("not found")
+          ) {
+            break;
+          }
+
+          retries++;
+          if (retries <= this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, 800));
+          }
+        }
+      }
+    }
+
+    throw lastError || new Error("All Groq AI models failed. Please try again later.");
+  }
+
+  async stream({
+    systemPrompt = "",
+    messages = [],
+    temperature = this.temperature,
+    onToken,
+  }) {
+    const modelsToTry = [this.model, ...GROQ_MODELS.filter((m) => m !== this.model)];
+    let lastError = null;
+
+    for (const modelCandidate of modelsToTry) {
       try {
-        const completion = await groq.chat.completions.create({
-          model: this.model,
+        const stream = await groq.chat.completions.create({
+          model: modelCandidate,
+          stream: true,
           temperature,
-          response_format: json
-            ? { type: "json_object" }
-            : undefined,
           messages: [
             {
               role: "system",
@@ -43,59 +101,34 @@ class AIService {
           ],
         });
 
-        return completion.choices[0].message.content;
-      } catch (err) {
-        retries++;
-
-        if (retries > this.maxRetries) {
-          throw err;
+        let finalText = "";
+        for await (const chunk of stream) {
+          const token = chunk.choices?.[0]?.delta?.content || "";
+          finalText += token;
+          if (onToken) {
+            onToken(token, finalText);
+          }
         }
-
-        await new Promise((resolve) =>
-          setTimeout(resolve, 1000 * retries)
-        );
-      }
-    }
-  }
-
-  async stream({
-    systemPrompt = "",
-    messages = [],
-    temperature = this.temperature,
-    onToken,
-  }) {
-    const stream = await groq.chat.completions.create({
-      model: this.model,
-      stream: true,
-      temperature,
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        ...messages,
-      ],
-    });
-
-    let finalText = "";
-
-    for await (const chunk of stream) {
-      const token = chunk.choices?.[0]?.delta?.content || "";
-
-      finalText += token;
-
-      if (onToken) {
-        onToken(token, finalText);
+        return finalText;
+      } catch (err) {
+        lastError = err;
+        console.warn(`Groq stream failed with ${modelCandidate}:`, err.message);
+        if (
+          err.status === 400 ||
+          err.status === 404 ||
+          err.message?.includes("decommissioned") ||
+          err.message?.includes("not found")
+        ) {
+          continue;
+        }
+        throw err;
       }
     }
 
-    return finalText;
+    throw lastError || new Error("Groq streaming unavailable.");
   }
 
-  async json({
-    systemPrompt,
-    messages,
-  }) {
+  async json({ systemPrompt, messages }) {
     const result = await this.chat({
       systemPrompt,
       messages,
@@ -112,11 +145,6 @@ class AIService {
 
 const aiService = new AIService();
 
-/**
- * Backward compatibility
- * Older pages still use:
- * import { askGroq } from "../services/aiService";
- */
 export async function askGroq(prompt) {
   return aiService.chat({
     messages: [
@@ -128,13 +156,7 @@ export async function askGroq(prompt) {
   });
 }
 
-/**
- * Optional JSON helper
- */
-export async function askGroqJSON(
-  systemPrompt,
-  prompt
-) {
+export async function askGroqJSON(systemPrompt, prompt) {
   return aiService.json({
     systemPrompt,
     messages: [
