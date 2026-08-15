@@ -83,13 +83,13 @@ export default function Referrals() {
         {/* HEADER */}
         <div style={{ marginBottom: "40px" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#e0f2fe", color: "#0369a1", padding: "6px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: "800", marginBottom: "12px" }}>
-            <Gift size={16} /> 20% COMMISSION REFERRAL PROGRAM
+            <Gift size={16} /> 5% COMMISSION REFERRAL PROGRAM
           </div>
           <h1 style={{ fontSize: isMobile ? "36px" : "48px", fontWeight: "900", color: "#0f172a" }}>
             Invite Friends & Earn Rewards
           </h1>
           <p style={{ color: "#64748b", marginTop: "8px", fontSize: "18px", maxWidth: "650px" }}>
-            Share your unique referral code. Whenever a friend joins and purchases their first Premium plan, you get <strong>20% of their plan price</strong> directly added to your balance!
+            Share your unique referral code. Whenever a friend joins and purchases their first Premium plan, you get <strong>5% of their plan price</strong> directly added to your balance!
           </p>
         </div>
 
@@ -166,7 +166,7 @@ export default function Referrals() {
           >
             <div>
               <div style={{ fontSize: "14px", fontWeight: "700", opacity: 0.9, textTransform: "uppercase", letterSpacing: "1px" }}>
-                Total 20% Earnings Balance
+                Total 5% Earnings Balance
               </div>
               <h1 style={{ fontSize: "56px", fontWeight: "900", margin: "10px 0" }}>
                 ₹{earningsBalance.toFixed(2)}
@@ -180,7 +180,7 @@ export default function Referrals() {
               </div>
               <div>
                 <span style={{ fontSize: "12px", opacity: 0.85 }}>Commission Rate</span>
-                <div style={{ fontSize: "22px", fontWeight: "800" }}>20% Per Sub</div>
+                <div style={{ fontSize: "22px", fontWeight: "800" }}>5% Per Sub</div>
               </div>
             </div>
           </div>
@@ -198,44 +198,46 @@ export default function Referrals() {
           }}
         >
           <h2 style={{ fontSize: "22px", fontWeight: "800", color: "#0f172a", marginBottom: "8px" }}>
-            Have a Friend's Referral Code?
+            Redeem Friend's Referral Code
           </h2>
           <p style={{ color: "#64748b", fontSize: "14px", marginBottom: "20px" }}>
-            Redeem their referral code here to link accounts before upgrading to Premium.
+            Did a friend invite you? Enter their referral code below to activate ₹50 cashback on your account.
           </p>
 
-          <form onSubmit={handleRedeemCode} style={{ display: "flex", gap: "12px", maxWidth: "540px" }}>
+          <form onSubmit={handleRedeemCode} style={{ display: "flex", gap: "12px", flexWrap: isMobile ? "wrap" : "nowrap" }}>
             <input
               type="text"
-              placeholder="Enter Referral Code (e.g. REF-ABC123)"
+              placeholder="Enter Referral Code (e.g. KNARROW123)"
               value={inputCode}
-              onChange={(e) => setInputCode(e.target.value)}
+              onChange={(e) => setInputCode(e.target.value.toUpperCase())}
               style={{
                 flex: 1,
-                padding: "14px 16px",
+                padding: "14px 20px",
                 borderRadius: "14px",
-                border: "1px solid #cbd5e1",
-                fontSize: "15px",
+                border: "1.5px solid #cbd5e1",
+                fontSize: "16px",
+                fontWeight: "700",
+                color: "#0f172a",
                 outline: "none",
-                fontWeight: "600",
+                textTransform: "uppercase",
               }}
             />
             <button
               type="submit"
               disabled={applying}
               style={{
-                background: "#0891b2",
-                color: "#ffffff",
+                background: "#0284c7",
+                color: "white",
                 border: "none",
                 borderRadius: "14px",
-                padding: "14px 24px",
+                padding: "14px 28px",
                 fontWeight: "800",
                 fontSize: "15px",
                 cursor: applying ? "not-allowed" : "pointer",
                 whiteSpace: "nowrap",
               }}
             >
-              {applying ? "Applying..." : "Redeem Code"}
+              {applying ? "Applying..." : "Apply Code"}
             </button>
           </form>
         </div>
@@ -252,7 +254,7 @@ export default function Referrals() {
             }}
           >
             <h2 style={{ fontSize: "22px", fontWeight: "800", color: "#0f172a", marginBottom: "20px" }}>
-              20% Commission History
+              5% Commission History
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {referralHistory.map((item, index) => (
@@ -276,7 +278,7 @@ export default function Referrals() {
                     </span>
                   </div>
                   <div style={{ fontSize: "18px", fontWeight: "800", color: "#16a34a" }}>
-                    +₹{item.commissionAmount} (20%)
+                    +₹{item.commissionAmount} (5%)
                   </div>
                 </div>
               ))}

@@ -206,7 +206,7 @@ export default function Pricing() {
             🎁 HAVE A REFERRAL CODE? GET ₹50 INSTANT CASHBACK!
           </div>
           <p className="referral-subtitle">
-            Enter your friend's referral code below: <strong>you get ₹50 instant cashback</strong> into your account upon purchase, and <strong>your friend earns a 20% referral reward!</strong>
+            Enter your friend's referral code below: <strong>you get ₹50 instant cashback</strong> into your account upon purchase, and <strong>your friend earns a 5% referral reward!</strong>
           </p>
           <div className="referral-form">
             <input

@@ -118,7 +118,7 @@ export async function applyReferralCode(currentUserId, referralCode) {
 
 /**
  * Process referral reward when referred user purchases Premium.
- * Commission = 20% of the first premium plan price.
+ * Commission = 5% of the first premium plan price.
  */
 export async function processReferralCommissionOnPremium({ userId, planPrice, planName }) {
   try {
@@ -132,7 +132,7 @@ export async function processReferralCommissionOnPremium({ userId, planPrice, pl
     if (!userData.referredByUid) return;
 
     const priceNum = Number(planPrice) || (planName?.includes("3") ? 1249 : 499);
-    const commission = Number((priceNum * 0.20).toFixed(2)); // 20% of first premium plan
+    const commission = Number((priceNum * 0.05).toFixed(2)); // 5% of first premium plan
 
     const referrerUid = userData.referredByUid;
     const referrerRef = doc(db, "users", referrerUid);

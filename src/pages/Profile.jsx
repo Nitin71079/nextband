@@ -215,7 +215,7 @@ export default function Profile() {
                   {referralCopied ? "Copied!" : "Copy Code"}
                 </button>
                 <p style={{ fontSize: ".73rem", color: "#0369a1", margin: "8px 0 0", textAlign: "center", fontWeight: 600 }}>
-                  Earn 20% when friends upgrade →{" "}
+                  Earn 5% when friends upgrade →{" "}
                   <Link to="/referrals" style={{ color: "#0284c7", textDecoration: "underline" }}>View earnings</Link>
                 </p>
               </div>
