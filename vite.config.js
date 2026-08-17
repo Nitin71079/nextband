@@ -8,13 +8,19 @@ export default defineConfig({
 
     VitePWA({
       registerType: "autoUpdate",
+      workbox: {
+        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+      },
 
       manifest: {
         name: "Knarrow",
         short_name: "Knarrow",
 
         description:
-          "AI-powered IELTS Preparation Platform with Writing, Speaking, Reading and Listening.",
+          "AI-powered IELTS & TOEFL Preparation Platform with Writing, Speaking, Reading and Listening.",
 
         theme_color: "#2563eb",
         background_color: "#ffffff",

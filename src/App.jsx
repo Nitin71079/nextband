@@ -58,6 +58,8 @@ const MySessions =
   );
 const Home = lazy(() => import("./pages/Home"));
 const TOEFLCenter = lazy(() => import("./pages/TOEFLCenter"));
+const TOEFLTestEnginePage = lazy(() => import("./pages/TOEFLTestEnginePage"));
+const TOEFLResultsPage = lazy(() => import("./pages/TOEFLResultsPage"));
 const GRECenter = lazy(() => import("./pages/GRECenter"));
 const CATCenter = lazy(() => import("./pages/CATCenter"));
 const Login = lazy(() => import("./pages/Login"));
@@ -593,6 +595,10 @@ element={<ExamHistory/>}
               </PrivateRoute>
             }
           />
+
+          <Route path="/toefl" element={<TOEFLCenter />} />
+          <Route path="/toefl/test/:testId" element={<TOEFLTestEnginePage />} />
+          <Route path="/toefl/results/:resultId" element={<TOEFLResultsPage />} />
 
           <Route path="/help" element={<HelpCenter />} />
 
