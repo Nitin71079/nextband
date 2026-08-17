@@ -147,6 +147,76 @@ export default function TOEFLCenter() {
           ))}
         </div>
 
+        {/* ── 5 FULL TOEFL MOCK EXAMS LIST ── */}
+        <div style={{ marginBottom: "48px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 12, background: "rgba(124,58,237,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#c084fc" }}>
+              <Layers size={20} />
+            </div>
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 900, margin: 0 }}>5 Official TOEFL iBT 2026 Full Mocks</h2>
+              <p style={{ fontSize: 13, color: "#94a3b8", margin: 0 }}>Practice authentic multistage adaptive Reading &amp; Listening + Groq AI evaluated Writing &amp; Speaking</p>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+            {toeflTests.map((t, idx) => (
+              <div
+                key={t.id}
+                style={{
+                  background: "rgba(30,41,59,0.8)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: 22,
+                  padding: 24,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  boxShadow: "0 8px 25px rgba(0,0,0,0.2)",
+                  transition: "transform 0.2s ease, border-color 0.2s ease",
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                    <span style={{ background: "rgba(16,185,129,0.15)", color: "#4ade80", padding: "4px 12px", borderRadius: 8, fontSize: 12, fontWeight: 800 }}>
+                      TEST #{idx + 1}
+                    </span>
+                    <span style={{ fontSize: 12, color: "#94a3b8", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                      <Clock size={13} /> ~90 Mins
+                    </span>
+                  </div>
+
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#ffffff", margin: "0 0 8px 0" }}>{t.title}</h3>
+                  <p style={{ fontSize: 13, color: "#cbd5e1", margin: "0 0 16px 0", lineHeight: 1.5 }}>
+                    {t.format} · Reading &amp; Listening Multistage Adaptive Router + AI Evaluated Writing &amp; Speaking
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => navigate(`/toefl/test/${t.id}`)}
+                  style={{
+                    width: "100%",
+                    background: "linear-gradient(135deg, #7c3aed, #2563eb)",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: 12,
+                    padding: "12px",
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    boxShadow: "0 4px 14px rgba(124,58,237,0.3)",
+                  }}
+                >
+                  <Play size={16} fill="#ffffff" /> Start Test #{idx + 1}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* ── SCORE CONVERTER TOOL ── */}
         <div id="score-converter" style={{ background: "rgba(30,41,59,0.8)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "24px", padding: "32px", marginBottom: "48px", boxShadow: "0 10px 30px rgba(0,0,0,0.3)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>

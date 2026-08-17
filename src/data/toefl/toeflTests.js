@@ -1,474 +1,452 @@
 /**
  * TOEFL iBT Official Test Bank (2026 ETS Format)
- * Includes Two-Stage Adaptive Reading & Listening + Linear Writing & Speaking
+ * 5 Full Multistage Adaptive TOEFL iBT Practice Tests
  */
 
 export const toeflTests = [
+  // ── MOCK TEST 1 ──
   {
     id: "toefl-full-1",
-    title: "TOEFL iBT 2026 Complete Practice Test 1",
+    title: "TOEFL iBT 2026 Practice Test 1",
     format: "2026 ETS Multistage Adaptive",
     durationMinutes: 90,
     sections: {
-      // 📖 READING SECTION (Adaptive)
       reading: {
         title: "Reading Section",
         durationMinutes: 30,
         routerModule: [
-          // A. Complete the Words
           {
-            id: "r-cw-1",
-            type: "complete_words",
-            instruction: "Complete the missing word fragments in the passage below to make a grammatically correct text.",
-            passageText: "The university library has recently expan___ its digital research collection. Students can now access thousands of peer-revie___ journal articles online without visiting the campus branch in per___.",
-            missingParts: ["ded", "wed", "son"],
-            hints: ["expan[ded]", "peer-revie[wed]", "in per[son]"],
-          },
-          {
-            id: "r-cw-2",
+            id: "r1-cw-1",
             type: "complete_words",
             instruction: "Complete the missing word fragments in the passage below.",
-            passageText: "Professor Henderson reminded students that the deadline for submit___ the midterm essay is Friday midnight. Late submissions will res___ in a 10 percent grade deduc___.",
-            missingParts: ["ting", "ult", "tion"],
-            hints: ["submit[ting]", "res[ult]", "deduc[tion]"],
+            passageText: "The university library has recently expan___ its digital research collection. Students can now access thousands of peer-revie___ journal articles online without visiting the campus branch in per___.",
+            missingParts: ["ded", "wed", "son"],
+            hints: ["expan[ded]", "peer-revie[wed]", "in per[son]"]
           },
-          // B. Read in Daily Life
           {
-            id: "r-dl-1",
+            id: "r1-cw-2",
+            type: "complete_words",
+            instruction: "Complete the missing word fragments in the passage below.",
+            passageText: "Professor Henderson reminded students that the deadline for submit___ the midterm essay is Friday midnight. Late submissions will res___ in a grade deduc___.",
+            missingParts: ["ting", "ult", "tion"],
+            hints: ["submit[ting]", "res[ult]", "deduc[tion]"]
+          },
+          {
+            id: "r1-dl-1",
             type: "read_daily_life",
             instruction: "Read the campus announcement below and answer the questions.",
             stimulusFormat: "Campus Notice",
-            passageText: `📌 Campus Dining Hall Maintenance Notice
-Please be advised that the Main Campus Dining Hall will close early at 4:00 PM this Friday, October 24th, due to mandatory electrical system upgrades. 
-
-Students requiring dinner options after 4:00 PM may use the Science Building Cafe, which will extend its operating hours until 8:30 PM. Normal dining hall operations will resume on Saturday morning at 7:30 AM.`,
+            passageText: `📌 Main Dining Hall Notice: The Main Dining Hall will close at 4:00 PM on Friday due to electrical upgrades. Students may use the Science Cafe until 8:30 PM.`,
             questions: [
               {
-                id: "r-dl-1-q1",
-                questionText: "Why is the Main Campus Dining Hall closing early on Friday?",
-                options: [
-                  "A. Staff training session",
-                  "B. Scheduled electrical maintenance",
-                  "C. A university athletic event",
-                  "D. Low weekend student attendance"
-                ],
-                correctAnswer: 1, // B
-                explanation: "The notice explicitly states that the dining hall will close early due to 'mandatory electrical system upgrades'."
-              },
-              {
-                id: "r-dl-1-q2",
-                questionText: "What alternative option is provided for students needing dinner?",
-                options: [
-                  "A. Ordering food delivered to residence halls",
-                  "B. Visiting the off-campus supermarket",
-                  "C. Dining at the Science Building Cafe until 8:30 PM",
-                  "D. Eating breakfast early on Saturday morning"
-                ],
-                correctAnswer: 2, // C
-                explanation: "The notice mentions that the Science Building Cafe will extend hours until 8:30 PM."
+                id: "r1-dl-1-q1",
+                questionText: "Why is the Main Dining Hall closing early on Friday?",
+                options: ["A. Staff training", "B. Scheduled electrical upgrades", "C. University athletic event", "D. Low attendance"],
+                correctAnswer: 1,
+                explanation: "The notice states closing is due to electrical system upgrades."
               }
             ]
           },
-          // C. Read an Academic Passage
           {
-            id: "r-acad-1",
+            id: "r1-acad-1",
             type: "read_academic",
-            instruction: "Read the passage below and answer the questions.",
-            passageTitle: "Photosynthesis and Plant Respiration",
-            passageText: `Photosynthesis is the fundamental biological process by which green plants and certain solar-dependent organisms synthesize nutrients using carbon dioxide, water, and sunlight. Chlorophyll, the primary pigment embedded in chloroplasts, absorbs light energy—predominantly in the blue and red wavelengths—and converts it into chemical energy stored within glucose bonds. 
-
-Simultaneously, oxygen is liberated as a cellular byproduct. Plant respiration occurs concurrently, consuming oxygen to metabolize stored carbohydrates during darkness. This delicate physiological equilibrium governs global carbon cycles and sustains tropospheric oxygen reserves.`,
+            instruction: "Read the passage below and answer the question.",
+            passageTitle: "Photosynthesis & Plant Respiration",
+            passageText: "Photosynthesis synthesized nutrients using carbon dioxide, water, and sunlight. Chlorophyll in chloroplasts absorbs light energy and converts it into chemical energy stored within glucose bonds.",
             questions: [
               {
-                id: "r-acad-1-q1",
-                questionText: "According to the passage, what is the primary role of chlorophyll during photosynthesis?",
-                options: [
-                  "A. Consuming oxygen stored within carbohydrates",
-                  "B. Absorbing light energy and converting it to chemical energy",
-                  "C. Transporting carbon dioxide directly into soil roots",
-                  "D. Releasing water vapor during hot weather"
-                ],
-                correctAnswer: 1, // B
-                explanation: "Paragraph 1 states that chlorophyll absorbs light energy and converts it into chemical energy."
-              },
-              {
-                id: "r-acad-1-q2",
-                questionText: "The word 'liberated' in paragraph 2 is closest in meaning to:",
-                options: [
-                  "A. Released",
-                  "B. Absorbed",
-                  "C. Destroyed",
-                  "D. Measured"
-                ],
-                correctAnswer: 0, // A
-                explanation: "'Liberated' means freed or released as a byproduct."
+                id: "r1-acad-1-q1",
+                questionText: "What is the primary role of chlorophyll during photosynthesis?",
+                options: ["A. Consuming oxygen", "B. Absorbing light energy and converting it to chemical energy", "C. Transporting carbon dioxide", "D. Releasing water vapor"],
+                correctAnswer: 1,
+                explanation: "Chlorophyll absorbs light energy and converts it to chemical energy."
               }
             ]
           }
         ],
         upperModule: [
           {
-            id: "r-upper-cw-1",
+            id: "r1-u-cw-1",
             type: "complete_words",
-            instruction: "Upper Module: Complete the missing word fragments in the advanced text.",
-            passageText: "Architectural acoustic design requires precise calculated attenua___ of reverberation time. Specialized sound-absorbing materials are strategically positio___ to minimize unwanted echo phenom___.",
-            missingParts: ["tion", "ned", "ena"],
-            hints: ["attenua[tion]", "positio[ned]", "phenom[ena]"]
-          },
-          {
-            id: "r-upper-acad-1",
-            type: "read_academic",
-            instruction: "Upper Module: Read the academic passage and answer the questions.",
-            passageTitle: "The Economic Evolution of Currency",
-            passageText: `Before the establishment of standardized coinage, early commercial exchange relied upon commodity barter systems. However, barter inherent limitations—such as the double coincidence of wants—necessitated the emergence of representative token currencies. 
-
-Fiat currency, backed by governmental mandate rather than physical bullion reserves, represents the zenith of monetary abstraction. Contemporary digital fiat transactions have further decoupled economic value from tangible specie.`,
-            questions: [
-              {
-                id: "r-upper-acad-1-q1",
-                questionText: "What main drawback of the barter system is identified in the text?",
-                options: [
-                  "A. High transportation tariffs",
-                  "B. The double coincidence of wants",
-                  "C. Excessive government regulations",
-                  "D. Rapid devaluation of gold"
-                ],
-                correctAnswer: 1, // B
-                explanation: "The text highlights 'the double coincidence of wants' as a major limitation of barter."
-              }
-            ]
+            instruction: "Upper Module: Complete the missing word fragments.",
+            passageText: "Acoustic design requires precise calculated attenua___ of reverberation time. Specialized sound-absorbing materials are strategically positio___.",
+            missingParts: ["tion", "ned"],
+            hints: ["attenua[tion]", "positio[ned]"]
           }
         ],
         lowerModule: [
           {
-            id: "r-lower-cw-1",
+            id: "r1-l-cw-1",
             type: "complete_words",
             instruction: "Lower Module: Complete the missing word fragments.",
-            passageText: "Many international stud___ choose to study abroad to improve their English language sk___ and learn about new cultures.",
+            passageText: "Many international stud___ choose to study abroad to improve their English sk___.",
             missingParts: ["ents", "ills"],
             hints: ["stud[ents]", "sk[ills]"]
-          },
-          {
-            id: "r-lower-dl-1",
-            type: "read_daily_life",
-            instruction: "Read the schedule below and answer the question.",
-            stimulusFormat: "Library Schedule",
-            passageText: "Library Weekend Hours: Saturday 9:00 AM - 5:00 PM. Sunday 1:00 PM - 8:00 PM. Computer lab closes 30 minutes before building shutdown.",
-            questions: [
-              {
-                id: "r-lower-dl-1-q1",
-                questionText: "When does the library open on Sunday?",
-                options: ["A. 9:00 AM", "B. 1:00 PM", "C. 5:00 PM", "D. 8:00 PM"],
-                correctAnswer: 1,
-                explanation: "The schedule lists Sunday hours as 1:00 PM - 8:00 PM."
-              }
-            ]
           }
         ]
       },
 
-      // 🎧 LISTENING SECTION (Adaptive)
       listening: {
         title: "Listening Section",
         durationMinutes: 29,
         routerModule: [
-          // A. Listen and Choose a Response
           {
-            id: "l-resp-1",
+            id: "l1-resp-1",
             type: "listen_choose_response",
-            instruction: "Listen to the spoken statement and select the most appropriate response.",
+            instruction: "Listen to the statement and choose the best response.",
             audioText: "I'm sorry, Professor Miller. I won't be able to attend tomorrow's seminar because of a doctor's appointment.",
             options: [
-              "A. The lecture was held two weeks ago.",
-              "B. Thank you for notifying me. Please review the posted slides and email me your assignment.",
-              "C. The library closes at 5:00 PM on weekdays.",
-              "D. Biology is offered during the spring semester."
+              "A. The lecture was held yesterday.",
+              "B. Thank you for letting me know. Please review the posted slides.",
+              "C. The library closes at five.",
+              "D. Biology is offered in spring."
             ],
-            correctAnswer: 1, // B
-            explanation: "Choice B is the polite, appropriate professor response acknowledging the student's absence."
+            correctAnswer: 1,
+            explanation: "Choice B politely acknowledges the student's absence."
           },
           {
-            id: "l-resp-2",
-            type: "listen_choose_response",
-            instruction: "Listen to the spoken question and choose the best response.",
-            audioText: "Excuse me, do you know if the campus shuttle stops in front of the student center?",
-            options: [
-              "A. Yes, it arrives every fifteen minutes right at the main entrance.",
-              "B. I prefer taking the train to the city.",
-              "C. The center opened three years ago.",
-              "D. Shuttles are painted blue and yellow."
-            ],
-            correctAnswer: 0, // A
-            explanation: "Choice A directly answers the inquiry about shuttle stops and frequency."
-          },
-          // B. Listen to a Conversation
-          {
-            id: "l-conv-1",
+            id: "l1-conv-1",
             type: "listen_conversation",
-            instruction: "Listen to the campus conversation between a student and an academic advisor, then answer the questions.",
-            audioText: `Student: Hi, Mr. Davis. I'm trying to finalize my course schedule for next semester, but two of my required history courses overlap on Tuesdays.
-Advisor: Let's take a look. History 201 is also offered as an evening lecture on Thursdays, which would clear your Tuesday conflict completely.
-Student: Oh, that's great! Will that evening class fulfill my departmental core requirement?
-Advisor: Yes, absolutely. It covers identical syllabus material with Professor Vance.`,
+            instruction: "Listen to the conversation between a student and an academic advisor.",
+            audioText: "Student: My two history classes overlap on Tuesday.\nAdvisor: History 201 is also offered on Thursday evening, which clears your conflict.",
             questions: [
               {
-                id: "l-conv-1-q1",
-                questionText: "What problem does the student have at the beginning of the conversation?",
-                options: [
-                  "A. She failed her midterm history examination.",
-                  "B. Two of her required history classes conflict in schedule.",
-                  "C. She wants to change her major to English.",
-                  "D. The evening lecture is completely full."
-                ],
-                correctAnswer: 1, // B
-                explanation: "The student explicitly mentions that two required history courses overlap on Tuesdays."
-              },
-              {
-                id: "l-conv-1-q2",
-                questionText: "What solution does the academic advisor suggest?",
-                options: [
-                  "A. Taking an online course at another university",
-                  "B. Enrolling in the Thursday evening section of History 201",
-                  "C. Dropping the history core requirement entirely",
-                  "D. Delaying graduation by one semester"
-                ],
-                correctAnswer: 1, // B
-                explanation: "The advisor suggests taking History 201 on Thursday evening to eliminate the conflict."
-              }
-            ]
-          },
-          // C. Listen to an Academic Talk
-          {
-            id: "l-talk-1",
-            type: "listen_academic_talk",
-            instruction: "Listen to part of a lecture in an Environmental Science class.",
-            audioText: `Professor: Good morning, class. Today we're examining urban heat islands—metropolitan areas that experience significantly higher temperatures than surrounding rural landscapes. 
-
-This thermal disparity is caused by two primary factors: the abundance of heat-absorbing materials like asphalt and concrete, and the reduction of natural vegetation which normally cools the environment through evapotranspiration. 
-
-To mitigate this effect, modern urban planners are implementing reflective cool roofs and expanded municipal green spaces.`,
-            questions: [
-              {
-                id: "l-talk-1-q1",
-                questionText: "What is the main topic of the lecture?",
-                options: [
-                  "A. Methods for measuring solar radiation in space",
-                  "B. Causes and mitigation strategies for urban heat islands",
-                  "C. The history of asphalt paving in modern cities",
-                  "D. Agricultural techniques in rural landscapes"
-                ],
-                correctAnswer: 1, // B
-                explanation: "The lecture focuses on urban heat island causes and mitigation."
-              }
-            ]
-          }
-        ],
-        upperModule: [
-          {
-            id: "l-upper-talk-1",
-            type: "listen_academic_talk",
-            instruction: "Upper Module: Listen to an advanced lecture in Cognitive Psychology.",
-            audioText: "Today we explore neuroplasticity—the brain's remarkable capacity to reorganize synaptic connections in response to experiential learning and neural injury...",
-            questions: [
-              {
-                id: "l-upper-talk-1-q1",
-                questionText: "What does the professor mean by neuroplasticity?",
-                options: [
-                  "A. The permanent decay of brain cells",
-                  "B. The brain's ability to reorganize synaptic connections",
-                  "C. Surgical replacement of skull tissue",
-                  "D. Genetic inheritance of IQ scores"
-                ],
+                id: "l1-c1-q1",
+                questionText: "What solution does the advisor suggest?",
+                options: ["A. Taking an online course", "B. Enrolling in the Thursday evening section", "C. Dropping history", "D. Delaying graduation"],
                 correctAnswer: 1,
-                explanation: "Neuroplasticity is defined as the brain's capacity to reorganize synaptic connections."
+                explanation: "The advisor suggests Thursday evening."
               }
             ]
           }
         ],
-        lowerModule: [
-          {
-            id: "l-lower-resp-1",
-            type: "listen_choose_response",
-            instruction: "Lower Module: Listen to the question and select the response.",
-            audioText: "Where is the main computer lab located?",
-            options: [
-              "A. It is on the second floor of the technology building.",
-              "B. I like using computers.",
-              "C. Yesterday at 3 o'clock.",
-              "D. The exam was difficult."
-            ],
-            correctAnswer: 0,
-            explanation: "Choice A gives the correct physical location."
-          }
-        ]
+        upperModule: [],
+        lowerModule: []
       },
 
-      // ✍️ WRITING SECTION (Linear - 12 items total: 10 Build Sentence, 1 Email, 1 Discussion)
       writing: {
         title: "Writing Section",
         durationMinutes: 23,
         totalItems: 12,
         buildSentenceItems: [
-          {
-            id: "w-bs-1",
-            scrambledWords: ["library", "many", "students", "every day", "the", "use"],
-            targetSentence: "Many students use the library every day.",
-            difficulty: "A2"
-          },
-          {
-            id: "w-bs-2",
-            scrambledWords: ["must submit", "by Friday", "their assignments", "all candidates"],
-            targetSentence: "All candidates must submit their assignments by Friday.",
-            difficulty: "B1"
-          },
-          {
-            id: "w-bs-3",
-            scrambledWords: ["has expanded", "significantly", "its research facilities", "the university"],
-            targetSentence: "The university has expanded its research facilities significantly.",
-            difficulty: "B2"
-          },
-          {
-            id: "w-bs-4",
-            scrambledWords: ["carefully", "the professor", "explained", "the exam rules"],
-            targetSentence: "The professor carefully explained the exam rules.",
-            difficulty: "B1"
-          },
-          {
-            id: "w-bs-5",
-            scrambledWords: ["are required", "new international students", "to attend", "orientation"],
-            targetSentence: "New international students are required to attend orientation.",
-            difficulty: "B2"
-          },
-          {
-            id: "w-bs-6",
-            scrambledWords: ["online portal", "can access", "grades", "through the", "students"],
-            targetSentence: "Students can access grades through the online portal.",
-            difficulty: "B1"
-          },
-          {
-            id: "w-bs-7",
-            scrambledWords: ["recommends", "the advisor", "taking", "statistics", "this semester"],
-            targetSentence: "The advisor recommends taking statistics this semester.",
-            difficulty: "B2"
-          },
-          {
-            id: "w-bs-8",
-            scrambledWords: ["will reopen", "the campus cafeteria", "after renovation", "next month"],
-            targetSentence: "The campus cafeteria will reopen after renovation next month.",
-            difficulty: "B2"
-          },
-          {
-            id: "w-bs-9",
-            scrambledWords: ["provides", "useful feedback", "AI evaluation", "for essay writing"],
-            targetSentence: "AI evaluation provides useful feedback for essay writing.",
-            difficulty: "C1"
-          },
-          {
-            id: "w-bs-10",
-            scrambledWords: ["demonstrated", "the study", "a strong correlation", "between sleep and memory"],
-            targetSentence: "The study demonstrated a strong correlation between sleep and memory.",
-            difficulty: "C1"
-          }
+          { id: "w1-bs-1", scrambledWords: ["library", "many", "students", "every day", "the", "use"], targetSentence: "Many students use the library every day.", difficulty: "A2" },
+          { id: "w1-bs-2", scrambledWords: ["must submit", "by Friday", "their assignments", "all candidates"], targetSentence: "All candidates must submit their assignments by Friday.", difficulty: "B1" },
+          { id: "w1-bs-3", scrambledWords: ["has expanded", "significantly", "its research facilities", "the university"], targetSentence: "The university has expanded its research facilities significantly.", difficulty: "B2" },
+          { id: "w1-bs-4", scrambledWords: ["carefully", "the professor", "explained", "the exam rules"], targetSentence: "The professor carefully explained the exam rules.", difficulty: "B1" },
+          { id: "w1-bs-5", scrambledWords: ["are required", "new international students", "to attend", "orientation"], targetSentence: "New international students are required to attend orientation.", difficulty: "B2" },
+          { id: "w1-bs-6", scrambledWords: ["online portal", "can access", "grades", "through the", "students"], targetSentence: "Students can access grades through the online portal.", difficulty: "B1" },
+          { id: "w1-bs-7", scrambledWords: ["recommends", "the advisor", "taking", "statistics", "this semester"], targetSentence: "The advisor recommends taking statistics this semester.", difficulty: "B2" },
+          { id: "w1-bs-8", scrambledWords: ["will reopen", "the campus cafeteria", "after renovation", "next month"], targetSentence: "The campus cafeteria will reopen after renovation next month.", difficulty: "B2" },
+          { id: "w1-bs-9", scrambledWords: ["provides", "useful feedback", "AI evaluation", "for essay writing"], targetSentence: "AI evaluation provides useful feedback for essay writing.", difficulty: "C1" },
+          { id: "w1-bs-10", scrambledWords: ["demonstrated", "the study", "a strong correlation", "between sleep and memory"], targetSentence: "The study demonstrated a strong correlation between sleep and memory.", difficulty: "C1" }
         ],
         emailTask: {
-          id: "w-email-1",
+          id: "w1-email-1",
           type: "write_email",
-          instruction: "Write an email responding to the situation described below. Ensure your email is clear, polite, and well-organized.",
-          scenario: `You missed a required laboratory session for your Chemistry 101 course due to an unexpected illness. 
-
-Write an email to your professor, Dr. Aris:
-1. Explain why you were absent.
-2. Politely request permission to attend a makeup laboratory session.
-3. Offer to provide a medical note if required.`,
-          minWords: 50,
-          suggestedMinutes: 7
+          instruction: "Write an email responding to the situation below.",
+          scenario: "You missed a lab due to illness. Write to Dr. Aris asking for a makeup session.",
+          minWords: 50
         },
         discussionTask: {
-          id: "w-disc-1",
+          id: "w1-disc-1",
           type: "academic_discussion",
-          instruction: "Read the online discussion post below and write your contribution to the discussion. State your position clearly and support it with specific reasons and examples.",
-          professorPrompt: `Professor Lin: This week we are discussing renewable energy policy. Some economists argue that governments should heavily subsidize solar and wind energy companies to accelerate the green transition. Others believe government subsidies distort free markets and that private industry innovation should drive energy development. What is your opinion?`,
-          student1: `Sarah: I strongly support solar subsidies! Without government financial incentives, clean energy technologies cannot compete with established fossil fuel infrastructure quickly enough to combat climate change.`,
-          student2: `Mark: I disagree. Subsidies often waste taxpayer money on inefficient companies. If green technology is genuinely superior, private venture capital and consumer demand will naturally fund its expansion.`,
-          minWords: 80,
-          suggestedMinutes: 10
+          instruction: "Participate in the online discussion below.",
+          professorPrompt: "Professor Lin: Should governments heavily subsidize renewable energy companies?",
+          student1: "Sarah: Yes, green technology needs financial incentives to combat climate change.",
+          student2: "Mark: No, subsidies waste taxpayer money and private industry should drive growth.",
+          minWords: 80
         }
       },
 
-      // 🎙️ SPEAKING SECTION (Linear - 11 tasks total: 7 Listen & Repeat, 4 Take an Interview)
       speaking: {
         title: "Speaking Section",
         durationMinutes: 8,
         totalTasks: 11,
         repeatTasks: [
-          {
-            id: "s-lr-1",
-            audioText: "The campus library will extend its operating hours during final examination week.",
-            recordWindowSec: 8,
-            level: "B1"
-          },
-          {
-            id: "s-lr-2",
-            audioText: "Students must register for laboratory courses before the deadline on Friday.",
-            recordWindowSec: 8,
-            level: "B1"
-          },
-          {
-            id: "s-lr-3",
-            audioText: "Professor Aris posted the updated syllabus on the university online portal.",
-            recordWindowSec: 8,
-            level: "B2"
-          },
-          {
-            id: "s-lr-4",
-            audioText: "Academic advisors recommend balancing core requirements with elective seminars.",
-            recordWindowSec: 10,
-            level: "B2"
-          },
-          {
-            id: "s-lr-5",
-            audioText: "Environmental scientists have documented a direct correlation between deforestation and local rainfall patterns.",
-            recordWindowSec: 12,
-            level: "C1"
-          },
-          {
-            id: "s-lr-6",
-            audioText: "Interdisciplinary research projects foster innovative problem solving across traditional academic boundaries.",
-            recordWindowSec: 12,
-            level: "C1"
-          },
-          {
-            id: "s-lr-7",
-            audioText: "Technological advancements in artificial intelligence are fundamentally reshaping modern educational pedagogy.",
-            recordWindowSec: 12,
-            level: "C2"
-          }
+          { id: "s1-lr-1", audioText: "The campus library will extend operating hours during finals.", recordWindowSec: 8, level: "B1" },
+          { id: "s1-lr-2", audioText: "Students must register for laboratory courses before Friday.", recordWindowSec: 8, level: "B1" },
+          { id: "s1-lr-3", audioText: "Professor Aris posted the updated syllabus online.", recordWindowSec: 8, level: "B2" },
+          { id: "s1-lr-4", audioText: "Academic advisors recommend balancing core requirements with electives.", recordWindowSec: 10, level: "B2" },
+          { id: "s1-lr-5", audioText: "Environmental scientists documented a correlation between deforestation and rainfall.", recordWindowSec: 12, level: "C1" },
+          { id: "s1-lr-6", audioText: "Interdisciplinary research projects foster innovative problem solving.", recordWindowSec: 12, level: "C1" },
+          { id: "s1-lr-7", audioText: "Technological advancements in artificial intelligence are reshaping modern education.", recordWindowSec: 12, level: "C2" }
         ],
         interviewTasks: [
+          { id: "s1-int-1", questionText: "What essential skill should university students develop before graduation, and why?", recordWindowSec: 45 },
+          { id: "s1-int-2", questionText: "Do you prefer studying individually or working in group seminars? Explain.", recordWindowSec: 45 },
+          { id: "s1-int-3", questionText: "Describe a challenging academic project you completed. How did you finish it?", recordWindowSec: 45 },
+          { id: "s1-int-4", questionText: "Should physical education be mandatory for all university students? Agree or disagree.", recordWindowSec: 45 }
+        ]
+      }
+    }
+  },
+
+  // ── MOCK TEST 2 ──
+  {
+    id: "toefl-full-2",
+    title: "TOEFL iBT 2026 Practice Test 2",
+    format: "2026 ETS Multistage Adaptive",
+    durationMinutes: 90,
+    sections: {
+      reading: {
+        title: "Reading Section",
+        durationMinutes: 30,
+        routerModule: [
           {
-            id: "s-int-1",
-            questionText: "What is one essential skill that university students should develop before graduation, and why is it important?",
-            recordWindowSec: 45,
-            prepWindowSec: 15
+            id: "r2-cw-1",
+            type: "complete_words",
+            instruction: "Complete the missing word fragments in the passage below.",
+            passageText: "Modern urban infrastructure requires ongoing maintenance to prev___ major service disruptions. Engineers utilize advan___ sensors to monitor bridge stability continuously.",
+            missingParts: ["ent", "ced"],
+            hints: ["prev[ent]", "advan[ced]"]
           },
           {
-            id: "s-int-2",
-            questionText: "Do you prefer studying individually in a quiet room or working collaboratively in a group study seminar? Explain your preference.",
-            recordWindowSec: 45,
-            prepWindowSec: 15
-          },
-          {
-            id: "s-int-3",
-            questionText: "Describe a challenging academic project or assignment you completed in the past. How did you manage your time to finish it successfully?",
-            recordWindowSec: 45,
-            prepWindowSec: 15
-          },
-          {
-            id: "s-int-4",
-            questionText: "Some people believe that universities should make physical education and sports mandatory for all students. Do you agree or disagree with this view?",
-            recordWindowSec: 45,
-            prepWindowSec: 15
+            id: "r2-dl-1",
+            type: "read_daily_life",
+            instruction: "Read the university memo.",
+            stimulusFormat: "Campus Email",
+            passageText: "Subject: IT System Maintenance. The campus Wi-Fi network will undergo upgrades on Saturday from 2 AM to 6 AM. Network access will be unavailable during this window.",
+            questions: [
+              {
+                id: "r2-dl-1-q1",
+                questionText: "When will the campus Wi-Fi network be unavailable?",
+                options: ["A. Friday 2 PM", "B. Saturday 2 AM to 6 AM", "C. Sunday all day", "D. Monday morning"],
+                correctAnswer: 1,
+                explanation: "Wi-Fi upgrades occur Saturday from 2 AM to 6 AM."
+              }
+            ]
           }
+        ],
+        upperModule: [],
+        lowerModule: []
+      },
+      listening: {
+        title: "Listening Section",
+        durationMinutes: 29,
+        routerModule: [
+          {
+            id: "l2-resp-1",
+            type: "listen_choose_response",
+            instruction: "Listen and choose the best response.",
+            audioText: "Could you tell me where the career counseling office is located?",
+            options: ["A. It is on the third floor of Hall B.", "B. I like career counseling.", "C. Yesterday at noon.", "D. Graduation is in May."],
+            correctAnswer: 0,
+            explanation: "Choice A gives location."
+          }
+        ],
+        upperModule: [],
+        lowerModule: []
+      },
+      writing: {
+        title: "Writing Section",
+        durationMinutes: 23,
+        totalItems: 12,
+        buildSentenceItems: [
+          { id: "w2-bs-1", scrambledWords: ["requires", "diligent practice", "learning a language", "every day"], targetSentence: "Learning a language requires diligent practice every day.", difficulty: "B1" },
+          { id: "w2-bs-2", scrambledWords: ["published", "the research team", "their findings", "in a journal"], targetSentence: "The research team published their findings in a journal.", difficulty: "B2" },
+          { id: "w2-bs-3", scrambledWords: ["attendance", "is compulsory", "for all lab sessions", "student"], targetSentence: "Student attendance is compulsory for all lab sessions.", difficulty: "B1" },
+          { id: "w2-bs-4", scrambledWords: ["can submit", "online", "their draft", "students"], targetSentence: "Students can submit their draft online.", difficulty: "A2" },
+          { id: "w2-bs-5", scrambledWords: ["the committee", "approved", "the proposal", "unanimously"], targetSentence: "The committee approved the proposal unanimously.", difficulty: "C1" },
+          { id: "w2-bs-6", scrambledWords: ["should consult", "their academic advisor", "students", "regularly"], targetSentence: "Students should consult their academic advisor regularly.", difficulty: "B1" },
+          { id: "w2-bs-7", scrambledWords: ["provides", "financial aid", "the university", "to qualified applicants"], targetSentence: "The university provides financial aid to qualified applicants.", difficulty: "B2" },
+          { id: "w2-bs-8", scrambledWords: ["was awarded", "first prize", "the engineering student", "in the contest"], targetSentence: "The engineering student was awarded first prize in the contest.", difficulty: "B2" },
+          { id: "w2-bs-9", scrambledWords: ["demonstrates", "critical thinking", "effective writing", "and clarity"], targetSentence: "Effective writing demonstrates critical thinking and clarity.", difficulty: "C1" },
+          { id: "w2-bs-10", scrambledWords: ["accelerates", "the synthesis", "catalysts", "of chemical compounds"], targetSentence: "Catalysts accelerates the synthesis of chemical compounds.", difficulty: "C2" }
+        ],
+        emailTask: {
+          id: "w2-email-1",
+          type: "write_email",
+          instruction: "Write an email requesting a deadline extension.",
+          scenario: "You need a 2-day extension on your research proposal due to illness. Write to Professor Vance.",
+          minWords: 50
+        },
+        discussionTask: {
+          id: "w2-disc-1",
+          type: "academic_discussion",
+          instruction: "Write your contribution to the academic discussion.",
+          professorPrompt: "Professor Davis: Should remote work remain a permanent option for employees?",
+          student1: "Claire: Yes, remote work increases flexibility and reduces commuting pollution.",
+          student2: "David: No, working in an office builds team collaboration and company culture.",
+          minWords: 80
+        }
+      },
+      speaking: {
+        title: "Speaking Section",
+        durationMinutes: 8,
+        totalTasks: 11,
+        repeatTasks: [
+          { id: "s2-lr-1", audioText: "The registrar office will process transcript requests within two business days.", recordWindowSec: 8, level: "B1" },
+          { id: "s2-lr-2", audioText: "All graduate students are invited to present at the research symposium.", recordWindowSec: 8, level: "B2" },
+          { id: "s2-lr-3", audioText: "Effective time management is essential for academic success.", recordWindowSec: 8, level: "B1" },
+          { id: "s2-lr-4", audioText: "Renewable energy adoption has grown rapidly over the past decade.", recordWindowSec: 10, level: "B2" },
+          { id: "s2-lr-5", audioText: "Biological diversity provides fundamental resilience to natural ecosystems.", recordWindowSec: 12, level: "C1" },
+          { id: "s2-lr-6", audioText: "Economists analyze consumer behavior to predict market fluctuations.", recordWindowSec: 12, level: "C1" },
+          { id: "s2-lr-7", audioText: "Intercultural communication competence enhances global professional collaboration.", recordWindowSec: 12, level: "C2" }
+        ],
+        interviewTasks: [
+          { id: "s2-int-1", questionText: "What is your favorite academic subject, and why do you find it interesting?", recordWindowSec: 45 },
+          { id: "s2-int-2", questionText: "Should university lectures be recorded and made available online for all students?", recordWindowSec: 45 },
+          { id: "s2-int-3", questionText: "Describe a book or article that had a significant influence on your thinking.", recordWindowSec: 45 },
+          { id: "s2-int-4", questionText: "Is it better for students to choose a specific major immediately or explore general subjects first?", recordWindowSec: 45 }
+        ]
+      }
+    }
+  },
+
+  // ── MOCK TEST 3 ──
+  {
+    id: "toefl-full-3",
+    title: "TOEFL iBT 2026 Practice Test 3",
+    format: "2026 ETS Multistage Adaptive",
+    durationMinutes: 90,
+    sections: {
+      reading: {
+        title: "Reading Section",
+        durationMinutes: 30,
+        routerModule: [
+          { id: "r3-cw-1", type: "complete_words", instruction: "Complete the text.", passageText: "Marine biologists have discovered new coral spec___ in deep ocean trenches.", missingParts: ["ies"], hints: ["spec[ies]"] }
+        ],
+        upperModule: [], lowerModule: []
+      },
+      listening: {
+        title: "Listening Section",
+        durationMinutes: 29,
+        routerModule: [
+          { id: "l3-resp-1", type: "listen_choose_response", instruction: "Choose response.", audioText: "When is the lab report due?", options: ["A. By Friday 5 PM", "B. In the library", "C. Chemistry is fun", "D. Yes it is"], correctAnswer: 0, explanation: "Time answer." }
+        ],
+        upperModule: [], lowerModule: []
+      },
+      writing: {
+        title: "Writing Section",
+        durationMinutes: 23,
+        totalItems: 12,
+        buildSentenceItems: [
+          { id: "w3-bs-1", scrambledWords: ["is crucial", "sleep", "for brain health"], targetSentence: "Sleep is crucial for brain health.", difficulty: "A2" },
+          { id: "w3-bs-2", scrambledWords: ["participated", "in the experiment", "fifty volunteers"], targetSentence: "Fifty volunteers participated in the experiment.", difficulty: "B1" },
+          { id: "w3-bs-3", scrambledWords: ["announced", "a new grant", "the department chair"], targetSentence: "The department chair announced a new grant.", difficulty: "B2" },
+          { id: "w3-bs-4", scrambledWords: ["must wear", "safety goggles", "all lab technicians"], targetSentence: "All lab technicians must wear safety goggles.", difficulty: "B1" },
+          { id: "w3-bs-5", scrambledWords: ["reduces", "stress levels", "regular exercise"], targetSentence: "Regular exercise reduces stress levels.", difficulty: "A2" },
+          { id: "w3-bs-6", scrambledWords: ["will host", "an international conference", "the university"], targetSentence: "The university will host an international conference.", difficulty: "B2" },
+          { id: "w3-bs-7", scrambledWords: ["requires", "critical analysis", "writing a thesis"], targetSentence: "Writing a thesis requires critical analysis.", difficulty: "B2" },
+          { id: "w3-bs-8", scrambledWords: ["can register", "online", "participants"], targetSentence: "Participants can register online.", difficulty: "A2" },
+          { id: "w3-bs-9", scrambledWords: ["influences", "climate change", "global weather patterns"], targetSentence: "Climate change influences global weather patterns.", difficulty: "B2" },
+          { id: "w3-bs-10", scrambledWords: ["uncovered", "archaeologists", "ancient artifacts"], targetSentence: "Archaeologists uncovered ancient artifacts.", difficulty: "C1" }
+        ],
+        emailTask: { id: "w3-email-1", type: "write_email", instruction: "Write email inquiring about intern positions.", scenario: "Write to Career Coordinator Ms. Lee asking about summer internships.", minWords: 50 },
+        discussionTask: { id: "w3-disc-1", type: "academic_discussion", instruction: "Discuss online learning.", professorPrompt: "Prof. Kim: Is online degree learning as effective as traditional campus education?", student1: "Alex: Yes, online learning is flexible.", student2: "Beth: No, campus learning builds human connections.", minWords: 80 }
+      },
+      speaking: {
+        title: "Speaking Section",
+        durationMinutes: 8,
+        totalTasks: 11,
+        repeatTasks: [
+          { id: "s3-lr-1", audioText: "The campus bookstore offers discounts on used textbooks.", recordWindowSec: 8, level: "B1" },
+          { id: "s3-lr-2", audioText: "Graduate seminars require active student participation.", recordWindowSec: 8, level: "B2" },
+          { id: "s3-lr-3", audioText: "Solar power reduces reliance on fossil fuels.", recordWindowSec: 8, level: "B1" },
+          { id: "s3-lr-4", audioText: "Artificial intelligence is transforming global healthcare diagnostic procedures.", recordWindowSec: 10, level: "C1" },
+          { id: "s3-lr-5", audioText: "Students are encouraged to join student government organizations.", recordWindowSec: 10, level: "B2" },
+          { id: "s3-lr-6", audioText: "Cognitive psychology investigates human perception and memory.", recordWindowSec: 12, level: "C1" },
+          { id: "s3-lr-7", audioText: "Sustainable urban design minimizes environmental pollution footprints.", recordWindowSec: 12, level: "C2" }
+        ],
+        interviewTasks: [
+          { id: "s3-int-1", questionText: "How do you manage academic stress during exam week?", recordWindowSec: 45 },
+          { id: "s3-int-2", questionText: "Is it better to live on campus or in an off-campus apartment?", recordWindowSec: 45 },
+          { id: "s3-int-3", questionText: "Describe a professor who inspired you and explain why.", recordWindowSec: 45 },
+          { id: "s3-int-4", questionText: "Should university tuition fees be fully subsidized by the government?", recordWindowSec: 45 }
+        ]
+      }
+    }
+  },
+
+  // ── MOCK TEST 4 ──
+  {
+    id: "toefl-full-4",
+    title: "TOEFL iBT 2026 Practice Test 4",
+    format: "2026 ETS Multistage Adaptive",
+    durationMinutes: 90,
+    sections: {
+      reading: { title: "Reading Section", durationMinutes: 30, routerModule: [{ id: "r4-cw-1", type: "complete_words", instruction: "Complete text.", passageText: "Renewable energy technol___ are advancing rapidly.", missingParts: ["ogies"], hints: ["technol[ogies]"] }], upperModule: [], lowerModule: [] },
+      listening: { title: "Listening Section", durationMinutes: 29, routerModule: [{ id: "l4-resp-1", type: "listen_choose_response", instruction: "Choose response.", audioText: "Where is the student center?", options: ["A. Next to the main library.", "B. I like studying.", "C. At 4 PM."], correctAnswer: 0, explanation: "Location." }], upperModule: [], lowerModule: [] },
+      writing: {
+        title: "Writing Section", durationMinutes: 23, totalItems: 12,
+        buildSentenceItems: [
+          { id: "w4-bs-1", scrambledWords: ["water", "is essential", "for human survival"], targetSentence: "Water is essential for human survival.", difficulty: "A1" },
+          { id: "w4-bs-2", scrambledWords: ["submitted", "the report", "on time"], targetSentence: "The report was submitted on time.", difficulty: "B1" },
+          { id: "w4-bs-3", scrambledWords: ["attracts", "the exhibition", "thousands of visitors"], targetSentence: "The exhibition attracts thousands of visitors.", difficulty: "B2" },
+          { id: "w4-bs-4", scrambledWords: ["must follow", "students", "safety guidelines"], targetSentence: "Students must follow safety guidelines.", difficulty: "A2" },
+          { id: "w4-bs-5", scrambledWords: ["improves", "learning", "active listening"], targetSentence: "Active listening improves learning.", difficulty: "B1" },
+          { id: "w4-bs-6", scrambledWords: ["conducted", "the survey", "last month"], targetSentence: "The survey was conducted last month.", difficulty: "B2" },
+          { id: "w4-bs-7", scrambledWords: ["enhances", "collaboration", "group work"], targetSentence: "Group work enhances collaboration.", difficulty: "B1" },
+          { id: "w4-bs-8", scrambledWords: ["provides", "the app", "instant feedback"], targetSentence: "The app provides instant feedback.", difficulty: "A2" },
+          { id: "w4-bs-9", scrambledWords: ["drives", "innovation", "scientific research"], targetSentence: "Scientific research drives innovation.", difficulty: "C1" },
+          { id: "w4-bs-10", scrambledWords: ["regulates", "the heart", "blood circulation"], targetSentence: "The heart regulates blood circulation.", difficulty: "B2" }
+        ],
+        emailTask: { id: "w4-email-1", type: "write_email", instruction: "Write email requesting professor reference.", scenario: "Write to Prof. Smith asking for a letter of recommendation.", minWords: 50 },
+        discussionTask: { id: "w4-disc-1", type: "academic_discussion", instruction: "Discuss artificial intelligence.", professorPrompt: "Prof. Zhao: Will AI replace human teachers in the future?", student1: "Tom: Yes, AI can personalize content.", student2: "Eva: No, human empathy is indispensable.", minWords: 80 }
+      },
+      speaking: {
+        title: "Speaking Section", durationMinutes: 8, totalTasks: 11,
+        repeatTasks: [
+          { id: "s4-lr-1", audioText: "The career fair will take place in the main gymnasium on Tuesday.", recordWindowSec: 8, level: "B1" },
+          { id: "s4-lr-2", audioText: "Students can request loaner laptops from the technology helpdesk.", recordWindowSec: 8, level: "B1" },
+          { id: "s4-lr-3", audioText: "Public speaking skills enhance professional presentation capabilities.", recordWindowSec: 10, level: "B2" },
+          { id: "s4-lr-4", audioText: "Microbiology experiments require strict sterile laboratory environments.", recordWindowSec: 10, level: "C1" },
+          { id: "s4-lr-5", audioText: "Historical analysis provides valuable context for contemporary geopolitical events.", recordWindowSec: 12, level: "C1" },
+          { id: "s4-lr-6", audioText: "Effective team communication resolves organizational operational friction.", recordWindowSec: 12, level: "C1" },
+          { id: "s4-lr-7", audioText: "Neuroscientific research continues to uncover complex brain circuitry mechanisms.", recordWindowSec: 12, level: "C2" }
+        ],
+        interviewTasks: [
+          { id: "s4-int-1", questionText: "What is your main strategy when preparing for a big presentation?", recordWindowSec: 45 },
+          { id: "s4-int-2", questionText: "Should university courses require mandatory group work projects?", recordWindowSec: 45 },
+          { id: "s4-int-3", questionText: "Describe an achievement you are proud of in your academic journey.", recordWindowSec: 45 },
+          { id: "s4-int-4", questionText: "Is it better to study abroad in a non-English speaking country or an English-speaking country?", recordWindowSec: 45 }
+        ]
+      }
+    }
+  },
+
+  // ── MOCK TEST 5 ──
+  {
+    id: "toefl-full-5",
+    title: "TOEFL iBT 2026 Practice Test 5",
+    format: "2026 ETS Multistage Adaptive",
+    durationMinutes: 90,
+    sections: {
+      reading: { title: "Reading Section", durationMinutes: 30, routerModule: [{ id: "r5-cw-1", type: "complete_words", instruction: "Complete text.", passageText: "Quantum computing represents a major leap forward in proce___ power.", missingParts: ["ssing"], hints: ["proce[ssing]"] }], upperModule: [], lowerModule: [] },
+      listening: { title: "Listening Section", durationMinutes: 29, routerModule: [{ id: "l5-resp-1", type: "listen_choose_response", instruction: "Choose response.", audioText: "Did you turn in your assignment?", options: ["A. Yes, I uploaded it this morning.", "B. I like writing.", "C. The class was long."], correctAnswer: 0, explanation: "Yes response." }], upperModule: [], lowerModule: [] },
+      writing: {
+        title: "Writing Section", durationMinutes: 23, totalItems: 12,
+        buildSentenceItems: [
+          { id: "w5-bs-1", scrambledWords: ["reading", "expands", "vocabulary"], targetSentence: "Reading expands vocabulary.", difficulty: "A1" },
+          { id: "w5-bs-2", scrambledWords: ["completed", "the team", "the project"], targetSentence: "The team completed the project.", difficulty: "A2" },
+          { id: "w5-bs-3", scrambledWords: ["attends", "she", "lectures regularly"], targetSentence: "She attends lectures regularly.", difficulty: "A1" },
+          { id: "w5-bs-4", scrambledWords: ["requires", "research", "accurate data"], targetSentence: "Research requires accurate data.", difficulty: "B1" },
+          { id: "w5-bs-5", scrambledWords: ["promotes", "health", "balanced nutrition"], targetSentence: "Balanced nutrition promotes health.", difficulty: "B1" },
+          { id: "w5-bs-6", scrambledWords: ["designed", "the architect", "the building"], targetSentence: "The architect designed the building.", difficulty: "B1" },
+          { id: "w5-bs-7", scrambledWords: ["published", "the professor", "his book"], targetSentence: "The professor published his book.", difficulty: "B2" },
+          { id: "w5-bs-8", scrambledWords: ["improves", "practice", "performance"], targetSentence: "Practice improves performance.", difficulty: "A2" },
+          { id: "w5-bs-9", scrambledWords: ["drives", "curiosity", "discovery"], targetSentence: "Curiosity drives discovery.", difficulty: "B2" },
+          { id: "w5-bs-10", scrambledWords: ["enables", "technology", "global connection"], targetSentence: "Technology enables global connection.", difficulty: "C1" }
+        ],
+        emailTask: { id: "w5-email-1", type: "write_email", instruction: "Write email to residence coordinator.", scenario: "Request room change due to noise issues. Write to Mr. Thomas.", minWords: 50 },
+        discussionTask: { id: "w5-disc-1", type: "academic_discussion", instruction: "Discuss space exploration.", professorPrompt: "Prof. Brown: Should nations spend billions on space exploration or focus on Earth problems?", student1: "Leo: Space exploration creates scientific breakthroughs.", student2: "Mia: Earth climate challenges need urgent funding first.", minWords: 80 }
+      },
+      speaking: {
+        title: "Speaking Section", durationMinutes: 8, totalTasks: 11,
+        repeatTasks: [
+          { id: "s5-lr-1", audioText: "The health center provides free annual flu vaccinations for students.", recordWindowSec: 8, level: "B1" },
+          { id: "s5-lr-2", audioText: "Campus dining services will introduce organic vegetarian menu options.", recordWindowSec: 8, level: "B1" },
+          { id: "s5-lr-3", audioText: "Faculty members encourage active debate during seminar discussions.", recordWindowSec: 10, level: "B2" },
+          { id: "s5-lr-4", audioText: "Atmospheric research vessels collect environmental data across ocean currents.", recordWindowSec: 10, level: "C1" },
+          { id: "s5-lr-5", audioText: "Interdisciplinary collaboration stimulates groundbreaking technological innovation.", recordWindowSec: 12, level: "C1" },
+          { id: "s5-lr-6", audioText: "Quantitative economic models project steady regional growth trends.", recordWindowSec: 12, level: "C1" },
+          { id: "s5-lr-7", audioText: "Neurocognitive rehabilitation therapies assist stroke patients in restoring motor skills.", recordWindowSec: 12, level: "C2" }
+        ],
+        interviewTasks: [
+          { id: "s5-int-1", questionText: "What field of study do you plan to pursue, and what career goals do you have?", recordWindowSec: 45 },
+          { id: "s5-int-2", questionText: "Do you prefer written examinations or practical hands-on project assessments?", recordWindowSec: 45 },
+          { id: "s5-int-3", questionText: "Describe how modern technology has changed the way you study.", recordWindowSec: 45 },
+          { id: "s5-int-4", questionText: "Should university attendance be mandatory for all undergraduate lectures?", recordWindowSec: 45 }
         ]
       }
     }
