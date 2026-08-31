@@ -31,6 +31,7 @@ import Footer from "./components/home/Footer";
 import Loader from "./components/Loader";
 import ScrollToTop from "./components/ScrollToTop";
 import PremiumGate from "./components/PremiumGate";
+import SecurityWatermarkOverlay from "./components/SecurityWatermarkOverlay";
 import AdminRoute from "./components/AdminRoute";
 import PrivateRoute from "./components/PrivateRoute";
 import ReadingCenter from "./pages/ReadingCenter";
@@ -115,6 +116,7 @@ function App() {
 
   return (
     <>
+      <SecurityWatermarkOverlay />
       <ScrollToTop />
       <WelcomeGreeting />
       <Navbar />
