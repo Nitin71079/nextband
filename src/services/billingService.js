@@ -96,6 +96,9 @@ export async function startCheckout(plan) {
           });
 
         if (result.success) {
+          import("../utils/planAccess").then(({ activateUserPlan }) => {
+            activateUserPlan(plan, "all_access");
+          });
           toast.success(
             "🎉 Premium Activated!"
           );

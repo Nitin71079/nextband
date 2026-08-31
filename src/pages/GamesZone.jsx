@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Swords, Lock, Gamepad2, Zap, Trophy, Users, Sparkles, Layers, Volume2 } from "lucide-react";
+import { Swords, Lock, Gamepad2, Zap, Trophy, Users, Sparkles, Layers, Volume2, Crown } from "lucide-react";
 import { useExam } from "../context/ExamContext";
+import { isGameUnlocked } from "../utils/planAccess";
+import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 const games = [
   {
@@ -204,6 +206,8 @@ export default function GamesZone() {
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative", zIndex: 1 }}>
 
+        <ExamTrackHeaderSwitcher />
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -345,33 +349,45 @@ export default function GamesZone() {
             gap: "24px",
           }}
         >
-          {games.map((game, i) => (
-            <motion.div
-              key={game.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={game.available ? { y: -8, scale: 1.015 } : {}}
-              onClick={() => game.available && navigate(game.path)}
-              style={{
-                position: "relative",
-                padding: "36px 32px",
-                borderRadius: "28px",
-                background: game.available
-                  ? "rgba(255,255,255,.05)"
-                  : "rgba(255,255,255,.02)",
-                border: game.available
-                  ? `1px solid rgba(37,99,235,.25)`
-                  : "1px solid rgba(255,255,255,.06)",
-                cursor: game.available ? "pointer" : "default",
-                boxShadow: game.available
-                  ? "0 8px 40px rgba(0,0,0,.3)"
-                  : "none",
-                overflow: "hidden",
-                transition: "all .3s ease",
-                opacity: game.available ? 1 : 0.55,
-              }}
-            >
+          {games.map((game, i) => {
+            const unlocked = isGameUnlocked(game.id);
+            const isClickable = game.available;
+
+            return (
+              <motion.div
+                key={game.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={isClickable ? { y: -8, scale: 1.015 } : {}}
+                onClick={() => {
+                  if (!unlocked) {
+                    navigate("/pricing");
+                  } else if (game.available) {
+                    navigate(game.path);
+                  }
+                }}
+                style={{
+                  position: "relative",
+                  padding: "36px 32px",
+                  borderRadius: "28px",
+                  background: !unlocked
+                    ? "rgba(30,41,59,0.7)"
+                    : game.available
+                    ? "rgba(255,255,255,.05)"
+                    : "rgba(255,255,255,.02)",
+                  border: !unlocked
+                    ? "1px solid rgba(250,204,21,0.3)"
+                    : game.available
+                    ? `1px solid rgba(37,99,235,.25)`
+                    : "1px solid rgba(255,255,255,.06)",
+                  cursor: "pointer",
+                  boxShadow: game.available ? "0 8px 40px rgba(0,0,0,.3)" : "none",
+                  overflow: "hidden",
+                  transition: "all .3s ease",
+                  opacity: game.available ? 1 : 0.55,
+                }}
+              >
               {/* Top accent line */}
               <div
                 style={{
@@ -395,15 +411,18 @@ export default function GamesZone() {
                   right: "20px",
                   padding: "5px 12px",
                   borderRadius: "999px",
-                  background: `${game.badgeColor}20`,
-                  border: `1px solid ${game.badgeColor}40`,
-                  color: game.badgeColor,
+                  background: !unlocked ? "rgba(250,204,21,0.2)" : `${game.badgeColor}20`,
+                  border: !unlocked ? "1px solid rgba(250,204,21,0.5)" : `1px solid ${game.badgeColor}40`,
+                  color: !unlocked ? "#facc15" : game.badgeColor,
                   fontSize: "10px",
                   fontWeight: 800,
                   letterSpacing: "1px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px"
                 }}
               >
-                {game.badge}
+                {!unlocked ? <>🔒 UPGRADE PLAN</> : game.badge}
               </div>
 
               {/* Lock for unavailable */}
@@ -504,7 +523,8 @@ export default function GamesZone() {
                 </div>
               )}
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

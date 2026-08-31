@@ -18,7 +18,10 @@ export default function DETTestEnginePage() {
   const [showSectionIntro, setShowSectionIntro] = useState(true);
 
   useEffect(() => {
-    const mock = detMockTests.find((m) => m.id === id);
+    const rawNum = String(id || "1").replace(/\D/g, "");
+    const numericId = parseInt(rawNum, 10);
+    const mockIndex = !isNaN(numericId) && numericId > 0 ? (numericId - 1) % detMockTests.length : 0;
+    const mock = detMockTests.find((m) => m.id === id || m.id === `det-full-mock-${numericId}`) || detMockTests[mockIndex];
     let newEngine;
 
     if (mock) {

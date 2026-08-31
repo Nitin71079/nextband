@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Sparkles, Trophy, ArrowLeft, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
-import { calculateDETPracticeScores } from "../services/detScoringEngine";
+import { ArrowLeft, RefreshCw, Trophy, Sparkles, CheckCircle2 } from "lucide-react";
+import { calculateDETPracticeScores, detToIelts, detToCEFR } from "../services/detScoringEngine";
 import "../styles/duolingo.css";
 
 export default function DETResultsPage() {
@@ -21,142 +21,192 @@ export default function DETResultsPage() {
       : [
           { skill: "literacy", accuracy: 0.85, difficulty: 100 },
           { skill: "comprehension", accuracy: 0.9, difficulty: 110 },
-          { skill: "conversation", accuracy: 0.8, difficulty: 95 },
-          { skill: "production", accuracy: 0.85, difficulty: 105 },
+          { skill: "conversation", accuracy: 0.8, difficulty: 105 },
+          { skill: "production", accuracy: 0.85, difficulty: 120 },
         ]
   );
 
+  const ieltsVal = scores.ieltsEquivalent || detToIelts(scores.overall);
+  const cefrVal = scores.cefrLevel || detToCEFR(scores.overall);
+
   return (
-    <div className="det-container">
+    <div className="det-container" style={{ maxWidth: "1000px", margin: "0 auto", padding: "32px 16px" }}>
       <button
         onClick={() => navigate("/duolingo")}
         style={{
           background: "none",
           border: "none",
-          color: "var(--det-text-muted)",
+          color: "var(--det-text-muted, #64748b)",
           cursor: "pointer",
           display: "inline-flex",
           alignItems: "center",
           gap: "8px",
           marginBottom: "24px",
           fontWeight: "700",
+          fontSize: "14px"
         }}
       >
-        <ArrowLeft size={18} /> Return to DET Dashboard
+        <ArrowLeft size={18} /> Back to DET Hub
       </button>
 
-      {/* ── Results Score Hero ────────────────────────────────────── */}
-      <div className="det-hero">
-        <div>
-          <span className="det-hero-badge">
-            <Trophy size={14} /> Test Complete
-          </span>
-          <h1>Your Practice Results</h1>
-          <p>
-            Here is your Knarrow Practice Estimate based on your adaptive performance.
-          </p>
-          <button className="det-btn-primary" onClick={() => navigate("/duolingo/test/det-full-mock-1")}>
-            <RefreshCw size={18} /> Retake Practice Test →
-          </button>
+      {/* ── GREEN OFFICIAL DET ESTIMATED RESULT HERO CARD ── */}
+      <div
+        style={{
+          background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+          borderRadius: "28px",
+          padding: "36px 40px",
+          color: "#ffffff",
+          boxShadow: "0 20px 40px rgba(5, 150, 105, 0.25)",
+          marginBottom: "40px",
+          position: "relative",
+          overflow: "hidden"
+        }}
+      >
+        <div style={{ fontSize: "13px", fontWeight: "900", letterSpacing: "1.5px", textTransform: "uppercase", opacity: 0.9, marginBottom: "16px" }}>
+          OFFICIAL DET ESTIMATED RESULT
         </div>
 
-        <div
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "24px" }}>
+          {/* Main Overall Score */}
+          <div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+              <span style={{ fontSize: "72px", fontWeight: "900", lineHeight: "1" }}>{scores.overall}</span>
+              <span style={{ fontSize: "28px", fontWeight: "700", opacity: 0.8 }}>/ 160</span>
+            </div>
+            <div style={{ fontSize: "16px", fontWeight: "700", opacity: 0.9, marginTop: "8px" }}>
+              Overall Duolingo English Test Score
+            </div>
+          </div>
+
+          {/* Pure DET Score Badges */}
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <div
+              style={{
+                background: "rgba(255, 255, 255, 0.15)",
+                backdropFilter: "blur(10px)",
+                borderRadius: "20px",
+                padding: "18px 24px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                minWidth: "160px"
+              }}
+            >
+              <div style={{ fontSize: "11px", fontWeight: "900", textTransform: "uppercase", opacity: 0.8, letterSpacing: "0.5px" }}>
+                DET SCORE TIER
+              </div>
+              <div style={{ fontSize: "22px", fontWeight: "900", marginTop: "4px" }}>
+                {scores.overall >= 120 ? "Advanced Academic" : "Intermediate"}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "rgba(255, 255, 255, 0.15)",
+                backdropFilter: "blur(10px)",
+                borderRadius: "20px",
+                padding: "18px 24px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                minWidth: "180px"
+              }}
+            >
+              <div style={{ fontSize: "11px", fontWeight: "900", textTransform: "uppercase", opacity: 0.8, letterSpacing: "0.5px" }}>
+                CEFR LEVEL
+              </div>
+              <div style={{ fontSize: "20px", fontWeight: "900", marginTop: "4px" }}>
+                {cefrVal}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── DET SUBSCORES BREAKDOWN GRID ── */}
+      <h2 style={{ fontSize: "24px", fontWeight: "900", color: "var(--det-text, #0f172a)", marginBottom: "20px" }}>
+        DET Subscores Breakdown
+      </h2>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "40px" }}>
+        {/* Literacy */}
+        <div style={{ background: "var(--card, #ffffff)", border: "1px solid var(--border, #e2e8f0)", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
+          <div style={{ fontSize: "13px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Literacy</div>
+          <div style={{ fontSize: "36px", fontWeight: "900", color: "#059669", margin: "8px 0" }}>
+            {scores.integrated.literacy} <span style={{ fontSize: "16px", color: "#94a3b8", fontWeight: "700" }}>/ 160</span>
+          </div>
+          <div style={{ width: "100%", background: "#e2e8f0", height: "8px", borderRadius: "999px", overflow: "hidden" }}>
+            <div style={{ width: `${(scores.integrated.literacy / 160) * 100}%`, background: "#059669", height: "100%", borderRadius: "999px" }} />
+          </div>
+        </div>
+
+        {/* Comprehension */}
+        <div style={{ background: "var(--card, #ffffff)", border: "1px solid var(--border, #e2e8f0)", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
+          <div style={{ fontSize: "13px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Comprehension</div>
+          <div style={{ fontSize: "36px", fontWeight: "900", color: "#059669", margin: "8px 0" }}>
+            {scores.integrated.comprehension} <span style={{ fontSize: "16px", color: "#94a3b8", fontWeight: "700" }}>/ 160</span>
+          </div>
+          <div style={{ width: "100%", background: "#e2e8f0", height: "8px", borderRadius: "999px", overflow: "hidden" }}>
+            <div style={{ width: `${(scores.integrated.comprehension / 160) * 100}%`, background: "#059669", height: "100%", borderRadius: "999px" }} />
+          </div>
+        </div>
+
+        {/* Conversation */}
+        <div style={{ background: "var(--card, #ffffff)", border: "1px solid var(--border, #e2e8f0)", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
+          <div style={{ fontSize: "13px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Conversation</div>
+          <div style={{ fontSize: "36px", fontWeight: "900", color: "#059669", margin: "8px 0" }}>
+            {scores.integrated.conversation} <span style={{ fontSize: "16px", color: "#94a3b8", fontWeight: "700" }}>/ 160</span>
+          </div>
+          <div style={{ width: "100%", background: "#e2e8f0", height: "8px", borderRadius: "999px", overflow: "hidden" }}>
+            <div style={{ width: `${(scores.integrated.conversation / 160) * 100}%`, background: "#059669", height: "100%", borderRadius: "999px" }} />
+          </div>
+        </div>
+
+        {/* Production */}
+        <div style={{ background: "var(--card, #ffffff)", border: "1px solid var(--border, #e2e8f0)", borderRadius: "20px", padding: "24px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
+          <div style={{ fontSize: "13px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Production</div>
+          <div style={{ fontSize: "36px", fontWeight: "900", color: "#059669", margin: "8px 0" }}>
+            {scores.integrated.production} <span style={{ fontSize: "16px", color: "#94a3b8", fontWeight: "700" }}>/ 160</span>
+          </div>
+          <div style={{ width: "100%", background: "#e2e8f0", height: "8px", borderRadius: "999px", overflow: "hidden" }}>
+            <div style={{ width: `${(scores.integrated.production / 160) * 100}%`, background: "#059669", height: "100%", borderRadius: "999px" }} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── ACTION BUTTONS ── */}
+      <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
+        <button
+          onClick={() => navigate("/duolingo")}
           style={{
-            background: "rgba(255,255,255,0.05)",
-            padding: "24px 36px",
-            borderRadius: "24px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            textAlign: "center",
+            padding: "16px 32px",
+            borderRadius: "999px",
+            border: "1px solid var(--border, #cbd5e1)",
+            background: "#ffffff",
+            color: "#334155",
+            fontWeight: "800",
+            fontSize: "15px",
+            cursor: "pointer"
           }}
         >
-          <div style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "700" }}>{scores.label}</div>
-          <div style={{ fontSize: "64px", fontWeight: "900", color: "#58cc02", margin: "4px 0" }}>
-            {scores.overall}
-          </div>
-          <div style={{ fontSize: "13px", color: "#cbd5e1" }}>Scale: 10–160</div>
-        </div>
-      </div>
+          Back to DET Center
+        </button>
 
-      {/* ── Subscore Breakdown ───────────────────────────────────── */}
-      <h2 style={{ fontSize: "22px", fontWeight: "800", marginBottom: "16px" }}>Integrated Subscores</h2>
-      <div className="det-subscore-grid">
-        <div className="det-subscore-card">
-          <div className="det-subscore-icon">📖</div>
-          <div>
-            <div style={{ fontSize: "13px", color: "var(--det-text-muted)", fontWeight: "700" }}>LITERACY</div>
-            <div style={{ fontSize: "28px", fontWeight: "900" }}>{scores.integrated.literacy} / 160</div>
-          </div>
-        </div>
-
-        <div className="det-subscore-card">
-          <div className="det-subscore-icon">🧠</div>
-          <div>
-            <div style={{ fontSize: "13px", color: "var(--det-text-muted)", fontWeight: "700" }}>COMPREHENSION</div>
-            <div style={{ fontSize: "28px", fontWeight: "900" }}>{scores.integrated.comprehension} / 160</div>
-          </div>
-        </div>
-
-        <div className="det-subscore-card">
-          <div className="det-subscore-icon">💬</div>
-          <div>
-            <div style={{ fontSize: "13px", color: "var(--det-text-muted)", fontWeight: "700" }}>CONVERSATION</div>
-            <div style={{ fontSize: "28px", fontWeight: "900" }}>{scores.integrated.conversation} / 160</div>
-          </div>
-        </div>
-
-        <div className="det-subscore-card">
-          <div className="det-subscore-icon">✍️</div>
-          <div>
-            <div style={{ fontSize: "13px", color: "var(--det-text-muted)", fontWeight: "700" }}>PRODUCTION</div>
-            <div style={{ fontSize: "28px", fontWeight: "900" }}>{scores.integrated.production} / 160</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Individual Skills Breakdown ──────────────────────────── */}
-      <h2 style={{ fontSize: "22px", fontWeight: "800", marginBottom: "16px" }}>Individual Modality Scores</h2>
-      <div className="det-stats-grid">
-        <div className="det-stat-card">
-          <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--det-text-muted)" }}>READING</span>
-          <div className="det-stat-val">{scores.individual.reading}</div>
-        </div>
-        <div className="det-stat-card">
-          <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--det-text-muted)" }}>LISTENING</span>
-          <div className="det-stat-val">{scores.individual.listening}</div>
-        </div>
-        <div className="det-stat-card">
-          <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--det-text-muted)" }}>WRITING</span>
-          <div className="det-stat-val">{scores.individual.writing}</div>
-        </div>
-        <div className="det-stat-card">
-          <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--det-text-muted)" }}>SPEAKING</span>
-          <div className="det-stat-val">{scores.individual.speaking}</div>
-        </div>
-      </div>
-
-      {/* ── Strengths & Key Areas ───────────────────────────────── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "32px" }}>
-        <div style={{ background: "var(--det-surface-2)", padding: "24px", borderRadius: "20px", border: "1px solid var(--det-border)" }}>
-          <h3 style={{ margin: "0 0 12px", display: "flex", alignItems: "center", gap: "8px", color: "#16a34a" }}>
-            <CheckCircle2 size={20} /> Key Strengths
-          </h3>
-          <ul style={{ margin: 0, paddingLeft: "20px", lineHeight: "1.8", color: "var(--det-text-muted)" }}>
-            <li>Strong performance in Reading comprehension tasks.</li>
-            <li>Accurate vocabulary selection in Read & Select.</li>
-            <li>Consistent task completion across Writing samples.</li>
-          </ul>
-        </div>
-
-        <div style={{ background: "var(--det-surface-2)", padding: "24px", borderRadius: "20px", border: "1px solid var(--det-border)" }}>
-          <h3 style={{ margin: "0 0 12px", display: "flex", alignItems: "center", gap: "8px", color: "#d97706" }}>
-            <AlertCircle size={20} /> Recommended Practice Focus
-          </h3>
-          <ul style={{ margin: 0, paddingLeft: "20px", lineHeight: "1.8", color: "var(--det-text-muted)" }}>
-            <li>Improve fluency and response length in Interactive Speaking.</li>
-            <li>Practice rapid dictation accuracy in Listen & Type.</li>
-            <li>Review C-test completion patterns in Read & Complete.</li>
-          </ul>
-        </div>
+        <button
+          onClick={() => {
+            const randomId = Math.floor(Math.random() * 12) + 1;
+            navigate(`/mock/det/${randomId}`);
+          }}
+          style={{
+            padding: "16px 36px",
+            borderRadius: "999px",
+            border: "none",
+            background: "#059669",
+            color: "#ffffff",
+            fontWeight: "800",
+            fontSize: "15px",
+            cursor: "pointer",
+            boxShadow: "0 6px 20px rgba(5, 150, 105, 0.3)"
+          }}
+        >
+          🎲 Retake Random DET Practice Test
+        </button>
       </div>
     </div>
   );

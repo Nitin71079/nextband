@@ -161,6 +161,22 @@ export function AuthProvider({
                   premiumActive
                 );
 
+                if (premiumActive) {
+                  try {
+                    const tracks = data.unlockedTracks || ["IELTS", "DET", "TOEFL", "PTE", "GRE", "CAT", "ACT", "SAT", "GMAT"];
+                    const payload = {
+                      type: tracks.length >= 8 ? "ALL_ACCESS" : "SINGLE_TRACK",
+                      planId: data.premiumPlan || "all_access_monthly",
+                      unlockedTracks: tracks,
+                      activatedAt: new Date().toISOString()
+                    };
+                    localStorage.setItem("knarrow_user_plan", JSON.stringify(payload));
+                    window.dispatchEvent(new Event("knarrow_plan_changed"));
+                  } catch (e) {
+                    console.error("Failed to sync premium plan to localStorage:", e);
+                  }
+                }
+
                 setLoading(false);
               },
               (error) => {

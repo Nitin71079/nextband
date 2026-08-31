@@ -12,7 +12,7 @@ import {
   Calendar, Trash2, BrainCircuit, CheckCircle2, Clock,
 } from "lucide-react";
 import aiService from "../services/aiService";
-import toast from "react-hot-toast";
+import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 const T = {
@@ -238,15 +238,21 @@ Make it practical, motivating, and ${trackTitle}-specific.
 
       <div style={{ maxWidth: "1320px", margin: "0 auto", padding: "72px 24px 60px", position: "relative", zIndex: 1 }}>
 
+        <ExamTrackHeaderSwitcher />
+
         {/* ── Page Hero ──────────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55 }}
           style={{ marginBottom: "48px" }}>
           <span style={T.badge}><Zap size={13} color="#4f46e5" />AI POWERED</span>
           <h1 style={{ fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-1px", color: "var(--text)", margin: "16px 0 10px" }}>
-            <span style={T.gradientText}>Study Planner</span>
+            <span style={T.gradientText}>{activeTrack === "DET" ? "Duolingo DET Study Planner" : activeTrack === "TOEFL" ? "TOEFL iBT Study Planner" : "IELTS Study Planner"}</span>
           </h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: "1rem", lineHeight: 1.8, maxWidth: "520px" }}>
-            Add your tasks, then let Groq AI generate a tailored week-by-week IELTS roadmap for your target band.
+          <p style={{ color: "var(--text-secondary)", fontSize: "1rem", lineHeight: 1.8, maxWidth: "560px" }}>
+            {activeTrack === "DET"
+              ? "Organize your practice tasks and let Groq AI generate a tailored week-by-week DET roadmap for your 10-160 target score."
+              : activeTrack === "TOEFL"
+              ? "Organize your study schedule and let Groq AI generate a custom TOEFL iBT prep roadmap for your 0-120 target score."
+              : "Add your tasks, then let Groq AI generate a tailored week-by-week IELTS roadmap for your target band."}
           </p>
         </motion.div>
 

@@ -3,6 +3,8 @@ import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import { app } from "../firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Star, Users, TrendingUp, Medal, Crown, Clock, Gamepad2, Swords } from "lucide-react";
+import { useExam } from "../context/ExamContext";
+import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const T = {
@@ -214,6 +216,7 @@ function RankRow({ u, idx, tab }) {
 
 // ─── Main Leaderboard ─────────────────────────────────────────────────────────
 export default function Leaderboard() {
+  const { activeTrack } = useExam();
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -245,6 +248,8 @@ export default function Leaderboard() {
 
   const TabIcon = tab.icon;
 
+  const trackLabel = activeTrack === "DET" ? "Duolingo DET (10-160)" : activeTrack === "TOEFL" ? "TOEFL iBT (0-120)" : "IELTS Academic (Band 0-9.0)";
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -260,6 +265,8 @@ export default function Leaderboard() {
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "72px 24px 60px", position: "relative", zIndex: 1 }}>
 
+        <ExamTrackHeaderSwitcher />
+
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -268,10 +275,10 @@ export default function Leaderboard() {
         >
           <span style={T.badge}><Star size={13} color="#fbbf24" />TOP PERFORMERS</span>
           <h1 style={{ fontSize: "clamp(1.9rem,4vw,2.8rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-1px", color: "var(--text)", margin: "14px 0 8px" }}>
-            <span style={T.gradientText}>Leaderboard</span>
+            <span style={T.gradientText}>{trackLabel} Leaderboard</span>
           </h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: ".97rem", lineHeight: 1.8, maxWidth: "440px" }}>
-            Rankings updated live. Every player, every plan — compete on band scores, game wins, and time spent learning.
+          <p style={{ color: "var(--text-secondary)", fontSize: ".97rem", lineHeight: 1.8, maxWidth: "520px" }}>
+            Rankings updated live. Every player, every test track — compete on official {activeTrack} scores, mini-game wins, and study achievements.
           </p>
           {/* Live indicator */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "14px" }}>

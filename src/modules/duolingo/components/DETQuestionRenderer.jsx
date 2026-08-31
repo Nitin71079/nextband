@@ -54,6 +54,7 @@ export default function DETQuestionRenderer({ item, onSubmitResponse, submitting
     case "speak-about-image":
       return <DescribeImageRenderer item={item} onSubmit={handleSub} submitting={submitting} />;
 
+    case "dictation":
     case "listen-and-type":
       return <ListenAndTypeRenderer item={item} onSubmit={handleSub} submitting={submitting} />;
 

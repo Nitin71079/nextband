@@ -11,47 +11,67 @@ export function calculateDETScore({
   listenSelectScore = 0, // max 100%
   listenTypeScore = 0,   // max 100%
   interactiveReadingScore = 0, // max 100%
-  interactiveListeningScore = 0,
-  readAloudScore = 80,   // default estimate if not AI evaluated
-  writeImageScore = 80,
-  speakImageScore = 80,
-  writingSampleScore = 85,
-  speakingSampleScore = 85,
+  interactiveListeningScore = 0, // max 100%
+  readAloudScore = 0,
+  writeImageScore = 0,
+  speakImageScore = 0,
+  writingSampleScore = 0,
+  speakingSampleScore = 0,
 }) {
+  // Normalize any 10-160 scale values to 0-100 percentage
+  const normPct = (val) => {
+    if (!val || val <= 10) return 0;
+    if (val > 100) {
+      return Math.min(100, Math.max(0, ((val - 10) / 150) * 100));
+    }
+    return Math.min(100, Math.max(0, val));
+  };
+
+  const rcPct = normPct(readCompleteScore);
+  const rsPct = normPct(readSelectScore);
+  const ltPct = normPct(listenTypeScore);
+  const irPct = normPct(interactiveReadingScore);
+  const ilPct = normPct(interactiveListeningScore);
+  const raPct = normPct(readAloudScore);
+  const wiPct = normPct(writeImageScore);
+  const siPct = normPct(speakImageScore);
+  const wsPct = normPct(writingSampleScore);
+  const ssPct = normPct(speakingSampleScore);
+
   // Subscore weights
-  // Literacy: Read and Complete, Read and Select, Interactive Reading, Write About Image, Writing Sample
+  // Literacy: Read and Complete (25%), Read and Select (20%), Interactive Reading (25%), Write About Image (15%), Writing Sample (15%)
   const literacyRaw = Math.round(
-    readCompleteScore * 0.25 +
-    readSelectScore * 0.20 +
-    interactiveReadingScore * 0.25 +
-    writeImageScore * 0.15 +
-    writingSampleScore * 0.15
+    rcPct * 0.25 +
+    rsPct * 0.20 +
+    irPct * 0.25 +
+    wiPct * 0.15 +
+    wsPct * 0.15
   );
 
-  // Comprehension: Read and Complete, Read and Select, Listen and Type, Interactive Reading, Interactive Listening
+  // Comprehension: Read and Complete (20%), Read and Select (20%), Listen and Type (20%), Interactive Reading (20%), Interactive Listening (20%)
   const comprehensionRaw = Math.round(
-    readCompleteScore * 0.20 +
-    readSelectScore * 0.20 +
-    listenTypeScore * 0.20 +
-    interactiveReadingScore * 0.20 +
-    interactiveListeningScore * 0.20
+    rcPct * 0.20 +
+    rsPct * 0.20 +
+    ltPct * 0.20 +
+    irPct * 0.20 +
+    ilPct * 0.20
   );
 
-  // Conversation: Listen and Type, Read Aloud, Speak About Image, Interactive Listening, Speaking Sample
+  // Conversation: Listen and Type (20%), Read Aloud (20%), Speak About Image (20%), Interactive Listening (20%), Speaking Sample (20%)
   const conversationRaw = Math.round(
-    listenTypeScore * 0.20 +
-    readAloudScore * 0.20 +
-    speakImageScore * 0.20 +
-    interactiveListeningScore * 0.20 +
-    speakingSampleScore * 0.20
+    ltPct * 0.20 +
+    raPct * 0.20 +
+    siPct * 0.20 +
+    ilPct * 0.20 +
+    ssPct * 0.20
   );
 
-  // Production: Write About Image, Speak About Image, Writing Sample, Speaking Sample
+  // Production: Write About Image (25%), Speak About Image (25%), Writing Sample (25%), Speaking Sample (25%)
   const productionRaw = Math.round(
-    writeImageScore * 0.25 +
-    speakImageScore * 0.25 +
-    writingSampleScore * 0.25 +
-    speakingSampleScore * 0.25
+    wiPct * 0.25 +
+    siPct * 0.25 +
+    wsPct * 0.25 +
+    ssPct * 0.25
   );
 
   // Map 0-100 percentage to DET 10-160 scale (in 5-point steps)

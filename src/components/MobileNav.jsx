@@ -2,26 +2,40 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home,
   LayoutDashboard,
+  BrainCircuit,
   CalendarDays,
   Users,
-  UserCircle,
 } from "lucide-react";
+import { useExam } from "../context/ExamContext";
 import "./MobileNav.css";
-
-const NAV_ITEMS = [
-  { to: "/",          label: "Home",      Icon: Home             },
-  { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard  },
-  { to: "/planner",   label: "Planner",   Icon: CalendarDays     },
-  { to: "/community", label: "Community", Icon: Users            },
-  { to: "/profile",   label: "Profile",   Icon: UserCircle       },
-];
 
 export default function MobileNav() {
   const { pathname } = useLocation();
+  const { activeTrack } = useExam();
+
+  const getExamHubPath = () => {
+    if (activeTrack === "DET") return "/duolingo";
+    if (activeTrack === "TOEFL") return "/toefl";
+    if (activeTrack === "PTE") return "/pte";
+    if (activeTrack === "GRE") return "/gre";
+    if (activeTrack === "CAT") return "/cat";
+    if (activeTrack === "ACT") return "/act";
+    if (activeTrack === "SAT") return "/sat";
+    if (activeTrack === "GMAT") return "/gmat";
+    return "/dashboard";
+  };
+
+  const navItems = [
+    { to: "/",                   label: "Home",      Icon: Home },
+    { to: getExamHubPath(),       label: "Exam Hub",  Icon: LayoutDashboard },
+    { to: "/insights",           label: "Analytics", Icon: BrainCircuit },
+    { to: "/planner",            label: "Planner",   Icon: CalendarDays },
+    { to: "/community",          label: "Community", Icon: Users },
+  ];
 
   return (
     <nav className="mobile-nav" role="navigation" aria-label="Mobile navigation">
-      {NAV_ITEMS.map(({ to, label, Icon }) => {
+      {navItems.map(({ to, label, Icon }) => {
         const active = pathname === to || (to !== "/" && pathname.startsWith(to));
         return (
           <Link

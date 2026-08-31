@@ -14,7 +14,7 @@ import ProgressAnalytics from "./pages/ProgressAnalytics";
 import ExamResults from "./pages/ExamResults";
 import FullAcademicMock from "./pages/FullAcademicMock";
 import FullGeneralMock from "./pages/FullGeneralMock";
-import { Routes, Route} from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Certificates from "./pages/Certificates";
 import MockListening from "./pages/MockListening";
 import MockSpeaking from "./pages/MockSpeaking";
@@ -23,6 +23,8 @@ import {lazy, Suspense} from "react";
 import MockReading from "./pages/MockReading";
 import Navbar from "./components/Navbar";
 import MobileNav from "./components/MobileNav";
+import PromotionalDangler from "./components/PromotionalDangler";
+import SecurityWatermarkOverlay from "./components/SecurityWatermarkOverlay";
 import Footer from "./components/home/Footer";
 import Loader from "./components/Loader";
 import ScrollToTop from "./components/ScrollToTop";
@@ -60,8 +62,24 @@ const Home = lazy(() => import("./pages/Home"));
 const TOEFLCenter = lazy(() => import("./pages/TOEFLCenter"));
 const TOEFLTestEnginePage = lazy(() => import("./pages/TOEFLTestEnginePage"));
 const TOEFLResultsPage = lazy(() => import("./pages/TOEFLResultsPage"));
+const PTECenter = lazy(() => import("./pages/PTECenter"));
+const PTETestEnginePage = lazy(() => import("./pages/PTETestEnginePage"));
+const PTEResultsPage = lazy(() => import("./pages/PTEResultsPage"));
 const GRECenter = lazy(() => import("./pages/GRECenter"));
+const GRETestEnginePage = lazy(() => import("./pages/GRETestEnginePage"));
+const GREResultsPage = lazy(() => import("./pages/GREResultsPage"));
 const CATCenter = lazy(() => import("./pages/CATCenter"));
+const CATTestEnginePage = lazy(() => import("./pages/CATTestEnginePage"));
+const CATResultsPage = lazy(() => import("./pages/CATResultsPage"));
+const ACTCenter = lazy(() => import("./pages/ACTCenter"));
+const ACTTestEnginePage = lazy(() => import("./pages/ACTTestEnginePage"));
+const ACTResultsPage = lazy(() => import("./pages/ACTResultsPage"));
+const SATCenter = lazy(() => import("./pages/SATCenter"));
+const SATTestEnginePage = lazy(() => import("./pages/SATTestEnginePage"));
+const SATResultsPage = lazy(() => import("./pages/SATResultsPage"));
+const GMATCenter = lazy(() => import("./pages/GMATCenter"));
+const GMATTestEnginePage = lazy(() => import("./pages/GMATTestEnginePage"));
+const GMATResultsPage = lazy(() => import("./pages/GMATResultsPage"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -105,11 +123,17 @@ const DETSubskillCenter = lazy(() => import("./pages/DETSubskillCenter"));
 const DETExamResults = lazy(() => import("./pages/DETExamResults"));
 
 function App() {
-  
+  const location = useLocation();
+  const isExamPage =
+    location.pathname.startsWith("/toefl/test/") ||
+    location.pathname.startsWith("/duolingo/test/") ||
+    location.pathname.startsWith("/mock/");
+
   return (
     <>
+      <SecurityWatermarkOverlay />
       <ScrollToTop />
-      <Navbar />
+      {!isExamPage && <Navbar />}
 
       <Suspense fallback={<Loader />}>
         <Routes>
@@ -600,6 +624,30 @@ element={<ExamHistory/>}
           <Route path="/toefl/test/:testId" element={<TOEFLTestEnginePage />} />
           <Route path="/toefl/results/:resultId" element={<TOEFLResultsPage />} />
 
+          <Route path="/pte" element={<PTECenter />} />
+          <Route path="/pte/test/:testId" element={<PTETestEnginePage />} />
+          <Route path="/pte/results/:resultId" element={<PTEResultsPage />} />
+
+          <Route path="/gre" element={<GRECenter />} />
+          <Route path="/gre/test/:testId" element={<GRETestEnginePage />} />
+          <Route path="/gre/results/:resultId" element={<GREResultsPage />} />
+
+          <Route path="/cat" element={<CATCenter />} />
+          <Route path="/cat/test/:testId" element={<CATTestEnginePage />} />
+          <Route path="/cat/results/:resultId" element={<CATResultsPage />} />
+
+          <Route path="/act" element={<ACTCenter />} />
+          <Route path="/act/test/:testId" element={<ACTTestEnginePage />} />
+          <Route path="/act/results/:resultId" element={<ACTResultsPage />} />
+
+          <Route path="/sat" element={<SATCenter />} />
+          <Route path="/sat/test/:testId" element={<SATTestEnginePage />} />
+          <Route path="/sat/results/:resultId" element={<SATResultsPage />} />
+
+          <Route path="/gmat" element={<GMATCenter />} />
+          <Route path="/gmat/test/:testId" element={<GMATTestEnginePage />} />
+          <Route path="/gmat/results/:resultId" element={<GMATResultsPage />} />
+
           <Route path="/help" element={<HelpCenter />} />
 
           <Route path="/faq" element={<FAQ />} />
@@ -611,8 +659,9 @@ element={<ExamHistory/>}
            </Routes>
   </Suspense>
 
-  <Footer />
-  <MobileNav />
+  {!isExamPage && <Footer />}
+  {!isExamPage && <MobileNav />}
+  <PromotionalDangler />
 </>
 );
 }

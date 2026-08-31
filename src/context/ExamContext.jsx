@@ -17,11 +17,15 @@ export function ExamProvider({ children }) {
     setActiveTrack(track);
     localStorage.setItem("knarrow_active_track", track);
     if (navigate) {
-      if (track === "IELTS") navigate("/dashboard");
-      else if (track === "DET") navigate("/duolingo");
+      if (track === "PTE") navigate("/pte");
       else if (track === "TOEFL") navigate("/toefl");
+      else if (track === "DET") navigate("/duolingo");
       else if (track === "GRE") navigate("/gre");
       else if (track === "CAT") navigate("/cat");
+      else if (track === "ACT") navigate("/act");
+      else if (track === "SAT") navigate("/sat");
+      else if (track === "GMAT") navigate("/gmat");
+      else navigate("/dashboard");
     }
   };
 

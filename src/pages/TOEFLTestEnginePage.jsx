@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock, Volume2, VolumeX, ArrowRight, ArrowLeft, Play, Pause,
   Mic, Square, CheckCircle2, AlertCircle, RefreshCw, Sparkles,
-  BookOpen, Headphones, PenTool, Layers, User, Award, Check
+  BookOpen, Headphones, PenTool, Layers, User, Award, Check, LogOut, Maximize, Minimize
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { toeflTests } from "../data/toefl/toeflTests";
@@ -21,16 +21,29 @@ export default function TOEFLTestEnginePage() {
   const { testId } = useParams();
   const navigate = useNavigate();
 
-  const testData = toeflTests.find((t) => t.id === testId) || toeflTests[0];
+  const rawNum = String(testId || "1").replace(/\D/g, "");
+  const numericId = parseInt(rawNum, 10);
+  const testIndex = !isNaN(numericId) && numericId > 0 ? (numericId - 1) % toeflTests.length : 0;
+  const testData = toeflTests.find((t) => t.id === testId || t.id === `toefl-full-${numericId}`) || toeflTests[testIndex];
 
   // Exam Section Flow: "reading" -> "listening" -> "writing" -> "speaking" -> "evaluating"
   const [currentSection, setCurrentSection] = useState("reading");
   const [readingStage, setReadingStage] = useState("router"); // "router" | "stage2"
   const [listeningStage, setListeningStage] = useState("router");
 
-  // Timer state (seconds)
-  const [timeLeft, setTimeLeft] = useState(30 * 60);
+  // Timer state (seconds) - Official 1h 56m TOEFL iBT Breakdown (Reading 35m, Listening 36m, Writing 29m, Speaking 16m)
+  const [timeLeft, setTimeLeft] = useState(35 * 60);
   const [hideTime, setHideTime] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+    }
+  }
 
   // 📖 Reading State
   const [cwUserInputs, setCwUserInputs] = useState({});
@@ -59,6 +72,7 @@ export default function TOEFLTestEnginePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [spokenTranscripts, setSpokenTranscripts] = useState({});
   const mediaRecorderRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   // Evaluation & Results State
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -108,21 +122,56 @@ export default function TOEFLTestEnginePage() {
     window.speechSynthesis.speak(utterance);
   }
 
-  // Microphone Audio Recording for Speaking Tasks
+  // Microphone Audio Recording & Real-time Speech Recognition for Speaking Tasks
   function startAudioRecording(taskId) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       toast.error("Microphone access is not supported.");
       return;
     }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      try {
+        if (recognitionRef.current) {
+          try { recognitionRef.current.stop(); } catch (e) {}
+        }
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
+
+        let currentBaseText = spokenTranscripts[taskId] || "";
+
+        recognition.onresult = (event) => {
+          let accumulated = "";
+          for (let i = 0; i < event.results.length; i++) {
+            accumulated += event.results[i][0].transcript + " ";
+          }
+          const liveText = accumulated.trim();
+          if (liveText) {
+            setSpokenTranscripts((prev) => ({ ...prev, [taskId]: liveText }));
+          }
+        };
+
+        recognition.onerror = (err) => {
+          console.warn("Speech recognition notice:", err.error);
+        };
+
+        recognition.start();
+        recognitionRef.current = recognition;
+      } catch (err) {
+        console.warn("Speech recognition initialization fallback:", err);
+      }
+    }
+
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       mediaRecorderRef.current = new MediaRecorder(stream);
       mediaRecorderRef.current.start();
       setIsRecording(true);
-      toast.success("🎤 Recording response...");
+      toast.success("🎙️ Recording active! Speak clearly into your microphone.");
 
       mediaRecorderRef.current.ondataavailable = (e) => {
-        const mockResponse = "The campus facilities provide excellent academic study environments for international students.";
-        setSpokenTranscripts((prev) => ({ ...prev, [taskId]: mockResponse }));
+        // Keeps audio stream alive during recording
       };
     }).catch((err) => {
       toast.error("Microphone permission denied.");
@@ -130,10 +179,14 @@ export default function TOEFLTestEnginePage() {
   }
 
   function stopAudioRecording() {
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch (e) {}
+      recognitionRef.current = null;
+    }
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+      try { mediaRecorderRef.current.stop(); } catch (e) {}
       setIsRecording(false);
-      toast.success("✓ Recording saved.");
+      toast.success("✓ Spoken response saved!");
     }
   }
 
@@ -164,14 +217,14 @@ export default function TOEFLTestEnginePage() {
           toast.success(`🧠 Reading Router Theta Ability = ${theta}. Routing to Upper Stage 2 Module.`);
         } else {
           setReadingModuleItems(testData.sections.reading.lowerModule);
-          toast.info(`📘 Reading Router Theta Ability = ${theta}. Routing to Stage 2 Module.`);
+          toast(`📘 Reading Router Theta Ability = ${theta}. Routing to Stage 2 Module.`);
         }
         setReadingStage("stage2");
         setReadingItemIndex(0);
       } else {
         setCurrentSection("listening");
-        setTimeLeft(29 * 60);
-        toast.success("🎧 Moving to Listening Section.");
+        setTimeLeft(36 * 60);
+        toast.success("🎧 Moving to Listening Section (36 Mins).");
       }
     } else if (currentSection === "listening") {
       if (listeningStage === "router") {
@@ -196,60 +249,101 @@ export default function TOEFLTestEnginePage() {
           toast.success(`🧠 Listening Router Theta Ability = ${theta}. Routing to Upper Stage 2 Module.`);
         } else {
           setListeningModuleItems(testData.sections.listening.lowerModule);
-          toast.info(`🎧 Routing to Stage 2 Listening Module.`);
+          toast(`🎧 Routing to Stage 2 Listening Module.`);
         }
         setListeningStage("stage2");
         setListeningItemIndex(0);
       } else {
         setCurrentSection("writing");
-        setTimeLeft(23 * 60);
-        toast.success("✍️ Moving to Writing Section.");
+        setTimeLeft(29 * 60);
+        toast.success("✍️ Moving to Writing Section (29 Mins).");
       }
     } else if (currentSection === "writing") {
       setCurrentSection("speaking");
-      setTimeLeft(8 * 60);
-      toast.success("🎙️ Moving to Speaking Section.");
+      setTimeLeft(16 * 60);
+      toast.success("🎙️ Moving to Speaking Section (16 Mins).");
     } else if (currentSection === "speaking") {
       finishAndEvaluateExam();
     }
   }
 
-  // Complete Exam & Run AI Evaluations
+  // Complete Exam & Run Groq AI Evaluations for Writing & Speaking
   async function finishAndEvaluateExam() {
     setCurrentSection("evaluating");
     setIsEvaluating(true);
 
-    // Reading Raw & Band Score
-    let rTotal = 0, rCorrect = 0;
-    testData.sections.reading.routerModule.forEach((item) => {
+    // 1. Reading Raw & Band Score (Stage 1 Router + Stage 2 Adaptive Module)
+    let cwCorrect = 0, cwTotal = 0;
+    let dlCorrect = 0, dlTotal = 0;
+    let acadCorrect = 0, acadTotal = 0;
+
+    const allReadingItems = [...(testData.sections.reading.routerModule || []), ...readingModuleItems];
+    allReadingItems.forEach((item) => {
       if (item.type === "complete_words") {
         const res = evaluateCompleteTheWords(cwUserInputs[item.id] || [], item.missingParts);
-        rTotal += res.total; rCorrect += res.correct;
-      } else if (item.questions) {
-        item.questions.forEach((q) => {
-          rTotal++;
-          if (mcqUserAnswers[q.id] === q.correctAnswer) rCorrect++;
-        });
+        cwTotal += res.total;
+        cwCorrect += res.correct;
+      } else if (item.type === "read_daily_life") {
+        if (item.questions) {
+          item.questions.forEach((q) => {
+            dlTotal++;
+            if (mcqUserAnswers[q.id] === q.correctAnswer) dlCorrect++;
+          });
+        }
+      } else if (item.type === "read_academic") {
+        if (item.questions) {
+          item.questions.forEach((q) => {
+            acadTotal++;
+            if (mcqUserAnswers[q.id] === q.correctAnswer) acadCorrect++;
+          });
+        }
       }
     });
-    const readingBand = rawTaskPointsToBand(rCorrect, rTotal);
 
-    // Listening Raw & Band Score
-    let lTotal = 0, lCorrect = 0;
-    testData.sections.listening.routerModule.forEach((item) => {
-      if (item.questions) {
-        item.questions.forEach((q) => {
-          lTotal++;
-          if (listeningAnswers[q.id] === q.correctAnswer) lCorrect++;
-        });
-      } else if (item.correctAnswer !== undefined) {
-        lTotal++;
-        if (listeningAnswers[item.id] === item.correctAnswer) lCorrect++;
+    const rTotalCorrect = cwCorrect + dlCorrect + acadCorrect;
+    const rTotalItems = cwTotal + dlTotal + acadTotal;
+    const readingBand = rawTaskPointsToBand(rTotalCorrect, rTotalItems);
+
+    const cwPct = cwTotal > 0 ? Math.round((cwCorrect / cwTotal) * 100) : 0;
+    const dlPct = dlTotal > 0 ? Math.round((dlCorrect / dlTotal) * 100) : 0;
+    const acadPct = acadTotal > 0 ? Math.round((acadCorrect / acadTotal) * 100) : 0;
+
+    // 2. Listening Raw & Band Score (Stage 1 Router + Stage 2 Adaptive Module)
+    let respCorrect = 0, respTotal = 0;
+    let convCorrect = 0, convTotal = 0;
+    let talkCorrect = 0, talkTotal = 0;
+
+    const allListeningItems = [...(testData.sections.listening.routerModule || []), ...listeningModuleItems];
+    allListeningItems.forEach((item) => {
+      if (item.type === "listen_choose_response") {
+        respTotal++;
+        if (listeningAnswers[item.id] === item.correctAnswer) respCorrect++;
+      } else if (item.type === "listen_conversation") {
+        if (item.questions) {
+          item.questions.forEach((q) => {
+            convTotal++;
+            if (listeningAnswers[q.id] === q.correctAnswer) convCorrect++;
+          });
+        }
+      } else {
+        if (item.questions) {
+          item.questions.forEach((q) => {
+            talkTotal++;
+            if (listeningAnswers[q.id] === q.correctAnswer) talkCorrect++;
+          });
+        }
       }
     });
-    const listeningBand = rawTaskPointsToBand(lCorrect, lTotal);
 
-    // Writing Score (Build a Sentence 10 items + 0-5 Email + 0-5 Academic Discussion)
+    const lTotalCorrect = respCorrect + convCorrect + talkCorrect;
+    const lTotalItems = respTotal + convTotal + talkTotal;
+    const listeningBand = rawTaskPointsToBand(lTotalCorrect, lTotalItems);
+
+    const respPct = respTotal > 0 ? Math.round((respCorrect / respTotal) * 100) : 0;
+    const convPct = convTotal > 0 ? Math.round((convCorrect / convTotal) * 100) : 0;
+    const talkPct = talkTotal > 0 ? Math.round((talkCorrect / talkTotal) * 100) : 0;
+
+    // 3. Writing Evaluation with Groq AI (Build a Sentence + Email + Discussion)
     let bsCorrect = 0;
     testData.sections.writing.buildSentenceItems.forEach((item, idx) => {
       const userArr = bsUserSentences[idx] || [];
@@ -257,6 +351,8 @@ export default function TOEFLTestEnginePage() {
         bsCorrect += 1;
       }
     });
+
+    toast.loading("🤖 Evaluating Writing responses with Groq AI...", { id: "eval-toast" });
 
     const emailEval = await evaluateTOEFLWritingAI({
       taskType: "email",
@@ -270,22 +366,51 @@ export default function TOEFLTestEnginePage() {
       userResponse: discussionText,
     });
 
-    // Combined raw writing task score (10 BS + 5 Email + 5 Discussion = 20 max raw points)
-    const rawWritingTotal = bsCorrect + emailEval.rawTaskScore + discEval.rawTaskScore;
-    const writingBand = rawTaskPointsToBand(rawWritingTotal, 20);
+    // Max raw writing score: 10 BS + (5 Email * 2) + (5 Disc * 2) = 30 points max
+    const rawWritingTotal = bsCorrect + (emailEval.rawTaskScore * 2) + (discEval.rawTaskScore * 2);
+    const writingBand = rawTaskPointsToBand(rawWritingTotal, 30);
 
-    // Speaking Score (7 Listen & Repeat + 4 Interview = 55 max raw points)
-    const intTask = testData.sections.speaking.interviewTasks[0];
-    const spokenTranscript = spokenTranscripts[intTask.id] || "The university environment helps students develop time management and academic skills.";
+    // 4. Speaking Evaluation with Groq AI across all recorded speaking tasks
+    toast.loading("🤖 Evaluating Spoken responses with Groq AI...", { id: "eval-toast" });
 
-    const speakingEval = await evaluateTOEFLSpeakingAI({
-      taskType: "interview",
-      prompt: intTask.questionText,
-      spokenText: spokenTranscript,
-      durationSeconds: 45,
+    let repeatCorrect = 0;
+    testData.sections.speaking.repeatTasks.forEach((rTask) => {
+      const userSpoken = (spokenTranscripts[rTask.id] || "").toLowerCase().trim();
+      const target = (rTask.audioText || "").toLowerCase().trim();
+      if (userSpoken && target) {
+        const uWords = userSpoken.split(/\s+/);
+        const tWords = target.split(/\s+/);
+        const match = uWords.filter(w => tWords.includes(w)).length;
+        if (match >= Math.floor(tWords.length * 0.6)) repeatCorrect += 5;
+        else if (match >= Math.floor(tWords.length * 0.3)) repeatCorrect += 3;
+      }
     });
 
-    const speakingBand = speakingEval.bandScore;
+    const interviewEvaluations = [];
+    let sumSpeakingRaw = 0;
+
+    for (const intTask of testData.sections.speaking.interviewTasks) {
+      const spokenText = spokenTranscripts[intTask.id] || "";
+      const evalRes = await evaluateTOEFLSpeakingAI({
+        taskType: "interview",
+        prompt: intTask.questionText,
+        spokenText,
+        durationSeconds: intTask.recordWindowSec || 45,
+      });
+      interviewEvaluations.push(evalRes);
+      sumSpeakingRaw += evalRes.rawTaskScore;
+    }
+
+    const avgSpeakingRaw = interviewEvaluations.length > 0 ? (sumSpeakingRaw / interviewEvaluations.length) : 0;
+    const rawSpeakingTotal = repeatCorrect + Math.round(avgSpeakingRaw * 4); // Max = 35 + 20 = 55 points
+    const speakingBand = rawTaskPointsToBand(rawSpeakingTotal, 55);
+
+    const primarySpeakingEval = interviewEvaluations.find(e => (e.feedback || "").length > 20) || interviewEvaluations[0] || {
+      rawTaskScore: Math.round(avgSpeakingRaw),
+      bandScore: speakingBand,
+      feedback: "No speech detected. Please ensure your microphone is working and speak clearly during the recording window.",
+      suggestions: ["Speak clearly into your microphone during the recording window."],
+    };
 
     // Overall Score Calculation with Confidence Range
     const { predictedScore, scoreRangeText, confidence } = calculateToeflOverallScore(
@@ -302,10 +427,23 @@ export default function TOEFLTestEnginePage() {
       listeningBand,
       writingBand,
       speakingBand,
+      // Dynamic Subskill Payload
+      cwPct,
+      dlPct,
+      acadPct,
+      respPct,
+      convPct,
+      annPct: Math.round((respPct + convPct) / 2),
+      talkPct,
+      bsScore: bsCorrect,
+      listenRepeatScore: repeatCorrect,
+      interviewRawScore: Math.round(avgSpeakingRaw),
       writingFeedback: { email: emailEval, discussion: discEval },
-      speakingFeedback: speakingEval,
+      speakingFeedback: primarySpeakingEval,
     };
 
+    toast.dismiss("eval-toast");
+    toast.success("✨ Groq AI Evaluation Completed!");
     localStorage.setItem(`toefl_result_${testId}`, JSON.stringify(resultObj));
     setIsEvaluating(false);
     navigate(`/toefl/results/${testId}`);
@@ -331,11 +469,43 @@ export default function TOEFLTestEnginePage() {
   return (
     <div style={{ minHeight: "100vh", background: "#0f172a", color: "#ffffff", fontFamily: "Inter, sans-serif", display: "flex", flexDirection: "column" }}>
 
-      {/* ── TOP EXAM TOOLBAR ── */}
+      {/* ── SAFETY EXIT CONFIRMATION MODAL ── */}
+      {showExitModal && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: "#1e293b", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "24px", padding: "32px", maxWidth: "480px", width: "100%", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", textAlign: "center" }}>
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(239,68,68,0.15)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", color: "#f87171" }}>
+              <AlertCircle size={32} />
+            </div>
+            <h2 style={{ fontSize: "22px", fontWeight: 900, margin: "0 0 12px 0", color: "#ffffff" }}>
+              Exit TOEFL iBT Simulation?
+            </h2>
+            <p style={{ fontSize: "14px", color: "#94a3b8", margin: "0 0 24px 0", lineHeight: 1.6 }}>
+              Are you sure you want to leave the exam session? Your current section responses will be submitted as-is.
+            </p>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                onClick={() => setShowExitModal(false)}
+                style={{ flex: 1, background: "rgba(255,255,255,0.08)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, padding: "12px", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+              >
+                Resume Test
+              </button>
+              <button
+                onClick={() => navigate("/toefl")}
+                style={{ flex: 1, background: "#dc2626", color: "#ffffff", border: "none", borderRadius: 12, padding: "12px", fontWeight: 800, fontSize: 14, cursor: "pointer", boxShadow: "0 4px 14px rgba(220,38,38,0.4)" }}
+              >
+                Exit to TOEFL Hub
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── OFFICIAL ETS TOP EXAM TOOLBAR ── */}
       <div style={{ background: "#1e293b", borderBottom: "1px solid rgba(255,255,255,0.1)", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ fontSize: "16px", fontWeight: 900, color: "#c084fc", letterSpacing: "0.5px" }}>
-            TOEFL iBT 2026 Simulation
+          <div style={{ fontSize: "16px", fontWeight: 900, color: "#c084fc", letterSpacing: "0.5px", display: "flex", alignItems: "center", gap: 8 }}>
+            <Sparkles size={18} color="#c084fc" />
+            <span>ETS TOEFL iBT Official Test Engine</span>
           </div>
           <div style={{ display: "flex", gap: 6 }}>
             {["reading", "listening", "writing", "speaking"].map((sec) => (
@@ -349,6 +519,7 @@ export default function TOEFLTestEnginePage() {
                   textTransform: "capitalize",
                   background: currentSection === sec ? "#7c3aed" : "rgba(255,255,255,0.06)",
                   color: currentSection === sec ? "#ffffff" : "#94a3b8",
+                  border: currentSection === sec ? "1px solid #a855f7" : "none",
                 }}
               >
                 {sec}
@@ -357,23 +528,42 @@ export default function TOEFLTestEnginePage() {
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             onClick={() => setHideTime(!hideTime)}
-            style={{ background: "rgba(255,255,255,0.08)", color: "#cbd5e1", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+            style={{ background: "rgba(255,255,255,0.08)", color: "#cbd5e1", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
           >
             {hideTime ? "Show Time" : "Hide Time"}
           </button>
+
           {!hideTime && (
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 16, fontWeight: 800, color: "#facc15" }}>
-              <Clock size={18} /> {formatTime(timeLeft)}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, fontWeight: 800, color: "#facc15", background: "rgba(250,204,21,0.1)", padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(250,204,21,0.2)" }}>
+              <Clock size={16} /> {formatTime(timeLeft)}
             </div>
           )}
+
+          <button
+            onClick={toggleFullscreen}
+            title="Toggle Fullscreen Exam Mode"
+            style={{ background: "rgba(255,255,255,0.08)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+            <span>{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
+          </button>
+
           <button
             onClick={handleNextSection}
-            style={{ background: "#2563eb", color: "#ffffff", border: "none", borderRadius: 10, padding: "8px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}
+            style={{ background: "linear-gradient(135deg, #7c3aed, #2563eb)", color: "#ffffff", border: "none", borderRadius: 10, padding: "8px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6, boxShadow: "0 4px 14px rgba(124,58,237,0.3)" }}
           >
             Next Section <ArrowRight size={16} />
+          </button>
+
+          <button
+            onClick={() => setShowExitModal(true)}
+            title="Exit Exam Session"
+            style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <LogOut size={15} /> Exit
           </button>
         </div>
       </div>
@@ -385,102 +575,166 @@ export default function TOEFLTestEnginePage() {
         {currentSection === "reading" && currentReadingItem && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <span style={{ fontSize: 13, color: "#38bdf8", fontWeight: 800 }}>
-                Multistage Adaptive: {readingStage === "router" ? "Stage 1 (Router Module ~18 Min)" : "Stage 2 (Selected Adaptive Module ~9 Min)"}
-              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "4px 12px", borderRadius: 8, fontSize: 13, fontWeight: 800 }}>
+                  Multistage Adaptive
+                </span>
+                <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 700 }}>
+                  {readingStage === "router" ? "Module 1 (Router Module ~18 Min)" : "Module 2 (Selected Adaptive Module ~9 Min)"}
+                </span>
+              </div>
               <span style={{ fontSize: 13, color: "#94a3b8" }}>
                 Item {readingItemIndex + 1} of {readingModuleItems.length}
               </span>
             </div>
 
-            {/* Complete the Words */}
+            {/* Complete the Words (ETS 2026 MOC4 Authentic Layout) */}
             {currentReadingItem.type === "complete_words" && (
-              <div style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 28 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 800, color: "#c084fc", marginBottom: 12 }}>
-                  Task: Complete the Words (Target B1–C1+)
-                </h3>
-                <p style={{ color: "#94a3b8", fontSize: 14, marginBottom: 20 }}>
-                  {currentReadingItem.instruction}
+              <div style={{ background: "rgba(30,41,59,0.85)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: 32, boxShadow: "0 10px 30px rgba(0,0,0,0.3)" }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: "#ffffff", marginBottom: 8 }}>
+                  Complete the Words
+                </div>
+                <p style={{ color: "#94a3b8", fontSize: 14, marginBottom: 24, lineHeight: 1.5 }}>
+                  {currentReadingItem.instruction || "Fill in the missing letters in the paragraph below."}
                 </p>
 
-                <div style={{ background: "#0f172a", padding: 24, borderRadius: 16, border: "1px solid rgba(255,255,255,0.08)", fontSize: 16, lineHeight: 1.8, color: "#e2e8f0", marginBottom: 24 }}>
-                  {currentReadingItem.passageText}
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#cbd5e1" }}>Type the missing word endings:</div>
-                  {currentReadingItem.missingParts.map((part, idx) => {
+                {/* Inline Paragraph Slot Renderer matching Image 3 reference */}
+                <div style={{ background: "#ffffff", padding: "28px 32px", borderRadius: 12, border: "1px solid #cbd5e1", fontSize: 17, lineHeight: 2.2, color: "#1e293b", fontFamily: "Georgia, serif", boxShadow: "inset 0 2px 6px rgba(0,0,0,0.05)", marginBottom: 28 }}>
+                  {(() => {
+                    const passageText = currentReadingItem.passageText;
+                    const missingParts = currentReadingItem.missingParts || [];
                     const currentArr = cwUserInputs[currentReadingItem.id] || [];
-                    return (
-                      <div key={idx} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <span style={{ fontSize: 14, color: "#94a3b8" }}>Word Fragment #{idx + 1}:</span>
-                        <input
-                          type="text"
-                          placeholder={currentReadingItem.hints[idx]}
-                          value={currentArr[idx] || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            const newArr = [...currentArr];
-                            newArr[idx] = val;
-                            setCwUserInputs({ ...cwUserInputs, [currentReadingItem.id]: newArr });
-                          }}
-                          style={{ background: "#1e293b", border: "1px solid #3b82f6", borderRadius: 10, padding: "10px 16px", color: "#ffffff", fontSize: 15, fontWeight: 700, width: 220, outline: "none" }}
-                        />
-                      </div>
-                    );
-                  })}
+
+                    // Match suffixes like expan___ or res___
+                    const parts = passageText.split(/([a-zA-Z]+___+)/g);
+                    let slotIdx = 0;
+
+                    return parts.map((part, pIdx) => {
+                      const match = part.match(/^([a-zA-Z]+)(___+)$/);
+                      if (match) {
+                        const currentSlot = slotIdx;
+                        slotIdx++;
+                        const prefix = match[1];
+                        const expectedLen = missingParts[currentSlot] ? missingParts[currentSlot].length : 3;
+                        const userVal = currentArr[currentSlot] || "";
+
+                        return (
+                          <span key={pIdx} style={{ display: "inline-flex", alignItems: "baseline", whiteSpace: "nowrap", margin: "0 2px" }}>
+                            <span style={{ fontWeight: 600, color: "#0f172a" }}>{prefix}</span>
+                            <input
+                              type="text"
+                              maxLength={expectedLen + 2}
+                              value={userVal}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                const newArr = [...currentArr];
+                                newArr[currentSlot] = val;
+                                setCwUserInputs({ ...cwUserInputs, [currentReadingItem.id]: newArr });
+                              }}
+                              style={{
+                                width: `${Math.max(36, (expectedLen + 1) * 14)}px`,
+                                height: "26px",
+                                background: "#bfdbfe", // Light blueish filled square box matching Image 3 reference
+                                color: "#0f172a",
+                                fontWeight: 800,
+                                fontSize: "15px",
+                                textAlign: "center",
+                                border: "1px dashed #2563eb",
+                                borderRadius: "3px",
+                                marginLeft: "1px",
+                                marginRight: "2px",
+                                outline: "none",
+                                fontFamily: "Inter, sans-serif"
+                              }}
+                            />
+                          </span>
+                        );
+                      }
+                      return <span key={pIdx}>{part}</span>;
+                    });
+                  })()}
                 </div>
               </div>
             )}
 
-            {/* Read in Daily Life / Read Academic Passage */}
+            {/* Read in Daily Life / Read Academic Passage (ETS 2026 MOC4 Authentic Dual Column matching Image 4 & 5) */}
             {(currentReadingItem.type === "read_daily_life" || currentReadingItem.type === "read_academic") && (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                <div style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 24 }}>
-                  {currentReadingItem.stimulusFormat && (
-                    <span style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8", padding: "4px 12px", borderRadius: 8, fontSize: 12, fontWeight: 800 }}>
-                      {currentReadingItem.stimulusFormat}
-                    </span>
-                  )}
-                  <h3 style={{ fontSize: 18, fontWeight: 800, margin: "12px 0 14px 0", color: "#ffffff" }}>
-                    {currentReadingItem.passageTitle || "Reading Stimulus"}
-                  </h3>
-                  <div style={{ fontSize: 14, lineHeight: 1.7, color: "#cbd5e1", whiteSpace: "pre-line" }}>
-                    {currentReadingItem.passageText}
-                  </div>
+              <div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: "#ffffff", marginBottom: 16 }}>
+                  {currentReadingItem.type === "read_daily_life"
+                    ? (currentReadingItem.stimulusFormat === "Campus Notice" ? "Read a notice." : currentReadingItem.stimulusFormat === "Email" ? "Read an email." : "Read a social media post.")
+                    : "Read an Academic Passage."}
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {currentReadingItem.questions?.map((q) => (
-                    <div key={q.id} style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 20 }}>
-                      <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 14, color: "#ffffff" }}>
-                        {q.questionText}
+                <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 24, alignItems: "start" }}>
+                  {/* Left Column Stimulus Card with Cyan/Emerald Border matching Image 4 & 5 */}
+                  <div style={{ background: "rgba(15,23,42,0.9)", border: "2px solid #0891b2", borderRadius: 16, padding: 24, boxShadow: "0 8px 30px rgba(0,0,0,0.4)" }}>
+                    {currentReadingItem.stimulusFormat === "Email" ? (
+                      <div>
+                        <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 14px", marginBottom: 14, fontSize: 13, color: "#cbd5e1", display: "flex", gap: 10 }}>
+                          <span style={{ fontWeight: 800, color: "#38bdf8" }}>Subject:</span>
+                          <span>{currentReadingItem.passageTitle || "Campus Notice"}</span>
+                        </div>
+                        <div style={{ fontSize: 14, lineHeight: 1.8, color: "#e2e8f0", whiteSpace: "pre-line" }}>
+                          {currentReadingItem.passageText}
+                        </div>
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {q.options.map((opt, oIdx) => {
-                          const isSelected = mcqUserAnswers[q.id] === oIdx;
-                          return (
-                            <button
-                              key={oIdx}
-                              onClick={() => setMcqUserAnswers({ ...mcqUserAnswers, [q.id]: oIdx })}
-                              style={{
-                                textAlign: "left",
-                                background: isSelected ? "rgba(124,58,237,0.25)" : "#0f172a",
-                                border: isSelected ? "2px solid #a855f7" : "1px solid rgba(255,255,255,0.08)",
-                                borderRadius: 12,
-                                padding: "12px 16px",
-                                color: "#ffffff",
-                                fontSize: 14,
-                                cursor: "pointer",
-                              }}
-                            >
-                              {opt}
-                            </button>
-                          );
-                        })}
+                    ) : (
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#0891b2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>
+                            📌
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 800, color: "#38bdf8" }}>
+                            {currentReadingItem.passageTitle || "Campus Announcement"}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: 15, lineHeight: 1.8, color: "#e2e8f0", whiteSpace: "pre-line" }}>
+                          {currentReadingItem.passageText}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )}
+                  </div>
+
+                  {/* Right Column Question & Choices */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {currentReadingItem.questions?.map((q) => (
+                      <div key={q.id} style={{ background: "rgba(30,41,59,0.85)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: 22 }}>
+                        <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 16, color: "#ffffff", lineHeight: 1.5 }}>
+                          {q.questionText}
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                          {q.options.map((opt, oIdx) => {
+                            const isSelected = mcqUserAnswers[q.id] === oIdx;
+                            return (
+                              <button
+                                key={oIdx}
+                                onClick={() => setMcqUserAnswers({ ...mcqUserAnswers, [q.id]: oIdx })}
+                                style={{
+                                  textAlign: "left",
+                                  background: isSelected ? "rgba(124,58,237,0.3)" : "#0f172a",
+                                  border: isSelected ? "2px solid #a855f7" : "1px solid rgba(255,255,255,0.1)",
+                                  borderRadius: 12,
+                                  padding: "14px 18px",
+                                  color: "#ffffff",
+                                  fontSize: 14,
+                                  fontWeight: isSelected ? 700 : 500,
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 12,
+                                  transition: "all 0.2s"
+                                }}
+                              >
+                                <div style={{ width: 20, height: 20, borderRadius: "50%", border: isSelected ? "6px solid #a855f7" : "2px solid #64748b", background: isSelected ? "#ffffff" : "transparent", flexShrink: 0 }} />
+                                <span>{opt}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -931,11 +1185,31 @@ export default function TOEFLTestEnginePage() {
                     </button>
                   </div>
 
-                  <div style={{ background: "#0f172a", padding: 20, borderRadius: 14, marginBottom: 24 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#cbd5e1", marginBottom: 8 }}>Spoken Response Transcript:</div>
-                    <div style={{ fontSize: 15, color: spokenTranscripts[currentInt.id] ? "#4ade80" : "#64748b" }}>
-                      {spokenTranscripts[currentInt.id] || "No recording captured yet."}
+                  <div style={{ background: "#0f172a", padding: 20, borderRadius: 14, marginBottom: 24, border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#cbd5e1" }}>🎙️ Spoken Response Transcript (Groq AI Evaluated):</span>
+                      <span style={{ fontSize: 12, color: isRecording ? "#facc15" : "#4ade80", fontWeight: 700 }}>
+                        {isRecording ? "● Recording & Transcribing Live..." : spokenTranscripts[currentInt.id] ? "✓ Spoken Response Captured" : "Ready to Record"}
+                      </span>
                     </div>
+                    <textarea
+                      rows={3}
+                      value={spokenTranscripts[currentInt.id] || ""}
+                      onChange={(e) => setSpokenTranscripts({ ...spokenTranscripts, [currentInt.id]: e.target.value })}
+                      placeholder="Click 'Record Response' to speak into your microphone, or type your response here..."
+                      style={{
+                        width: "100%",
+                        background: "rgba(15,23,42,0.8)",
+                        border: "1px solid #10b981",
+                        borderRadius: 10,
+                        padding: 14,
+                        color: "#ffffff",
+                        fontSize: 15,
+                        lineHeight: 1.5,
+                        outline: "none",
+                        resize: "vertical"
+                      }}
+                    />
                   </div>
 
                   <div style={{ marginBottom: 24, textAlign: "center" }}>

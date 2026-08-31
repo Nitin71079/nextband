@@ -1,362 +1,377 @@
-import { useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AuroraBackground from "../components/AuroraBackground";
-import PricingCard from "../components/PricingCard";
-import { useAuth } from "../context/AuthContext";
-import "../styles/pricing.css";
-
-/* ── social proof numbers ── */
-const STATS = [
-  { value: "20+",  label: "Reading & Listening Tests" },
-  { value: "100+", label: "Writing & Speaking Tasks"  },
-  { value: "AI",   label: "Instant Band Evaluation"   },
-  { value: "CBT",  label: "Real IELTS Exam Experience"},
-];
-
-/* ── comparison rows ── */
-const COMPARE = [
-  { feature: "Reading Practice",      free: "5 Tests",   premium: "Unlimited" },
-  { feature: "Listening Practice",    free: "5 Tests",   premium: "Unlimited" },
-  { feature: "Writing AI Evaluation", free: "—",         premium: "✓"         },
-  { feature: "Speaking AI Evaluation",free: "—",         premium: "✓"         },
-  { feature: "Band Prediction",       free: "—",         premium: "✓"         },
-  { feature: "Performance Analytics", free: "Basic",     premium: "Advanced"  },
-  { feature: "Full CBT Mock Exams",   free: "—",         premium: "✓"         },
-  { feature: "Study Planner",         free: "Basic",     premium: "AI Powered"},
-  { feature: "AI Study Coach",        free: "—",         premium: "✓"         },
-];
-
-/* ── FAQ items ── */
-const FAQ = [
-  {
-    q: "Is Premium activated immediately?",
-    a: "Yes. Once Razorpay verifies your payment, Premium unlocks automatically within seconds.",
-  },
-  {
-    q: "Can I access Knarrow on multiple devices?",
-    a: "Absolutely. Sign in with the same account on any device — desktop, tablet, or mobile.",
-  },
-  {
-    q: "Which payment methods are supported?",
-    a: "UPI, Debit / Credit Cards, Net Banking, and Wallets via Razorpay.",
-  },
-  {
-    q: "Will my Premium expire automatically?",
-    a: "Yes. Your subscription stays active until the expiry date shown in your account.",
-  },
-  {
-    q: "What if I'm already on a plan?",
-    a: "Your current plan is highlighted on this page. You can upgrade anytime and the new period starts immediately.",
-  },
-];
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Sparkles, CheckCircle2, Zap, ShieldCheck, Award, Layers,
+  Lock, ArrowRight, HelpCircle, RefreshCw, Star, Check, X, Crown, Clock
+} from "lucide-react";
+import { getActiveUserPlan, activateUserPlan } from "../utils/planAccess";
+import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
+import FloatingDanglerPill from "../components/FloatingDanglerPill";
 
 export default function Pricing() {
-  const { user, premium, premiumPlan, premiumExpires } = useAuth();
   const navigate = useNavigate();
-  const pricingRef = useRef(null);
 
-  /* figure out which card is "active" */
-  const currentPlan = !user
-    ? null
-    : premium
-    ? premiumPlan || "Premium Monthly"   // fallback to monthly if plan not stored
-    : "Free";
+  // Active Plan State
+  const [currentPlan, setCurrentPlan] = useState(getActiveUserPlan());
+  const [billingCycle, setBillingCycle] = useState("monthly"); // "weekly" | "monthly" | "yearly" | "lifetime"
+  const [packType, setPackType] = useState("all_access"); // "all_access" | "single_track"
+  const [selectedTrack, setSelectedTrack] = useState("DET");
+  const [successModal, setSuccessModal] = useState(null);
 
-  function scrollToPlans() {
-    pricingRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
+  useEffect(() => {
+    const handlePlanChange = () => {
+      setCurrentPlan(getActiveUserPlan());
+    };
+    window.addEventListener("knarrow_plan_changed", handlePlanChange);
+    return () => window.removeEventListener("knarrow_plan_changed", handlePlanChange);
+  }, []);
+
+  // Pricing Matrix Configs
+  const pricingData = {
+    all_access: {
+      weekly: { priceUSD: "$12", priceINR: "₹799", period: "per week", badge: "QUICK SPRINT", discount: null },
+      monthly: { priceUSD: "$29", priceINR: "₹1,899", period: "per month", badge: "MOST POPULAR", discount: "SAVE 40%" },
+      yearly: { priceUSD: "$99", priceINR: "₹5,999", period: "per year", badge: "BEST VALUE", discount: "SAVE 65%" },
+      lifetime: { priceUSD: "$199", priceINR: "₹11,999", period: "one-time payment", badge: "LIFETIME VIP", discount: "PAY ONCE FOREVER" }
+    },
+    single_track: {
+      weekly: { priceUSD: "$7", priceINR: "₹449", period: "per week", badge: "SINGLE EXAM SPRINT", discount: null },
+      monthly: { priceUSD: "$19", priceINR: "₹1,199", period: "per month", badge: "RECOMMENDED FOR 1 EXAM", discount: "SAVE 35%" },
+      yearly: { priceUSD: "$69", priceINR: "₹3,999", period: "per year", badge: "BEST VALUE", discount: "SAVE 60%" },
+      lifetime: { priceUSD: "$149", priceINR: "₹7,999", period: "one-time payment", badge: "LIFETIME SINGLE TRACK", discount: "PERPETUAL ACCESS" }
+    }
+  };
+
+  const currentPricing = pricingData[packType][billingCycle];
+
+  const handleActivatePlan = (planId) => {
+    const payload = activateUserPlan(planId, packType, packType === "single_track" ? selectedTrack : null, billingCycle);
+    setSuccessModal(payload);
+  };
+
+  const tracksList = [
+    { id: "IELTS", name: "IELTS Academic & General" },
+    { id: "DET", name: "Duolingo English Test (DET)" },
+    { id: "TOEFL", name: "TOEFL iBT 2026" },
+    { id: "PTE", name: "PTE Academic" },
+    { id: "GRE", name: "GRE General Test" },
+    { id: "CAT", name: "CAT MBA Entrance" },
+    { id: "ACT", name: "ACT 2026 Exam" },
+    { id: "SAT", name: "Digital SAT 2026" },
+    { id: "GMAT", name: "GMAT Exam 2026" },
+  ];
 
   return (
-    <div className="pricing-page">
-      <AuroraBackground />
+    <div style={{ minHeight: "100vh", background: "radial-gradient(circle at 50% 0%, #0369a1 0%, #0f172a 70%)", color: "#ffffff", fontFamily: "Inter, sans-serif", padding: "40px 24px 80px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
-      {/* ═══════════════════════════════════════
-          HERO
-      ═══════════════════════════════════════ */}
-      <section className="pr-hero">
-        <div className="pr-hero-inner">
+        {/* ── EXAM TRACK HEADER SWITCHER ── */}
+        <ExamTrackHeaderSwitcher />
 
-          <div className="pr-hero-pill">
-            🚀 AI-Powered IELTS Preparation Platform
-          </div>
+        {/* ── HERO BANNER ── */}
+        <div style={{ textAlign: "center", marginBottom: 48, position: "relative" }}>
+          
+          {/* Decorative Floating Glass Danglers */}
+          <FloatingDanglerPill
+            icon={Crown}
+            value="100% Unlocked"
+            label="All Exam Tracks"
+            variant="light"
+            iconBg="rgba(250, 204, 21, 0.15)"
+            iconColor="#facc15"
+            floatDelay={0}
+            style={{ position: "absolute", top: 10, right: 40 }}
+          />
 
-          <h1 className="pr-hero-title">
-            Achieve Your Dream
-            <span> IELTS Band </span>
-            Faster with AI
+          <FloatingDanglerPill
+            icon={ShieldCheck}
+            value="7-Day Guarantee"
+            label="Money-Back Promise"
+            variant="light"
+            iconBg="rgba(56, 189, 248, 0.15)"
+            iconColor="#38bdf8"
+            floatDelay={1.5}
+            style={{ position: "absolute", bottom: 0, left: 40 }}
+          />
+
+          <span style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "6px 20px", borderRadius: 999, fontSize: 13, fontWeight: 900, letterSpacing: 0.5, display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <Sparkles size={15} /> UNLOCK ALL 100 MOCKS &amp; AI EVALUATIONS
+          </span>
+
+          <h1 style={{ fontSize: "clamp(2.4rem, 5vw, 3.8rem)", fontWeight: 900, margin: "20px 0 16px", letterSpacing: "-1px" }}>
+            Invest in Your High Exam Score
           </h1>
-
-          <p className="pr-hero-sub">
-            Practice exactly like the official IELTS Computer Based Test —
-            AI-powered Writing &amp; Speaking evaluation, realistic mock exams,
-            deep analytics, and a personalised study coach.
+          <p style={{ color: "#cbd5e1", fontSize: "1.15rem", maxWidth: 750, margin: "0 auto 36px", lineHeight: 1.6 }}>
+            Every exam includes <strong>3 Free Full Mocks</strong> &amp; <strong>3 Free Arcade Games</strong>. Upgrade to unlock all 100 Mocks per exam, 800+ total simulation tests, Groq AI feedback, and all 9 multiplayer arcade games!
           </p>
 
-          <div className="pr-hero-actions">
-            <button className="pr-btn-primary" onClick={scrollToPlans}>
-              Unlock Premium →
+          {/* ── PACK TYPE TOGGLE (ALL ACCESS VS SINGLE EXAM) ── */}
+          <div style={{ display: "inline-flex", background: "rgba(15,23,42,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 20, padding: 6, marginBottom: 28, backdropFilter: "blur(10px)" }}>
+            <button
+              onClick={() => setPackType("all_access")}
+              style={{
+                background: packType === "all_access" ? "linear-gradient(135deg, #0284c7, #7c3aed)" : "transparent",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 16,
+                padding: "12px 28px",
+                fontWeight: 900,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                boxShadow: packType === "all_access" ? "0 6px 20px rgba(2,132,199,0.4)" : "none"
+              }}
+            >
+              <Crown size={18} color="#facc15" /> All-Exam All-Access Pass (8 Tracks)
             </button>
             <button
-              className="pr-btn-secondary"
-              onClick={() =>
-                document.getElementById("pr-benefits")?.scrollIntoView({ behavior: "smooth" })
-              }
+              onClick={() => setPackType("single_track")}
+              style={{
+                background: packType === "single_track" ? "linear-gradient(135deg, #0284c7, #7c3aed)" : "transparent",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 16,
+                padding: "12px 28px",
+                fontWeight: 900,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                boxShadow: packType === "single_track" ? "0 6px 20px rgba(2,132,199,0.4)" : "none"
+              }}
             >
-              Explore Features
+              <Layers size={18} /> Single Exam Track Pass
             </button>
           </div>
 
-          <div className="pr-hero-rating">
-            <span className="pr-stars">⭐⭐⭐⭐⭐</span>
-            <span>Premium AI-powered IELTS Preparation</span>
+          {/* Single Track Selector dropdown if single track chosen */}
+          {packType === "single_track" && (
+            <div style={{ marginBottom: 28 }}>
+              <label style={{ fontSize: 13, color: "#38bdf8", fontWeight: 800, marginRight: 10 }}>Select Target Exam Track:</label>
+              <select
+                value={selectedTrack}
+                onChange={(e) => setSelectedTrack(e.target.value)}
+                style={{ background: "#0f172a", color: "#ffffff", border: "2px solid #38bdf8", borderRadius: 12, padding: "8px 16px", fontSize: 14, fontWeight: 800, outline: "none", cursor: "pointer" }}
+              >
+                {tracksList.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* ── DURATION BILLING CYCLE TOGGLE ── */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+            {[
+              { id: "weekly", label: "Weekly Pass" },
+              { id: "monthly", label: "Monthly Pass" },
+              { id: "yearly", label: "Yearly Pass (Save 65%)" },
+              { id: "lifetime", label: "Lifetime Pass (VIP)" },
+            ].map((cycle) => {
+              const isActive = billingCycle === cycle.id;
+              return (
+                <button
+                  key={cycle.id}
+                  onClick={() => setBillingCycle(cycle.id)}
+                  style={{
+                    background: isActive ? "rgba(56,189,248,0.25)" : "rgba(255,255,255,0.06)",
+                    color: isActive ? "#38bdf8" : "#cbd5e1",
+                    border: isActive ? "2px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 14,
+                    padding: "10px 20px",
+                    fontWeight: 800,
+                    fontSize: 13,
+                    cursor: "pointer"
+                  }}
+                >
+                  {cycle.label}
+                </button>
+              );
+            })}
           </div>
 
         </div>
-      </section>
 
-      {/* ═══════════════════════════════════════
-          STATS BAR
-      ═══════════════════════════════════════ */}
-      <section className="pr-stats">
-        {STATS.map((s) => (
-          <div key={s.value} className="pr-stat-card">
-            <h2>{s.value}</h2>
-            <p>{s.label}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* ═══════════════════════════════════════
-          ACTIVE PLAN BANNER
-      ═══════════════════════════════════════ */}
-      {user && premium && (
-        <div className="pr-active-banner">
-          <div className="pr-active-banner-inner">
-            <div className="pr-active-banner-left">
-              <span className="pr-active-crown">👑</span>
-              <div>
-                <strong>You're on {currentPlan}</strong>
-                {premiumExpires && (() => {
-                  const d = premiumExpires?.toDate
-                    ? premiumExpires.toDate()
-                    : new Date(premiumExpires);
-                  return (
-                    <p>
-                      Active until{" "}
-                      {d.toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                  );
-                })()}
+        {/* ── PRICING CARDS DISPLAY ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24, marginBottom: 56 }}>
+          
+          {/* FREE PLAN CARD */}
+          <div style={{ background: "rgba(30,41,59,0.75)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 28, padding: 36, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <span style={{ background: "rgba(255,255,255,0.08)", color: "#cbd5e1", padding: "4px 12px", borderRadius: 999, fontSize: 11, fontWeight: 800 }}>
+                ALWAYS FREE TIER
+              </span>
+              <h3 style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", margin: "16px 0 8px 0" }}>Free Practice Pass</h3>
+              <div style={{ fontSize: 36, fontWeight: 900, color: "#ffffff" }}>
+                $0 <span style={{ fontSize: 14, color: "#94a3b8" }}>/ forever</span>
               </div>
+              <p style={{ color: "#94a3b8", fontSize: 13, margin: "12px 0 24px 0" }}>
+                Explore the Knarrow platform with free starter mocks and games.
+              </p>
+
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12, fontSize: 14, color: "#cbd5e1" }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#22c55e" />
+                  <span><strong>3 Full Mocks Free</strong> per exam track (#1, #2, #3)</span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#22c55e" />
+                  <span><strong>2 IELTS Sectional Tests</strong> per skill</span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#22c55e" />
+                  <span><strong>3 Arcade Games Unlocked</strong> (Word Chain, Fixer, Blitz)</span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10, opacity: 0.5 }}>
+                  <X size={16} color="#ef4444" />
+                  <span>Mocks #4–100 (Locked)</span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10, opacity: 0.5 }}>
+                  <X size={16} color="#ef4444" />
+                  <span>Groq AI Llama 3.3 Diagnostic Action Plan</span>
+                </li>
+              </ul>
             </div>
+
             <button
-              className="pr-banner-btn"
-              onClick={() => navigate("/dashboard")}
+              disabled
+              style={{ width: "100%", background: "rgba(255,255,255,0.08)", color: "#94a3b8", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: 14, fontWeight: 800, marginTop: 32, cursor: "default" }}
             >
-              Go to Dashboard →
+              Current Active Tier
             </button>
           </div>
-        </div>
-      )}
 
-      {/* ═══════════════════════════════════════
-          PRICING CARDS
-      ═══════════════════════════════════════ */}
-      <section id="pricing-section" className="pr-plans-section" ref={pricingRef}>
+          {/* PAID PLAN CARD (FEATURED) */}
+          <div style={{ background: "linear-gradient(135deg, rgba(2,132,199,0.2) 0%, rgba(124,58,237,0.2) 100%)", border: "2px solid #38bdf8", borderRadius: 28, padding: 36, display: "flex", flexDirection: "column", justifyContent: "space-between", boxShadow: "0 20px 50px rgba(2,132,199,0.3)", position: "relative" }}>
+            
+            {currentPricing.badge && (
+              <span style={{ position: "absolute", top: -14, right: 28, background: "linear-gradient(135deg, #0284c7, #7c3aed)", color: "#ffffff", padding: "4px 16px", borderRadius: 999, fontSize: 11, fontWeight: 900, letterSpacing: 0.5, boxShadow: "0 4px 15px rgba(2,132,199,0.4)" }}>
+                {currentPricing.badge}
+              </span>
+            )}
 
-        <div className="pr-section-label">Simple, transparent pricing</div>
+            <div>
+              <span style={{ background: "rgba(56,189,248,0.25)", color: "#38bdf8", padding: "4px 12px", borderRadius: 999, fontSize: 11, fontWeight: 800 }}>
+                {packType === "all_access" ? "ALL-EXAM UNLIMITED PASS" : `${selectedTrack} EXAM PASS`}
+              </span>
 
-        <h2 className="pr-section-title">Choose Your Plan</h2>
+              <h3 style={{ fontSize: 26, fontWeight: 900, color: "#ffffff", margin: "16px 0 8px 0" }}>
+                {packType === "all_access" ? "Knarrow All-Access VIP" : `Knarrow ${selectedTrack} Pass`}
+              </h3>
 
-        <p className="pr-section-sub">
-          Upgrade anytime and unlock the complete Knarrow experience.
-        </p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <div style={{ fontSize: 44, fontWeight: 900, color: "#ffffff" }}>
+                  {currentPricing.priceUSD} <span style={{ fontSize: 20, color: "#94a3b8" }}>({currentPricing.priceINR})</span>
+                </div>
+                <div style={{ fontSize: 14, color: "#cbd5e1" }}>/ {currentPricing.period}</div>
+              </div>
 
-        <div className="pr-plans-grid">
+              <p style={{ color: "#cbd5e1", fontSize: 13, margin: "12px 0 24px 0" }}>
+                {packType === "all_access" ? "Unlocks all 8 exam tracks (IELTS, DET, TOEFL, PTE, GRE, CAT, ACT, SAT, GMAT)." : `Unlocks all 100 mocks, sectional drills, and games for ${selectedTrack}.`}
+              </p>
 
-          <PricingCard
-            title="Free"
-            price="0"
-            currentPlan={currentPlan}
-          />
-
-          <PricingCard
-            title="Premium Monthly"
-            price="299"
-            currentPlan={currentPlan}
-            expiresAt={premiumExpires}
-          />
-
-          <PricingCard
-            title="Premium 3 Months"
-            price="799"
-            popular
-            currentPlan={currentPlan}
-            expiresAt={premiumExpires}
-          />
-
-        </div>
-
-        <p className="pr-plans-footnote">
-          🔒 All payments are processed securely through Razorpay &nbsp;·&nbsp; Instant activation
-        </p>
-
-      </section>
-
-      {/* ═══════════════════════════════════════
-          BENEFITS
-      ═══════════════════════════════════════ */}
-      <section id="pr-benefits" className="pr-benefits">
-
-        <div className="pr-section-label">Why Knarrow</div>
-        <h2 className="pr-section-title">Everything You Need to Score Higher</h2>
-        <p className="pr-section-sub">
-          Every feature is designed to replicate the official IELTS CBT while giving
-          you AI guidance unavailable anywhere else.
-        </p>
-
-        <div className="pr-benefit-grid">
-          {[
-            { icon: "📝", title: "AI Writing Evaluation",    desc: "Detailed IELTS-style feedback, band estimates, grammar corrections, coherence and vocabulary suggestions — instantly." },
-            { icon: "🎤", title: "AI Speaking Evaluation",   desc: "Improve pronunciation, fluency, lexical resource and grammar through intelligent real-time assessment." },
-            { icon: "📊", title: "Performance Analytics",    desc: "Track every section, identify weaknesses and monitor band progression with deep visualisations." },
-            { icon: "🎯", title: "Real CBT Experience",      desc: "Practice with an interface that closely mirrors the official IELTS Computer Based Test." },
-            { icon: "🤖", title: "AI Study Coach",           desc: "Personalised recommendations based on your strengths, weaknesses and progress over time." },
-            { icon: "🏆", title: "Full Mock Exams",          desc: "Complete Reading, Listening, Writing and Speaking exams under realistic exam timing." },
-          ].map((b) => (
-            <div key={b.title} className="pr-benefit-card">
-              <div className="pr-benefit-icon">{b.icon}</div>
-              <h3>{b.title}</h3>
-              <p>{b.desc}</p>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12, fontSize: 14, color: "#ffffff" }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#38bdf8" />
+                  <span><strong>All 100 Full Mocks Unlocked</strong> ({packType === "all_access" ? "800+ Total Mocks" : `100 ${selectedTrack} Mocks`})</span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#38bdf8" />
+                  <span><strong>Groq AI Llama 3.3</strong> Instant Diagnostic Evaluation &amp; 7-Day Action Plan</span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#38bdf8" />
+                  <span><strong>All 9 Multiplayer Arcade Games Unlocked</strong> (Showdown, Duel, Sniper, etc.)</span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#38bdf8" />
+                  <span><strong>Unlimited AI Speaking &amp; Writing Feedback</strong></span>
+                </li>
+                <li style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <CheckCircle2 size={16} color="#38bdf8" />
+                  <span><strong>Score Improvement Guarantee</strong> (7-Day Money Back Promise)</span>
+                </li>
+              </ul>
             </div>
-          ))}
-        </div>
 
-      </section>
-
-      {/* ═══════════════════════════════════════
-          TRUST
-      ═══════════════════════════════════════ */}
-      <section className="pr-trust">
-        <div className="pr-trust-inner">
-          {[
-            { icon: "🔒", title: "100% Secure Payments",  desc: "Powered by Razorpay with industry-standard encryption and payment protection." },
-            { icon: "⚡", title: "Instant Premium Access", desc: "Your account upgrades automatically after successful payment verification." },
-            { icon: "💻", title: "Access Anywhere",        desc: "Practice from desktop, tablet or mobile using the same account." },
-          ].map((t) => (
-            <div key={t.title} className="pr-trust-card">
-              <div className="pr-trust-icon">{t.icon}</div>
-              <h3>{t.title}</h3>
-              <p>{t.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════
-          COMPARISON TABLE
-      ═══════════════════════════════════════ */}
-      <section className="pr-compare">
-
-        <div className="pr-section-label">Side by side</div>
-        <h2 className="pr-section-title">Compare Plans</h2>
-
-        <div className="pr-compare-table">
-
-          {/* header */}
-          <div className="pr-compare-row pr-compare-head">
-            <div>Feature</div>
-            <div>Free</div>
-            <div>Premium</div>
-          </div>
-
-          {COMPARE.map((row, i) => (
-            <div
-              key={i}
-              className={`pr-compare-row${i % 2 === 0 ? " pr-compare-even" : ""}`}
+            <button
+              onClick={() => handleActivatePlan(`${packType}_${billingCycle}`)}
+              style={{ width: "100%", background: "linear-gradient(135deg, #0284c7, #7c3aed)", color: "#ffffff", border: "none", borderRadius: 16, padding: 16, fontWeight: 900, fontSize: 16, cursor: "pointer", marginTop: 32, boxShadow: "0 8px 25px rgba(2,132,199,0.4)" }}
             >
-              <div>{row.feature}</div>
-              <div className={row.free === "—" ? "pr-no" : "pr-yes"}>{row.free}</div>
-              <div className="pr-yes">{row.premium}</div>
-            </div>
-          ))}
+              Activate {packType === "all_access" ? "All-Access Pass" : `${selectedTrack} Pass`} Now →
+            </button>
+          </div>
 
         </div>
 
-      </section>
+        {/* ── COMPARISON MATRIX TABLE ── */}
+        <div style={{ background: "rgba(30,41,59,0.8)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 28, padding: 36, marginBottom: 56 }}>
+          <h3 style={{ fontSize: 22, fontWeight: 900, color: "#ffffff", textAlign: "center", marginBottom: 28 }}>
+            Plan Feature Comparison Matrix
+          </h3>
 
-      {/* ═══════════════════════════════════════
-          FAQ
-      ═══════════════════════════════════════ */}
-      <section className="pr-faq">
-
-        <div className="pr-section-label">Got questions?</div>
-        <h2 className="pr-section-title">Frequently Asked Questions</h2>
-
-        <div className="pr-faq-grid">
-          {FAQ.map((item) => (
-            <div key={item.q} className="pr-faq-card">
-              <h3>{item.q}</h3>
-              <p>{item.a}</p>
-            </div>
-          ))}
-        </div>
-
-      </section>
-
-      {/* ═══════════════════════════════════════
-          FINAL CTA
-      ═══════════════════════════════════════ */}
-      <section className="pr-final-cta">
-        <div className="pr-cta-card">
-          <div className="pr-cta-badge">🚀 Start Your IELTS Journey Today</div>
-
-          <h2>
-            Ready to Reach <span>Band 8+</span> with Knarrow?
-          </h2>
-
-          <p>
-            Practice smarter with AI-powered evaluation, realistic CBT mock exams,
-            personalised analytics and everything you need to hit your target band.
-          </p>
-
-          <button className="pr-cta-btn" onClick={scrollToPlans}>
-            🚀 View Plans
-          </button>
-
-          <div className="pr-cta-trust">
-            <span>🔒 Secure Payments</span>
-            <span>⚡ Instant Activation</span>
-            <span>💳 Powered by Razorpay</span>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", color: "#ffffff", textAlign: "left", fontSize: 14 }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
+                  <th style={{ padding: 16 }}>Platform Feature</th>
+                  <th style={{ padding: 16, color: "#94a3b8" }}>Free Tier</th>
+                  <th style={{ padding: 16, color: "#38bdf8" }}>Single Exam Pass</th>
+                  <th style={{ padding: 16, color: "#c084fc" }}>All-Access VIP Pass</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { feature: "Full Simulation Mocks per Track", free: "3 Free Mocks", single: "100 Mocks (Selected Track)", all: "800+ Mocks (All 8 Tracks)" },
+                  { feature: "IELTS Sectional Practice", free: "2 Tests per Skill", single: "Unlimited (If IELTS Pass)", all: "Unlimited (All Skills)" },
+                  { feature: "Arcade Games Access", free: "3 Free Games", single: "All 9 Games Unlocked", all: "All 9 Games Unlocked" },
+                  { feature: "Groq AI Llama 3.3 Scoring", free: "Basic", single: "Full 7-Day Plan", all: "Full Unlimited AI Plan" },
+                  { feature: "Computer-Adaptive CAT Engine", free: "✓", single: "✓", all: "✓" },
+                  { feature: "On-Screen Tools (Desmos / Calc)", free: "✓", single: "✓", all: "✓" },
+                ].map((row, idx) => (
+                  <tr key={idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <td style={{ padding: 16, fontWeight: 700 }}>{row.feature}</td>
+                    <td style={{ padding: 16, color: "#cbd5e1" }}>{row.free}</td>
+                    <td style={{ padding: 16, color: "#38bdf8", fontWeight: 800 }}>{row.single}</td>
+                    <td style={{ padding: 16, color: "#c084fc", fontWeight: 900 }}>{row.all}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </section>
 
-      {/* ═══════════════════════════════════════
-          MOBILE STICKY CTA
-      ═══════════════════════════════════════ */}
-      {!premium && (
-        <div className="pr-mobile-sticky">
-          <button onClick={scrollToPlans}>🚀 Unlock Premium</button>
-        </div>
-      )}
+        {/* ── SUCCESS MODAL ── */}
+        <AnimatePresence>
+          {successModal && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(8,12,20,0.9)", backdropFilter: "blur(20px)", zIndex: 999999, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={{ background: "#0f172a", border: "2px solid #38bdf8", borderRadius: 28, padding: 40, maxWidth: 500, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}>
+                <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(34,197,94,0.2)", color: "#22c55e", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+                  <CheckCircle2 size={36} />
+                </div>
+                <h3 style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", margin: "0 0 12px 0" }}>Plan Activated Successfully!</h3>
+                <p style={{ color: "#cbd5e1", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
+                  Your <strong>{successModal.type === "ALL_ACCESS" ? "All-Exam All-Access VIP Pass" : `${successModal.trackId} Pass`}</strong> is now active. All 100 Mocks, AI feedback, and Arcade Games are unlocked!
+                </p>
+                <button
+                  onClick={() => {
+                    setSuccessModal(null);
+                    navigate(successModal.trackId ? `/${successModal.trackId.toLowerCase()}` : "/dashboard");
+                  }}
+                  style={{ width: "100%", background: "linear-gradient(135deg, #0284c7, #7c3aed)", color: "#ffffff", border: "none", borderRadius: 16, padding: 16, fontWeight: 900, fontSize: 16, cursor: "pointer" }}
+                >
+                  Start Practicing Now →
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
-      {/* ═══════════════════════════════════════
-          FOOTER
-      ═══════════════════════════════════════ */}
-      <footer className="pr-footer">
-        <p>© 2026 Knarrow. All rights reserved.</p>
-        <div>
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
-          <a href="/support">Help Center</a>
-        </div>
-      </footer>
-
+      </div>
     </div>
   );
 }

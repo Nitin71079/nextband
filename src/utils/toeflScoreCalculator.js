@@ -113,52 +113,75 @@ export function evaluateBuildASentence(userSentence, targetSentence) {
 /**
  * Deterministic letter fragment evaluator for Complete the Words
  */
-export function evaluateCompleteTheWords(userAnswers, missingParts) {
+export function evaluateCompleteTheWords(userAnswers = [], missingParts = []) {
   let correct = 0;
-  missingParts.forEach((expected, i) => {
-    const userVal = (userAnswers[i] || "").trim().toLowerCase();
-    if (userVal === expected.toLowerCase()) {
+  const parts = Array.isArray(missingParts) ? missingParts : [];
+  parts.forEach((expected, i) => {
+    const userVal = (userAnswers && userAnswers[i] ? String(userAnswers[i]) : "").trim().toLowerCase();
+    if (expected && userVal === String(expected).toLowerCase()) {
       correct++;
     }
   });
-  return { correct, total: missingParts.length };
+  return { correct, total: parts.length };
 }
 
 /**
  * Calculate detailed subskill dimension analytics for report dashboard
  */
-export function calculateTOEFLAnalytics({ readingResults, listeningResults, writingResults, speakingResults }) {
+export function calculateTOEFLAnalytics(data = {}) {
+  // Support both direct result object or structured subskill payloads
+  const readingResults = data.readingResults || data.readingAnalytics || {};
+  const listeningResults = data.listeningResults || data.listeningAnalytics || {};
+  const writingResults = data.writingResults || data.writingAnalytics || {};
+  const speakingResults = data.speakingResults || data.speakingAnalytics || {};
+
+  const cwPct = readingResults.cwPct ?? data.cwPct ?? 0;
+  const dlPct = readingResults.dlPct ?? data.dlPct ?? 0;
+  const acadPct = readingResults.acadPct ?? data.acadPct ?? 0;
+
+  const respPct = listeningResults.respPct ?? data.respPct ?? 0;
+  const convPct = listeningResults.convPct ?? data.convPct ?? 0;
+  const annPct = listeningResults.annPct ?? data.annPct ?? 0;
+  const talkPct = listeningResults.talkPct ?? data.talkPct ?? 0;
+
+  const bsScore = writingResults.bsScore ?? data.bsScore ?? 0;
+  const emailRawScore = writingResults.emailRawScore ?? data.writingFeedback?.email?.rawTaskScore ?? 0;
+  const discRawScore = writingResults.discRawScore ?? data.writingFeedback?.discussion?.rawTaskScore ?? 0;
+
+  const listenRepeatScore = speakingResults.listenRepeatScore ?? data.listenRepeatScore ?? 0;
+  const interviewScore = speakingResults.interviewRawScore ?? data.speakingFeedback?.rawTaskScore ?? 0;
+
   return {
     reading: {
-      completeWordsPct: readingResults?.cwPct || 85,
-      dailyLifePct: readingResults?.dlPct || 90,
-      academicPassagePct: readingResults?.acadPct || 75,
-      vocabularyPct: 84,
-      inferencePct: 78,
+      completeWordsPct: cwPct,
+      dailyLifePct: dlPct,
+      academicPassagePct: acadPct,
+      vocabularyPct: Math.round((cwPct + dlPct) / 2),
+      inferencePct: Math.round((acadPct + dlPct) / 2),
     },
     listening: {
-      chooseResponsePct: listeningResults?.respPct || 88,
-      conversationPct: listeningResults?.convPct || 82,
-      announcementPct: listeningResults?.annPct || 90,
-      academicTalkPct: listeningResults?.talkPct || 72,
+      chooseResponsePct: respPct,
+      conversationPct: convPct,
+      announcementPct: annPct,
+      academicTalkPct: talkPct,
     },
     writing: {
-      buildSentenceScore: writingResults?.bsScore || 9, // out of 10
-      emailTaskScore: writingResults?.emailRawScore || 4, // 0-5
-      discussionTaskScore: writingResults?.discRawScore || 4, // 0-5
-      taskAchievement: 88,
-      grammarPrecision: 82,
-      vocabularyVariety: 85,
-      socialRegister: 90,
+      buildSentenceScore: bsScore, // out of 10
+      emailTaskScore: emailRawScore, // 0-5
+      discussionTaskScore: discRawScore, // 0-5
+      taskAchievement: Math.round(((emailRawScore + discRawScore) / 10) * 100),
+      grammarPrecision: Math.round(((emailRawScore + discRawScore) / 10) * 100),
+      vocabularyVariety: Math.round(((emailRawScore + discRawScore) / 10) * 100),
+      socialRegister: Math.round(((emailRawScore + discRawScore) / 10) * 100),
     },
     speaking: {
-      listenRepeatScore: speakingResults?.repeatRawTotal || 28, // out of 35
-      interviewScore: speakingResults?.interviewRawTotal || 16, // out of 20
-      accuracy: 86,
-      fluency: 78,
-      pronunciation: 84,
-      prosody: 76,
-      intelligibility: 90,
+      listenRepeatScore: listenRepeatScore, // out of 35
+      interviewScore: interviewScore, // out of 5
+      accuracy: speakingResults.accuracy ?? data.speakingAccuracy ?? (listenRepeatScore > 0 ? Math.round((listenRepeatScore / 35) * 100) : 0),
+      fluency: speakingResults.fluency ?? (interviewScore > 0 ? interviewScore * 20 : 0),
+      pronunciation: speakingResults.pronunciation ?? (interviewScore > 0 ? interviewScore * 20 : 0),
+      prosody: speakingResults.prosody ?? (interviewScore > 0 ? interviewScore * 20 : 0),
+      intelligibility: speakingResults.intelligibility ?? (interviewScore > 0 ? interviewScore * 20 : 0),
     }
   };
 }

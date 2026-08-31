@@ -45,7 +45,44 @@ export default function TOEFLResultsPage() {
   const cefrEquiv = toeflToCEFR(overallScore);
   const oldScaleEquiv = toeflToOldScale(overallScore);
 
-  const analytics = calculateTOEFLAnalytics({});
+  const analytics = calculateTOEFLAnalytics(result);
+
+  // Dynamic 7-day study plan tailored to user's weakest area
+  const sectionScores = [
+    { name: "Reading", band: readingBand },
+    { name: "Listening", band: listeningBand },
+    { name: "Writing", band: writingBand },
+    { name: "Speaking", band: speakingBand },
+  ];
+  const lowestSection = [...sectionScores].sort((a, b) => a.band - b.band)[0]?.name || "Writing";
+
+  let studyPlan = [
+    { day: "Day 1", task: "Academic Discussion Development & 100+ Word Elaboration", color: "#38bdf8" },
+    { day: "Day 2", task: "Build a Sentence Syntax & Word Ordering Drills", color: "#f59e0b" },
+    { day: "Day 3", task: "Listening Inference & Academic Talk Main Idea Practice", color: "#c084fc" },
+    { day: "Day 4", task: "Listen & Repeat Sentence Prosody & Rhythm Training", color: "#4ade80" },
+    { day: "Day 5", task: "Email Social Register & Politeness Conventions", color: "#f43f5e" },
+    { day: "Day 6", task: "Multistage Adaptive Reading Complete-the-Words Drills", color: "#a855f7" },
+    { day: "Day 7", task: "Complete Full TOEFL 2026 Simulation Mock Test", color: "#3b82f6" },
+  ];
+
+  if (lowestSection === "Reading") {
+    studyPlan[0] = { day: "Day 1", task: "Complete-the-Words Fragment Spelling & Morphology Drills", color: "#38bdf8" };
+    studyPlan[1] = { day: "Day 2", task: "Campus Daily Life Bulletin & Social Media Post Reading", color: "#f59e0b" };
+    studyPlan[2] = { day: "Day 3", task: "150–250 Word Academic Passage Inference Practice", color: "#c084fc" };
+  } else if (lowestSection === "Speaking") {
+    studyPlan[0] = { day: "Day 1", task: "Microphone Speech Intelligibility & Pronunciation Drills", color: "#4ade80" };
+    studyPlan[1] = { day: "Day 2", task: "Listen & Repeat Sentence Rhythm & Prosody Calibration", color: "#38bdf8" };
+    studyPlan[2] = { day: "Day 3", task: "Interview Task 45s Response Elaboration & Fluency", color: "#c084fc" };
+  } else if (lowestSection === "Writing") {
+    studyPlan[0] = { day: "Day 1", task: "Campus Email Structure & Formal Salutation Practice", color: "#f43f5e" };
+    studyPlan[1] = { day: "Day 2", task: "Academic Discussion 100+ Word Reasoning & Evidence", color: "#f59e0b" };
+    studyPlan[2] = { day: "Day 3", task: "Build a Sentence Clause Structure & Syntax Mastery", color: "#38bdf8" };
+  } else if (lowestSection === "Listening") {
+    studyPlan[0] = { day: "Day 1", task: "Listen & Choose Response Short Query Comprehension", color: "#c084fc" };
+    studyPlan[1] = { day: "Day 2", task: "Student-Professor Dialogue Note-Taking Strategies", color: "#38bdf8" };
+    studyPlan[2] = { day: "Day 3", task: "Academic Lecture Main Idea & Technical Terminology", color: "#4ade80" };
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#0f172a", color: "#ffffff", fontFamily: "Inter, sans-serif", padding: "60px 24px 80px" }}>
@@ -75,14 +112,10 @@ export default function TOEFLResultsPage() {
             Estimated Range: {scoreRangeText || `${(overallScore - 0.5).toFixed(1)} – ${(overallScore + 0.5).toFixed(1)}`} ({confidence || "High Confidence"})
           </div>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap", borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: 20 }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: 32, flexWrap: "wrap", borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: 20 }}>
             <div>
               <div style={{ fontSize: 12, color: "#e9d5ff" }}>CEFR Level</div>
               <div style={{ fontSize: 18, fontWeight: 800, color: "#ffffff" }}>{cefrEquiv}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 12, color: "#e9d5ff" }}>IELTS Equivalent</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#4ade80" }}>Band {ieltsEquiv}</div>
             </div>
             <div>
               <div style={{ fontSize: 12, color: "#e9d5ff" }}>Legacy 0–120 Score</div>
@@ -209,15 +242,7 @@ export default function TOEFLResultsPage() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
-            {[
-              { day: "Day 1", task: "Academic Discussion Development & 100+ Word Elaboration", color: "#38bdf8" },
-              { day: "Day 2", task: "Build a Sentence Syntax & Word Ordering Drills", color: "#f59e0b" },
-              { day: "Day 3", task: "Listening Inference & Academic Talk Main Idea Practice", color: "#c084fc" },
-              { day: "Day 4", task: "Listen & Repeat Sentence Prosody & Rhythm Training", color: "#4ade80" },
-              { day: "Day 5", task: "Email Social Register & Politeness Conventions", color: "#f43f5e" },
-              { day: "Day 6", task: "Multistage Adaptive Reading Complete-the-Words Drills", color: "#a855f7" },
-              { day: "Day 7", task: "Complete Full TOEFL 2026 Simulation Mock Test", color: "#3b82f6" },
-            ].map((item) => (
+            {studyPlan.map((item) => (
               <div key={item.day} style={{ background: "#0f172a", padding: 14, borderRadius: 14, borderLeft: `4px solid ${item.color}` }}>
                 <div style={{ fontSize: 12, fontWeight: 800, color: item.color }}>{item.day}</div>
                 <div style={{ fontSize: 13, color: "#ffffff", fontWeight: 600, marginTop: 4 }}>{item.task}</div>
@@ -227,19 +252,30 @@ export default function TOEFLResultsPage() {
         </div>
 
         {/* ── ACTION BUTTONS ── */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
-          <button
-            onClick={() => navigate(`/toefl/test/${testId}`)}
-            style={{ background: "#7c3aed", color: "#ffffff", border: "none", borderRadius: 14, padding: "14px 28px", fontSize: 15, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
-          >
-            <RefreshCw size={18} /> Retake TOEFL Test
-          </button>
+        <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap", marginBottom: 40 }}>
           <button
             onClick={() => navigate("/toefl")}
-            style={{ background: "rgba(255,255,255,0.08)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 14, padding: "14px 28px", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
+            style={{ background: "linear-gradient(135deg, #7c3aed, #2563eb)", color: "#ffffff", border: "none", borderRadius: 14, padding: "14px 28px", fontSize: 15, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 6px 20px rgba(124, 58, 237, 0.4)" }}
           >
-            Go to TOEFL Hub
+            <RefreshCw size={18} /> TOEFL iBT Mocks Hub
           </button>
+          <button
+            onClick={() => navigate("/duolingo")}
+            style={{ background: "rgba(16,185,129,0.15)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)", borderRadius: 14, padding: "14px 28px", fontSize: 15, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
+          >
+            <Sparkles size={18} /> Try Duolingo DET Mocks
+          </button>
+          <button
+            onClick={() => navigate("/results-history")}
+            style={{ background: "rgba(255,255,255,0.08)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 14, padding: "14px 24px", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
+          >
+            All Exam Analytics
+          </button>
+        </div>
+
+        {/* ── MANDATORY LEGAL & ETS COMPLIANCE DISCLAIMER ── */}
+        <div style={{ textTransform: "none", fontSize: 12, color: "#64748b", textAlign: "center", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 24, lineHeight: 1.6, maxWidth: 800, margin: "0 auto" }}>
+          Knarrow is an independent TOEFL iBT 2026-aligned learning and assessment platform. All score estimates are predicted values calculated via calibrated psychometric models and ETS 0–5 raw task rubrics. TOEFL® is a registered trademark of Educational Testing Service (ETS) in the United States and other countries. This product is not endorsed, certified, or approved by ETS.
         </div>
 
       </div>

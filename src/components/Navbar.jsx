@@ -55,8 +55,8 @@ const NAV_ITEMS_PUBLIC = [
     path: "/",
   },
   {
-    label: "DET Prep",
-    path: "/duolingo",
+    label: "Exam Hub",
+    path: "/dashboard",
     icon: Sparkles,
   },
   {
@@ -72,6 +72,7 @@ const NAV_ITEMS_PUBLIC = [
   {
     label: "Pricing",
     path: "/pricing",
+    icon: Crown,
   },
   {
     label: "Help",
@@ -86,22 +87,17 @@ const NAV_ITEMS_PUBLIC = [
 
 const NAV_ITEMS_PRIVATE = [
   {
-    label: "Dashboard",
+    label: "Exam Hub",
     path: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    label: "DET Prep",
-    path: "/duolingo",
-    icon: Sparkles,
-  },
-  {
-    label: "AI Studio",
-    path: "/ai-center",
+    label: "AI Analytics",
+    path: "/insights",
     icon: BrainCircuit,
   },
   {
-    label: "Planner",
+    label: "Study Planner",
     path: "/planner",
     icon: CalendarDays,
   },
@@ -111,12 +107,7 @@ const NAV_ITEMS_PRIVATE = [
     icon: Users,
   },
   {
-    label: "Leaderboard",
-    path: "/leaderboard",
-    icon: Trophy,
-  },
-  {
-    label: "Games",
+    label: "Arcade",
     path: "/games",
     icon: Gamepad2,
   },
@@ -124,11 +115,6 @@ const NAV_ITEMS_PRIVATE = [
     label: "Pricing",
     path: "/pricing",
     icon: Crown,
-  },
-  {
-    label: "Help",
-    path: "/help",
-    icon: HelpCircle,
   },
 ];
 
@@ -229,10 +215,17 @@ export default function Navbar() {
   const navItems = useMemo(() => {
     const baseItems = user ? NAV_ITEMS_PRIVATE : NAV_ITEMS_PUBLIC;
     return baseItems.map((item) => {
-      if (item.label === "Dashboard") {
+      if (item.label === "Exam Hub" || item.label === "Dashboard") {
         return {
           ...item,
-          path: activeTrack === "DET" ? "/duolingo" : (activeTrack === "TOEFL" ? "/toefl" : (activeTrack === "GRE" ? "/gre" : (activeTrack === "CAT" ? "/cat" : "/dashboard")))
+          path: activeTrack === "DET" ? "/duolingo" :
+                activeTrack === "TOEFL" ? "/toefl" :
+                activeTrack === "PTE" ? "/pte" :
+                activeTrack === "GRE" ? "/gre" :
+                activeTrack === "CAT" ? "/cat" :
+                activeTrack === "ACT" ? "/act" :
+                activeTrack === "SAT" ? "/sat" :
+                activeTrack === "GMAT" ? "/gmat" : "/dashboard"
         };
       }
       return item;
@@ -526,8 +519,12 @@ export default function Navbar() {
             {activeTrack === "DET" && "🦉 DET Prep"}
             {activeTrack === "IELTS" && "🎓 IELTS Prep"}
             {activeTrack === "TOEFL" && "📚 TOEFL Prep"}
+            {activeTrack === "PTE" && "⚡ PTE Prep"}
             {activeTrack === "GRE" && "🧠 GRE Prep"}
             {activeTrack === "CAT" && "📈 CAT Prep"}
+            {activeTrack === "ACT" && "🏆 ACT Prep"}
+            {activeTrack === "SAT" && "✨ SAT Prep"}
+            {activeTrack === "GMAT" && "📊 GMAT Prep"}
             <ChevronDown size={14} />
           </motion.button>
 
@@ -550,8 +547,12 @@ export default function Navbar() {
                 { id: "IELTS", label: "🎓 IELTS Academic/General" },
                 { id: "DET", label: "🦉 Duolingo English Test" },
                 { id: "TOEFL", label: "📚 TOEFL iBT Test" },
+                { id: "PTE", label: "⚡ PTE Academic Test" },
                 { id: "GRE", label: "🧠 GRE General Test" },
                 { id: "CAT", label: "📈 CAT MBA Entrance" },
+                { id: "ACT", label: "🏆 ACT 2026 Exam" },
+                { id: "SAT", label: "✨ Digital SAT 2026" },
+                { id: "GMAT", label: "📊 GMAT Exam 2026" },
               ].map((t) => (
                 <button
                   key={t.id}

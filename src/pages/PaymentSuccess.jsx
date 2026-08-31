@@ -1,6 +1,11 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { activateUserPlan } from "../utils/planAccess";
 
 export default function PaymentSuccess() {
+  useEffect(() => {
+    activateUserPlan("all_access_monthly", "all_access");
+  }, []);
   return (
     <div
       style={{

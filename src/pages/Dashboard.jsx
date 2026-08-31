@@ -1,7 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useExam } from "../context/ExamContext";
 import Loader from "../components/Loader";
+
+import DETDashboard from "../modules/duolingo/pages/DETDashboard";
+import TOEFLCenter from "./TOEFLCenter";
+import PTECenter from "./PTECenter";
+import GRECenter from "./GRECenter";
+import CATCenter from "./CATCenter";
+import ACTCenter from "./ACTCenter";
+import SATCenter from "./SATCenter";
+import GMATCenter from "./GMATCenter";
+import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 import DashboardHero       from "../components/dashboard/DashboardHero";
 import ContinueLearning    from "../components/dashboard/ContinueLearning";
@@ -20,6 +31,7 @@ import { useLiveData } from "../hooks/useLiveData";
 import "../styles/dashboard/dashboard.css";
 
 export default function Dashboard() {
+  const { activeTrack } = useExam();
   const { premium } = useAuth();
   const { loading, analytics, memory, activities, firstName } = useLiveData();
   const [forceReady, setForceReady] = useState(false);
@@ -31,10 +43,46 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, []);
 
+  if (activeTrack === "DET") {
+    return <DETDashboard />;
+  }
+
+  if (activeTrack === "TOEFL") {
+    return <TOEFLCenter />;
+  }
+
+  if (activeTrack === "PTE") {
+    return <PTECenter />;
+  }
+
+  if (activeTrack === "GRE") {
+    return <GRECenter />;
+  }
+
+  if (activeTrack === "CAT") {
+    return <CATCenter />;
+  }
+
+  if (activeTrack === "ACT") {
+    return <ACTCenter />;
+  }
+
+  if (activeTrack === "SAT") {
+    return <SATCenter />;
+  }
+
+  if (activeTrack === "GMAT") {
+    return <GMATCenter />;
+  }
+
   if (loading && !forceReady) return <Loader />;
 
   return (
     <div className="dashboard-page">
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>
+        <ExamTrackHeaderSwitcher />
+      </div>
+
       <DashboardHero
         firstName={firstName}
         analytics={analytics}

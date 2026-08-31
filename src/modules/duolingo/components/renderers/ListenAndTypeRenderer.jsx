@@ -54,9 +54,9 @@ export default function ListenAndTypeRenderer({ item, onSubmit, submitting }) {
 
   return (
     <div className="det-test-card" style={{ textAlign: "center" }}>
-      <span className="det-hero-badge">Listen and Type</span>
+      <span className="det-hero-badge">DICTATION</span>
       <h3 style={{ marginTop: "12px", fontSize: "20px", fontWeight: "800", color: "var(--det-text)" }}>
-        {item.prompt || "Type the statement that you hear."}
+        Listen carefully and type exactly what you hear.
       </h3>
 
       <div style={{ margin: "32px 0" }}>
@@ -81,7 +81,7 @@ export default function ListenAndTypeRenderer({ item, onSubmit, submitting }) {
           <Volume2 size={36} />
         </button>
         <div style={{ marginTop: "12px", fontSize: "14px", color: "var(--det-text-muted)", fontWeight: "700" }}>
-          {replaysLeft} replay{replaysLeft !== 1 ? "s" : ""} remaining
+          Replay: {replaysLeft} remaining
         </div>
       </div>
 

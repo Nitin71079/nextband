@@ -13,13 +13,18 @@ import { evaluateDETGPT } from "../services/evaluateDETGPT";
 import { DETAdaptiveEngine } from "../utils/detAdaptiveEngine";
 import { useAuth } from "../context/AuthContext";
 import AudioRecorder from "../components/AudioRecorder";
+import InteractiveReadingRenderer from "../modules/duolingo/components/renderers/InteractiveReadingRenderer";
+import InteractiveListeningRenderer from "../modules/duolingo/components/renderers/InteractiveListeningRenderer";
 
 export default function MockDET() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const test = detTests.find(t => String(t.id) === String(id)) || detTests[0];
+  const rawNum = String(id || "1").replace(/\D/g, "");
+  const numericId = parseInt(rawNum, 10);
+  const testIndex = !isNaN(numericId) && numericId > 0 ? (numericId - 1) % detTests.length : 0;
+  const test = detTests[testIndex];
 
   const [phase, setPhase] = useState("intro"); // intro | exam | evaluating | report
   const [qIndex, setQIndex] = useState(0);
@@ -81,20 +86,11 @@ export default function MockDET() {
   async function finishExam() {
     setPhase("evaluating");
 
-    let totalRCWords = 0;
-    let correctRCWords = 0;
-
-    let totalRSWords = 0;
-    let correctRSWords = 0;
-
-    let totalLSWords = 0;
-    let correctLSWords = 0;
-
-    let totalDictationWords = 0;
-    let correctDictationWords = 0;
-
-    let interactiveReadingPoints = 0;
-    let maxIRPoints = 0;
+    let totalRCWords = 0, correctRCWords = 0;
+    let totalRSWords = 0, correctRSWords = 0;
+    let totalDictationWords = 0, correctDictationWords = 0;
+    let maxIRPoints = 0, interactiveReadingPoints = 0;
+    let maxILPoints = 0, interactiveListeningPoints = 0;
 
     test.questions.forEach(q => {
       const uAns = answers[q.id];
@@ -104,7 +100,7 @@ export default function MockDET() {
         q.passage.filter(p => p.blank).forEach((item, idx) => {
           totalRCWords++;
           const entered = uAns?.[idx] || "";
-          if (entered.trim().toLowerCase() === item.missing.toLowerCase()) {
+          if (entered.trim().toLowerCase() === (item.missing || "").toLowerCase()) {
             correctRCWords++;
           }
         });
@@ -121,21 +117,11 @@ export default function MockDET() {
         });
       }
 
-      // 3. Listen and Select
-      if (q.type === "listen-and-select" && q.words) {
-        q.words.forEach(w => {
-          totalLSWords++;
-          const isSelected = Boolean(uAns?.[w.word]);
-          if (isSelected === w.isReal) {
-            correctLSWords++;
-          }
-        });
-      }
-
-      // 4. Listen and Type
-      if (q.type === "listen-and-type" && q.correctSentence) {
+      // 3. Dictation / Listen and Type
+      if ((q.type === "dictation" || q.type === "listen-and-type") && (q.correctSentence || q.audioText)) {
+        const targetText = q.correctSentence || q.audioText;
         const userTyped = (uAns || "").trim().toLowerCase().split(/\s+/);
-        const targetWords = q.correctSentence.trim().toLowerCase().split(/\s+/);
+        const targetWords = targetText.trim().toLowerCase().split(/\s+/);
         targetWords.forEach(w => {
           totalDictationWords++;
           if (userTyped.includes(w.replace(/[.,!?]/g, ""))) {
@@ -144,51 +130,114 @@ export default function MockDET() {
         });
       }
 
-      // 8. Interactive Reading
-      if (q.type === "interactive-reading" && q.tasks) {
-        q.tasks.forEach((task, tIdx) => {
-          maxIRPoints++;
-          const tAns = uAns?.[tIdx];
-          if (tAns !== undefined && tAns === task.answer) {
-            interactiveReadingPoints++;
+      // 4. Interactive Reading (4 steps)
+      if (q.type === "interactive-reading") {
+        maxIRPoints += 4;
+        if (uAns && typeof uAns === "object") {
+          const irData = q.interactiveReading;
+          if (irData) {
+            const step1Correct = irData.step1MissingSentence?.correctIndex ?? 0;
+            const step2Correct = irData.step2Comprehension?.correctIndex ?? 0;
+            const step3Correct = irData.step3MainIdea?.correctIndex ?? 0;
+            const step4Correct = irData.step4BestTitle?.correctIndex ?? 0;
+
+            if (uAns[0] === step1Correct) interactiveReadingPoints++;
+            if (uAns[1] === step2Correct) interactiveReadingPoints++;
+            if (uAns[2] === step3Correct) interactiveReadingPoints++;
+            if (uAns[3] === step4Correct) interactiveReadingPoints++;
+          } else {
+            interactiveReadingPoints += Object.keys(uAns).length;
           }
-        });
+        }
+      }
+
+      // 5. Interactive Listening (4 stages)
+      if (q.type === "interactive-listening") {
+        maxILPoints += 3;
+        if (uAns && typeof uAns === "object") {
+          const ilData = q.interactiveListening;
+          if (ilData) {
+            const q1Answer = ilData.comprehensionQ1?.answer;
+            const q1Options = ilData.comprehensionQ1?.options || [];
+            const q1CorrectIndex = q1Answer ? q1Options.indexOf(q1Answer) : 0;
+
+            const q2Answer = ilData.comprehensionQ2?.answer;
+            const q2Options = ilData.comprehensionQ2?.options || [];
+            const q2CorrectIndex = q2Answer ? q2Options.indexOf(q2Answer) : 0;
+
+            const userQ1 = uAns.compAnswers?.[1];
+            const userQ2 = uAns.compAnswers?.[2];
+            const userTurn1 = uAns.turnAnswers?.[0];
+
+            if (userQ1 === (q1CorrectIndex >= 0 ? q1CorrectIndex : 0)) interactiveListeningPoints++;
+            if (userQ2 === (q2CorrectIndex >= 0 ? q2CorrectIndex : 0)) interactiveListeningPoints++;
+            if (userTurn1 === 0) interactiveListeningPoints++;
+          } else {
+            interactiveListeningPoints += 2;
+          }
+        }
       }
     });
 
-    const readCompletePct = totalRCWords > 0 ? Math.round((correctRCWords / totalRCWords) * 100) : 75;
-    const readSelectPct = totalRSWords > 0 ? Math.round((correctRSWords / totalRSWords) * 100) : 75;
-    const listenSelectPct = totalLSWords > 0 ? Math.round((correctLSWords / totalLSWords) * 100) : 75;
-    const listenTypePct = totalDictationWords > 0 ? Math.round((correctDictationWords / totalDictationWords) * 100) : 75;
-    const irPct = maxIRPoints > 0 ? Math.round((interactiveReadingPoints / maxIRPoints) * 100) : 80;
+    const readCompletePct = totalRCWords > 0 ? Math.round((correctRCWords / totalRCWords) * 100) : 0;
+    const readSelectPct = totalRSWords > 0 ? Math.round((correctRSWords / totalRSWords) * 100) : 0;
+    const listenTypePct = totalDictationWords > 0 ? Math.round((correctDictationWords / totalDictationWords) * 100) : 0;
+    const irPct = maxIRPoints > 0 ? Math.round((interactiveReadingPoints / maxIRPoints) * 100) : 0;
+    const ilPct = maxILPoints > 0 ? Math.round((interactiveListeningPoints / maxILPoints) * 100) : 0;
 
-    // AI Evaluation for Writing Sample if submitted
-    const writingQ = test.questions.find(q => q.type === "writing-sample");
-    let aiWritingScore = 85;
-    if (writingQ && answers[writingQ.id]) {
+    // Read Aloud task answer check
+    const readAloudQ = test.questions.find(q => q.type === "read-aloud");
+    const readAloudScore = readAloudQ && answers[readAloudQ.id] ? 100 : 0;
+
+    // Groq AI Evaluation for Writing & Speaking production tasks
+    const writingQ = test.questions.find(q => q.type === "writing-sample" || q.type === "interactive-writing" || q.type === "describe-image" || q.type === "write-about-image");
+    const speakingQ = test.questions.find(q => q.type === "speaking-sample" || q.type === "interactive-speaking" || q.type === "speak-about-image");
+
+    let aiWritingScore = 10;
+    let aiSpeakingScore = 10;
+
+    const userWritingAns = writingQ ? answers[writingQ.id] : null;
+    if (userWritingAns && typeof userWritingAns === "string" && userWritingAns.trim().length >= 10) {
       try {
         const evalRes = await evaluateDETGPT({
-          taskType: "writing-sample",
-          questionPrompt: writingQ.question,
-          userResponse: answers[writingQ.id],
+          taskType: writingQ.type,
+          questionPrompt: writingQ.prompt || writingQ.question,
+          userResponse: userWritingAns,
         });
-        aiWritingScore = evalRes.score || 85;
+        aiWritingScore = evalRes.score || 70;
       } catch (e) {
-        console.warn("AI writing evaluation error:", e);
+        console.warn("Groq AI DET writing evaluation error:", e);
+        aiWritingScore = 70;
+      }
+    }
+
+    const userSpeakingAns = speakingQ ? answers[speakingQ.id] : null;
+    if (userSpeakingAns) {
+      try {
+        const evalRes = await evaluateDETGPT({
+          taskType: speakingQ.type,
+          questionPrompt: speakingQ.prompt || speakingQ.question,
+          userResponse: typeof userSpeakingAns === "string" ? userSpeakingAns : "Audio response submitted",
+        });
+        aiSpeakingScore = evalRes.score || 70;
+      } catch (e) {
+        console.warn("Groq AI DET speaking evaluation error:", e);
+        aiSpeakingScore = 70;
       }
     }
 
     const reportData = calculateDETScore({
       readCompleteScore: readCompletePct,
       readSelectScore: readSelectPct,
-      listenSelectScore: listenSelectPct,
+      listenSelectScore: readSelectPct,
       listenTypeScore: listenTypePct,
       interactiveReadingScore: irPct,
-      readAloudScore: 85,
+      interactiveListeningScore: ilPct,
+      readAloudScore: readAloudScore,
       writeImageScore: aiWritingScore,
-      speakImageScore: 82,
+      speakImageScore: aiSpeakingScore,
       writingSampleScore: aiWritingScore,
-      speakingSampleScore: 85,
+      speakingSampleScore: aiSpeakingScore,
     });
 
     setDetReport(reportData);
@@ -299,8 +348,8 @@ export default function MockDET() {
 
               <div style={{ display: "flex", gap: 16 }}>
                 <div style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(10px)", padding: "16px 22px", borderRadius: 18, textAlign: "center" }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.8, textTransform: "uppercase" }}>IELTS EQUIVALENT</div>
-                  <div style={{ fontSize: 24, fontWeight: 900, marginTop: 2 }}>Band {ieltsEquivalent}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.8, textTransform: "uppercase" }}>DET SCORE TIER</div>
+                  <div style={{ fontSize: 20, fontWeight: 900, marginTop: 4 }}>{overall >= 120 ? "Advanced Academic" : "Intermediate"}</div>
                 </div>
 
                 <div style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(10px)", padding: "16px 22px", borderRadius: 18, textAlign: "center" }}>
@@ -369,49 +418,132 @@ export default function MockDET() {
         </div>
 
         {/* ── QUESTION TYPE 1: READ AND COMPLETE ── */}
-        {currentQ.type === "read-and-complete" && (
-          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 32, lineHeight: 2.2, fontSize: 18, fontWeight: 600 }}>
-            {currentQ.passage.map((item, i) => {
-              if (!item.blank) return <span key={i}>{item.text}</span>;
+        {currentQ.type === "read-and-complete" && (() => {
+          let passageTokens = currentQ.passage;
+          if (!passageTokens || !Array.isArray(passageTokens) || passageTokens.length === 0) {
+            const rawText = currentQ.cTestText || currentQ.passageText || "Scientific research shows that regular physical activity significantly enhances cognitive function. Exercise promotes blood flow to the brain, stimulating neural growth.";
+            passageTokens = [];
+            const words = rawText.split(/(\s+)/);
+            let wordCount = 0;
+            for (let i = 0; i < words.length; i++) {
+              const token = words[i];
+              if (/^\s+$/.test(token) || !/[a-zA-Z]/.test(token)) {
+                passageTokens.push({ text: token, blank: false });
+                continue;
+              }
+              wordCount++;
+              const match = token.match(/^([a-zA-Z]+)(.*)$/);
+              if (!match) {
+                passageTokens.push({ text: token, blank: false });
+                continue;
+              }
+              const cleanWord = match[1];
+              const trailingPunct = match[2];
+              if (wordCount > 3 && wordCount % 2 === 0 && cleanWord.length >= 3) {
+                const halfLen = Math.floor(cleanWord.length / 2);
+                const prefix = cleanWord.slice(0, halfLen);
+                const missing = cleanWord.slice(halfLen);
+                passageTokens.push({
+                  text: prefix,
+                  missing: missing,
+                  blank: true,
+                  fullWord: cleanWord,
+                  suffix: trailingPunct
+                });
+              } else {
+                passageTokens.push({ text: token, blank: false });
+              }
+            }
+          }
 
-              const blankAnswers = uAnswer || {};
-              const currentInputVal = blankAnswers[i] || "";
+          return (
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 32, lineHeight: 2.2, fontSize: 18, fontWeight: 600 }}>
+              {passageTokens.map((item, i) => {
+                if (!item.blank) return <span key={i}>{item.text}</span>;
 
-              return (
-                <span key={i} style={{ display: "inline-flex", alignItems: "baseline", margin: "0 2px" }}>
-                  <span style={{ color: "var(--text)", fontWeight: 700 }}>{item.text}</span>
-                  <input
-                    type="text"
-                    maxLength={item.missing.length}
-                    value={currentInputVal}
-                    onChange={e => {
-                      const updated = { ...blankAnswers, [i]: e.target.value };
-                      handleAnswerChange(currentQ.id, updated);
-                    }}
-                    style={{
-                      width: `${Math.max(2, item.missing.length * 14)}px`,
-                      padding: "2px 6px",
-                      borderRadius: 6,
-                      border: "2px solid #10b981",
-                      background: "rgba(16,185,129,0.08)",
-                      color: "#10b981",
-                      fontWeight: 800,
-                      fontSize: 18,
-                      textAlign: "center",
-                      outline: "none",
-                      fontFamily: "inherit",
-                    }}
-                  />
-                </span>
-              );
-            })}
+                const blankAnswers = uAnswer || {};
+                const currentInputVal = blankAnswers[i] || "";
+
+                return (
+                  <span key={i} style={{ display: "inline-flex", alignItems: "center", verticalAlign: "middle", margin: "0 1px" }}>
+                    <span style={{ color: "var(--text)", fontWeight: 700 }}>{item.text}</span>
+                    <input
+                      type="text"
+                      maxLength={item.missing ? item.missing.length : 4}
+                      value={currentInputVal}
+                      onChange={e => {
+                        const updated = { ...blankAnswers, [i]: e.target.value };
+                        handleAnswerChange(currentQ.id, updated);
+                      }}
+                      style={{
+                        height: "32px",
+                        width: `${Math.max(34, (item.missing ? item.missing.length : 3) * 15 + 10)}px`,
+                        padding: "0 4px",
+                        margin: "0 2px",
+                        borderRadius: "6px",
+                        border: "2px solid #10b981",
+                        background: "#ffffff",
+                        color: "#059669",
+                        fontWeight: 800,
+                        fontSize: "16px",
+                        textAlign: "center",
+                        outline: "none",
+                        boxSizing: "border-box",
+                        display: "inline-block",
+                        verticalAlign: "middle"
+                      }}
+                    />
+                    {item.suffix && <span style={{ color: "var(--text)", fontWeight: 700 }}>{item.suffix}</span>}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })()}
+
+        {/* ── QUESTION TYPE 2: SINGLE WORD READ AND SELECT ── */}
+        {currentQ.type === "single-word-read-select" && (
+          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 40, textAlign: "center" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 16 }}>Is this a real English word?</div>
+            <div style={{ fontSize: 36, fontWeight: 900, color: "#10b981", letterSpacing: "1px", marginBottom: 32 }}>
+              {currentQ.word || "meticulous"}
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: 20 }}>
+              <button
+                onClick={() => handleAnswerChange(currentQ.id, true)}
+                style={{ background: uAnswer === true ? "#10b981" : "rgba(16,185,129,0.12)", color: uAnswer === true ? "#fff" : "#10b981", border: "2px solid #10b981", borderRadius: 16, padding: "14px 36px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}
+              >
+                ✓ YES (Real Word)
+              </button>
+              <button
+                onClick={() => handleAnswerChange(currentQ.id, false)}
+                style={{ background: uAnswer === false ? "#ef4444" : "rgba(239,68,68,0.12)", color: uAnswer === false ? "#fff" : "#ef4444", border: "2px solid #ef4444", borderRadius: 16, padding: "14px 36px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}
+              >
+                ✕ NO (Fake Word)
+              </button>
+            </div>
           </div>
         )}
 
-        {/* ── QUESTION TYPE 2: READ AND SELECT ── */}
+        {/* ── QUESTION TYPE 3: FILL IN THE BLANKS ── */}
+        {currentQ.type === "fill-in-the-blanks" && (
+          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 32, fontSize: 18, lineHeight: 1.8, textAlign: "center" }}>
+            <span>{currentQ.sentenceBefore}</span>
+            <input
+              type="text"
+              value={uAnswer || ""}
+              onChange={e => handleAnswerChange(currentQ.id, e.target.value)}
+              placeholder="type missing word..."
+              style={{ margin: "0 8px", padding: "6px 14px", borderRadius: 8, border: "2px solid #10b981", background: "rgba(16,185,129,0.08)", color: "#10b981", fontWeight: 800, fontSize: 18, outline: "none", textAlign: "center" }}
+            />
+            <span>{currentQ.sentenceAfter}</span>
+          </div>
+        )}
+
+        {/* ── QUESTION TYPE 4: READ AND SELECT ── */}
         {currentQ.type === "read-and-select" && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 14 }}>
-            {currentQ.words.map((item, idx) => {
+            {(currentQ.words || []).map((item, idx) => {
               const selectedMap = uAnswer || {};
               const isSelected = Boolean(selectedMap[item.word]);
 
@@ -441,74 +573,64 @@ export default function MockDET() {
           </div>
         )}
 
-        {/* ── QUESTION TYPE 3: LISTEN AND SELECT ── */}
-        {currentQ.type === "listen-and-select" && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
-            {currentQ.words.map((item, idx) => {
-              const selectedMap = uAnswer || {};
-              const isSelected = Boolean(selectedMap[item.word]);
+        {/* ── QUESTION TYPE 5: DICTATION ── */}
+        {(currentQ.type === "dictation" || currentQ.type === "listen-and-type") && (() => {
+          const currentCount = audioReplays[currentQ.id] || 0;
+          const replaysLeft = Math.max(0, 2 - currentCount);
+          return (
+            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 36, textAlign: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase", letterSpacing: "1px", color: "#10b981", marginBottom: 8 }}>
+                DICTATION
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 800, color: "var(--text)", margin: "0 0 24px 0" }}>
+                Listen carefully and type exactly what you hear.
+              </h3>
 
-              return (
-                <div
-                  key={idx}
+              <div style={{ marginBottom: 28 }}>
+                <button
+                  disabled={replaysLeft <= 0}
+                  onClick={() => {
+                    if (replaysLeft <= 0) {
+                      toast.error("Replay limit reached (2 max)");
+                      return;
+                    }
+                    setAudioReplays(prev => ({ ...prev, [currentQ.id]: (prev[currentQ.id] || 0) + 1 }));
+                    playAudioText(currentQ.audioText || currentQ.correctSentence || "Scientific research suggests that regular exercise improves cognitive performance.");
+                  }}
                   style={{
-                    background: isSelected ? "rgba(16,185,129,0.12)" : "var(--card)",
-                    border: isSelected ? "2px solid #10b981" : "1px solid var(--border)",
-                    borderRadius: 18,
-                    padding: 16,
-                    display: "flex",
+                    background: replaysLeft > 0 ? "linear-gradient(135deg, #10b981, #059669)" : "var(--border)",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 999,
+                    padding: "16px 36px",
+                    fontSize: 16,
+                    fontWeight: 800,
+                    cursor: replaysLeft > 0 ? "pointer" : "not-allowed",
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    gap: 10,
+                    boxShadow: replaysLeft > 0 ? "0 6px 20px rgba(16,185,129,0.3)" : "none"
                   }}
                 >
-                  <button
-                    onClick={() => playAudioText(item.audioText || item.word)}
-                    style={{ background: "rgba(37,99,235,0.12)", border: "none", borderRadius: "50%", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#2563eb" }}
-                  >
-                    <Volume2 size={20} />
-                  </button>
-
-                  <button
-                    onClick={() => handleAnswerChange(currentQ.id, { ...selectedMap, [item.word]: !isSelected })}
-                    style={{ background: "none", border: "none", fontWeight: 800, fontSize: 15, color: isSelected ? "#059669" : "var(--text)", cursor: "pointer" }}
-                  >
-                    {isSelected ? "✓ Real Word" : "Select Word"}
-                  </button>
+                  <Volume2 size={22} /> {currentCount === 0 ? "🔊 Play Audio" : replaysLeft > 0 ? "🔊 Replay Audio" : "Replay Limit Reached"}
+                </button>
+                <div style={{ marginTop: 10, fontSize: 13, color: "var(--text-secondary)", fontWeight: 700 }}>
+                  Replay: {replaysLeft} remaining
                 </div>
-              );
-            })}
-          </div>
-        )}
+              </div>
 
-        {/* ── QUESTION TYPE 4: LISTEN AND TYPE ── */}
-        {currentQ.type === "listen-and-type" && (
-          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 32, textAlign: "center" }}>
-            <button
-              onClick={() => {
-                const currentCount = audioReplays[currentQ.id] || 0;
-                if (currentCount >= (currentQ.maxReplays || 3)) {
-                  toast.error("Replay limit reached (3 max)");
-                  return;
-                }
-                setAudioReplays(prev => ({ ...prev, [currentQ.id]: currentCount + 1 }));
-                playAudioText(currentQ.audioText);
-              }}
-              style={{ background: "linear-gradient(135deg, #2563eb, #1d4ed8)", color: "#fff", border: "none", borderRadius: 999, padding: "16px 32px", fontSize: 16, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 16 }}
-            >
-              <Volume2 size={22} /> Listen Audio ({3 - (audioReplays[currentQ.id] || 0)} plays left)
-            </button>
+              <textarea
+                value={uAnswer || ""}
+                onChange={e => handleAnswerChange(currentQ.id, e.target.value)}
+                placeholder="Type the exact sentence you heard..."
+                rows={3}
+                style={{ width: "100%", borderRadius: 16, border: "2px solid #10b981", padding: 16, fontSize: 16, outline: "none", background: "var(--surface)", color: "var(--text)", resize: "vertical", boxSizing: "border-box" }}
+              />
+            </div>
+          );
+        })()}
 
-            <textarea
-              value={uAnswer || ""}
-              onChange={e => handleAnswerChange(currentQ.id, e.target.value)}
-              placeholder="Type the exact sentence you heard..."
-              rows={3}
-              style={{ width: "100%", borderRadius: 16, border: "1px solid var(--border)", padding: 16, fontSize: 16, outline: "none", background: "var(--surface)", color: "var(--text)", resize: "vertical", boxSizing: "border-box" }}
-            />
-          </div>
-        )}
-
-        {/* ── QUESTION TYPE 5: READ ALOUD ── */}
+        {/* ── QUESTION TYPE 6: READ ALOUD ── */}
         {currentQ.type === "read-aloud" && (
           <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 32, textAlign: "center" }}>
             <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", marginBottom: 28, lineHeight: 1.5 }}>
@@ -521,10 +643,18 @@ export default function MockDET() {
           </div>
         )}
 
-        {/* ── QUESTION TYPE 6: WRITE ABOUT IMAGE ── */}
-        {currentQ.type === "write-about-image" && (
+        {/* ── QUESTION TYPE 7: DESCRIBE / WRITE ABOUT IMAGE ── */}
+        {(currentQ.type === "describe-image" || currentQ.type === "write-about-image") && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, alignItems: "start" }}>
-            <img src={currentQ.imageUrl} alt={currentQ.imageAlt} style={{ width: "100%", borderRadius: 20, border: "1px solid var(--border)", objectFit: "cover", maxHeight: 320 }} />
+            <img
+              src={currentQ.imageUrl || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80";
+              }}
+              alt={currentQ.imageAlt || "DET Image"}
+              style={{ width: "100%", borderRadius: 20, border: "1px solid var(--border)", objectFit: "cover", maxHeight: 320 }}
+            />
 
             <div>
               <textarea
@@ -538,10 +668,18 @@ export default function MockDET() {
           </div>
         )}
 
-        {/* ── QUESTION TYPE 7: SPEAK ABOUT IMAGE ── */}
+        {/* ── QUESTION TYPE 8: SPEAK ABOUT IMAGE ── */}
         {currentQ.type === "speak-about-image" && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, alignItems: "center" }}>
-            <img src={currentQ.imageUrl} alt={currentQ.imageAlt} style={{ width: "100%", borderRadius: 20, border: "1px solid var(--border)", objectFit: "cover", maxHeight: 320 }} />
+            <img
+              src={currentQ.imageUrl || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80";
+              }}
+              alt={currentQ.imageAlt || "DET Image"}
+              style={{ width: "100%", borderRadius: 20, border: "1px solid var(--border)", objectFit: "cover", maxHeight: 320 }}
+            />
 
             <div style={{ textAlign: "center" }}>
               <AudioRecorder onRecordingComplete={(blob) => handleAnswerChange(currentQ.id, blob)} />
@@ -549,42 +687,65 @@ export default function MockDET() {
           </div>
         )}
 
-        {/* ── QUESTION TYPE 8: INTERACTIVE READING ── */}
+        {/* ── QUESTION TYPE 9: INTERACTIVE READING ── */}
         {currentQ.type === "interactive-reading" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-            <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24, maxHeight: 440, overflowY: "auto" }}>
-              <h4 style={{ fontSize: 16, fontWeight: 800, margin: "0 0 12px 0" }}>{currentQ.passageTitle}</h4>
-              <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>{currentQ.fullPassage}</p>
+          <InteractiveReadingRenderer
+            item={currentQ}
+            onSubmit={(ansMap, acc) => {
+              handleAnswerChange(currentQ.id, ansMap);
+              handleNextQuestion();
+            }}
+          />
+        )}
+
+        {/* ── QUESTION TYPE 10: INTERACTIVE LISTENING ── */}
+        {currentQ.type === "interactive-listening" && (
+          <InteractiveListeningRenderer
+            item={currentQ}
+            onSubmit={(ansData, acc) => {
+              handleAnswerChange(currentQ.id, ansData);
+              handleNextQuestion();
+            }}
+          />
+        )}
+
+        {/* ── QUESTION TYPE 11: INTERACTIVE WRITING ── */}
+        {currentQ.type === "interactive-writing" && (
+          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 28 }}>
+            <div style={{ fontSize: 17, fontWeight: 800, color: "var(--text)", marginBottom: 16, lineHeight: 1.5 }}>
+              {currentQ.prompt || currentQ.question}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {currentQ.tasks?.map((task, tIdx) => (
-                <div key={tIdx} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16, padding: 18 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>{tIdx + 1}. {task.question}</div>
-                  {task.options?.map((opt, oIdx) => {
-                    const taskAnsMap = uAnswer || {};
-                    const isSel = taskAnsMap[tIdx] === oIdx;
-                    return (
-                      <button
-                        key={oIdx}
-                        onClick={() => handleAnswerChange(currentQ.id, { ...taskAnsMap, [tIdx]: oIdx })}
-                        style={{ width: "100%", textAlign: "left", padding: "10px 14px", borderRadius: 10, border: isSel ? "2px solid #10b981" : "1px solid var(--border)", background: isSel ? "rgba(16,185,129,0.12)" : "var(--card)", color: isSel ? "#059669" : "var(--text)", fontWeight: 600, fontSize: 13, marginBottom: 6, cursor: "pointer" }}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
+            <textarea
+              value={uAnswer || ""}
+              onChange={e => handleAnswerChange(currentQ.id, e.target.value)}
+              placeholder="Write your interactive writing response here..."
+              rows={8}
+              style={{ width: "100%", borderRadius: 16, border: "1px solid var(--border)", padding: 16, fontSize: 15, outline: "none", background: "var(--surface)", color: "var(--text)", resize: "vertical", boxSizing: "border-box" }}
+            />
+
+            <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-secondary)", textAlign: "right", fontWeight: 700 }}>
+              Word Count: {(uAnswer || "").trim().split(/\s+/).filter(Boolean).length} words
             </div>
           </div>
         )}
 
-        {/* ── QUESTION TYPE 10: WRITING SAMPLE ── */}
+        {/* ── QUESTION TYPE 12: INTERACTIVE SPEAKING ── */}
+        {currentQ.type === "interactive-speaking" && (
+          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 32, textAlign: "center" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "var(--text)", marginBottom: 24, lineHeight: 1.5 }}>
+              "{currentQ.prompt || currentQ.question}"
+            </div>
+
+            <AudioRecorder onRecordingComplete={(blob) => handleAnswerChange(currentQ.id, blob)} />
+          </div>
+        )}
+
+        {/* ── QUESTION TYPE 13: WRITING SAMPLE ── */}
         {currentQ.type === "writing-sample" && (
           <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 28 }}>
             <div style={{ fontSize: 17, fontWeight: 800, color: "var(--text)", marginBottom: 16, lineHeight: 1.5 }}>
-              {currentQ.question}
+              {currentQ.prompt || currentQ.question}
             </div>
 
             <textarea
@@ -601,15 +762,13 @@ export default function MockDET() {
           </div>
         )}
 
-        {/* ── QUESTION TYPE 11: SPEAKING SAMPLE ── */}
+        {/* ── QUESTION TYPE 14: SPEAKING SAMPLE ── */}
         {currentQ.type === "speaking-sample" && (
           <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 24, padding: 32, textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 16 }}>Choose 1 topic to present:</div>
-            {currentQ.options?.map((opt, i) => (
-              <div key={i} style={{ padding: "12px 18px", borderRadius: 14, background: "var(--surface)", border: "1px solid var(--border)", fontSize: 15, fontWeight: 700, color: "var(--text)", marginBottom: 10, textAlign: "left" }}>
-                {opt}
-              </div>
-            ))}
+            <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 16 }}>Topic to present:</div>
+            <div style={{ padding: "14px 20px", borderRadius: 16, background: "var(--surface)", border: "1px solid var(--border)", fontSize: 16, fontWeight: 800, color: "var(--text)", marginBottom: 20, textAlign: "center" }}>
+              {currentQ.prompt || currentQ.question}
+            </div>
 
             <div style={{ marginTop: 24 }}>
               <AudioRecorder onRecordingComplete={(blob) => handleAnswerChange(currentQ.id, blob)} />

@@ -9,31 +9,34 @@ import { askGroqJSON } from "./aiService";
  * - Fluency & Pacing
  */
 export async function evaluateDETGPT({ taskType, questionPrompt, userResponse, imageUrl = null }) {
-  const textResponse = typeof userResponse === "string" ? userResponse.trim() : "Audio recording submitted.";
+  const textResponse = typeof userResponse === "string" ? userResponse.trim() : "Audio recording submitted for evaluation.";
 
-  const systemPrompt = `You are an expert official examiner for the Duolingo English Test (DET).
-Your job is to evaluate candidate responses for Speaking and Writing tasks on the official 10 to 160 DET score scale (in 5-point increments).
+  const systemPrompt = `You are an official examiner for the Duolingo English Test (DET).
+Your job is to evaluate candidate responses for Speaking and Writing tasks strictly according to official DET scoring criteria:
 
-DET Grading Criteria:
-1. Grammatical Accuracy & Complexity (Structure variety, clauses, tense accuracy)
-2. Lexical Sophistication & Diversity (Advanced academic vocabulary, collocation, range)
-3. Task Relevance & Coherence (Fulfillment of prompt, organization, cohesive devices)
-4. Fluency / Spoken & Written Pacing (Word count, continuity)
+Official DET Scoring Rubric:
+1. Grammatical Accuracy & Complexity (Sentence structure variety, clause subordination, tense control, error frequency)
+2. Lexical Sophistication & Diversity (Word choice precision, C1/C2 academic vocabulary range, natural collocations, type-token ratio)
+3. Task Relevance & Coherence (Prompt fulfillment, logical flow, paragraph organization, cohesive transitions)
+4. Fluency & Pacing (Spoken fluency, speech rate, written elaboration, word count volume)
 
-Output ONLY valid JSON with no extra text or markdown syntax:
+IMPORTANT SCORING RULE:
+All overall scores and subscores MUST be integers between 10 and 160, strictly in 5-point increments (e.g., 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160).
+
+Output ONLY valid JSON with no extra text or markdown codeblocks:
 {
   "score": 125,
   "subscores": {
     "literacy": 125,
-    "comprehension": 130,
-    "conversation": 120,
-    "production": 120
+    "comprehension": 120,
+    "conversation": 130,
+    "production": 125
   },
   "feedback": {
-    "grammaticalComplexity": "Detailed feedback on grammar and sentence structure...",
-    "lexicalSophistication": "Detailed feedback on vocabulary range and word choices...",
-    "taskRelevance": "Detailed feedback on task fulfillment...",
-    "recommendation": "Actionable advice to reach DET 130-160..."
+    "grammaticalComplexity": "Detailed analysis of grammar, syntax errors, and sentence variety...",
+    "lexicalSophistication": "Detailed analysis of vocabulary sophistication and word choice...",
+    "taskRelevance": "Analysis of how thoroughly the candidate fulfilled the task prompt...",
+    "recommendation": "Specific actionable advice to advance candidate score to the next 5-point tier..."
   }
 }`;
 
@@ -44,12 +47,29 @@ Prompt: ${questionPrompt || "Respond to the task prompt."}
 Image URL: ${imageUrl || "None"}
 Candidate Response: "${textResponse}"
 
-Calculate overall score (10-160 in steps of 5) and subscores for Literacy, Comprehension, Conversation, Production. Return valid JSON only.`;
+Compute DET overall score and subscores (10-160 in steps of 5). Return valid JSON only.`;
 
   try {
     const rawResult = await askGroqJSON(systemPrompt, userPrompt);
     const parsed = typeof rawResult === "string" ? JSON.parse(rawResult) : rawResult;
-    return parsed;
+
+    const round5 = (val) => Math.min(160, Math.max(10, Math.round((Number(val) || 100) / 5) * 5));
+
+    return {
+      score: round5(parsed.score),
+      subscores: {
+        literacy: round5(parsed.subscores?.literacy || parsed.score),
+        comprehension: round5(parsed.subscores?.comprehension || parsed.score),
+        conversation: round5(parsed.subscores?.conversation || parsed.score),
+        production: round5(parsed.subscores?.production || parsed.score),
+      },
+      feedback: parsed.feedback || {
+        grammaticalComplexity: "Demonstrates varied sentence structures with minor grammatical errors.",
+        lexicalSophistication: "Good vocabulary range with effective word choices.",
+        taskRelevance: "Response directly addresses the prompt requirements.",
+        recommendation: "Focus on expanding academic collocations to push past 130+.",
+      },
+    };
   } catch (error) {
     console.warn("Groq DET evaluation error, activating local backup evaluator:", error);
     return fallbackDETEvaluation({ taskType, userResponse: textResponse });

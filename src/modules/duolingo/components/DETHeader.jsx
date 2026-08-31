@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, X, Sparkles } from "lucide-react";
+import { Clock, X, Sparkles, AlertCircle, Maximize, Minimize } from "lucide-react";
 
 export default function DETHeader({ title = "DET Practice", timeLimit = 60, onTimeUp }) {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+    }
+  }
 
   useEffect(() => {
     setTimeLeft(timeLimit);
@@ -33,8 +43,40 @@ export default function DETHeader({ title = "DET Practice", timeLimit = 60, onTi
         background: "var(--det-surface)",
         borderBottom: "1px solid var(--det-border)",
         boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+        position: "relative",
       }}
     >
+      {/* ── SAFETY EXIT CONFIRMATION MODAL ── */}
+      {showExitModal && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "24px", padding: "32px", maxWidth: "460px", width: "100%", boxShadow: "0 20px 50px rgba(0,0,0,0.25)", textAlign: "center" }}>
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#fef2f2", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", color: "#ef4444" }}>
+              <AlertCircle size={32} />
+            </div>
+            <h2 style={{ fontSize: "22px", fontWeight: 800, margin: "0 0 12px 0", color: "#0f172a" }}>
+              Exit Duolingo English Test?
+            </h2>
+            <p style={{ fontSize: "14px", color: "#64748b", margin: "0 0 24px 0", lineHeight: 1.6 }}>
+              Are you sure you want to leave the test? Your responses so far will not be saved.
+            </p>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                onClick={() => setShowExitModal(false)}
+                style={{ flex: 1, background: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", borderRadius: 12, padding: "12px", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+              >
+                Resume Test
+              </button>
+              <button
+                onClick={() => navigate("/duolingo")}
+                style={{ flex: 1, background: "#58cc02", color: "#ffffff", border: "none", borderRadius: 12, padding: "12px", fontWeight: 800, fontSize: 14, cursor: "pointer", boxShadow: "0 4px 14px rgba(88,204,2,0.4)" }}
+              >
+                Exit to DET Hub
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <div
           style={{
@@ -57,12 +99,12 @@ export default function DETHeader({ title = "DET Practice", timeLimit = 60, onTi
             {title}
           </h2>
           <span style={{ fontSize: "12px", color: "var(--det-text-muted)", fontWeight: "600" }}>
-            Knarrow Practice Estimate
+            Duolingo Official Adaptive Test Simulation
           </span>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
         <div
           style={{
             display: "flex",
@@ -81,21 +123,44 @@ export default function DETHeader({ title = "DET Practice", timeLimit = 60, onTi
         </div>
 
         <button
-          onClick={() => navigate("/duolingo")}
+          onClick={toggleFullscreen}
+          title="Toggle Fullscreen Mode"
           style={{
-            background: "transparent",
-            border: "none",
-            color: "var(--det-text-muted)",
+            background: "var(--det-surface-2)",
+            border: "1px solid var(--det-border)",
+            color: "var(--det-text)",
             cursor: "pointer",
-            padding: "8px",
-            borderRadius: "50%",
+            padding: "8px 12px",
+            borderRadius: "12px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            gap: "6px",
+            fontSize: "13px",
+            fontWeight: "700",
+          }}
+        >
+          {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+          <span>{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
+        </button>
+
+        <button
+          onClick={() => setShowExitModal(true)}
+          style={{
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            color: "#ef4444",
+            cursor: "pointer",
+            padding: "8px 14px",
+            borderRadius: "12px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontWeight: "800",
+            fontSize: "13px",
           }}
           title="Exit Practice"
         >
-          <X size={20} />
+          <X size={18} /> Exit
         </button>
       </div>
     </div>

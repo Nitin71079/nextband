@@ -351,7 +351,8 @@ export const detItemBank = [
   // ── 5. LISTEN AND TYPE (5 Items) ─────────────────────────────────────────
   {
     id: "lt-001",
-    type: "listen-and-type",
+    type: "dictation",
+    title: "Dictation",
     skill: "comprehension",
     subscores: ["Comprehension", "Conversation"],
     difficulty: "medium",
@@ -360,11 +361,12 @@ export const detItemBank = [
     maxReplays: 2,
     audioUrl: "/audio/det/lt-001.mp3",
     audioText: "Scientific research suggests that regular exercise improves cognitive performance.",
-    prompt: "Type the statement that you hear."
+    prompt: "Listen carefully and type exactly what you hear."
   },
   {
     id: "lt-002",
-    type: "listen-and-type",
+    type: "dictation",
+    title: "Dictation",
     skill: "comprehension",
     subscores: ["Comprehension", "Conversation"],
     difficulty: "high",
@@ -373,11 +375,12 @@ export const detItemBank = [
     maxReplays: 2,
     audioUrl: "/audio/det/lt-002.mp3",
     audioText: "The international conference on climate change will take place next month.",
-    prompt: "Type the statement that you hear."
+    prompt: "Listen carefully and type exactly what you hear."
   },
   {
     id: "lt-003",
-    type: "listen-and-type",
+    type: "dictation",
+    title: "Dictation",
     skill: "comprehension",
     subscores: ["Comprehension", "Conversation"],
     difficulty: "medium",
@@ -385,11 +388,12 @@ export const detItemBank = [
     timeLimit: 60,
     maxReplays: 2,
     audioText: "Students are encouraged to submit their research proposals before the deadline.",
-    prompt: "Type the statement that you hear."
+    prompt: "Listen carefully and type exactly what you hear."
   },
   {
     id: "lt-004",
-    type: "listen-and-type",
+    type: "dictation",
+    title: "Dictation",
     skill: "comprehension",
     subscores: ["Comprehension", "Conversation"],
     difficulty: "high",
@@ -397,11 +401,12 @@ export const detItemBank = [
     timeLimit: 60,
     maxReplays: 2,
     audioText: "Technological innovation has substantially transformed traditional educational methodologies.",
-    prompt: "Type the statement that you hear."
+    prompt: "Listen carefully and type exactly what you hear."
   },
   {
     id: "lt-005",
-    type: "listen-and-type",
+    type: "dictation",
+    title: "Dictation",
     skill: "comprehension",
     subscores: ["Comprehension", "Conversation"],
     difficulty: "high",
@@ -409,7 +414,7 @@ export const detItemBank = [
     timeLimit: 60,
     maxReplays: 2,
     audioText: "Environmental sustainability requires comprehensive international policy collaboration.",
-    prompt: "Type the statement that you hear."
+    prompt: "Listen carefully and type exactly what you hear."
   },
 
   // ── 6. READ ALOUD (5 Items) ──────────────────────────────────────────────

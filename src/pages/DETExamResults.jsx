@@ -73,13 +73,8 @@ export default function DETExamResults() {
 
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
               <div style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(10px)", padding: "14px 20px", borderRadius: 18, textAlign: "center" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.8, textTransform: "uppercase" }}>IELTS EQUIVALENT</div>
-                <div style={{ fontSize: 22, fontWeight: 900, marginTop: 2 }}>Band {ieltsVal}</div>
-              </div>
-
-              <div style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(10px)", padding: "14px 20px", borderRadius: 18, textAlign: "center" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.8, textTransform: "uppercase" }}>TOEFL iBT</div>
-                <div style={{ fontSize: 20, fontWeight: 900, marginTop: 4 }}>{toeflVal}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, opacity: 0.8, textTransform: "uppercase" }}>DET SCORE TIER</div>
+                <div style={{ fontSize: 20, fontWeight: 900, marginTop: 4 }}>{score >= 120 ? "Advanced Academic" : "Intermediate"}</div>
               </div>
 
               <div style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(10px)", padding: "14px 20px", borderRadius: 18, textAlign: "center" }}>

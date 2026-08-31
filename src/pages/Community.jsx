@@ -4,9 +4,11 @@ import {
 } from "firebase/firestore";
 import { app } from "../firebase";
 import { useAuth } from "../context/AuthContext";
+import { useExam } from "../context/ExamContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, Send, MessageSquare, Clock, Sparkles, TrendingUp } from "lucide-react";
 import aiService from "../services/aiService";
+import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 const T = {
@@ -62,9 +64,10 @@ function PostCard({ p, idx }) {
 }
 
 export default function Community() {
+  const { activeTrack } = useExam();
   const { user, loading: authLoading } = useAuth();
-  const [post, setPost] = useState("");
   const [posts, setPosts] = useState([]);
+  const [post, setPost] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   // AI tip
@@ -117,7 +120,7 @@ export default function Community() {
     setAiTip(""); setTipStreaming(true);
     try {
       await aiService.stream({
-        systemPrompt: "You are an expert IELTS coach. Give concise, practical, encouraging advice. Use bullet points. Keep it under 150 words.",
+        systemPrompt: `You are an expert ${activeTrack} coach. Give concise, practical, encouraging advice. Use bullet points. Keep it under 150 words.`,
         messages: [{ role: "user", content: tipPrompt }],
         onToken: (_, full) => setAiTip(full),
       });
@@ -125,20 +128,24 @@ export default function Community() {
     finally { setTipStreaming(false); }
   }
 
+  const trackTitle = activeTrack === "DET" ? "DET Learners" : activeTrack === "TOEFL" ? "TOEFL Aspirants" : "IELTS Learners";
+
   return (
     <div style={{ minHeight: "100vh", background: "radial-gradient(circle at 20% 10%, rgba(99,102,241,.18), transparent 40%), radial-gradient(circle at 80% 90%, rgba(59,130,246,.15), transparent 40%), var(--bg)", fontFamily: "Inter, sans-serif" }}>
       <div style={{ position: "fixed", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg,rgba(255,255,255,.04) 1px, transparent 1px)", backgroundSize: "40px 40px", opacity: .4, pointerEvents: "none", zIndex: 0 }} />
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "72px 24px 60px", position: "relative", zIndex: 1 }}>
 
+        <ExamTrackHeaderSwitcher />
+
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55 }} style={{ marginBottom: "44px" }}>
           <span style={T.badge}><Users size={13} color="#4f46e5" />COMMUNITY</span>
           <h1 style={{ fontSize: "clamp(1.9rem,4vw,2.8rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-1px", color: "var(--text)", margin: "14px 0 8px" }}>
-            Connect With <span style={T.gradientText}>IELTS Learners</span>
+            Connect With <span style={T.gradientText}>{trackTitle}</span>
           </h1>
           <p style={{ color: "var(--text-secondary)", fontSize: ".97rem", lineHeight: 1.8, maxWidth: "500px" }}>
-            Share tips, ask questions, and grow together with thousands of aspirants.
+            Share tips, ask questions, and grow together with thousands of {activeTrack} aspirants.
           </p>
         </motion.div>
 

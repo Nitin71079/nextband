@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* Light Theme & Core Layout */
+
 /* ===========================================================
    LIGHT THEME
 =========================================================== */
@@ -428,9 +430,134 @@ button:hover{
 }
 
 .card{
-
     border-radius:18px;
-
 }
 
 }
+
+/* ===========================================================
+   GLOSSY GLASSMORPHISM DESIGN SYSTEM (APP-WIDE TEMPLATES)
+=========================================================== */
+
+/* Glossy Glass Card Template */
+.glossy-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 24px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.glossy-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 40% !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%) !important;
+  pointer-events: none !important;
+  border-top-left-radius: inherit !important;
+  border-top-right-radius: inherit !important;
+}
+
+.glossy-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 
+    0 28px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 0 30px rgba(96, 165, 250, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Glossy Neon Button Template */
+.glossy-btn {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 
+    0 8px 25px rgba(37, 99, 235, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-radius: 16px !important;
+  padding: 14px 28px !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.glossy-btn:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 
+    0 12px 35px rgba(37, 99, 235, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  filter: brightness(1.1) !important;
+}
+
+/* Glossy Purple/Violet Variant */
+.glossy-btn-purple {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
+  box-shadow: 
+    0 8px 25px rgba(139, 92, 246, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Glossy Amber/Gold Variant */
+.glossy-btn-gold {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(135deg, #f59e0b 0%, #b45309 100%) !important;
+  box-shadow: 
+    0 8px 25px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Glossy Emerald Variant */
+.glossy-btn-emerald {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+  box-shadow: 
+    0 8px 25px rgba(16, 185, 129, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Glossy Badge Template */
+.glossy-badge {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  padding: 6px 16px !important;
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* Glossy Metric Display Box */
+.glossy-stat-box {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  border-radius: 18px !important;
+  padding: 16px 20px !important;
+  transition: all 0.2s ease !important;
+}
+
+.glossy-stat-box:hover {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%) !important;
+}

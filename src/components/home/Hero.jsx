@@ -56,7 +56,7 @@ export default function Hero() {
           </motion.p>
 
           <motion.div className="hero-buttons" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
-            <Link to={user ? (activeTrack === "DET" ? "/duolingo" : "/dashboard") : "/register"}>
+            <Link to={user ? (activeTrack === "DET" ? "/duolingo" : (activeTrack === "TOEFL" ? "/toefl" : (activeTrack === "PTE" ? "/pte" : (activeTrack === "GRE" ? "/gre" : (activeTrack === "CAT" ? "/cat" : (activeTrack === "ACT" ? "/act" : (activeTrack === "SAT" ? "/sat" : (activeTrack === "GMAT" ? "/gmat" : "/dashboard")))))))) : "/register"}>
               <motion.button className="hero-primary-btn" whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}>
                 <Zap size={18} />
                 {user ? `Enter ${activeTrack} Prep` : "Start Free Practice"}
