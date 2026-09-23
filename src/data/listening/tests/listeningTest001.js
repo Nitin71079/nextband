@@ -282,16 +282,14 @@ const listeningTest001 = {
 }, // closes MCQ group
 
 {
-  id: "section2_map",
+  id: "section2_matching",
 
-  type: "map",
+  type: "matching",
 
   title: "Questions 16–20",
 
   instruction:
-    "Label the map below.\nChoose FIVE answers from the box and write the correct letter, A–F, next to Questions 16–20.",
-
-  image: "/images/listening/test001-map.svg",
+    "Match each facility below with the correct location (A–F).\nChoose FIVE answers from the box and write the correct letter, A–F, next to Questions 16–20.",
 
   options: [
     {
@@ -323,26 +321,31 @@ const listeningTest001 = {
   questions: [
     {
       id: 16,
+      item: "Information Point",
       label: "Information Point",
       answer: "B"
     },
     {
       id: 17,
+      item: "Formal Garden",
       label: "Formal Garden",
       answer: "D"
     },
     {
       id: 18,
+      item: "Children's Activity Area",
       label: "Children's Activity Area",
       answer: "C"
     },
     {
       id: 19,
+      item: "Lakeside Building",
       label: "Lakeside Building",
       answer: "E"
     },
     {
       id: 20,
+      item: "Outdoor Eating Area",
       label: "Outdoor Eating Area",
       answer: "F"
     }

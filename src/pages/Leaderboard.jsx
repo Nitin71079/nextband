@@ -4,7 +4,6 @@ import { app } from "../firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Star, Users, TrendingUp, Medal, Crown, Clock, Gamepad2, Swords } from "lucide-react";
 import { useExam } from "../context/ExamContext";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const T = {
@@ -264,8 +263,6 @@ export default function Leaderboard() {
       }} />
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "72px 24px 60px", position: "relative", zIndex: 1 }}>
-
-        <ExamTrackHeaderSwitcher />
 
         {/* Hero */}
         <motion.div

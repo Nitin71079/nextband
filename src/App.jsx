@@ -58,6 +58,7 @@ const MySessions =
       "./pages/MySessions"
     )
   );
+
 const Home = lazy(() => import("./pages/Home"));
 const TOEFLCenter = lazy(() => import("./pages/TOEFLCenter"));
 const TOEFLTestEnginePage = lazy(() => import("./pages/TOEFLTestEnginePage"));
@@ -80,6 +81,31 @@ const SATResultsPage = lazy(() => import("./pages/SATResultsPage"));
 const GMATCenter = lazy(() => import("./pages/GMATCenter"));
 const GMATTestEnginePage = lazy(() => import("./pages/GMATTestEnginePage"));
 const GMATResultsPage = lazy(() => import("./pages/GMATResultsPage"));
+
+const GATECenter = lazy(() => import("./pages/GATECenter"));
+const GATEInstructionsPage = lazy(() => import("./pages/GATEInstructionsPage"));
+const GATETestEnginePage = lazy(() => import("./pages/GATETestEnginePage"));
+const GATEResultsPage = lazy(() => import("./pages/GATEResultsPage"));
+const GATENotesPage = lazy(() => import("./pages/GATENotesPage"));
+
+const JEECenter = lazy(() => import("./pages/JEECenter"));
+const JEEInstructionsPage = lazy(() => import("./pages/JEEInstructionsPage"));
+const JEETestEnginePage = lazy(() => import("./pages/JEETestEnginePage"));
+const JEEResultsPage = lazy(() => import("./pages/JEEResultsPage"));
+const JEENotesPage = lazy(() => import("./pages/JEENotesPage"));
+
+const NEETCenter = lazy(() => import("./pages/NEETCenter"));
+const NEETInstructionsPage = lazy(() => import("./pages/NEETInstructionsPage"));
+const NEETTestEnginePage = lazy(() => import("./pages/NEETTestEnginePage"));
+const NEETResultsPage = lazy(() => import("./pages/NEETResultsPage"));
+const NEETNotesPage = lazy(() => import("./pages/NEETNotesPage"));
+
+const CLATCenter = lazy(() => import("./pages/CLATCenter"));
+const CLATInstructionsPage = lazy(() => import("./pages/CLATInstructionsPage"));
+const CLATTestEnginePage = lazy(() => import("./pages/CLATTestEnginePage"));
+const CLATResultsPage = lazy(() => import("./pages/CLATResultsPage"));
+const CLATNotesPage = lazy(() => import("./pages/CLATNotesPage"));
+
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -105,6 +131,11 @@ const SentenceFixer = lazy(() => import("./pages/SentenceFixer"));
 const BandBlitz = lazy(() => import("./pages/BandBlitz"));
 const SynonymSprint = lazy(() => import("./pages/SynonymSprint"));
 const GrammarGladiator = lazy(() => import("./pages/GrammarGladiator"));
+const MathMatrix = lazy(() => import("./pages/MathMatrix"));
+const AptitudeArena = lazy(() => import("./pages/AptitudeArena"));
+const IdiomMaster = lazy(() => import("./pages/IdiomMaster"));
+const SpeedMathClash = lazy(() => import("./pages/SpeedMathClash"));
+const DataInterpretation = lazy(() => import("./pages/DataInterpretation"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -112,6 +143,7 @@ const Success = lazy(() => import("./pages/Success"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const MonitorPanel = lazy(() => import("./pages/MonitorPanel"));
+const ExamQualityCenter = lazy(() => import("./pages/ExamQualityCenter"));
 
 const DETDashboard = lazy(() => import("./modules/duolingo/pages/DETDashboard"));
 const DETPracticeCenter = lazy(() => import("./modules/duolingo/pages/DETPracticeCenter"));
@@ -125,8 +157,7 @@ const DETExamResults = lazy(() => import("./pages/DETExamResults"));
 function App() {
   const location = useLocation();
   const isExamPage =
-    location.pathname.startsWith("/toefl/test/") ||
-    location.pathname.startsWith("/duolingo/test/") ||
+    location.pathname.includes("/test/") ||
     location.pathname.startsWith("/mock/");
 
   return (
@@ -170,13 +201,8 @@ function App() {
     </PrivateRoute>
   }
 />
-<Route
-
-path="/admin/content"
-
-element={<AdminContent/>}
-
-/>
+<Route path="/admin/content" element={<AdminContent/>} />
+<Route path="/admin/quality" element={<AdminRoute><ExamQualityCenter /></AdminRoute>} />
 <Route
   path="/admin/tests/:type"
   element={<AdminTests />}
@@ -500,6 +526,11 @@ element={<ExamHistory/>}
 />
 
 <Route
+  path="/ai-assistant"
+  element={<AIAssistant />}
+/>
+
+<Route
   path="/games"
   element={
     <PrivateRoute>
@@ -599,6 +630,51 @@ element={<ExamHistory/>}
 />
 
 <Route
+  path="/games/math-matrix"
+  element={
+    <PrivateRoute>
+      <MathMatrix />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/aptitude-arena"
+  element={
+    <PrivateRoute>
+      <AptitudeArena />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/idiom-master"
+  element={
+    <PrivateRoute>
+      <IdiomMaster />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/speed-math-clash"
+  element={
+    <PrivateRoute>
+      <SpeedMathClash />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/games/data-interpretation"
+  element={
+    <PrivateRoute>
+      <DataInterpretation />
+    </PrivateRoute>
+  }
+/>
+
+<Route
   path="/audio-generator"
   element={
     <PrivateRoute>
@@ -647,6 +723,30 @@ element={<ExamHistory/>}
           <Route path="/gmat" element={<GMATCenter />} />
           <Route path="/gmat/test/:testId" element={<GMATTestEnginePage />} />
           <Route path="/gmat/results/:resultId" element={<GMATResultsPage />} />
+
+          <Route path="/gate" element={<GATECenter />} />
+          <Route path="/gate/instructions/:testId" element={<GATEInstructionsPage />} />
+          <Route path="/gate/test/:testId" element={<GATETestEnginePage />} />
+          <Route path="/gate/results/:resultId" element={<GATEResultsPage />} />
+          <Route path="/gate/notes" element={<GATENotesPage />} />
+
+          <Route path="/jee" element={<JEECenter />} />
+          <Route path="/jee/instructions/:testId" element={<JEEInstructionsPage />} />
+          <Route path="/jee/test/:testId" element={<JEETestEnginePage />} />
+          <Route path="/jee/results/:resultId" element={<JEEResultsPage />} />
+          <Route path="/jee/notes" element={<JEENotesPage />} />
+
+          <Route path="/neet" element={<NEETCenter />} />
+          <Route path="/neet/instructions/:testId" element={<NEETInstructionsPage />} />
+          <Route path="/neet/test/:testId" element={<NEETTestEnginePage />} />
+          <Route path="/neet/results/:attemptId" element={<NEETResultsPage />} />
+          <Route path="/neet/notes" element={<NEETNotesPage />} />
+
+          <Route path="/clat" element={<CLATCenter />} />
+          <Route path="/clat/instructions/:testId" element={<CLATInstructionsPage />} />
+          <Route path="/clat/test/:testId" element={<CLATTestEnginePage />} />
+          <Route path="/clat/results/:resultId" element={<CLATResultsPage />} />
+          <Route path="/clat/notes" element={<CLATNotesPage />} />
 
           <Route path="/help" element={<HelpCenter />} />
 

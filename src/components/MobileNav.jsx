@@ -27,7 +27,6 @@ export default function MobileNav() {
 
   const navItems = [
     { to: "/",                   label: "Home",      Icon: Home },
-    { to: getExamHubPath(),       label: "Exam Hub",  Icon: LayoutDashboard },
     { to: "/insights",           label: "Analytics", Icon: BrainCircuit },
     { to: "/planner",            label: "Planner",   Icon: CalendarDays },
     { to: "/community",          label: "Community", Icon: Users },

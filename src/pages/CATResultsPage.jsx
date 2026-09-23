@@ -82,10 +82,10 @@ export default function CATResultsPage() {
         {/* ── HEADER BADGE ── */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <span style={{ background: "rgba(236,72,153,0.15)", color: "#f472b6", border: "1px solid rgba(244,114,182,0.3)", padding: "6px 18px", borderRadius: 999, fontSize: 12, fontWeight: 800 }}>
-            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> OFFICIAL CAT 2026 SCORE REPORT &amp; PERCENTILE DIAGNOSTIC
+            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> CAT GENERAL TEST PRACTICE RESULTS
           </span>
           <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, margin: "16px 0 8px 0" }}>
-            Your CAT Examination Results
+            Your CAT Practice Results
           </h1>
           <p style={{ color: "#94a3b8", fontSize: 15 }}>Test Date: {new Date(result.date || Date.now()).toLocaleDateString()}</p>
         </div>
@@ -102,7 +102,7 @@ export default function CATResultsPage() {
             Total Raw Score: <strong>{totalRaw} / 204</strong> · Estimated Scaled Score: <strong>{totalScaled}</strong>
           </div>
           <div style={{ fontSize: 12, color: "#fbcfe8", opacity: 0.8, marginTop: 12 }}>
-            *Note: Percentile rank is an estimated prediction based on historical CAT performance distributions.
+            *Disclaimer: This is a Knarrow practice estimate and is not an official CAT/IIM score or percentile.
           </div>
         </div>
 

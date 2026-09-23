@@ -181,14 +181,13 @@ const listeningTest003 = {
         },
 
         {
-          id: "section2_map",
-          type: "map",
+          id: "section2_matching",
+          type: "matching",
           title: "Questions 16–20",
           instruction:
-            "Label the map of Greenvale Nature Reserve below.\n" +
+            "Match each reserve feature below with the correct location (A–H).\n" +
             "Choose FIVE answers from the box and write the correct letter, A–H, " +
             "next to Questions 16–20.",
-          image: "/images/listening/test003-map.svg",
           options: [
             { letter: "A", text: "Bird Hide"          },
             { letter: "B", text: "Car Park"           },
@@ -202,26 +201,31 @@ const listeningTest003 = {
           questions: [
             {
               id: 16,
+              item: "Entrance and reception point",
               label: "Entrance and reception point",
               answer: "G"
             },
             {
               id: 17,
+              item: "Building used for school visits and workshops",
               label: "Building used for school visits and workshops",
               answer: "C"
             },
             {
               id: 18,
+              item: "Structure overlooking the wetland area",
               label: "Structure overlooking the wetland area",
               answer: "A"
             },
             {
               id: 19,
+              item: "Area closed to visitors this month",
               label: "Area closed to visitors this month",
               answer: "D"
             },
             {
               id: 20,
+              item: "Recommended spot for early-morning otter watching",
               label: "Recommended spot for early-morning otter watching",
               answer: "F"
             }

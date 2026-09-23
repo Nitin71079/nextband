@@ -3,7 +3,7 @@
  * Aligned with Official IIM CAT Specifications (+3 / -1 for MCQ, +3 / 0 for TITA)
  */
 
-import { getCATConfig } from "../config/catConfig";
+import { getCATConfig } from "../config/catConfig.js";
 
 /**
  * Scores an individual CAT Question deterministically

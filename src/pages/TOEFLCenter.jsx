@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { toeflTests } from "../data/toefl/toeflTests";
 import { toeflToIelts, toeflToCEFR, toeflToOldScale } from "../utils/toeflScoreCalculator";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 import FloatingDanglerPill from "../components/FloatingDanglerPill";
 
 export default function TOEFLCenter() {
@@ -60,50 +59,50 @@ export default function TOEFLCenter() {
   const sections = [
     {
       title: "📖 Reading Section",
-      time: "30–35 min",
-      items: "Stage 1 Router + Stage 2 Adaptive",
-      adaptive: "✅ Multistage Adaptive",
+      time: "Approx. 30 min",
+      items: "50 Items Total (Router + Stage 2)",
+      adaptive: "✅ Adaptive Reading",
       color: "#38bdf8",
       tasks: [
-        "Complete the Words (C-Test 80–120 words with 8–10 blanks)",
+        "Complete the Words (Router Module only)",
         "Read in Daily Life (Campus notices, emails & bulletins)",
         "Read an Academic Passage (150–250 word authentic texts)"
       ]
     },
     {
       title: "🎧 Listening Section",
-      time: "29–36 min",
-      items: "Stage 1 Router + Stage 2 Adaptive",
-      adaptive: "✅ Multistage Adaptive",
+      time: "Approx. 29 min",
+      items: "47 Items Total (Router + Stage 2)",
+      adaptive: "✅ Adaptive Listening",
       color: "#c084fc",
       tasks: [
-        "Listen and Choose a Response (Short campus queries)",
-        "Listen to a Conversation (Student & Professor dialogues)",
-        "Adaptive Stage 2 Lectures & Campus Talk snippets"
+        "Listen and Choose a Response (Short campus prompts)",
+        "Listen to a Conversation (Student & Advisor dialogues)",
+        "Listen to an Announcement & Academic Talks"
       ]
     },
     {
       title: "✍️ Writing Section",
-      time: "23–29 min",
-      items: "12 Items (Build Sentence + Email + Discussion)",
-      adaptive: "⚡ Groq AI Evaluated",
+      time: "Approx. 23 min",
+      items: "12 Tasks (Linear)",
+      adaptive: "⚡ Automated Scoring",
       color: "#f59e0b",
       tasks: [
-        "Build a Sentence (10 syntax & word ordering items)",
-        "Write an Email (Realistic campus situation, 50+ words)",
+        "Build a Sentence (10 syntax & clause ordering items)",
+        "Write an Email (Realistic campus communication)",
         "Write for an Academic Discussion (Forum post, 100+ words)"
       ]
     },
     {
       title: "🎙️ Speaking Section",
-      time: "8–16 min",
-      items: "11 Tasks (7 Repeat + 4 Interview)",
-      adaptive: "⚡ Groq AI Evaluated",
+      time: "Approx. 8 min",
+      items: "11 Tasks (Linear)",
+      adaptive: "⚡ Automated Scoring",
       color: "#4ade80",
       tasks: [
-        "Listen & Repeat (7 read-aloud sentence repetition tasks)",
-        "Take an Interview (4 independent speaking questions)",
-        "Real-Time Speech-to-Text + Llama 3.3 Groq Scoring"
+        "Listen and Repeat (7 sentence repetition tasks, text hidden)",
+        "Take an Interview (4 progressive speaking questions)",
+        "Real-Time Audio Recording + Automated Rubric Evaluation"
       ]
     }
   ];
@@ -112,9 +111,6 @@ export default function TOEFLCenter() {
     <div style={{ minHeight: "100vh", background: "radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%)", color: "#ffffff", fontFamily: "Inter, sans-serif", padding: "40px 24px 80px" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         
-        {/* ── EXAM TRACK SWITCHER ── */}
-        <ExamTrackHeaderSwitcher />
-
         {/* ── HERO BANNER ── */}
         <div style={{ marginBottom: "48px", position: "relative" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 32, alignItems: "center", marginBottom: 36 }}>
@@ -124,11 +120,11 @@ export default function TOEFLCenter() {
               transition={{ duration: 0.5 }}
             >
               <span style={{ background: "rgba(139,92,246,0.2)", color: "#c084fc", border: "1px solid rgba(192,132,252,0.3)", padding: "6px 20px", borderRadius: "999px", fontSize: "13px", fontWeight: "800", letterSpacing: "0.5px", boxShadow: "0 0 20px rgba(168,85,247,0.2)", display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                <Sparkles size={15} color="#c084fc" /> OFFICIAL 2026 TOEFL iBT 100-MOCK SUITE (1.0 – 6.0 SCALE)
+                <Sparkles size={15} color="#c084fc" /> 🎓 IELTS Academic &amp; TOEFL iBT 2026 100-MOCK SUITE (1.0 – 6.0 SCALE)
               </span>
 
               <h1 style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)", fontWeight: 900, margin: "20px 0 16px", letterSpacing: "-1.5px", background: "linear-gradient(135deg, #ffffff 30%, #c084fc 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                TOEFL iBT 2026 Adaptive Practice &amp; AI Hub
+                🎓 IELTS Academic &amp; TOEFL iBT 2026 Practice &amp; AI Hub
               </h1>
               <p style={{ color: "#94a3b8", fontSize: "1.15rem", margin: "0 0 28px", lineHeight: "1.6" }}>
                 Master all <strong>100 Full Practice Tests</strong> built to official 2026 ETS Multistage Adaptive specifications—featuring <strong>150–250 word Academic Passages</strong>, <strong>Complete the Words</strong>, <strong>Build a Sentence</strong>, <strong>Listen &amp; Repeat</strong>, and live <strong>Groq AI Llama 3.3</strong> rubric evaluations.
@@ -263,7 +259,7 @@ export default function TOEFLCenter() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <Layers size={24} color="#c084fc" />
                 <h2 style={{ fontSize: 24, fontWeight: 900, margin: 0, color: "#ffffff" }}>
-                  100 Official TOEFL iBT Full Mocks
+                  100 TOEFL iBT 2026 Full Practice Mocks
                 </h2>
               </div>
               <p style={{ fontSize: 14, color: "#94a3b8", margin: "4px 0 0 0" }}>
@@ -536,7 +532,7 @@ export default function TOEFLCenter() {
               <div style={{ fontSize: 22, fontWeight: 900, color: "#4ade80", marginTop: 6 }}>Band {ieltsEquiv}</div>
             </div>
             <div style={{ background: "rgba(15,23,42,0.7)", padding: 20, borderRadius: 18, border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", fontWeight: 800 }}>Legacy 0–120 Scale</div>
+              <div style={{ fontSize: 12, color: "#94a3b8", textTransform: "uppercase", fontWeight: 800 }}>Comparable 0–120 Score</div>
               <div style={{ fontSize: 22, fontWeight: 900, color: "#facc15", marginTop: 6 }}>{oldScaleEquiv} / 120</div>
             </div>
           </div>

@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Swords, Lock, Gamepad2, Zap, Trophy, Users, Sparkles, Layers, Volume2, Crown } from "lucide-react";
 import { useExam } from "../context/ExamContext";
 import { isGameUnlocked } from "../utils/planAccess";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 const games = [
   {
@@ -146,6 +145,76 @@ const games = [
     tags: ["Multiplayer", "Grammar", "Real-time"],
     color: "#f43f5e",
   },
+  {
+    id: "math-matrix",
+    icon: "🧮",
+    title: "Math Matrix Blitz",
+    subtitle: "Quantitative Speed Race",
+    description:
+      "60-second rapid-fire math & numerical aptitude challenge. Master percentages, algebra, geometry, and mental math shortcuts with streak multipliers.",
+    badge: "HOT",
+    badgeColor: "#06b6d4",
+    available: true,
+    path: "/games/math-matrix",
+    tags: ["Math", "Quantitative", "Speed", "Aptitude"],
+    color: "#06b6d4",
+  },
+  {
+    id: "aptitude-arena",
+    icon: "🧠",
+    title: "Logical Aptitude Arena",
+    subtitle: "Reasoning & Puzzles",
+    description:
+      "Solve number series, blood relations, spatial logic, and syllogism puzzles against the clock. Boost your analytical thinking for SAT, GRE, GMAT, and CAT.",
+    badge: "HOT",
+    badgeColor: "#8b5cf6",
+    available: true,
+    path: "/games/aptitude-arena",
+    tags: ["Logic", "Reasoning", "Aptitude", "Puzzles"],
+    color: "#8b5cf6",
+  },
+  {
+    id: "idiom-master",
+    icon: "🧩",
+    title: "Idiom & Paraphrase Master",
+    subtitle: "Lexical & Expression Sprint",
+    description:
+      "Master high-level academic idioms, collocations, phrasal verbs, and Band 8+ essay paraphrasing under the timer with instant examiner tips.",
+    badge: "NEW",
+    badgeColor: "#f59e0b",
+    available: true,
+    path: "/games/idiom-master",
+    tags: ["English", "Vocabulary", "Idioms", "Phrases"],
+    color: "#f59e0b",
+  },
+  {
+    id: "speed-math-clash",
+    icon: "⚡🧮",
+    title: "Speed Math Clash",
+    subtitle: "45s Rapid-Fire Time Attack",
+    description:
+      "Time-attack mental arithmetic & algebra clash! Correct answers add +3s to the clock while wrong answers deduct 2s. Build massive speed streaks!",
+    badge: "NEW",
+    badgeColor: "#10b981",
+    available: true,
+    path: "/games/speed-math-clash",
+    tags: ["Math", "Speed", "Time Attack", "Mental Math"],
+    color: "#10b981",
+  },
+  {
+    id: "data-interpretation",
+    icon: "📊",
+    title: "Data & Chart Analysis",
+    subtitle: "Graph & Table Duel",
+    description:
+      "Rapid-fire chart, graph, and table analysis! Interpret pie charts, line trends, and data tables under time pressure with instant solution steps.",
+    badge: "NEW",
+    badgeColor: "#3b82f6",
+    available: true,
+    path: "/games/data-interpretation",
+    tags: ["Data", "Graphs", "Charts", "Analysis"],
+    color: "#3b82f6",
+  },
 ];
 
 export default function GamesZone() {
@@ -205,8 +274,6 @@ export default function GamesZone() {
       />
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-
-        <ExamTrackHeaderSwitcher />
 
         {/* Header */}
         <motion.div
@@ -341,12 +408,12 @@ export default function GamesZone() {
           </div>
         )}
 
-        {/* Games grid */}
+        {/* Games grid (5x3 Layout - 5 Columns x 3 Rows = 15 Total Arcade Games) */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "24px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "20px",
           }}
         >
           {games.map((game, i) => {

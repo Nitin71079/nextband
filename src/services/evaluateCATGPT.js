@@ -65,7 +65,7 @@ Provide a comprehensive AI Evaluation Report formatted strictly as valid JSON wi
 
   try {
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "groq/compound-mini",
       messages: [
         { role: "system", content: "You are an expert CAT Assessment Director. Respond strictly in valid JSON format." },
         { role: "user", content: prompt }

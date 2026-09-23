@@ -112,7 +112,7 @@ export async function evaluateEssay({
     evaluation,
 
     aiModel:
-      "llama-3.3-70b-versatile",
+      "groq/compound-mini",
 
     promptVersion: "v1",
 

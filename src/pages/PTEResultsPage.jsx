@@ -52,10 +52,10 @@ export default function PTEResultsPage() {
         {/* ── HEADER BADGE ── */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <span style={{ background: "rgba(16,185,129,0.15)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)", padding: "6px 18px", borderRadius: 999, fontSize: 12, fontWeight: 800 }}>
-            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> OFFICIAL 2026 PTE ACADEMIC SCORE REPORT (10 – 90 SCALE)
+            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> PTE ACADEMIC PRACTICE RESULTS (10 – 90 SCALE)
           </span>
           <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, margin: "16px 0 8px 0" }}>
-            Your 2026 PTE Academic Exam Results
+            Your 2026 PTE Academic Practice Results
           </h1>
           <p style={{ color: "#94a3b8", fontSize: 15 }}>Test Date: {new Date(result.date).toLocaleDateString()}</p>
         </div>
@@ -153,7 +153,7 @@ export default function PTEResultsPage() {
 
         {/* ── LEGAL DISCLAIMER ── */}
         <div style={{ fontSize: 12, color: "#64748b", textAlign: "center", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 24, lineHeight: 1.6, maxWidth: 800, margin: "0 auto" }}>
-          Knarrow is an independent learning platform. PTE Academic™ and PTE Academic UKVI™ are registered trademarks of Pearson PLC. This product is not endorsed, certified, or approved by Pearson.
+          Knarrow practice estimate — not an official Pearson score. Knarrow is an independent learning platform. PTE Academic™ and PTE Academic UKVI™ are registered trademarks of Pearson PLC. This product is not endorsed, certified, or approved by Pearson.
         </div>
 
       </div>

@@ -1,5 +1,7 @@
 import Hero from "../components/home/Hero";
 import ExamTrackSelector from "../components/home/ExamTrackSelector";
+import ScoreConverterWidget from "../components/home/ScoreConverterWidget";
+import HowItWorks from "../components/home/HowItWorks";
 import Stats from "../components/home/Stats";
 import Features from "../components/home/Features";
 import GamesShowcase from "../components/home/GamesShowcase";
@@ -14,6 +16,8 @@ export default function Home() {
     <>
       <Hero />
       <ExamTrackSelector />
+      <HowItWorks />
+      <ScoreConverterWidget />
       <Stats />
       <Features />
       <GamesShowcase />

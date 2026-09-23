@@ -7,12 +7,12 @@ import { useAuth } from "../context/AuthContext";
 import { useExam } from "../context/ExamContext";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import toast from "react-hot-toast";
 import {
   CalendarDays, Sparkles, PlusCircle, Zap, ClipboardList,
   Calendar, Trash2, BrainCircuit, CheckCircle2, Clock,
 } from "lucide-react";
 import aiService from "../services/aiService";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 const T = {
@@ -82,9 +82,172 @@ function FieldLabel({ children }) {
   return <label style={{ display: "block", fontSize: ".8rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "5px" }}>{children}</label>;
 }
 
+// ─── Track Configuration System ───────────────────────────────────────────────
+const TRACK_PLANNER_CONFIG = {
+  ACT: {
+    title: "ACT 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom ACT 2026 prep roadmap for your 1–36 target composite score.",
+    currentLabel: "Current Composite Score",
+    currentPlaceholder: "E.g. 24",
+    targetLabel: "Target Composite Score",
+    targetPlaceholder: "E.g. 32",
+    focusPlaceholder: "E.g. Math, English, Science",
+    emptyText: "Enter your composite scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "1 – 36 Composite Scale",
+    promptDetails: "ACT 2026 National format covering English (50 Qs), Math (45 Qs), Reading (36 Qs), optional Science (40 Qs), and optional Writing."
+  },
+  SAT: {
+    title: "Digital SAT 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom Digital SAT prep roadmap for your 400–1600 target total score.",
+    currentLabel: "Current Total Score",
+    currentPlaceholder: "E.g. 1150",
+    targetLabel: "Target Total Score",
+    targetPlaceholder: "E.g. 1450",
+    focusPlaceholder: "E.g. Math, Reading & Writing",
+    emptyText: "Enter your total SAT scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "400 – 1600 Total Scale",
+    promptDetails: "Digital SAT 2026 Multistage Adaptive format covering Reading & Writing (54 Qs / 64m) and Math (44 Qs / 70m with Desmos calculator)."
+  },
+  GMAT: {
+    title: "GMAT Exam 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom GMAT prep roadmap for your 205–805 target score.",
+    currentLabel: "Current GMAT Score",
+    currentPlaceholder: "E.g. 585",
+    targetLabel: "Target GMAT Score",
+    targetPlaceholder: "E.g. 705",
+    focusPlaceholder: "E.g. Quantitative, Data Insights",
+    emptyText: "Enter your GMAT scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "205 – 805 Scale",
+    promptDetails: "GMAT Exam / Focus Edition 2026 format covering Quantitative Reasoning (21 Qs), Verbal Reasoning (23 Qs), and Data Insights (20 Qs)."
+  },
+  TOEFL: {
+    title: "TOEFL iBT 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom TOEFL iBT prep roadmap for your 0–120 target score.",
+    currentLabel: "Current TOEFL Score",
+    currentPlaceholder: "E.g. 85",
+    targetLabel: "Target TOEFL Score",
+    targetPlaceholder: "E.g. 105",
+    focusPlaceholder: "E.g. Speaking, Writing, C-Tests",
+    emptyText: "Enter your TOEFL scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "0 – 120 Scale",
+    promptDetails: "TOEFL iBT 2026 format covering Reading (C-tests & passages), Listening, Speaking, and Writing."
+  },
+  GRE: {
+    title: "GRE General 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom GRE General prep roadmap for your 260–340 target score.",
+    currentLabel: "Current GRE Score",
+    currentPlaceholder: "E.g. 308",
+    targetLabel: "Target GRE Score",
+    targetPlaceholder: "E.g. 325",
+    focusPlaceholder: "E.g. Verbal Reasoning, Quant",
+    emptyText: "Enter your GRE scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "260 – 340 Combined Scale",
+    promptDetails: "GRE General Shorter 2026 format covering Analytical Writing (Issue Essay), Verbal Reasoning (27 Qs), and Quantitative Reasoning (27 Qs)."
+  },
+  CAT: {
+    title: "IIM CAT 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom CAT MBA prep roadmap for your target percentile.",
+    currentLabel: "Current Percentile",
+    currentPlaceholder: "E.g. 80 %ile",
+    targetLabel: "Target Percentile",
+    targetPlaceholder: "E.g. 99 %ile",
+    focusPlaceholder: "E.g. DILR Sets, QA Arithmetic",
+    emptyText: "Enter your percentiles and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "Percentile Scale (0 – 100 %ile)",
+    promptDetails: "IIM CAT 2026 format covering VARC (24 Qs), DILR (22 Qs), and QA (22 Qs) with section-locking."
+  },
+  PTE: {
+    title: "PTE Academic 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom PTE Academic prep roadmap for your 10–90 target score.",
+    currentLabel: "Current PTE Score",
+    currentPlaceholder: "E.g. 62",
+    targetLabel: "Target PTE Score",
+    targetPlaceholder: "E.g. 79",
+    focusPlaceholder: "E.g. Read Aloud, Dictation",
+    emptyText: "Enter your PTE scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "10 – 90 Scale",
+    promptDetails: "PTE Academic 2026 Enhanced format covering Speaking & Writing (54–67m), Reading, and Listening."
+  },
+  DET: {
+    title: "Duolingo DET Study Planner",
+    subtitle: "Organize your practice tasks and let Groq AI generate a tailored week-by-week DET roadmap for your 10–160 target score.",
+    currentLabel: "Current DET Score",
+    currentPlaceholder: "E.g. 115",
+    targetLabel: "Target DET Score",
+    targetPlaceholder: "E.g. 135",
+    focusPlaceholder: "E.g. Literacy, Production",
+    emptyText: "Enter your DET scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "10 – 160 Scale",
+    promptDetails: "Duolingo English Test (DET) 2026 computer-adaptive format across Literacy, Comprehension, Conversation, and Production subscores."
+  },
+  NEET: {
+    title: "NEET UG 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom NEET UG prep roadmap for your 180–720 target score.",
+    currentLabel: "Current NEET Score",
+    currentPlaceholder: "E.g. 520",
+    targetLabel: "Target NEET Score",
+    targetPlaceholder: "E.g. 680",
+    focusPlaceholder: "E.g. Biology, Physics Numericals, Chemistry",
+    emptyText: "Enter your NEET scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "180 – 720 Score Scale",
+    promptDetails: "NEET UG 2026 format covering Physics (45 Qs), Chemistry (45 Qs), and Biology/Botany/Zoology (90 Qs)."
+  },
+  JEE: {
+    title: "JEE Main 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom JEE Main prep roadmap for your target percentile or score.",
+    currentLabel: "Current Percentile / Score",
+    currentPlaceholder: "E.g. 92 %ile",
+    targetLabel: "Target Percentile / Score",
+    targetPlaceholder: "E.g. 99.5 %ile",
+    focusPlaceholder: "E.g. Calculus, Organic Chemistry, Mechanics",
+    emptyText: "Enter your JEE scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "Percentile / 300 Score Scale",
+    promptDetails: "JEE Main 2026 format covering Physics (30 Qs), Chemistry (30 Qs), and Mathematics (30 Qs)."
+  },
+  GATE: {
+    title: "GATE Exam 2026 Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom GATE prep roadmap for your target score.",
+    currentLabel: "Current GATE Score",
+    currentPlaceholder: "E.g. 450",
+    targetLabel: "Target GATE Score",
+    targetPlaceholder: "E.g. 750",
+    focusPlaceholder: "E.g. General Aptitude, Core Engineering Subjects",
+    emptyText: "Enter your GATE scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "100 Marks / 1000 Score Scale",
+    promptDetails: "GATE 2026 Engineering & Science format covering General Aptitude (15 marks) and Core Discipline (85 marks)."
+  },
+  CLAT: {
+    title: "CLAT 2026 Exam Study Planner",
+    subtitle: "Organize your study schedule and let Groq AI generate a custom CLAT prep roadmap for your target score / NLU rank.",
+    currentLabel: "Current CLAT Score",
+    currentPlaceholder: "E.g. 75",
+    targetLabel: "Target CLAT Score",
+    targetPlaceholder: "E.g. 105",
+    focusPlaceholder: "E.g. Legal Reasoning, Current Affairs, Critical Reasoning",
+    emptyText: "Enter your CLAT scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "120 Marks Scale",
+    promptDetails: "Consortium of NLUs CLAT 2026 format covering English, Current Affairs, Legal Reasoning, Logical Reasoning, and Quantitative Techniques."
+  },
+  IELTS: {
+    title: "IELTS Study Planner",
+    subtitle: "Add your tasks, then let Groq AI generate a tailored week-by-week IELTS roadmap for your target band score.",
+    currentLabel: "Current Band Score",
+    currentPlaceholder: "E.g. 6.0",
+    targetLabel: "Target Band Score",
+    targetPlaceholder: "E.g. 7.5",
+    focusPlaceholder: "E.g. Writing Task 2, Speaking",
+    emptyText: "Enter your band scores and click \"Generate with Groq AI\" to get your personalized plan.",
+    scale: "Band 0 – 9.0 Scale",
+    promptDetails: "IELTS Academic & General Training format covering Listening (40 Qs), Reading (3 passages, 40 Qs), Writing (Task 1 & 2), and Speaking (3 Parts)."
+  }
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function StudyPlanner() {
   const { user } = useAuth();
+  const { activeTrack } = useExam();
+
+  const trackCfg = TRACK_PLANNER_CONFIG[activeTrack] || TRACK_PLANNER_CONFIG.IELTS;
 
   // Task form
   const [taskName, setTaskName] = useState("");
@@ -124,7 +287,6 @@ export default function StudyPlanner() {
       setTasks(data);
     } catch (e) {
       console.error("fetchTasks:", e);
-      // Silently ignore permission errors for unauthenticated states
       if (e?.code !== "permission-denied") {
         toast.error("Could not load tasks. Please try again.");
       }
@@ -162,56 +324,98 @@ export default function StudyPlanner() {
     }
   }
 
-  const { activeTrack } = useExam();
+  function buildLocalStudyPlan() {
+    const weeks = parseInt(weeksAvail, 10) || 8;
+    const focus = focusArea || "All sections equally";
+
+    return `
+## 🎯 Personalized ${trackCfg.title} Prep Roadmap (${activeTrack} Track)
+
+### 📌 Student Profile & Objectives
+- **${trackCfg.currentLabel}:** ${currentBand} (Scale: ${trackCfg.scale})
+- **${trackCfg.targetLabel}:** ${targetBand} (Scale: ${trackCfg.scale})
+- **Preparation Window:** ${weeks} Weeks
+- **Key Focus Area:** ${focus}
+- **Exam Context:** ${trackCfg.promptDetails}
+
+---
+
+## 🗓️ Week-by-Week Action Plan
+
+### 🚀 Phase 1: Diagnostic Foundation & Core Strategies (Weeks 1 – 2)
+- **Daily Allocation:** 1.5 – 2 Hours / day
+- **Monday & Tuesday:** Diagnostic practice test to pinpoint current error patterns in ${focus}.
+- **Wednesday & Thursday:** Review core exam question formats, timing rules, and section guidelines.
+- **Friday:** Focused drill on weak topics (Targeting +15% accuracy).
+- **Weekend:** Complete Section Mock 1 + In-depth answer review.
+
+### 📈 Phase 2: Skill Building & Strategy Mastery (Weeks 3 – ${Math.min(weeks, 4)})
+- **Daily Allocation:** 2 – 2.5 Hours / day
+- **Focus:** Intensive practice on ${focus} and key high-yield topics.
+- **Section Drills:** Time-bound practice sessions with instant error analysis.
+- **Mid-Point Assessment:** Take Full Mock Test 1 under simulated exam conditions. Target progress check toward ${targetBand}.
+
+### ⚡ Phase 3: Advanced Speed, Accuracy & Full Mock Simulations (Weeks ${Math.min(weeks, 5)} – ${weeks})
+- **Daily Allocation:** 2.5 – 3 Hours / day
+- **Full Exam Mocks:** 2 Full Mocks per week with realistic timing enforcement.
+- **Error Log Refinement:** Re-solve missed questions until 100% mastery.
+- **Final Week Prep:** Light review, test-day strategy checklist, and rest before the exam.
+
+---
+
+## 💡 Key Strategies to Reach ${targetBand}
+1. **Pacing Control:** Master time management for each section.
+2. **Error Logging:** Maintain an active log of incorrect answers and review weekly.
+3. **Simulated Mocks:** Replicate exam conditions for peak performance.
+`.trim();
+  }
 
   async function generatePlan() {
     if (!currentBand || !targetBand) return;
     setAiPlan("");
     setStreaming(true);
 
-    const isDET = activeTrack === "DET";
-    const trackTitle = isDET ? "Duolingo English Test (DET)" : `${activeTrack} Prep`;
+    const prompt = `
+Create a detailed, personalized study plan for a student preparing for ${trackCfg.title} (${activeTrack} Track) with the following profile:
+- ${trackCfg.currentLabel}: ${currentBand} (Scale: ${trackCfg.scale})
+- ${trackCfg.targetLabel}: ${targetBand} (Scale: ${trackCfg.scale})
+- Available Study Window: ${weeksAvail || "8"} weeks
+- Priority Focus Area: ${focusArea || "All sections equally"}
 
-    const prompt = isDET ? `
-Create a detailed, personalized Duolingo English Test (DET) study plan for a student with the following profile:
-- Current DET Score: ${currentBand} (10 to 160 scale)
-- Target DET Score: ${targetBand} (10 to 160 scale)
-- Available Preparation Window: ${weeksAvail || "4"} weeks
-- Priority Subscore Focus Area: ${focusArea || "Literacy, Comprehension, Conversation, Production"}
-
-Generate a week-by-week plan with:
-1. Daily study tasks and time allocation
-2. Specific exercises across DET 14 task types (Single Word Read & Select, Fill in the Blanks, Read & Complete, Dictation, Read Aloud, Interactive Reading, Interactive Listening, Interactive Writing, Interactive Speaking, Writing & Speaking Samples)
-3. DET Computer-Adaptive Mock Test schedule
-4. Weekly subscore milestones
-5. Tips to bridge the gap from ${currentBand} to ${targetBand} on the 10-160 scale.
-
-Make it practical, motivating, and DET-specific.
-`.trim() : `
-Create a detailed, personalized ${trackTitle} study plan for a student with the following profile:
-- Current Score / Level: ${currentBand}
-- Target Score / Level: ${targetBand}
-- Available Study Time: ${weeksAvail || "8"} weeks
-- Priority Focus Area: ${focusArea || "all sections equally"}
+Exam Specification Context:
+${trackCfg.promptDetails}
 
 Generate a week-by-week plan with:
 1. Daily study tasks and time allocation
-2. Specific exercises per section
-3. Full Mock test schedule
-4. Weekly milestones and how to measure progress
-5. Tips to bridge the gap from ${currentBand} to ${targetBand}
+2. Specific exercises per section/subskill for ${activeTrack}
+3. Full Mock test schedule and progress checks
+4. Weekly milestones and how to measure improvement
+5. Practical tips to bridge the gap from ${currentBand} to ${targetBand} on the ${trackCfg.scale}
 
-Make it practical, motivating, and ${trackTitle}-specific.
+Make it highly practical, encouraging, and specific to ${trackCfg.title}.
 `.trim();
 
     try {
       await aiService.stream({
-        systemPrompt: `You are an expert ${trackTitle} coach. Create structured, practical study plans using markdown with clear headings (##), bullet points, and weekly breakdowns. Be specific and encouraging.`,
+        systemPrompt: `You are an expert ${trackCfg.title} coach. Create structured, practical study plans using markdown with clear headings (##), bullet points, and weekly breakdowns. Be specific and encouraging.`,
         messages: [{ role: "user", content: prompt }],
         onToken: (_, full) => setAiPlan(full),
       });
     } catch (e) {
-      setAiPlan("❌ Failed to generate plan. Please try again.");
+      console.warn("AI generation failed, using structured fallback planner:", e);
+      try {
+        const chatRes = await aiService.chat({
+          systemPrompt: `You are an expert ${trackCfg.title} coach.`,
+          messages: [{ role: "user", content: prompt }]
+        });
+        if (chatRes) {
+          setAiPlan(chatRes);
+          return;
+        }
+      } catch (err) {
+        console.warn("AI chat fallback failed:", err);
+      }
+      setAiPlan(buildLocalStudyPlan());
     } finally {
       setStreaming(false);
     }
@@ -238,21 +442,15 @@ Make it practical, motivating, and ${trackTitle}-specific.
 
       <div style={{ maxWidth: "1320px", margin: "0 auto", padding: "72px 24px 60px", position: "relative", zIndex: 1 }}>
 
-        <ExamTrackHeaderSwitcher />
-
         {/* ── Page Hero ──────────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55 }}
           style={{ marginBottom: "48px" }}>
           <span style={T.badge}><Zap size={13} color="#4f46e5" />AI POWERED</span>
           <h1 style={{ fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-1px", color: "var(--text)", margin: "16px 0 10px" }}>
-            <span style={T.gradientText}>{activeTrack === "DET" ? "Duolingo DET Study Planner" : activeTrack === "TOEFL" ? "TOEFL iBT Study Planner" : "IELTS Study Planner"}</span>
+            <span style={T.gradientText}>{trackCfg.title}</span>
           </h1>
           <p style={{ color: "var(--text-secondary)", fontSize: "1rem", lineHeight: 1.8, maxWidth: "560px" }}>
-            {activeTrack === "DET"
-              ? "Organize your practice tasks and let Groq AI generate a tailored week-by-week DET roadmap for your 10-160 target score."
-              : activeTrack === "TOEFL"
-              ? "Organize your study schedule and let Groq AI generate a custom TOEFL iBT prep roadmap for your 0-120 target score."
-              : "Add your tasks, then let Groq AI generate a tailored week-by-week IELTS roadmap for your target band."}
+            {trackCfg.subtitle}
           </p>
         </motion.div>
 
@@ -270,7 +468,7 @@ Make it practical, motivating, and ${trackTitle}-specific.
               <div>
                 <FieldLabel>Task</FieldLabel>
                 <input value={taskName} onChange={(e) => setTaskName(e.target.value)}
-                  placeholder="E.g. Complete Reading Test 4"
+                  placeholder="E.g. Complete Practice Module 4"
                   style={T.input} onFocus={focusIn} onBlur={focusOut}
                   onKeyDown={(e) => e.key === "Enter" && addTask()} />
               </div>
@@ -311,7 +509,7 @@ Make it practical, motivating, and ${trackTitle}-specific.
                         style={{ background: today ? `${accent}14` : "rgba(255,255,255,.04)", border: `1px solid ${today ? accent + "44" : "rgba(255,255,255,.08)"}`, borderRadius: "14px", padding: "13px 14px", display: "flex", alignItems: "flex-start", gap: "11px", position: "relative", overflow: "hidden" }}>
                         {/* left bar */}
                         <div style={{ position: "absolute", left: 0, top: 0, width: "3px", height: "100%", background: past ? "#64748b" : accent }} />
-                        <div style={{ width: "30px", height: "30px", borderRadius: "9px", display: "flex", alignItems: "center", justifyContent: "center", background: `${accent}22`, flexShrink: 0 }}>
+                        <div style={{ width: "30px", height: "30px", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", background: `${accent}22`, flexShrink: 0 }}>
                           {today ? <CheckCircle2 size={15} color={accent} /> : <Calendar size={15} color={accent} />}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -337,13 +535,13 @@ Make it practical, motivating, and ${trackTitle}-specific.
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5, delay: .18 }}>
             <CardSection title="AI Plan Generator" icon={BrainCircuit} iconColor="#8b5cf6">
               <div>
-                <FieldLabel>Current Band</FieldLabel>
-                <input placeholder="E.g. 5.5" value={currentBand} onChange={(e) => setCurrentBand(e.target.value)}
+                <FieldLabel>{trackCfg.currentLabel}</FieldLabel>
+                <input placeholder={trackCfg.currentPlaceholder} value={currentBand} onChange={(e) => setCurrentBand(e.target.value)}
                   style={T.input} onFocus={focusIn} onBlur={focusOut} />
               </div>
               <div>
-                <FieldLabel>Target Band</FieldLabel>
-                <input placeholder="E.g. 7.0" value={targetBand} onChange={(e) => setTargetBand(e.target.value)}
+                <FieldLabel>{trackCfg.targetLabel}</FieldLabel>
+                <input placeholder={trackCfg.targetPlaceholder} value={targetBand} onChange={(e) => setTargetBand(e.target.value)}
                   style={T.input} onFocus={focusIn} onBlur={focusOut} />
               </div>
               <div>
@@ -353,7 +551,7 @@ Make it practical, motivating, and ${trackTitle}-specific.
               </div>
               <div>
                 <FieldLabel>Priority Focus (optional)</FieldLabel>
-                <input placeholder="E.g. Writing, Speaking" value={focusArea} onChange={(e) => setFocusArea(e.target.value)}
+                <input placeholder={trackCfg.focusPlaceholder} value={focusArea} onChange={(e) => setFocusArea(e.target.value)}
                   style={T.input} onFocus={focusIn} onBlur={focusOut} />
               </div>
               <button onClick={generatePlan} disabled={streaming || !currentBand || !targetBand}
@@ -387,7 +585,7 @@ Make it practical, motivating, and ${trackTitle}-specific.
                   <Sparkles size={15} color="white" />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, color: "var(--text)", fontSize: ".95rem" }}>AI Study Plan</div>
+                  <div style={{ fontWeight: 700, color: "var(--text)", fontSize: ".95rem" }}>{trackCfg.title} (AI Output)</div>
                   <div style={{ fontSize: ".75rem", color: streaming ? "#22d3ee" : "var(--text-secondary)", display: "flex", alignItems: "center", gap: "5px" }}>
                     {streaming && <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#22d3ee", animation: "pulse 1s infinite", display: "inline-block" }} />}
                     {streaming ? "Groq AI is writing your plan…" : aiPlan ? "Plan ready" : "Fill in the form and generate"}
@@ -401,7 +599,7 @@ Make it practical, motivating, and ${trackTitle}-specific.
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "16px", opacity: .5, paddingTop: "60px" }}>
                     <BrainCircuit size={48} color="#4f46e5" />
                     <p style={{ color: "var(--text-secondary)", fontSize: ".9rem", textAlign: "center", maxWidth: "260px", lineHeight: 1.7 }}>
-                      Enter your band scores and click "Generate with Groq AI" to get your personalized plan.
+                      {trackCfg.emptyText}
                     </p>
                   </div>
                 ) : (

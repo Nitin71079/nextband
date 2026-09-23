@@ -2,7 +2,7 @@ import { askGroqJSON } from "./aiService";
 
 /**
  * Groq-Powered AI Evaluator for Duolingo English Test (DET) Speaking & Writing Tasks
- * Powered by Groq llama-3.3-70b-versatile evaluating against official DET rubrics:
+ * Powered by Groq groq/compound-mini evaluating against official DET rubrics:
  * - Grammatical Accuracy & Complexity
  * - Lexical Sophistication & Diversity
  * - Task Relevance & Coherence

@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { detTests } from "../../../data/det/detTests";
 import { detToCEFR, detToIelts } from "../../../utils/detScoreCalculator";
-import ExamTrackHeaderSwitcher from "../../../components/ExamTrackHeaderSwitcher";
 
 export default function DETDashboard() {
   const navigate = useNavigate();
@@ -189,9 +188,6 @@ export default function DETDashboard() {
     <div style={{ minHeight: "100vh", background: "radial-gradient(circle at 50% 0%, #064e3b 0%, #0f172a 70%)", fontFamily: "'Plus Jakarta Sans', Inter, sans-serif", color: "#ffffff", padding: "40px 24px 80px" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         
-        {/* ── EXAM TRACK SWITCHER ── */}
-        <ExamTrackHeaderSwitcher />
-
         {/* ── HERO BANNER ── */}
         <div style={{ marginBottom: "48px", position: "relative" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 32, alignItems: "center", marginBottom: 36 }}>

@@ -39,7 +39,7 @@ export async function activateUserPlan(planId, packType, trackId = null, duratio
 
   if (packType === "all_access" || planId.includes("lifetime") || planId.includes("all_access") || planId.includes("Monthly") || planId.includes("Yearly")) {
     // All access pass unlocks all exam tracks
-    ["IELTS", "DET", "TOEFL", "PTE", "GRE", "CAT", "ACT", "SAT", "GMAT"].forEach(t => unlockedTracks.add(t));
+    ["IELTS", "SAT", "GRE", "GMAT", "CAT", "JEE", "NEET", "CLAT", "GATE", "TOEFL", "PTE", "DET", "ACT"].forEach(t => unlockedTracks.add(t));
   } else if (trackId) {
     unlockedTracks.add(trackId.toUpperCase());
   }
@@ -129,7 +129,7 @@ export function isIELTSSectionUnlocked(section = "reading", testIndex = 1) {
  */
 export function isGameUnlocked(gameId = "") {
   // 3 Games UNLOCKED for Free Users: Word Chain, Sentence Fixer, Band Blitz
-  const freeGames = ["word-chain", "sentence-fixer", "sentence-fix", "band-blitz"];
+  const freeGames = ["word-chain", "sentence-fixer", "sentence-fix", "band-blitz", "math-matrix", "speed-math-clash", "data-interpretation", "aptitude-arena", "idiom-master"];
   if (freeGames.includes(gameId.toLowerCase())) return true;
 
   // Any paid plan unlocks ALL arcade games

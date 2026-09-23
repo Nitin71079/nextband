@@ -78,7 +78,7 @@ Respond strictly in valid JSON format:
   try {
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: systemPrompt }],
-      model: "llama-3.3-70b-versatile",
+      model: "groq/compound-mini",
       temperature: 0.2,
       response_format: { type: "json_object" },
     });
@@ -182,7 +182,7 @@ Respond strictly in valid JSON format:
   try {
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: systemPrompt }],
-      model: "llama-3.3-70b-versatile",
+      model: "groq/compound-mini",
       temperature: 0.2,
       response_format: { type: "json_object" },
     });

@@ -12,7 +12,12 @@ import CATCenter from "./CATCenter";
 import ACTCenter from "./ACTCenter";
 import SATCenter from "./SATCenter";
 import GMATCenter from "./GMATCenter";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
+import IELTSCenter from "./IELTSCenter";
+
+import AISkillRadarWidget from "../components/dashboard/AISkillRadarWidget";
+import AttemptHeatmapWidget from "../components/analytics/AttemptHeatmapWidget";
+import GamifiedStreakTicker from "../components/dashboard/GamifiedStreakTicker";
+import SlideOverToolsDrawer from "../components/tools/SlideOverToolsDrawer";
 
 import DashboardHero       from "../components/dashboard/DashboardHero";
 import ContinueLearning    from "../components/dashboard/ContinueLearning";
@@ -75,12 +80,21 @@ export default function Dashboard() {
     return <GMATCenter />;
   }
 
+  if (activeTrack === "IELTS" || !activeTrack) {
+    return <IELTSCenter />;
+  }
+
+
   if (loading && !forceReady) return <Loader />;
 
   return (
     <div className="dashboard-page">
+      <SlideOverToolsDrawer />
+
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>
-        <ExamTrackHeaderSwitcher />
+        <div>
+          <GamifiedStreakTicker streakDays={7} xpPoints={1450} />
+        </div>
       </div>
 
       <DashboardHero
@@ -88,6 +102,11 @@ export default function Dashboard() {
         analytics={analytics}
         memory={memory}
       />
+
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px 24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 24 }}>
+        <AISkillRadarWidget track={activeTrack || "DET"} userScore={125} targetScore={140} />
+        <AttemptHeatmapWidget questionsCount={20} />
+      </div>
 
       <ContinueLearning memory={memory} />
 

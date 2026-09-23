@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AuroraBackground from "../components/AuroraBackground";
+import { useExam } from "../context/ExamContext";
 import {
   Search,
   BookOpen,
@@ -19,298 +20,401 @@ import {
   Sparkles,
   HelpCircle,
   BarChart3,
+  Calculator,
+  Scale,
+  Zap,
+  FileText,
+  CheckCircle2,
+  Globe,
+  Award,
   Gamepad2,
+  Atom,
+  Stethoscope,
+  BookMarked,
+  Cpu,
+  Layers
 } from "lucide-react";
 import "../styles/helpCenter.css";
 
 /* ─────────────────────────────────────────────
-   CATEGORIES
+   EXAM TRACK CONFIGURATION (13 EXAMS)
 ───────────────────────────────────────────── */
 
-const CATEGORIES = [
-  { id: "getting-started", label: "Getting Started",     icon: BookOpen,     color: "#2563eb" },
-  { id: "reading",         label: "Reading",             icon: BookOpen,     color: "#0891b2" },
-  { id: "listening",       label: "Listening",           icon: Headphones,   color: "#7c3aed" },
-  { id: "writing",         label: "Writing",             icon: PenLine,      color: "#059669" },
-  { id: "speaking",        label: "Speaking",            icon: Mic,          color: "#dc2626" },
-  { id: "ai",              label: "AI Features",         icon: Brain,        color: "#d97706" },
-  { id: "analytics",       label: "Analytics",           icon: BarChart3,    color: "#0284c7" },
-  { id: "games",           label: "Games Zone",          icon: Gamepad2,     color: "#9333ea" },
-  { id: "billing",         label: "Billing & Premium",   icon: CreditCard,   color: "#16a34a" },
-  { id: "account",         label: "Account & Settings",  icon: Settings,     color: "#475569" },
-  { id: "scores",          label: "Scores & Results",    icon: Trophy,       color: "#b45309" },
+const EXAMS_LIST = [
+  { id: "IELTS", label: "IELTS", icon: "🎓", name: "IELTS Academic & GT", color: "#2563eb" },
+  { id: "SAT",   label: "Digital SAT", icon: "📘", name: "Digital SAT (1600)", color: "#0284c7" },
+  { id: "GRE",   label: "GRE",   icon: "🏛️", name: "GRE General Test",   color: "#7c3aed" },
+  { id: "GMAT",  label: "GMAT",  icon: "💼", name: "GMAT Focus Edition", color: "#059669" },
+  { id: "CAT",   label: "CAT",   icon: "🐆", name: "IIM CAT (VARC/DILR/QA)", color: "#dc2626" },
+  { id: "JEE",   label: "JEE",   icon: "⚛️", name: "JEE Main & Advanced", color: "#d97706" },
+  { id: "NEET",  label: "NEET",  icon: "🩺", name: "NEET UG (Medical)", color: "#16a34a" },
+  { id: "CLAT",  label: "CLAT",  icon: "⚖️", name: "CLAT (Law NLUs)",   color: "#9333ea" },
+  { id: "GATE",  label: "GATE",  icon: "⚙️", name: "GATE Engineering",  color: "#475569" },
+  { id: "TOEFL", label: "TOEFL", icon: "🗣️", name: "TOEFL iBT",         color: "#0891b2" },
+  { id: "PTE",   label: "PTE",   icon: "🔤", name: "PTE Academic",      color: "#b45309" },
+  { id: "DET",   label: "DET",   icon: "🦉", name: "Duolingo English",  color: "#65a30d" },
+  { id: "ACT",   label: "ACT",   icon: "🎯", name: "ACT College Prep",  color: "#e11d48" }
 ];
 
 /* ─────────────────────────────────────────────
-   FAQ DATA
+   EXAM-SPECIFIC HELP CENTER DATA DICTIONARY
 ───────────────────────────────────────────── */
 
-const FAQS = [
-  /* ── Getting Started ── */
-  {
-    category: "getting-started",
-    q: "What is Knarrow?",
-    a: "Knarrow is an AI-powered IELTS preparation platform. It offers realistic Computer Based Test (CBT) simulations for all four modules — Reading, Listening, Writing, and Speaking — along with AI-driven feedback, performance analytics, a personalised study planner, and games to make practice engaging.",
-  },
-  {
-    category: "getting-started",
-    q: "Do I need to create an account to use Knarrow?",
-    a: "You can explore the home page and some public content without an account. However, to access practice tests, track your progress, and use AI features you need to register. Registration is free and takes under a minute.",
-  },
-  {
-    category: "getting-started",
-    q: "How do I register?",
-    a: "Click the 'Register' button on the top right of any page. You can sign up with your email and a password. After verifying your email you'll be redirected to your Dashboard automatically.",
-  },
-  {
-    category: "getting-started",
-    q: "Is Knarrow free to use?",
-    a: "Yes — there's a free tier that gives access to limited Reading and Listening tests along with basic analytics. Upgrading to Premium unlocks unlimited tests, AI Writing & Speaking evaluation, full CBT mock exams, advanced analytics, the AI Study Coach, and more.",
-  },
-  {
-    category: "getting-started",
-    q: "Which IELTS modules does Knarrow cover?",
-    a: "Knarrow covers all four modules: Reading (Academic & General Training), Listening, Writing (Task 1 & Task 2), and Speaking. Full CBT-style mock exams bundling all four modules are also available under Full Mocks.",
-  },
-
-  /* ── Reading ── */
-  {
-    category: "reading",
-    q: "What types of Reading tests are available?",
-    a: "Knarrow provides both Academic and General Training Reading tests. Each test contains three passages with a variety of question types including Multiple Choice, True/False/Not Given, Matching Headings, Sentence Completion, and more.",
-  },
-  {
-    category: "reading",
-    q: "How are Reading answers checked?",
-    a: "Answers are checked automatically as soon as you submit the test. You'll see which answers are correct or incorrect, your band score estimate, and a full review mode where you can go through each question with the correct answer highlighted.",
-  },
-  {
-    category: "reading",
-    q: "Can I pause a Reading test and resume later?",
-    a: "Yes. Your progress is auto-saved as you go. If you navigate away, you'll be prompted to resume the test next time you open it.",
-  },
-  {
-    category: "reading",
-    q: "How many Reading tests are available?",
-    a: "There are 20+ Reading tests across Academic and General Training categories, with more being added regularly.",
+const EXAM_HELP_DATA = {
+  /* 🎓 IELTS */
+  IELTS: {
+    title: "IELTS Help & Exam Guide",
+    subtitle: "Everything you need to master IELTS Academic & General Training (Band 0–9).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#2563eb" },
+      { id: "reading", label: "Reading Module", icon: BookOpen, color: "#0891b2" },
+      { id: "listening", label: "Listening Module", icon: Headphones, color: "#7c3aed" },
+      { id: "writing", label: "Writing Task 1 & 2", icon: PenLine, color: "#059669" },
+      { id: "speaking", label: "Speaking Parts 1-3", icon: Mic, color: "#dc2626" },
+      { id: "ai", label: "AI Evaluation & Coach", icon: Brain, color: "#d97706" },
+      { id: "scores", label: "Band Scores (0-9)", icon: Trophy, color: "#b45309" },
+      { id: "billing", label: "Billing & Premium", icon: CreditCard, color: "#16a34a" },
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is Knarrow IELTS Prep?", a: "Knarrow provides official 2026 CBT simulations for IELTS Academic & General Training including Reading, Listening, Writing, and Speaking with real-time AI band scoring." },
+      { category: "reading", q: "How are Reading tests scored in Knarrow?", a: "Raw correct answers (out of 40) are automatically mapped to official IELTS Band Scores (0-9) according to Academic and GT conversion tables." },
+      { category: "listening", q: "Can I pause audio during the Listening test?", a: "In realistic exam mode, audio plays strictly once without pausing. Practice mode allows playback controls for learning." },
+      { category: "writing", q: "How does AI Writing Evaluation grade Task 1 and Task 2?", a: "Our AI evaluates your essay across all 4 official criteria: Task Achievement/Response, Coherence & Cohesion, Lexical Resource, and Grammatical Range & Accuracy within seconds." },
+      { category: "speaking", q: "How does the AI Speaking test work?", a: "You record audio for Part 1 (Questions), Part 2 (Cue Card 2-min talk), and Part 3 (Discussion). AI transcribes and scores your Fluency, Lexical Resource, Grammar, and Pronunciation." },
+      { category: "scores", q: "How accurate are Knarrow AI Band Predictions?", a: "Our scoring models align within ±0.5 band of official examiner descriptors based on official IELTS benchmark corpora." }
+    ],
+    popular: [
+      { label: "How is IELTS Band Score calculated?", cat: "scores" },
+      { label: "How does AI Writing Evaluation work?", cat: "writing" },
+      { label: "My microphone isn't working for Speaking", cat: "speaking" },
+      { label: "Difference between Academic and General Training", cat: "reading" }
+    ],
+    quickLinks: [
+      { icon: BookOpen, label: "Take IELTS Reading Mock", path: "/reading", color: "#0891b2" },
+      { icon: Headphones, label: "Start Listening Simulation", path: "/listening", color: "#7c3aed" },
+      { icon: PenLine, label: "AI Essay Evaluation", path: "/writing", color: "#059669" },
+      { icon: Mic, label: "AI Speaking Simulator", path: "/speaking", color: "#dc2626" },
+      { icon: Brain, label: "IELTS AI Study Coach", path: "/ai-center", color: "#d97706" }
+    ]
   },
 
-  /* ── Listening ── */
-  {
-    category: "listening",
-    q: "How does the Listening module work?",
-    a: "You'll listen to audio recordings — just like in the real IELTS exam — and answer questions as the audio plays. The audio cannot be paused or replayed, matching real exam conditions. A question palette lets you track which questions you've answered.",
-  },
-  {
-    category: "listening",
-    q: "What question types appear in Listening tests?",
-    a: "You'll encounter Multiple Choice, Form Completion, Note Completion, Table Completion, Flowchart Completion, Diagram Labelling, Matching, and Map Labelling questions.",
-  },
-  {
-    category: "listening",
-    q: "The audio isn't playing. What should I do?",
-    a: "First check that your browser isn't blocking audio (look for a muted icon in the address bar). Make sure your device volume is turned up. Try refreshing the page. If the issue persists, try a different browser — Knarrow works best in Chrome or Edge.",
-  },
-  {
-    category: "listening",
-    q: "Can I restore an accidentally closed Listening test?",
-    a: "Yes. Knarrow saves your listening progress locally. When you return to the Listening Center, you'll see an option to resume your most recent session.",
-  },
-
-  /* ── Writing ── */
-  {
-    category: "writing",
-    q: "What writing tasks are available?",
-    a: "Both Academic Writing Task 1 (charts, graphs, diagrams, maps) and Task 2 (opinion essays, problem-solution essays, discussion essays) and General Training letter writing tasks are available.",
-  },
-  {
-    category: "writing",
-    q: "How does AI Writing Evaluation work?",
-    a: "After you submit your essay, Knarrow's AI analyses it against all four official IELTS Writing criteria: Task Achievement, Coherence & Cohesion, Lexical Resource, and Grammatical Range & Accuracy. You receive a detailed breakdown with a band estimate, specific suggestions, and highlighted improvements.",
-  },
-  {
-    category: "writing",
-    q: "How long does Writing evaluation take?",
-    a: "Evaluation is near-instant — usually within 10–15 seconds after submission.",
-  },
-  {
-    category: "writing",
-    q: "Does Knarrow save my writing drafts?",
-    a: "Yes. Knarrow auto-saves your essay as you type. If you close the tab accidentally, your draft will be restored the next time you open the same task.",
-  },
-  {
-    category: "writing",
-    q: "Is AI Writing Evaluation available on the Free plan?",
-    a: "AI Writing Evaluation is a Premium feature. Free users can write essays but won't receive AI feedback until they upgrade.",
+  /* 📘 DIGITAL SAT */
+  SAT: {
+    title: "Digital SAT Help & Exam Guide",
+    subtitle: "Master the 2026 Digital SAT Reading, Writing & Math (Score 400–1600).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#2563eb" },
+      { id: "rw", label: "Reading & Writing", icon: BookOpen, color: "#0284c7" },
+      { id: "math", label: "Math & Desmos", icon: Calculator, color: "#d97706" },
+      { id: "adaptivity", label: "Multistage Adaptivity", icon: Zap, color: "#7c3aed" },
+      { id: "ai", label: "AI Score Predictor", icon: Brain, color: "#059669" },
+      { id: "scores", label: "Scale (400-1600)", icon: Trophy, color: "#b45309" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is the 2026 Digital SAT format?", a: "The Digital SAT consists of 2 Reading & Writing modules (54 questions total, 64 mins) and 2 Math modules (44 questions total, 70 mins)." },
+      { category: "rw", q: "What question types appear in SAT Reading & Writing?", a: "Modules feature concise passages (25-150 words) with questions testing Craft & Structure, Information & Ideas, Standard English Conventions, and Expression of Ideas." },
+      { category: "math", q: "Is the Desmos Graphing Calculator built into Knarrow SAT tests?", a: "Yes! Full Desmos Graphing Calculator is embedded inside all SAT Math practice tests and section mocks." },
+      { category: "adaptivity", q: "How does Digital SAT multistage adaptivity work?", a: "Your performance on Module 1 determines whether you receive the Harder or Easier Module 2, directly impacting your maximum achievable 800 section score." },
+      { category: "scores", q: "How does Knarrow calculate the 400-1600 score?", a: "We simulate College Board's Item Response Theory (IRT) scoring algorithm across both R&W and Math sections." }
+    ],
+    popular: [
+      { label: "How does SAT Multistage Adaptivity work?", cat: "adaptivity" },
+      { label: "Using Desmos Calculator in Math section", cat: "math" },
+      { label: "Reading & Writing timing & strategies", cat: "rw" },
+      { label: "SAT 400-1600 score conversion chart", cat: "scores" }
+    ],
+    quickLinks: [
+      { icon: BookOpen, label: "Digital SAT Practice Mocks", path: "/sat", color: "#0284c7" },
+      { icon: Calculator, label: "SAT Math Practice", path: "/sat", color: "#d97706" },
+      { icon: Brain, label: "SAT AI Error Diagnostic", path: "/ai-center", color: "#059669" },
+      { icon: Trophy, label: "SAT Score History", path: "/results-history", color: "#b45309" }
+    ]
   },
 
-  /* ── Speaking ── */
-  {
-    category: "speaking",
-    q: "How does AI Speaking Evaluation work?",
-    a: "You record your response to a Speaking prompt directly in the browser. Knarrow transcribes your audio, then evaluates it on Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, and Pronunciation, providing a band estimate and actionable feedback.",
-  },
-  {
-    category: "speaking",
-    q: "My microphone is not working. How do I fix it?",
-    a: "Make sure you've granted microphone permission to the site. In Chrome, click the lock icon in the address bar → Site settings → Microphone → Allow. Then refresh the page and try again.",
-  },
-  {
-    category: "speaking",
-    q: "What parts of the IELTS Speaking test are covered?",
-    a: "Knarrow covers all three parts: Part 1 (Introduction & Interview), Part 2 (Long Turn / Cue Card), and Part 3 (Two-way Discussion).",
-  },
-  {
-    category: "speaking",
-    q: "Is AI Speaking Evaluation available on the Free plan?",
-    a: "AI Speaking Evaluation is a Premium feature. Free users can practice speaking but need to upgrade for AI feedback.",
-  },
-
-  /* ── AI Features ── */
-  {
-    category: "ai",
-    q: "What is the AI Control Center?",
-    a: "The AI Control Center is your hub for all AI-powered tools — AI Writing Evaluation, AI Speaking Evaluation, the AI Study Coach chat, the AI Accent Lab, and Audio Generator. Access it from the nav bar under 'AI Studio'.",
-  },
-  {
-    category: "ai",
-    q: "What is the AI Study Coach?",
-    a: "The AI Study Coach is a conversational assistant that gives you personalised study advice, answers IELTS questions, helps you understand your weak areas, and suggests what to practice next based on your history.",
-  },
-  {
-    category: "ai",
-    q: "What is Accent Lab?",
-    a: "Accent Lab is a Premium AI tool that analyses your pronunciation, identifies specific sounds you struggle with, and gives targeted exercises to improve your spoken English accent and clarity.",
-  },
-  {
-    category: "ai",
-    q: "What is the Audio Generator?",
-    a: "Audio Generator is a Premium tool that creates realistic IELTS-style listening audio from custom scripts — useful for teachers creating practice material or learners who want fresh content.",
+  /* 🏛️ GRE */
+  GRE: {
+    title: "GRE General Test Help & Guide",
+    subtitle: "Master the Shorter GRE 2026: Verbal, Quant & Analytical Writing (260–340).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#2563eb" },
+      { id: "verbal", label: "Verbal Reasoning", icon: BookOpen, color: "#7c3aed" },
+      { id: "quant", label: "Quant Reasoning", icon: Calculator, color: "#0284c7" },
+      { id: "awa", label: "Analytical Writing", icon: PenLine, color: "#059669" },
+      { id: "scores", label: "GRE Score Scale", icon: Trophy, color: "#b45309" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is the Shorter GRE test duration?", a: "The shorter GRE takes under 2 hours total, comprising Analytical Writing (1 Issue essay, 30 min), 2 Verbal sections (27 questions), and 2 Quant sections (27 questions)." },
+      { category: "verbal", q: "What question types are in GRE Verbal?", a: "Text Completion (1, 2, 3 blanks), Sentence Equivalence, and Reading Comprehension with single and multi-select answer options." },
+      { category: "quant", q: "Is an onscreen calculator provided for GRE Quant?", a: "Yes, an official 4-function calculator with square root is provided in all Quant sections on Knarrow." },
+      { category: "awa", q: "How is the Issue Essay scored?", a: "Knarrow AI evaluates your Issue Essay on a 0.0 to 6.0 scale according to ETS Analytical Writing scoring criteria." }
+    ],
+    popular: [
+      { label: "Shorter GRE test structure explained", cat: "getting-started" },
+      { label: "GRE Verbal 130-170 scale conversion", cat: "scores" },
+      { label: "AI Essay scoring for GRE AWA", cat: "awa" }
+    ],
+    quickLinks: [
+      { icon: BookOpen, label: "GRE Verbal Practice", path: "/gre", color: "#7c3aed" },
+      { icon: Calculator, label: "GRE Quant Practice", path: "/gre", color: "#0284c7" },
+      { icon: PenLine, label: "AI Issue Essay Grader", path: "/writing", color: "#059669" }
+    ]
   },
 
-  /* ── Analytics ── */
-  {
-    category: "analytics",
-    q: "What does the Analytics dashboard show?",
-    a: "The Analytics dashboard shows your band score trends across all modules, time spent practising, accuracy by question type, your strongest and weakest skill areas, and personalised improvement suggestions.",
-  },
-  {
-    category: "analytics",
-    q: "How accurate is the band prediction?",
-    a: "Band predictions are generated by AI models trained on IELTS marking criteria. They are designed to closely reflect official band descriptors, but should be treated as an indication rather than a guarantee of your actual exam score.",
-  },
-  {
-    category: "analytics",
-    q: "Is advanced analytics a Premium feature?",
-    a: "Basic analytics (overall scores, recent tests) are available for free. Advanced analytics with full trend breakdowns, question-type analysis, and AI recommendations require a Premium subscription.",
-  },
-
-  /* ── Games ── */
-  {
-    category: "games",
-    q: "What games are available in the Games Zone?",
-    a: "The Games Zone currently includes: Speaking Showdown, Audio Sniper, Essay Duel, Vocab Battle, Reading Race, Word Chain, Sentence Fixer, Band Blitz, Synonym Sprint, and Grammar Gladiator.",
-  },
-  {
-    category: "games",
-    q: "Do games count towards my practice history?",
-    a: "Yes. Games contribute to your Streaks and some game scores are reflected in your overall activity feed and leaderboard ranking.",
-  },
-  {
-    category: "games",
-    q: "Can I compete against other users?",
-    a: "The Leaderboard ranks all users by activity and scores. Some games like Essay Duel and Speaking Showdown are designed with competitive mechanics in mind.",
+  /* 💼 GMAT */
+  GMAT: {
+    title: "GMAT Focus Edition Help & Guide",
+    subtitle: "Master Quantitative, Verbal & Data Insights for Top Business Schools (205–805).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#2563eb" },
+      { id: "quant", label: "Quantitative Reasoning", icon: Calculator, color: "#0284c7" },
+      { id: "verbal", label: "Verbal Reasoning", icon: BookOpen, color: "#7c3aed" },
+      { id: "di", label: "Data Insights", icon: BarChart3, color: "#059669" },
+      { id: "scores", label: "Score Scale (205-805)", icon: Trophy, color: "#b45309" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What are the sections in GMAT Focus Edition?", a: "GMAT Focus features 3 equal sections of 45 mins each: Quantitative Reasoning (21 questions), Verbal Reasoning (23 questions), and Data Insights (20 questions)." },
+      { category: "di", q: "What is tested in Data Insights?", a: "Data Insights tests Data Sufficiency, Multi-Source Reasoning, Table Analysis, Graphics Interpretation, and Two-Part Analysis." },
+      { category: "quant", q: "Can I edit answers in GMAT Focus?", a: "Yes! You can bookmark any question and review/change up to 3 answers per section at the end if time permits." }
+    ],
+    popular: [
+      { label: "GMAT Focus Question Bookmark & Edit Feature", cat: "quant" },
+      { label: "Data Insights Question Types & Calculator", cat: "di" },
+      { label: "205-805 Score Scale & Percentile Table", cat: "scores" }
+    ],
+    quickLinks: [
+      { icon: BarChart3, label: "GMAT Data Insights Practice", path: "/gmat", color: "#059669" },
+      { icon: Calculator, label: "GMAT Quant Practice", path: "/gmat", color: "#0284c7" },
+      { icon: BookOpen, label: "GMAT Verbal Practice", path: "/gmat", color: "#7c3aed" }
+    ]
   },
 
-  /* ── Billing & Premium ── */
-  {
-    category: "billing",
-    q: "How much does Premium cost?",
-    a: "Knarrow offers two Premium plans: Monthly at ₹299/month and 3-Month at ₹799 (best value). Both give identical access to all Premium features.",
-  },
-  {
-    category: "billing",
-    q: "Which payment methods are accepted?",
-    a: "All payments are processed securely through Razorpay. Accepted methods include UPI, Debit Cards, Credit Cards, Net Banking, and popular Wallets.",
-  },
-  {
-    category: "billing",
-    q: "Is Premium activated immediately after payment?",
-    a: "Yes. Once Razorpay confirms your payment, your account upgrades to Premium automatically within seconds. No manual activation required.",
-  },
-  {
-    category: "billing",
-    q: "Does Premium renew automatically?",
-    a: "No. Knarrow uses one-time payment subscriptions. You'll receive a reminder before your plan expires, and can renew manually from the Pricing page.",
-  },
-  {
-    category: "billing",
-    q: "What happens when my Premium expires?",
-    a: "You revert to the Free plan. Your data, results, and history are fully preserved. You can resubscribe anytime to regain Premium access.",
-  },
-  {
-    category: "billing",
-    q: "Can I get a refund?",
-    a: "Refunds are evaluated on a case-by-case basis. If you haven't used any Premium features since payment, reach out to support@knarrow.in within 48 hours and we'll review your request.",
+  /* 🐆 CAT */
+  CAT: {
+    title: "CAT Exam Help & Guide",
+    subtitle: "Ace VARC, DILR & Quantitative Aptitude for IIMs & Top B-Schools.",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#2563eb" },
+      { id: "varc", label: "VARC", icon: BookOpen, color: "#7c3aed" },
+      { id: "dilr", label: "DILR Sets", icon: Layers, color: "#dc2626" },
+      { id: "qa", label: "Quant Aptitude", icon: Calculator, color: "#0284c7" },
+      { id: "tita", label: "TITA Non-MCQs", icon: Zap, color: "#d97706" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is the CAT exam timing and layout?", a: "CAT features 66 questions in 120 minutes with 40-minute strict sectional time limits for VARC, DILR, and QA." },
+      { category: "tita", q: "What are TITA questions?", a: "TITA (Type-In-The-Answer) are non-MCQ questions where you type numbers into an input box. There is NO negative marking for incorrect TITA answers." },
+      { category: "varc", q: "What is the CAT VARC marking scheme?", a: "MCQs carry +3 marks for correct answers and -1 mark penalty for wrong options." }
+    ],
+    popular: [
+      { label: "CAT Sectional Time Limit Rules", cat: "getting-started" },
+      { label: "TITA Question Strategy", cat: "tita" },
+      { label: "CAT Percentile Estimator", cat: "qa" }
+    ],
+    quickLinks: [
+      { icon: BookOpen, label: "VARC Practice Passages", path: "/cat", color: "#7c3aed" },
+      { icon: Layers, label: "DILR Set Simulations", path: "/cat", color: "#dc2626" },
+      { icon: Calculator, label: "Quant Section Mocks", path: "/cat", color: "#0284c7" }
+    ]
   },
 
-  /* ── Account & Settings ── */
-  {
-    category: "account",
-    q: "How do I update my profile information?",
-    a: "Go to your Profile page (click your avatar in the top right → Profile). From there you can update your display name, target band score, and profile picture.",
-  },
-  {
-    category: "account",
-    q: "How do I change my password?",
-    a: "Go to Settings → Security and use the 'Change Password' option. You'll need to confirm your current password before setting a new one.",
-  },
-  {
-    category: "account",
-    q: "How do I switch between dark and light mode?",
-    a: "Click the Sun/Moon icon in the top navigation bar to toggle between light and dark themes. Your preference is saved automatically.",
-  },
-  {
-    category: "account",
-    q: "How do I delete my account?",
-    a: "Account deletion can be requested from Settings → Account → Delete Account. This is permanent and removes all your data. If you're having trouble, contact support@knarrow.in.",
+  /* ⚛️ JEE */
+  JEE: {
+    title: "JEE Main & Advanced Help & Guide",
+    subtitle: "Master Physics, Chemistry & Mathematics for IITs, NITs & IIITs.",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: Atom, color: "#2563eb" },
+      { id: "physics", label: "Physics", icon: Zap, color: "#7c3aed" },
+      { id: "chemistry", label: "Chemistry", icon: Sparkles, color: "#059669" },
+      { id: "math", label: "Mathematics", icon: Calculator, color: "#d97706" },
+      { id: "numerical", label: "Numerical Value", icon: Trophy, color: "#b45309" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is NTA JEE Main exam marking pattern?", a: "Each section (Physics, Chemistry, Math) has Section A (20 MCQs) and Section B (10 Numerical Value questions, attempt 5). Correct answers carry +4, wrong carry -1." },
+      { category: "numerical", q: "How should numerical value answers be entered?", a: "Numerical value answers must be entered as exact integers or rounded decimal numbers specified in the question." }
+    ],
+    popular: [
+      { label: "NTA +4 / -1 Marking Rules", cat: "getting-started" },
+      { label: "JEE Main vs Advanced Differences", cat: "math" }
+    ],
+    quickLinks: [
+      { icon: Atom, label: "JEE Physics Practice", path: "/jee", color: "#7c3aed" },
+      { icon: Sparkles, label: "JEE Chemistry Practice", path: "/jee", color: "#059669" },
+      { icon: Calculator, label: "JEE Math Section", path: "/jee", color: "#d97706" }
+    ]
   },
 
-  /* ── Scores & Results ── */
-  {
-    category: "scores",
-    q: "Where can I see all my past test results?",
-    a: "Visit the Results History page (Dashboard → View History or navigate to /results-history). You can filter by module and date to find any past test.",
+  /* 🩺 NEET */
+  NEET: {
+    title: "NEET UG Medical Exam Help & Guide",
+    subtitle: "Target 720/720 in Physics, Chemistry & Biology (Botany & Zoology).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: Stethoscope, color: "#16a34a" },
+      { id: "biology", label: "Botany & Zoology", icon: Sparkles, color: "#059669" },
+      { id: "chemistry", label: "Chemistry", icon: BookOpen, color: "#0284c7" },
+      { id: "physics", label: "Physics", icon: Zap, color: "#7c3aed" },
+      { id: "omr", label: "OMR Speed Strategy", icon: Trophy, color: "#b45309" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is the total marks structure for NEET UG?", a: "NEET UG consists of 200 questions (attempt 180) for 720 total marks: 360 marks for Biology (Botany + Zoology), 180 for Physics, and 180 for Chemistry." },
+      { category: "biology", q: "Are questions strictly NCERT-based?", a: "Yes, over 95% of NEET Biology and Chemistry questions are direct NCERT line-by-line concept checks." }
+    ],
+    popular: [
+      { label: "NEET 720 Score Breakdown", cat: "getting-started" },
+      { label: "NCERT High-Yield Revision", cat: "biology" }
+    ],
+    quickLinks: [
+      { icon: Stethoscope, label: "Biology NCERT Drills", path: "/neet", color: "#16a34a" },
+      { icon: Zap, label: "Physics Practice Mocks", path: "/neet", color: "#7c3aed" },
+      { icon: BookOpen, label: "Chemistry Practice Mocks", path: "/neet", color: "#0284c7" }
+    ]
   },
-  {
-    category: "scores",
-    q: "How is the IELTS band score calculated?",
-    a: "For Reading and Listening, your raw score (number correct) is converted to a band using official IELTS conversion tables. For Writing and Speaking, the AI evaluates your response against the four official band descriptors and provides a band estimate.",
-  },
-  {
-    category: "scores",
-    q: "Can I download or share my results?",
-    a: "Yes. From the Results or Evaluation History page, use the 'Download PDF' button to export your result as a formatted PDF you can share or print.",
-  },
-  {
-    category: "scores",
-    q: "What are Certificates?",
-    a: "Knarrow awards achievement certificates when you reach milestones like completing a full mock exam or consistently scoring above a target band. Find them at /certificates.",
-  },
-];
 
-/* ─────────────────────────────────────────────
-   POPULAR ARTICLES  (quick-start links)
-───────────────────────────────────────────── */
+  /* ⚖️ CLAT */
+  CLAT: {
+    title: "CLAT Exam Help & Guide",
+    subtitle: "Master Legal Reasoning, Current Affairs, English & Logic for National Law Universities.",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: Scale, color: "#9333ea" },
+      { id: "legal", label: "Legal Reasoning", icon: Scale, color: "#7c3aed" },
+      { id: "gk", label: "Current Affairs & GK", icon: Globe, color: "#0284c7" },
+      { id: "english-logic", label: "English & Logic", icon: BookOpen, color: "#059669" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is the CLAT exam duration and passage style?", a: "CLAT features 120 passage-based MCQs in 120 minutes with 0.25 negative marking per incorrect answer." },
+      { category: "legal", q: "Do I need prior legal knowledge for Legal Reasoning?", a: "No. Legal principles are provided inside the reading passage; you apply the principle to the factual situation." }
+    ],
+    popular: [
+      { label: "Passage Comprehension Techniques for CLAT", cat: "legal" },
+      { label: "CLAT 120 Min Speed Strategy", cat: "getting-started" }
+    ],
+    quickLinks: [
+      { icon: Scale, label: "Legal Reasoning Passages", path: "/clat", color: "#9333ea" },
+      { icon: Globe, label: "Current Affairs Drills", path: "/clat", color: "#0284c7" },
+      { icon: BookOpen, label: "Logical Reasoning Mocks", path: "/clat", color: "#059669" }
+    ]
+  },
 
-const POPULAR = [
-  { label: "How do I upgrade to Premium?",       cat: "billing"         },
-  { label: "How does AI Writing Evaluation work?", cat: "writing"        },
-  { label: "My microphone isn't working",          cat: "speaking"       },
-  { label: "How to restore a Listening session",   cat: "listening"      },
-  { label: "Where are my past results?",           cat: "scores"         },
-  { label: "What is the AI Study Coach?",          cat: "ai"             },
-];
+  /* ⚙️ GATE */
+  GATE: {
+    title: "GATE Engineering Exam Help & Guide",
+    subtitle: "Master Core Engineering, Mathematics, MSQs & Virtual Calculator for M.Tech & PSUs.",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: Cpu, color: "#475569" },
+      { id: "core", label: "Technical Core", icon: Cpu, color: "#2563eb" },
+      { id: "math", label: "Engineering Math", icon: Calculator, color: "#7c3aed" },
+      { id: "msq-nat", label: "MSQs & NAT", icon: Zap, color: "#d97706" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What are MSQ and NAT question types in GATE?", a: "MSQs (Multiple Select Questions) have one or more correct choices with ZERO partial marking. NAT (Numerical Answer Type) requires typing numeric values into a specified decimal range." },
+      { category: "math", q: "Is the Virtual Calculator available in GATE tests?", a: "Yes, an exact replica of the GATE TCS iON virtual calculator is available in all GATE tests on Knarrow." }
+    ],
+    popular: [
+      { label: "GATE MSQ Zero Partial Marking Rules", cat: "msq-nat" },
+      { label: "Virtual Calculator Tips & Tricks", cat: "math" }
+    ],
+    quickLinks: [
+      { icon: Cpu, label: "Technical Core Practice", path: "/gate", color: "#2563eb" },
+      { icon: Calculator, label: "Engineering Math Practice", path: "/gate", color: "#7c3aed" }
+    ]
+  },
+
+  /* 🗣️ TOEFL */
+  TOEFL: {
+    title: "TOEFL iBT Help & Guide",
+    subtitle: "Master Streamlined TOEFL Reading, Listening, Speaking & Academic Writing (0–120).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#0891b2" },
+      { id: "reading", label: "Reading", icon: BookOpen, color: "#0284c7" },
+      { id: "listening", label: "Listening", icon: Headphones, color: "#7c3aed" },
+      { id: "speaking", label: "Speaking", icon: Mic, color: "#dc2626" },
+      { id: "writing", label: "Academic Writing", icon: PenLine, color: "#059669" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is the new TOEFL iBT test duration?", a: "TOEFL iBT takes under 2 hours, featuring Reading (20 questions), Listening (28 questions), Speaking (4 tasks), and Writing (2 tasks including Writing for Academic Discussion)." },
+      { category: "writing", q: "What is 'Writing for Academic Discussion'?", a: "You state and justify your opinion in an online academic forum prompt within 10 minutes (100+ words)." }
+    ],
+    popular: [
+      { label: "TOEFL Writing for Academic Discussion Guide", cat: "writing" },
+      { label: "TOEFL 0-120 Subscore Conversion", cat: "getting-started" }
+    ],
+    quickLinks: [
+      { icon: PenLine, label: "Academic Discussion Writing", path: "/toefl", color: "#059669" },
+      { icon: Mic, label: "TOEFL Speaking Simulator", path: "/toefl", color: "#dc2626" }
+    ]
+  },
+
+  /* 🔤 PTE */
+  PTE: {
+    title: "PTE Academic Help & Guide",
+    subtitle: "Master Read Aloud, Repeat Sentence, Describe Image & Listening (10–90 Scale).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#b45309" },
+      { id: "speaking-writing", label: "Speaking & Writing", icon: Mic, color: "#dc2626" },
+      { id: "reading", label: "Reading", icon: BookOpen, color: "#0284c7" },
+      { id: "listening", label: "Listening", icon: Headphones, color: "#7c3aed" }
+    ],
+    faqs: [
+      { category: "speaking-writing", q: "How does Pearson AI score Oral Fluency & Pronunciation?", a: "Fluency is judged on natural rhythm without hesitations; Pronunciation compares vowel/consonant acoustic waveforms to native speech standards." },
+      { category: "getting-started", q: "How are PTE Enabling Skills calculated?", a: "Grammar, Oral Fluency, Pronunciation, Spelling, Vocabulary, and Discourse Structure combine to give your overall 10-90 score." }
+    ],
+    popular: [
+      { label: "Read Aloud Fluency vs Pronunciation Weightage", cat: "speaking-writing" },
+      { label: "PTE 10-90 Score Scale Breakdown", cat: "getting-started" }
+    ],
+    quickLinks: [
+      { icon: Mic, label: "Read Aloud & Repeat Sentence", path: "/pte", color: "#dc2626" },
+      { icon: BookOpen, label: "Describe Image Visuals", path: "/pte", color: "#b45309" }
+    ]
+  },
+
+  /* 🦉 DET */
+  DET: {
+    title: "Duolingo English Test Help & Guide",
+    subtitle: "Master Literacy, Comprehension, Conversation & Production (10–160 Scale).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#65a30d" },
+      { id: "subscores", label: "Subscores (10-160)", icon: Trophy, color: "#059669" },
+      { id: "interactive-reading", label: "Interactive Reading", icon: BookOpen, color: "#0284c7" },
+      { id: "production", label: "Writing & Speaking", icon: PenLine, color: "#7c3aed" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "How long is the DET and how is it structured?", a: "The DET takes ~1 hour, featuring computer adaptive short questions, Interactive Reading, Interactive Writing, and a Video Interview." },
+      { category: "subscores", q: "What are the 4 DET subscores?", a: "Literacy (Read & Write), Comprehension (Read & Listen), Conversation (Listen & Speak), and Production (Write & Speak)." }
+    ],
+    popular: [
+      { label: "DET Computer Adaptive Difficulty Rules", cat: "getting-started" },
+      { label: "Interactive Reading Fill-in-the-Blanks", cat: "interactive-reading" }
+    ],
+    quickLinks: [
+      { icon: BookOpen, label: "Interactive Reading Practice", path: "/duolingo", color: "#0284c7" },
+      { icon: PenLine, label: "Picture Description & Writing", path: "/duolingo", color: "#7c3aed" }
+    ]
+  },
+
+  /* 🎯 ACT */
+  ACT: {
+    title: "ACT College Prep Help & Guide",
+    subtitle: "Master English, Mathematics, Reading & Science Reasoning (1–36 Composite).",
+    categories: [
+      { id: "getting-started", label: "Getting Started", icon: BookOpen, color: "#e11d48" },
+      { id: "english", label: "English", icon: BookOpen, color: "#0284c7" },
+      { id: "math", label: "Mathematics", icon: Calculator, color: "#d97706" },
+      { id: "reading", label: "Reading", icon: BookOpen, color: "#7c3aed" },
+      { id: "science", label: "Science Reasoning", icon: Zap, color: "#059669" }
+    ],
+    faqs: [
+      { category: "getting-started", q: "What is the ACT exam layout?", a: "ACT includes English (75 Qs, 45 mins), Math (60 Qs, 60 mins), Reading (40 Qs, 35 mins), and Science (40 Qs, 35 mins)." },
+      { category: "science", q: "Do I need scientific facts for ACT Science?", a: "No! ACT Science tests data interpretation, graph analysis, and conflicting viewpoints based on text provided." }
+    ],
+    popular: [
+      { label: "ACT Science Data Interpretation Strategy", cat: "science" },
+      { label: "ACT English 45s Pacing Guide", cat: "english" }
+    ],
+    quickLinks: [
+      { icon: Zap, label: "ACT Science Reasoning Mocks", path: "/act", color: "#059669" },
+      { icon: Calculator, label: "ACT Math Practice", path: "/act", color: "#d97706" }
+    ]
+  }
+};
 
 /* ─────────────────────────────────────────────
    ACCORDION ITEM
@@ -333,18 +437,44 @@ function AccordionItem({ q, a, open, onToggle }) {
 }
 
 /* ─────────────────────────────────────────────
-   MAIN PAGE
+   MAIN HELP CENTER COMPONENT
 ───────────────────────────────────────────── */
 
 export default function HelpCenter() {
-  const [search, setSearch]       = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [openFaq, setOpenFaq]     = useState(null);
+  const examContext = useExam ? useExam() : null;
+  const activeTrack = examContext?.activeTrack || "IELTS";
+  const selectTrack = examContext?.selectTrack;
 
-  /* filter FAQs */
-  const filtered = useMemo(() => {
+  const [selectedExam, setSelectedExam] = useState(activeTrack);
+  const [search, setSearch]             = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [openFaq, setOpenFaq]           = useState(null);
+
+  // Sync selected exam if global context changes
+  useEffect(() => {
+    if (activeTrack && EXAM_HELP_DATA[activeTrack]) {
+      setSelectedExam(activeTrack);
+    }
+  }, [activeTrack]);
+
+  function handleExamChange(examId) {
+    setSelectedExam(examId);
+    setActiveCategory("all");
+    setSearch("");
+    setOpenFaq(null);
+    if (selectTrack) {
+      selectTrack(examId, null); // update global context without forcing navigation
+    }
+  }
+
+  // Retrieve current active exam data (fallback to IELTS if undefined)
+  const currentExamConfig = EXAMS_LIST.find((e) => e.id === selectedExam) || EXAMS_LIST[0];
+  const examData = EXAM_HELP_DATA[selectedExam] || EXAM_HELP_DATA.IELTS;
+
+  /* Filter FAQs */
+  const filteredFaqs = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return FAQS.filter((faq) => {
+    return examData.faqs.filter((faq) => {
       const matchCat = activeCategory === "all" || faq.category === activeCategory;
       const matchSearch =
         !q ||
@@ -352,7 +482,7 @@ export default function HelpCenter() {
         faq.a.toLowerCase().includes(q);
       return matchCat && matchSearch;
     });
-  }, [search, activeCategory]);
+  }, [search, activeCategory, examData]);
 
   function handleCategoryClick(id) {
     setActiveCategory(id);
@@ -370,12 +500,14 @@ export default function HelpCenter() {
     <div className="hc-page">
       <AuroraBackground />
 
-      {/* ═══════ HERO ═══════ */}
+      {/* ═══════ HERO SECTION ═══════ */}
       <section className="hc-hero">
         <div className="hc-hero-inner">
+          
+          {/* Badge */}
           <div className="hc-hero-badge">
             <HelpCircle size={16} />
-            Help Center
+            <span>Knarrow Help Center</span>
           </div>
 
           <h1 className="hc-hero-title">
@@ -383,16 +515,47 @@ export default function HelpCenter() {
           </h1>
 
           <p className="hc-hero-sub">
-            Search our knowledge base or browse by topic below.
+            {examData.subtitle}
           </p>
 
-          {/* search bar */}
+          {/* ═══════ DYNAMIC EXAM TRACK SELECTOR BAR ═══════ */}
+          <div className="hc-exam-selector-wrap">
+            <div className="hc-exam-selector-header">
+              <Sparkles size={16} className="hc-exam-sparkle" />
+              <span>Select Exam Target:</span>
+              <span className="hc-exam-active-pill" style={{ color: currentExamConfig.color, borderColor: `${currentExamConfig.color}40` }}>
+                {currentExamConfig.icon} {currentExamConfig.name}
+              </span>
+            </div>
+
+            <div className="hc-exam-bar">
+              {EXAMS_LIST.map((ex) => {
+                const isActive = selectedExam === ex.id;
+                return (
+                  <button
+                    key={ex.id}
+                    className={`hc-exam-pill${isActive ? " hc-exam-pill--active" : ""}`}
+                    style={{
+                      "--exam-color": ex.color,
+                      borderColor: isActive ? ex.color : "var(--border)"
+                    }}
+                    onClick={() => handleExamChange(ex.id)}
+                  >
+                    <span className="hc-exam-pill-icon">{ex.icon}</span>
+                    <span className="hc-exam-pill-label">{ex.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Search bar */}
           <div className="hc-search-wrap">
             <Search size={20} className="hc-search-icon" />
             <input
               className="hc-search-input"
               type="text"
-              placeholder="Search articles, questions…"
+              placeholder={`Search ${currentExamConfig.label} questions, scoring, strategy…`}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -412,27 +575,29 @@ export default function HelpCenter() {
             )}
           </div>
 
-          {/* popular articles */}
-          <div className="hc-popular">
-            <span className="hc-popular-label">Popular:</span>
-            {POPULAR.map((item) => (
-              <button
-                key={item.label}
-                className="hc-popular-tag"
-                onClick={() => handlePopularClick(item)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
+          {/* Popular tags */}
+          {examData.popular && examData.popular.length > 0 && (
+            <div className="hc-popular">
+              <span className="hc-popular-label">Popular for {currentExamConfig.label}:</span>
+              {examData.popular.map((item) => (
+                <button
+                  key={item.label}
+                  className="hc-popular-tag"
+                  onClick={() => handlePopularClick(item)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* ═══════ CATEGORY GRID ═══════ */}
       <section className="hc-categories">
         <div className="hc-categories-inner">
-          <div className="hc-section-label">Browse by topic</div>
-          <h2 className="hc-section-title">What do you need help with?</h2>
+          <div className="hc-section-label">{currentExamConfig.label} Knowledge Base</div>
+          <h2 className="hc-section-title">Explore {currentExamConfig.name} Topics</h2>
 
           <div className="hc-cat-grid">
             {/* "All Topics" card */}
@@ -440,15 +605,15 @@ export default function HelpCenter() {
               className={`hc-cat-card${activeCategory === "all" ? " hc-cat-card--active" : ""}`}
               onClick={() => handleCategoryClick("all")}
             >
-              <div className="hc-cat-icon" style={{ background: "rgba(37,99,235,.12)", color: "#2563eb" }}>
+              <div className="hc-cat-icon" style={{ background: `${currentExamConfig.color}18`, color: currentExamConfig.color }}>
                 <Sparkles size={24} />
               </div>
               <span>All Topics</span>
-              <small>{FAQS.length} articles</small>
+              <small>{examData.faqs.length} articles</small>
             </button>
 
-            {CATEGORIES.map(({ id, label, icon: Icon, color }) => {
-              const count = FAQS.filter((f) => f.category === id).length;
+            {examData.categories.map(({ id, label, icon: Icon, color }) => {
+              const count = examData.faqs.filter((f) => f.category === id).length;
               return (
                 <button
                   key={id}
@@ -479,28 +644,28 @@ export default function HelpCenter() {
           <div className="hc-faq-header">
             <h2 className="hc-section-title">
               {activeCategory === "all"
-                ? "All Articles"
-                : CATEGORIES.find((c) => c.id === activeCategory)?.label || "Articles"}
+                ? `${currentExamConfig.label} FAQ & Guidelines`
+                : examData.categories.find((c) => c.id === activeCategory)?.label || "Articles"}
             </h2>
             <span className="hc-faq-count">
-              {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+              {filteredFaqs.length} result{filteredFaqs.length !== 1 ? "s" : ""}
             </span>
           </div>
 
-          {filtered.length === 0 ? (
+          {filteredFaqs.length === 0 ? (
             <div className="hc-no-results">
               <HelpCircle size={48} />
-              <h3>No articles found</h3>
+              <h3>No articles found for "{search || activeCategory}"</h3>
               <p>
-                Try a different search term, or{" "}
+                Try searching for another topic or{" "}
                 <button onClick={() => { setSearch(""); setActiveCategory("all"); }}>
-                  browse all topics
+                  view all {currentExamConfig.label} topics
                 </button>.
               </p>
             </div>
           ) : (
             <div className="hc-accordion">
-              {filtered.map((faq, i) => (
+              {filteredFaqs.map((faq, i) => (
                 <AccordionItem
                   key={i}
                   q={faq.q}
@@ -514,50 +679,45 @@ export default function HelpCenter() {
         </div>
       </section>
 
-      {/* ═══════ QUICK LINKS ═══════ */}
-      <section className="hc-quick-links">
-        <div className="hc-quick-links-inner">
-          <div className="hc-section-label">Helpful links</div>
-          <h2 className="hc-section-title">Jump right in</h2>
+      {/* ═══════ EXAM QUICK LINKS ═══════ */}
+      {examData.quickLinks && examData.quickLinks.length > 0 && (
+        <section className="hc-quick-links">
+          <div className="hc-quick-links-inner">
+            <div className="hc-section-label">{currentExamConfig.label} Practice Tools</div>
+            <h2 className="hc-section-title">Jump Right into {currentExamConfig.label} Practice</h2>
 
-          <div className="hc-quick-grid">
-            {[
-              { icon: BookOpen,   label: "Start Reading Practice",  path: "/reading",   color: "#0891b2" },
-              { icon: Headphones, label: "Start Listening Practice", path: "/listening", color: "#7c3aed" },
-              { icon: PenLine,    label: "Start Writing Practice",   path: "/writing",   color: "#059669" },
-              { icon: Mic,        label: "Start Speaking Practice",  path: "/speaking",  color: "#dc2626" },
-              { icon: Brain,      label: "Open AI Studio",           path: "/ai-center", color: "#d97706" },
-              { icon: CreditCard, label: "View Pricing Plans",       path: "/pricing",   color: "#16a34a" },
-            ].map(({ icon: Icon, label, path, color }) => (
-              <Link key={path} to={path} className="hc-quick-card">
-                <div className="hc-quick-icon" style={{ background: `${color}18`, color }}>
-                  <Icon size={22} />
-                </div>
-                <span>{label}</span>
-                <ArrowRight size={16} className="hc-quick-arrow" />
-              </Link>
-            ))}
+            <div className="hc-quick-grid">
+              {examData.quickLinks.map(({ icon: Icon, label, path, color }) => (
+                <Link key={label} to={path} className="hc-quick-card">
+                  <div className="hc-quick-icon" style={{ background: `${color}18`, color }}>
+                    <Icon size={22} />
+                  </div>
+                  <span>{label}</span>
+                  <ArrowRight size={16} className="hc-quick-arrow" />
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* ═══════ CONTACT ═══════ */}
+      {/* ═══════ CONTACT SUPPORT ═══════ */}
       <section className="hc-contact">
         <div className="hc-contact-inner">
-          <div className="hc-section-label">Still need help?</div>
-          <h2 className="hc-section-title">Contact Support</h2>
+          <div className="hc-section-label">Still need help with {currentExamConfig.label}?</div>
+          <h2 className="hc-section-title">Contact Knarrow Support</h2>
           <p className="hc-contact-sub">
-            Can't find what you're looking for? Our support team is here to help.
+            Our expert exam tutors and support engineers are available 24/7.
           </p>
 
           <div className="hc-contact-grid">
-            <a href="mailto:support@knarrow.in" className="hc-contact-card">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=support@knarrow.in" target="_blank" rel="noopener noreferrer" className="hc-contact-card">
               <div className="hc-contact-icon">
                 <Mail size={28} />
               </div>
               <h3>Email Support</h3>
               <p>support@knarrow.in</p>
-              <span className="hc-contact-badge">Usually replies within 24h</span>
+              <span className="hc-contact-badge">Opens directly in Gmail</span>
             </a>
 
             <Link to="/community" className="hc-contact-card">
@@ -565,8 +725,8 @@ export default function HelpCenter() {
                 <MessageCircle size={28} />
               </div>
               <h3>Community Forum</h3>
-              <p>Ask the Knarrow community</p>
-              <span className="hc-contact-badge hc-contact-badge--purple">Get peer help instantly</span>
+              <p>Discuss {currentExamConfig.label} strategies</p>
+              <span className="hc-contact-badge hc-contact-badge--purple">Get peer & tutor help</span>
             </Link>
           </div>
         </div>

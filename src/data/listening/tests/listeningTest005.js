@@ -181,14 +181,13 @@ const listeningTest005 = {
         },
 
         {
-          id: "section2_map",
-          type: "map",
+          id: "section2_matching",
+          type: "matching",
           title: "Questions 16–20",
           instruction:
-            "Label the map of the City Science Museum below.\n" +
+            "Match each museum feature below with the correct location (A–H).\n" +
             "Choose FIVE answers from the box and write the correct letter, A–H, " +
             "next to Questions 16–20.",
-          image: "/images/listening/test005-map.svg",
           options: [
             { letter: "A", text: "Café"                   },
             { letter: "B", text: "Discovery Room"         },
@@ -202,26 +201,31 @@ const listeningTest005 = {
           questions: [
             {
               id: 16,
+              item: "First gallery visited on today's tour",
               label: "First gallery visited on today's tour",
               answer: "E"
             },
             {
               id: 17,
+              item: "Area where interactive energy experiments are demonstrated",
               label: "Area where interactive energy experiments are demonstrated",
               answer: "C"
             },
             {
               id: 18,
+              item: "First-floor room in the north-east corner where the sky simulation takes place",
               label: "First-floor room in the north-east corner where the sky simulation takes place",
               answer: "G"
             },
             {
               id: 19,
+              item: "Room where today's guided tour ends",
               label: "Room where today's guided tour ends",
               answer: "B"
             },
             {
               id: 20,
+              item: "Counter passed when walking straight ahead from the Main Entrance",
               label: "Counter passed when walking straight ahead from the Main Entrance",
               answer: "D"
             }

@@ -3,6 +3,7 @@ import listeningTest002 from "./listeningTest002";
 import listeningTest003 from "./listeningTest003";
 import listeningTest004 from "./listeningTest004";
 import listeningTest005 from "./listeningTest005";
+import listeningTest006 from "./listeningTest006";
 
 export default [
   listeningTest001,
@@ -10,4 +11,5 @@ export default [
   listeningTest003,
   listeningTest004,
   listeningTest005,
+  listeningTest006,
 ];

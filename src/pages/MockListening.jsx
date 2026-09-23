@@ -25,12 +25,14 @@ export default function MockListening({
 }) {
   /* ── Resolve test ── */
   const { id: urlId } = useParams();
-  const test =
-    urlId
-      ? listeningTests.find((t) => t.id === urlId) ??
-        listeningTests[testIdProp] ??
-        listeningTests[0]
-      : listeningTests[testIdProp] ?? listeningTests[0];
+  const test = useMemo(() => {
+    if (urlId && urlId !== "random") {
+      const found = listeningTests.find((t) => t.id === urlId);
+      if (found) return found;
+    }
+    const randomIndex = Math.floor(Math.random() * listeningTests.length);
+    return listeningTests[randomIndex] || listeningTests[0];
+  }, [urlId]);
 
   if (!test) return <h2 style={{ color: "#fff", padding: 40 }}>Listening Test Not Found</h2>;
 

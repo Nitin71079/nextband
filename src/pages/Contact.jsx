@@ -167,7 +167,7 @@ export default function Contact() {
                   <Mail size={18} />
                   <div>
                     <span className="ci-label">Email</span>
-                    <a href="mailto:support@knarrow.in" className="ci-value">support@knarrow.in</a>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=support@knarrow.in" target="_blank" rel="noopener noreferrer" className="ci-value">support@knarrow.in</a>
                   </div>
                 </div>
                 <div className="contact-info-item">

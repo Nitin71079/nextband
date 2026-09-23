@@ -9,7 +9,7 @@
 export function rawToGreScaledScore(section1Correct, section2Correct, section2ModuleType = "medium") {
   const totalCorrect = (section1Correct || 0) + (section2Correct || 0); // Out of 27 total questions
   
-  // Section-level adaptive adjustment
+  // Section-level adaptive difficulty adjustment
   let bonus = 0;
   if (section2ModuleType === "hard") bonus = 3;
   else if (section2ModuleType === "easy") bonus = -3;
@@ -68,28 +68,91 @@ export function determineSection2Module(section1Correct, totalSection1Questions 
  */
 export function evaluateQuantComparison(userChoice, correctAnswer) {
   if (!userChoice || !correctAnswer) return 0;
-  return userChoice.trim().toUpperCase() === correctAnswer.trim().toUpperCase() ? 1 : 0;
+  const uLetter = String(userChoice).trim().charAt(0).toUpperCase();
+  const cLetter = String(correctAnswer).trim().charAt(0).toUpperCase();
+  return uLetter === cLetter ? 1 : 0;
 }
 
 /**
- * Evaluates Numeric Entry Question with mathematical equivalence check
+ * Evaluates Single Answer Multiple Choice Question
+ */
+export function evaluateMcqSingle(userChoice, correctAnswer) {
+  if (!userChoice || !correctAnswer) return 0;
+  const uClean = String(userChoice).trim();
+  const cClean = String(correctAnswer).trim();
+  if (uClean === cClean) return 1;
+
+  // Compare choice letter if options format is "A. Option text"
+  const uLetter = uClean.charAt(0).toUpperCase();
+  const cLetter = cClean.charAt(0).toUpperCase();
+  if (["A", "B", "C", "D", "E"].includes(uLetter) && ["A", "B", "C", "D", "E"].includes(cLetter) && uLetter === cLetter) {
+    return 1;
+  }
+  return 0;
+}
+
+/**
+ * Evaluates Multiple Answer Question (Reading Comp Multiple & Quant MC Multiple)
+ * All-or-Nothing Rule: Candidate must select exact set of correct choices.
+ */
+export function evaluateMcqMultiple(userSelections, correctAnswers) {
+  const uArr = Array.isArray(userSelections) ? userSelections : (userSelections ? [userSelections] : []);
+  const cArr = Array.isArray(correctAnswers) ? correctAnswers : (correctAnswers ? [correctAnswers] : []);
+
+  if (uArr.length === 0 || cArr.length === 0 || uArr.length !== cArr.length) return 0;
+
+  const sortedUser = [...uArr].map(s => String(s).trim().toLowerCase()).sort();
+  const sortedCorrect = [...cArr].map(s => String(s).trim().toLowerCase()).sort();
+
+  for (let i = 0; i < sortedUser.length; i++) {
+    if (sortedUser[i] !== sortedCorrect[i]) {
+      // Check if letter prefix matches (e.g. "a" vs "a. Option text")
+      const uL = sortedUser[i].charAt(0);
+      const cL = sortedCorrect[i].charAt(0);
+      if (uL !== cL) return 0;
+    }
+  }
+
+  return 1;
+}
+
+/**
+ * Evaluates Numeric Entry Question with mathematical equivalence check (e.g., 0.5 vs 1/2)
  */
 export function evaluateNumericEntry(userInput, correctAnswer, acceptedVariants = []) {
-  if (!userInput && userInput !== 0) return 0;
+  if (userInput === undefined || userInput === null || String(userInput).trim() === "") return 0;
   const uClean = String(userInput).trim();
   const cClean = String(correctAnswer).trim();
 
   if (uClean === cClean) return 1;
 
-  // Check numeric equivalence (e.g. 1.5 vs 3/2 or 1.50)
-  const uVal = parseFloat(uClean);
-  const cVal = parseFloat(cClean);
+  // Helper to parse numeric values including fractions e.g. "1/2" -> 0.5
+  const parseNum = (str) => {
+    if (str.includes("/")) {
+      const parts = str.split("/");
+      const num = parseFloat(parts[0]);
+      const den = parseFloat(parts[1]);
+      if (!isNaN(num) && !isNaN(den) && den !== 0) return num / den;
+    }
+    return parseFloat(str);
+  };
+
+  const uVal = parseNum(uClean);
+  const cVal = parseNum(cClean);
   if (!isNaN(uVal) && !isNaN(cVal) && Math.abs(uVal - cVal) < 0.0001) {
     return 1;
   }
 
-  // Check accepted variant strings
-  return acceptedVariants.some(v => String(v).trim() === uClean) ? 1 : 0;
+  if (Array.isArray(acceptedVariants)) {
+    return acceptedVariants.some(v => {
+      const vClean = String(v).trim();
+      if (vClean === uClean) return true;
+      const vVal = parseNum(vClean);
+      return !isNaN(uVal) && !isNaN(vVal) && Math.abs(uVal - vVal) < 0.0001;
+    }) ? 1 : 0;
+  }
+
+  return 0;
 }
 
 /**
@@ -97,11 +160,14 @@ export function evaluateNumericEntry(userInput, correctAnswer, acceptedVariants 
  * For 2-blank or 3-blank questions, candidate MUST get all blanks correct to earn 1 point.
  */
 export function evaluateTextCompletion(userSelections = {}, correctAnswers = {}) {
+  if (!userSelections || !correctAnswers) return 0;
   const blankKeys = Object.keys(correctAnswers);
   if (blankKeys.length === 0) return 0;
 
   for (const bKey of blankKeys) {
-    if (userSelections[bKey] !== correctAnswers[bKey]) {
+    const userVal = String(userSelections[bKey] || "").trim().toLowerCase();
+    const correctVal = String(correctAnswers[bKey] || "").trim().toLowerCase();
+    if (userVal !== correctVal) {
       return 0; // Mandatory All-or-Nothing rule
     }
   }
@@ -113,11 +179,13 @@ export function evaluateTextCompletion(userSelections = {}, correctAnswers = {})
  * Full credit (1 point) only when BOTH correct choices are selected.
  */
 export function evaluateSentenceEquivalence(userSelected = [], correctPair = []) {
-  if (!Array.isArray(userSelected) || userSelected.length !== 2) return 0;
-  if (!Array.isArray(correctPair) || correctPair.length !== 2) return 0;
+  const uArr = Array.isArray(userSelected) ? userSelected : [];
+  const cArr = Array.isArray(correctPair) ? correctPair : [];
 
-  const sortedUser = [...userSelected].sort();
-  const sortedCorrect = [...correctPair].sort();
+  if (uArr.length !== 2 || cArr.length !== 2) return 0;
+
+  const sortedUser = [...uArr].map(s => String(s).trim().toLowerCase()).sort();
+  const sortedCorrect = [...cArr].map(s => String(s).trim().toLowerCase()).sort();
 
   return sortedUser[0] === sortedCorrect[0] && sortedUser[1] === sortedCorrect[1] ? 1 : 0;
 }
@@ -126,6 +194,8 @@ export function evaluateSentenceEquivalence(userSelected = [], correctPair = [])
  * Evaluates Select-in-Passage Question
  */
 export function evaluateSelectInPassage(userSentenceIndex, correctSentenceIndex) {
+  if (userSentenceIndex === undefined || userSentenceIndex === null) return 0;
+  if (correctSentenceIndex === undefined || correctSentenceIndex === null) return 0;
   return parseInt(userSentenceIndex, 10) === parseInt(correctSentenceIndex, 10) ? 1 : 0;
 }
 

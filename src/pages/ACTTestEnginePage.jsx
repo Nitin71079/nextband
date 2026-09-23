@@ -3,14 +3,20 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock, ShieldCheck, ChevronLeft, ChevronRight, CheckCircle2,
-  Bookmark, Award, Zap, AlertCircle, Calculator, FileText, X, Play, RotateCcw, PenTool, Ban
+  Bookmark, Award, Zap, AlertCircle, Calculator, FileText, X, Play, RotateCcw, PenTool, Ban,
+  Eye, EyeOff, BookOpen, Highlighter
 } from "lucide-react";
 import { actTests } from "../data/act/actTests";
 import { getACTConfig } from "../config/actConfig";
 import {
   scoreACTQuestion, rawToActSectionScore, calculateACTComposite,
-  calculateACTStemScore, calculateACTElaScore
+  calculateACTStemScore, calculateACTElaScore, evaluateFullACTNormativePerformance
 } from "../utils/actScoreCalculator";
+import { normalizeReadingPassages, normalizeSciencePassages } from "../utils/actMockGenerator";
+
+import ACTLineReader from "../components/act/ACTLineReader";
+import ACTHighlightAnnotator from "../components/act/ACTHighlightAnnotator";
+import ACTFormulaSheetDrawer from "../components/act/ACTFormulaSheetDrawer";
 
 export default function ACTTestEnginePage() {
   const { testId } = useParams();
@@ -20,13 +26,27 @@ export default function ACTTestEnginePage() {
   // Test mode query param: 'core', 'science', 'writing', 'complete'
   const mockMode = searchParams.get("mode") || "complete";
 
-  const testObj = useMemo(() => {
+  const rawTestObj = useMemo(() => {
     return actTests.find((t) => t.id === testId) || actTests[0];
   }, [testId]);
 
-  const config = getACTConfig(testObj.testVersion || "ACT_2026_NATIONAL");
+  // Apply Strict Passage Sequencing and Category Normalization
+  const testObj = useMemo(() => {
+    if (!rawTestObj) return null;
 
-  // Determine active section keys based on chosen mode
+    const copy = JSON.parse(JSON.stringify(rawTestObj));
+    if (copy.sections.reading?.questions) {
+      copy.sections.reading.questions = normalizeReadingPassages(copy.sections.reading.questions);
+    }
+    if (copy.sections.science?.questions) {
+      copy.sections.science.questions = normalizeSciencePassages(copy.sections.science.questions);
+    }
+    return copy;
+  }, [rawTestObj]);
+
+  const config = getACTConfig(testObj?.testVersion || "ACT_2026_NATIONAL");
+
+  // Active section keys based on chosen mode
   const activeSections = useMemo(() => {
     const secs = ["english", "math", "reading"];
     if (mockMode === "science" || mockMode === "complete") secs.push("science");
@@ -37,14 +57,16 @@ export default function ACTTestEnginePage() {
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
 
-  // User Response State
+  // User Response & Highlights State
   const [userAnswers, setUserAnswers] = useState({});
   const [flaggedQuestions, setFlaggedQuestions] = useState({});
   const [userEssayText, setUserEssayText] = useState("");
+  const [passageHighlights, setPassageHighlights] = useState([]);
 
   // Tools State
   const [showCalculator, setShowCalculator] = useState(false);
-  const [showScratchpad, setShowScratchpad] = useState(false);
+  const [showFormulaDrawer, setShowFormulaDrawer] = useState(false);
+  const [showLineReader, setShowLineReader] = useState(false);
   const [scratchText, setScratchText] = useState("");
   const [calcInput, setCalcInput] = useState("");
 
@@ -64,9 +86,9 @@ export default function ACTTestEnginePage() {
 
   const activeQuestions = isWritingSection
     ? []
-    : testObj.sections[activeSectionKey]?.questions || [];
+    : testObj?.sections[activeSectionKey]?.questions || [];
   const currentQ = activeQuestions[currentQuestionIdx] || activeQuestions[0];
-  const writingPrompt = testObj.sections.writing?.prompt;
+  const writingPrompt = testObj?.sections.writing?.prompt;
 
   // Auto-Save / Session Recovery
   useEffect(() => {
@@ -79,6 +101,8 @@ export default function ACTTestEnginePage() {
         setUserEssayText(parsed.userEssayText || "");
         setActiveSectionIdx(parsed.activeSectionIdx || 0);
         setCurrentQuestionIdx(parsed.currentQuestionIdx || 0);
+        setScratchText(parsed.scratchText || "");
+        setPassageHighlights(parsed.passageHighlights || []);
       } catch (err) {
         console.error("ACT session recovery error:", err);
       }
@@ -88,9 +112,17 @@ export default function ACTTestEnginePage() {
   useEffect(() => {
     localStorage.setItem(
       `act_session_${testId}`,
-      JSON.stringify({ userAnswers, flaggedQuestions, userEssayText, activeSectionIdx, currentQuestionIdx })
+      JSON.stringify({
+        userAnswers,
+        flaggedQuestions,
+        userEssayText,
+        activeSectionIdx,
+        currentQuestionIdx,
+        scratchText,
+        passageHighlights
+      })
     );
-  }, [userAnswers, flaggedQuestions, userEssayText, activeSectionIdx, currentQuestionIdx, testId]);
+  }, [userAnswers, flaggedQuestions, userEssayText, activeSectionIdx, currentQuestionIdx, scratchText, passageHighlights, testId]);
 
   // Section Timer Countdown
   useEffect(() => {
@@ -143,7 +175,7 @@ export default function ACTTestEnginePage() {
     }
   };
 
-  // Complete ACT Exam
+  // Complete ACT Exam with Normative IRT Score Equating
   const handleCompleteACTExam = () => {
     let engRaw = 0, mathRaw = 0, readRaw = 0, sciRaw = 0;
 
@@ -162,12 +194,19 @@ export default function ACTTestEnginePage() {
       });
     }
 
-    const englishScore = rawToActSectionScore(engRaw, "english");
-    const mathScore = rawToActSectionScore(mathRaw, "math");
-    const readingScore = rawToActSectionScore(readRaw, "reading");
-    const scienceScore = activeSections.includes("science") ? rawToActSectionScore(sciRaw, "science") : null;
+    const formDifficulty = 1.0; // Standard calibrated form
+    const normativeEval = evaluateFullACTNormativePerformance({
+      rawScores: { engRaw, mathRaw, readRaw, sciRaw },
+      formDifficulty,
+      activeSections
+    });
 
-    const compositeScore = calculateACTComposite(englishScore, mathScore, readingScore);
+    const englishScore = normativeEval.sectionScores.english;
+    const mathScore = normativeEval.sectionScores.math;
+    const readingScore = normativeEval.sectionScores.reading;
+    const scienceScore = normativeEval.sectionScores.science;
+    const compositeScore = normativeEval.compositeScore;
+
     const stemScore = scienceScore ? calculateACTStemScore(mathScore, scienceScore) : null;
     const elaScore = activeSections.includes("writing") ? calculateACTElaScore(englishScore, readingScore, 8) : null;
 
@@ -181,6 +220,9 @@ export default function ACTTestEnginePage() {
       rawScores: { engRaw, mathRaw, readRaw, sciRaw },
       sectionScores: { englishScore, mathScore, readingScore, scienceScore },
       compositeScore,
+      percentile: normativeEval.percentile,
+      sem: normativeEval.sem,
+      scoreRange: normativeEval.scoreRange,
       stemScore,
       elaScore,
       userEssayText
@@ -196,8 +238,19 @@ export default function ACTTestEnginePage() {
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#ffffff", fontFamily: "Inter, sans-serif", display: "flex", flexDirection: "column" }}>
 
-      {/* ── TOP HEADER BAR ── */}
-      <div style={{ background: "#0f172a", borderBottom: "1px solid rgba(255,255,255,0.12)", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 999 }}>
+      {/* ── NATIVE ACT LINE READER OVERLAY ── */}
+      <ACTLineReader isOpen={showLineReader} onClose={() => setShowLineReader(false)} />
+
+      {/* ── FORMULA & REFERENCE DRAWER ── */}
+      <ACTFormulaSheetDrawer
+        isOpen={showFormulaDrawer}
+        onClose={() => setShowFormulaDrawer(false)}
+        scratchText={scratchText}
+        setScratchText={setScratchText}
+      />
+
+      {/* ── TOP HEADER TOOLBAR ── */}
+      <div style={{ background: "#0f172a", borderBottom: "1px solid rgba(255,255,255,0.12)", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 998 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <button
             onClick={() => navigate("/act")}
@@ -206,7 +259,7 @@ export default function ACTTestEnginePage() {
             <ChevronLeft size={16} /> Exit Exam
           </button>
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: "#ffffff" }}>{testObj.title}</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: "#ffffff" }}>{testObj?.title}</h2>
             <div style={{ fontSize: 11, color: "#38bdf8", fontWeight: 800 }}>OFFICIAL ACT 2026 SIMULATION</div>
           </div>
         </div>
@@ -240,7 +293,48 @@ export default function ACTTestEnginePage() {
         </div>
 
         {/* Right Tools & Timer */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Line Reader / Masking Toggle */}
+          <button
+            onClick={() => setShowLineReader((prev) => !prev)}
+            style={{
+              background: showLineReader ? "rgba(56,189,248,0.25)" : "rgba(255,255,255,0.08)",
+              color: showLineReader ? "#38bdf8" : "#cbd5e1",
+              border: showLineReader ? "1px solid #38bdf8" : "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 10,
+              padding: "8px 12px",
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6
+            }}
+          >
+            {showLineReader ? <Eye size={16} /> : <EyeOff size={16} />}
+            Line Reader
+          </button>
+
+          {/* Formulas & Reference Drawer Toggle */}
+          <button
+            onClick={() => setShowFormulaDrawer(true)}
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              color: "#cbd5e1",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 10,
+              padding: "8px 12px",
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6
+            }}
+          >
+            <BookOpen size={16} color="#38bdf8" /> Formulas &amp; Notes
+          </button>
+
           {/* On-Screen Calculator (Disabled in Science) */}
           <button
             disabled={!isCalculatorAllowed}
@@ -250,7 +344,7 @@ export default function ACTTestEnginePage() {
               color: !isCalculatorAllowed ? "#ef4444" : showCalculator ? "#facc15" : "#cbd5e1",
               border: !isCalculatorAllowed ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(255,255,255,0.15)",
               borderRadius: 10,
-              padding: "8px 14px",
+              padding: "8px 12px",
               fontSize: 12,
               fontWeight: 800,
               cursor: !isCalculatorAllowed ? "not-allowed" : "pointer",
@@ -260,15 +354,7 @@ export default function ACTTestEnginePage() {
             }}
           >
             {!isCalculatorAllowed ? <Ban size={16} /> : <Calculator size={16} />}
-            {activeSectionKey === "science" ? "No Calc (Science)" : "Calculator"}
-          </button>
-
-          {/* Rough Scratchpad Toggle */}
-          <button
-            onClick={() => setShowScratchpad((prev) => !prev)}
-            style={{ background: showScratchpad ? "rgba(56,189,248,0.2)" : "rgba(255,255,255,0.08)", color: showScratchpad ? "#38bdf8" : "#cbd5e1", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "8px 14px", fontSize: 12, fontWeight: 800, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}
-          >
-            <FileText size={16} /> Scratchpad
+            {activeSectionKey === "science" ? "No Calc" : "Calculator"}
           </button>
 
           {/* Section Timer */}
@@ -281,7 +367,7 @@ export default function ACTTestEnginePage() {
       {/* ── MAIN EXAM AREA ── */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", flex: 1, minHeight: "calc(100vh - 65px)" }}>
 
-        {/* LEFT COLUMN: QUESTION CONTENT & INPUT */}
+        {/* LEFT COLUMN: QUESTION CONTENT & ANNOTATABLE PASSAGE */}
         <div style={{ padding: 32, overflowY: "auto", borderRight: "1px solid rgba(255,255,255,0.1)" }}>
 
           {isWritingSection ? (
@@ -323,15 +409,16 @@ export default function ACTTestEnginePage() {
           ) : (
             /* MULTIPLE CHOICE SECTIONS */
             <div>
-              {/* Passage / Scenario Box */}
+              {/* Passage Box with Interactive Highlighting & Annotator */}
               {(currentQ?.passageText || currentQ?.scenarioText) && (
-                <div style={{ background: "rgba(30,41,59,0.75)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: 24, marginBottom: 28, maxHeight: 300, overflowY: "auto" }}>
-                  <div style={{ fontSize: 12, fontWeight: 800, color: "#38bdf8", textTransform: "uppercase", marginBottom: 8 }}>
-                    {currentQ.passageTitle || currentQ.scenarioTitle || "Passage / Scenario Text"}
-                  </div>
-                  <div style={{ color: "#e2e8f0", fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-line" }}>
-                    {currentQ.passageText || currentQ.scenarioText}
-                  </div>
+                <div style={{ background: "rgba(30,41,59,0.75)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: 24, marginBottom: 28, maxHeight: 340, overflowY: "auto" }}>
+                  <ACTHighlightAnnotator
+                    passageId={currentQ.id || "passage_main"}
+                    passageTitle={currentQ.passageTitle || currentQ.scenarioTitle}
+                    passageText={currentQ.passageText || currentQ.scenarioText}
+                    highlights={passageHighlights}
+                    onUpdateHighlights={setPassageHighlights}
+                  />
                 </div>
               )}
 
@@ -341,9 +428,9 @@ export default function ACTTestEnginePage() {
                   <span style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "4px 12px", borderRadius: 8, fontSize: 12, fontWeight: 900 }}>
                     QUESTION {currentQuestionIdx + 1} OF {activeQuestions.length} ({activeSectionKey.toUpperCase()})
                   </span>
-                  {currentQ?.category && (
+                  {(currentQ?.category || currentQ?.scienceCategoryTitle || currentQ?.passageGenre) && (
                     <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700 }}>
-                      Category: {currentQ.category}
+                      Category: {currentQ.category || currentQ.scienceCategoryTitle || currentQ.passageGenre}
                     </span>
                   )}
                 </div>
@@ -526,22 +613,6 @@ export default function ACTTestEnginePage() {
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* ── ROUGH WORK SCRATCHPAD MODAL ── */}
-      {showScratchpad && (
-        <div style={{ position: "fixed", bottom: 80, right: 100, background: "#0f172a", border: "2px solid #38bdf8", borderRadius: 20, padding: 20, width: 320, zIndex: 9999, boxShadow: "0 20px 40px rgba(0,0,0,0.6)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 900, color: "#38bdf8" }}>ROUGH WORK SCRATCHPAD</span>
-            <X size={16} cursor="pointer" onClick={() => setShowScratchpad(false)} />
-          </div>
-          <textarea
-            value={scratchText}
-            onChange={(e) => setScratchText(e.target.value)}
-            placeholder="Type equations, variables, and scratch notes here..."
-            style={{ width: "100%", height: 180, background: "#020617", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, padding: 12, color: "#ffffff", fontSize: 13, outline: "none", resize: "none" }}
-          />
         </div>
       )}
 

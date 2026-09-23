@@ -12,7 +12,7 @@ export async function callOpenAI(prompt) {
 try {
 const completion =
 await client.chat.completions.create({
-model: "llama-3.3-70b-versatile",
+model: "groq/compound-mini",
 
     messages: [
       {

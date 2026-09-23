@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 520" width="700" height="520" font-family="Arial, sans-serif">
+  <!-- Background -->
+  <rect width="700" height="520" fill="#f4f7f4" rx="8"/>
+
+  <!-- Title -->
+  <text x="350" y="32" text-anchor="middle" font-size="16" font-weight="bold" fill="#1b4332">OAKRIDGE NATURE RESERVE — SITE LAYOUT MAP</text>
+
+  <!-- Outer Reserve Boundary -->
+  <rect x="50" y="50" width="600" height="430" fill="#ffffff" stroke="#2d6a4f" stroke-width="2.5" rx="6"/>
+
+  <!-- Compass Indicator -->
+  <g transform="translate(620, 75)">
+    <circle cx="0" cy="0" r="18" fill="#ffffff" stroke="#2d6a4f" stroke-width="1.5"/>
+    <text x="0" y="-4" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b4332">N</text>
+    <polygon points="0,-14 -4,-4 4,-4" fill="#2d6a4f"/>
+  </g>
+
+  <!-- Central Gravel Path -->
+  <path d="M 350,480 L 350,180 Q 350,120 280,120 L 100,120" stroke="#d4a373" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 350,480 L 350,180 Q 350,120 280,120 L 100,120" stroke="#faedcd" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="365" y="440" font-size="10" fill="#8c5e2b" font-weight="bold">Main Central Path</text>
+
+  <!-- Wooden Bridge -->
+  <rect x="330" y="340" width="40" height="18" fill="#b08968" stroke="#7f5539" stroke-width="1.5" rx="2"/>
+  <text x="350" y="353" text-anchor="middle" font-size="9" fill="#ffffff" font-weight="bold">BRIDGE</text>
+
+  <!-- Main Lake Area -->
+  <path d="M 320,180 Q 420,130 520,160 Q 600,200 580,270 Q 520,330 400,310 Q 320,290 320,180 Z" fill="#90e0ef" stroke="#0077b6" stroke-dasharray="4,2" stroke-width="2"/>
+  <text x="460" y="235" text-anchor="middle" font-size="13" font-weight="bold" fill="#03045e">Central Lake</text>
+
+  <!-- ─── LOCATIONS (16 to 20) ─── -->
+
+  <!-- Q16: Wildflower Meadow (B) - East of path just past wooden bridge -->
+  <rect x="400" y="360" width="180" height="90" fill="#e9edc9" stroke="#52b788" stroke-width="2" rx="4"/>
+  <circle cx="430" cy="405" r="16" fill="#1b4332"/>
+  <text x="430" y="410" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">16</text>
+  <text x="510" y="400" text-anchor="middle" font-size="11" fill="#2d6a4f" font-weight="bold">[ Q16 ]</text>
+
+  <!-- Q17: Wetland Boardwalk (E) - West off central path at lake edge -->
+  <rect x="180" y="160" width="130" height="70" fill="#ccd5ae" stroke="#52b788" stroke-width="2" rx="4"/>
+  <circle cx="210" cy="195" r="16" fill="#1b4332"/>
+  <text x="210" y="200" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">17</text>
+  <text x="260" y="198" text-anchor="middle" font-size="11" fill="#2d6a4f" font-weight="bold">[ Q17 ]</text>
+
+  <!-- Q18: Bird Hide (C) - Far eastern bank of lake -->
+  <rect x="530" y="100" width="100" height="60" fill="#faedcd" stroke="#d4a373" stroke-width="2" rx="4"/>
+  <circle cx="580" cy="130" r="16" fill="#1b4332"/>
+  <text x="580" y="135" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">18</text>
+  <text x="580" y="152" text-anchor="middle" font-size="9" fill="#7f5539" font-style="italic">[ Q18 ]</text>
+
+  <!-- Q19: Equipment Shed (F) - SW corner next to West Gate Car Park -->
+  <rect x="70" y="380" width="120" height="70" fill="#e2e2e2" stroke="#6c757d" stroke-width="2" rx="4"/>
+  <circle cx="100" cy="415" r="16" fill="#1b4332"/>
+  <text x="100" y="420" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">19</text>
+  <text x="145" y="418" text-anchor="middle" font-size="11" fill="#495057" font-weight="bold">[ Q19 ]</text>
+
+  <!-- Q20: Tree Nursery (D) - NW corner near greenhouses -->
+  <rect x="70" y="65" width="140" height="70" fill="#d8f3dc" stroke="#40916c" stroke-width="2" rx="4"/>
+  <circle cx="100" cy="100" r="16" fill="#1b4332"/>
+  <text x="100" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">20</text>
+  <text x="155" y="103" text-anchor="middle" font-size="11" fill="#1b4332" font-weight="bold">[ Q20 ]</text>
+
+  <!-- West Gate Car Park & Entrance -->
+  <rect x="70" y="455" width="100" height="25" fill="#ced4da" stroke="#495057" stroke-width="1"/>
+  <text x="120" y="471" text-anchor="middle" font-size="9" fill="#212529" font-weight="bold">WEST GATE CAR PARK</text>
+
+  <!-- South Entrance -->
+  <rect x="300" y="475" width="100" height="10" fill="#d4a373"/>
+  <text x="350" y="470" text-anchor="middle" font-size="10" fill="#1b4332" font-weight="bold">VOLUNTEER ENTRANCE</text>
+</svg>

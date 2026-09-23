@@ -39,8 +39,8 @@ export function toeflToOldScale(score) {
   if (s >= 3.0) return "50 - 59";
   if (s >= 2.5) return "40 - 49";
   if (s >= 2.0) return "30 - 39";
-  if (s >= 1.5) return "20 - 29";
-  return "10 - 19";
+  if (s >= 1.5) return "10 - 29";
+  return "0+";
 }
 
 /**

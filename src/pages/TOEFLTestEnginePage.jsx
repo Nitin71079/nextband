@@ -505,7 +505,7 @@ export default function TOEFLTestEnginePage() {
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ fontSize: "16px", fontWeight: 900, color: "#c084fc", letterSpacing: "0.5px", display: "flex", alignItems: "center", gap: 8 }}>
             <Sparkles size={18} color="#c084fc" />
-            <span>ETS TOEFL iBT Official Test Engine</span>
+            <span>🎓 IELTS Academic &amp; TOEFL iBT 2026 Test Engine</span>
           </div>
           <div style={{ display: "flex", gap: 6 }}>
             {["reading", "listening", "writing", "speaking"].map((sec) => (
@@ -577,10 +577,12 @@ export default function TOEFLTestEnginePage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "4px 12px", borderRadius: 8, fontSize: 13, fontWeight: 800 }}>
-                  Multistage Adaptive
+                  Adaptive Reading
                 </span>
                 <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 700 }}>
-                  {readingStage === "router" ? "Module 1 (Router Module ~18 Min)" : "Module 2 (Selected Adaptive Module ~9 Min)"}
+                  {readingStage === "router"
+                    ? "Module 1 — Router"
+                    : (readingModuleItems === testData.sections.reading.upperModule ? "Module 2 — Upper" : "Module 2 — Lower")}
                 </span>
               </div>
               <span style={{ fontSize: 13, color: "#94a3b8" }}>
@@ -662,8 +664,13 @@ export default function TOEFLTestEnginePage() {
               <div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: "#ffffff", marginBottom: 16 }}>
                   {currentReadingItem.type === "read_daily_life"
-                    ? (currentReadingItem.stimulusFormat === "Campus Notice" ? "Read a notice." : currentReadingItem.stimulusFormat === "Email" ? "Read an email." : "Read a social media post.")
-                    : "Read an Academic Passage."}
+                    ? "Read in Daily Life"
+                    : "Read an Academic Passage"}
+                  {currentReadingItem.stimulusFormat && (
+                    <span style={{ fontSize: 14, color: "#38bdf8", marginLeft: 12, fontWeight: 600 }}>
+                      ({currentReadingItem.stimulusFormat})
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 24, alignItems: "start" }}>
@@ -771,7 +778,13 @@ export default function TOEFLTestEnginePage() {
           <div style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 28 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <span style={{ fontSize: 13, color: "#8b5cf6", fontWeight: 800 }}>
-                Task: {currentListeningItem.type.replace(/_/g, " ").toUpperCase()}
+                Task: {
+                  currentListeningItem.type === "listen_choose_response" ? "Listen and Choose a Response" :
+                  currentListeningItem.type === "listen_conversation" ? "Listen to a Conversation" :
+                  currentListeningItem.type === "listen_announcement" ? "Listen to an Announcement" :
+                  currentListeningItem.type === "listen_academic_talk" ? "Listen to an Academic Talk" :
+                  "Listening Task"
+                }
               </span>
               <span style={{ fontSize: 13, color: "#94a3b8" }}>
                 Item {listeningItemIndex + 1} of {listeningModuleItems.length}
@@ -784,10 +797,10 @@ export default function TOEFLTestEnginePage() {
                 <User size={36} />
               </div>
               <div style={{ fontSize: 16, fontWeight: 800, color: "#ffffff", marginBottom: 4 }}>
-                ETS TOEFL Speaker (North American / UK Accent)
+                Audio Prompt
               </div>
               <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 18 }}>
-                {isPlayingAudio ? "🔊 Audio playing now..." : playedAudioItems[currentListeningItem.id] ? "✓ Audio played (Played once in exam mode)" : "Click Play Audio to listen"}
+                {isPlayingAudio ? "🔊 Audio playing now..." : playedAudioItems[currentListeningItem.id] ? "✓ Audio played (Played once in exam mode)" : "Listen carefully and choose the best response."}
               </div>
 
               <button
@@ -908,13 +921,13 @@ export default function TOEFLTestEnginePage() {
                 onClick={() => setWritingSubTask("email")}
                 style={{ background: writingSubTask === "email" ? "#f59e0b" : "rgba(255,255,255,0.06)", color: "#ffffff", border: "none", borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
               >
-                Write an Email (0–5 Task Rubric)
+                Write an Email
               </button>
               <button
                 onClick={() => setWritingSubTask("discussion")}
                 style={{ background: writingSubTask === "discussion" ? "#f59e0b" : "rgba(255,255,255,0.06)", color: "#ffffff", border: "none", borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
               >
-                Academic Discussion (0–5 Task Rubric)
+                Write for an Academic Discussion
               </button>
             </div>
 
@@ -927,7 +940,7 @@ export default function TOEFLTestEnginePage() {
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
                     <span style={{ fontSize: 13, color: "#f59e0b", fontWeight: 800 }}>Sentence #{bsIndex + 1} of 10 ({currentBs.difficulty})</span>
                   </div>
-                  <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Arrange word chips in correct grammatical order:</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Arrange the words and phrases to form a grammatically correct sentence:</h3>
 
                   <div style={{ background: "#0f172a", border: "2px dashed #f59e0b", borderRadius: 16, padding: 20, minHeight: 60, marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
                     {chosenWords.length === 0 ? (
@@ -1007,7 +1020,13 @@ export default function TOEFLTestEnginePage() {
               const wordCount = emailText.trim() ? emailText.trim().split(/\s+/).length : 0;
               return (
                 <div style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 28 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", marginBottom: 12 }}>Task 2: Write an Email (0–5 Raw Rubric Score)</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", marginBottom: 12 }}>Task 2: Write an Email</h3>
+                  
+                  <div style={{ background: "#0f172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "12px 18px", marginBottom: 14, fontSize: 13, color: "#cbd5e1", display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div><strong style={{ color: "#38bdf8" }}>To:</strong> Academic Recipient</div>
+                    <div><strong style={{ color: "#38bdf8" }}>Subject:</strong> Campus Inquiry / Request</div>
+                  </div>
+
                   <div style={{ background: "#0f172a", padding: 20, borderRadius: 14, marginBottom: 20, fontSize: 14, lineHeight: 1.7, color: "#cbd5e1" }}>
                     {emailTask.scenario}
                   </div>
@@ -1041,7 +1060,7 @@ export default function TOEFLTestEnginePage() {
               const wordCount = discussionText.trim() ? discussionText.trim().split(/\s+/).length : 0;
               return (
                 <div style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 28 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", marginBottom: 12 }}>Task 3: Academic Discussion (0–5 Raw Rubric Score)</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", marginBottom: 12 }}>Task 3: Write for an Academic Discussion</h3>
                   
                   <div style={{ background: "#0f172a", padding: 20, borderRadius: 14, marginBottom: 20, fontSize: 14, lineHeight: 1.7, color: "#cbd5e1", display: "flex", flexDirection: "column", gap: 12 }}>
                     <div><strong>{discTask.professorPrompt}</strong></div>
@@ -1059,7 +1078,7 @@ export default function TOEFLTestEnginePage() {
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ fontSize: 13, color: wordCount >= 100 ? "#4ade80" : "#facc15" }}>
-                      Word Count: {wordCount} (Recommended: 100+ words)
+                      Word Count: {wordCount} (An effective response will contain at least 100 words.)
                     </span>
                     <button
                       onClick={handleNextSection}
@@ -1082,13 +1101,13 @@ export default function TOEFLTestEnginePage() {
                 onClick={() => setSpeakingSubTask("repeat")}
                 style={{ background: speakingSubTask === "repeat" ? "#10b981" : "rgba(255,255,255,0.06)", color: "#ffffff", border: "none", borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
               >
-                Listen &amp; Repeat (7 Scenarios)
+                Listen and Repeat (7 Tasks)
               </button>
               <button
                 onClick={() => setSpeakingSubTask("interview")}
                 style={{ background: speakingSubTask === "interview" ? "#10b981" : "rgba(255,255,255,0.06)", color: "#ffffff", border: "none", borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer" }}
               >
-                Take an Interview (4 Questions)
+                Take an Interview (4 Tasks)
               </button>
             </div>
 
@@ -1098,10 +1117,10 @@ export default function TOEFLTestEnginePage() {
               return (
                 <div style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 28, textAlign: "center" }}>
                   <span style={{ background: "rgba(16,185,129,0.15)", color: "#10b981", padding: "4px 12px", borderRadius: 8, fontSize: 12, fontWeight: 800 }}>
-                    Sentence #{repeatIndex + 1} of 7 ({currentRep.level})
+                    Question #{repeatIndex + 1} of 7
                   </span>
 
-                  <h3 style={{ fontSize: 20, fontWeight: 800, margin: "20px 0 14px 0" }}>Listen to the sentence audio prompt and repeat it accurately:</h3>
+                  <h3 style={{ fontSize: 20, fontWeight: 800, margin: "20px 0 14px 0" }}>Listen carefully and repeat the sentence.</h3>
 
                   <button
                     onClick={() => playAudioPrompt(currentRep.id, currentRep.audioText)}
@@ -1110,8 +1129,8 @@ export default function TOEFLTestEnginePage() {
                     <Volume2 size={28} />
                   </button>
 
-                  <div style={{ background: "#0f172a", padding: 20, borderRadius: 14, fontSize: 18, fontWeight: 700, color: "#38bdf8", maxWidth: 600, margin: "0 auto 24px" }}>
-                    "{currentRep.audioText}"
+                  <div style={{ background: "rgba(15,23,42,0.6)", padding: 16, borderRadius: 14, fontSize: 14, color: "#94a3b8", maxWidth: 600, margin: "0 auto 24px", border: "1px dashed rgba(255,255,255,0.15)" }}>
+                    🎧 Sentence audio prompt is hidden during test mode. Click Play to listen, then record your spoken repetition.
                   </div>
 
                   <div style={{ marginBottom: 24 }}>
@@ -1185,31 +1204,14 @@ export default function TOEFLTestEnginePage() {
                     </button>
                   </div>
 
-                  <div style={{ background: "#0f172a", padding: 20, borderRadius: 14, marginBottom: 24, border: "1px solid rgba(255,255,255,0.1)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#cbd5e1" }}>🎙️ Spoken Response Transcript (Groq AI Evaluated):</span>
-                      <span style={{ fontSize: 12, color: isRecording ? "#facc15" : "#4ade80", fontWeight: 700 }}>
-                        {isRecording ? "● Recording & Transcribing Live..." : spokenTranscripts[currentInt.id] ? "✓ Spoken Response Captured" : "Ready to Record"}
-                      </span>
+                  <div style={{ background: "#0f172a", padding: "18px 24px", borderRadius: 16, marginBottom: 24, border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Mic size={20} color={isRecording ? "#ef4444" : "#10b981"} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#cbd5e1" }}>Spoken Response Recording</span>
                     </div>
-                    <textarea
-                      rows={3}
-                      value={spokenTranscripts[currentInt.id] || ""}
-                      onChange={(e) => setSpokenTranscripts({ ...spokenTranscripts, [currentInt.id]: e.target.value })}
-                      placeholder="Click 'Record Response' to speak into your microphone, or type your response here..."
-                      style={{
-                        width: "100%",
-                        background: "rgba(15,23,42,0.8)",
-                        border: "1px solid #10b981",
-                        borderRadius: 10,
-                        padding: 14,
-                        color: "#ffffff",
-                        fontSize: 15,
-                        lineHeight: 1.5,
-                        outline: "none",
-                        resize: "vertical"
-                      }}
-                    />
+                    <span style={{ fontSize: 13, color: isRecording ? "#facc15" : spokenTranscripts[currentInt.id] ? "#4ade80" : "#94a3b8", fontWeight: 700 }}>
+                      {isRecording ? "● Recording Active (Speak clearly into your microphone)" : spokenTranscripts[currentInt.id] ? "✓ Response Captured" : "Ready to Record"}
+                    </span>
                   </div>
 
                   <div style={{ marginBottom: 24, textAlign: "center" }}>

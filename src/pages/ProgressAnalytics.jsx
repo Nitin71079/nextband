@@ -7,7 +7,8 @@ import {
   Flame, ArrowRight, ChevronUp, ChevronDown, Minus,
   Sparkles, Lock,
 } from "lucide-react";
-import { getResults } from "../services/resultService";
+import { getFirestore, collection, query, where, onSnapshot } from "firebase/firestore";
+import { app } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import "../styles/analytics.css";
 
@@ -93,11 +94,41 @@ export default function ProgressAnalytics() {
   const [activeSkill, setActiveSkill] = useState("all");
 
   useEffect(() => {
-    if (!user) return;
-    getResults(user.uid).then((data) => {
-      setResults(data);
+    if (!user) { setLoading(false); return; }
+    setLoading(true);
+    const db = getFirestore(app);
+
+    let r1 = [];
+    let r2 = [];
+
+    const processCombined = () => {
+      const combinedMap = new Map();
+      [...r1, ...r2].forEach(item => combinedMap.set(item.id, item));
+      const sorted = Array.from(combinedMap.values()).sort((a, b) => {
+        const ta = a.completedAt?.toDate ? a.completedAt.toDate() : a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.completedAt || a.createdAt || 0);
+        const tb = b.completedAt?.toDate ? b.completedAt.toDate() : b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.completedAt || b.createdAt || 0);
+        return tb - ta;
+      });
+      setResults(sorted);
       setLoading(false);
-    });
+    };
+
+    const q1 = query(collection(db, "results"), where("userId", "==", user.uid));
+    const u1 = onSnapshot(q1, (snap) => {
+      r1 = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      processCombined();
+    }, () => processCombined());
+
+    const q2 = query(collection(db, "mockResults"), where("userId", "==", user.uid));
+    const u2 = onSnapshot(q2, (snap) => {
+      r2 = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      processCombined();
+    }, () => processCombined());
+
+    return () => {
+      u1();
+      u2();
+    };
   }, [user]);
 
   /* ── derived stats ─────────────────────────────── */

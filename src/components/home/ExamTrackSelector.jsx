@@ -96,42 +96,51 @@ export default function ExamTrackSelector() {
   ];
 
   return (
-    <section style={{ padding: "80px 24px", background: "var(--bg, #0f172a)", color: "var(--text, #ffffff)" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <section style={{ padding: "100px 24px", background: "radial-gradient(circle at 50% 0%, #0369a1 0%, #020617 70%)", color: "#ffffff", position: "relative", overflow: "hidden" }}>
+      
+      {/* Background Ambient Spotlights */}
+      <div className="ambient-light-spot" style={{ top: "10%", left: "5%" }} />
+      <div className="ambient-light-spot" style={{ bottom: "10%", right: "5%", background: "radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)" }} />
+
+      <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 2 }}>
         
         {/* Section Header */}
-        <div style={{ textAlign: "center", marginBottom: "56px" }}>
+        <div style={{ textAlign: "center", marginBottom: "64px" }}>
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              background: "rgba(37, 99, 235, 0.15)",
-              color: "#60a5fa",
-              border: "1px solid rgba(96, 165, 250, 0.3)",
-              padding: "6px 16px",
+              background: "rgba(56, 189, 248, 0.15)",
+              color: "#38bdf8",
+              border: "1px solid rgba(56, 189, 248, 0.3)",
+              padding: "8px 20px",
               borderRadius: "999px",
-              fontSize: "13px",
-              fontWeight: "800",
+              fontSize: "12px",
+              fontWeight: "900",
               textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              marginBottom: "16px",
+              letterSpacing: "1px",
+              marginBottom: "20px",
+              boxShadow: "0 4px 20px rgba(56, 189, 248, 0.2)"
             }}
           >
             <Sparkles size={16} /> Choose Your Target Exam Track
           </div>
 
-          <h2 style={{ fontSize: "clamp(2rem, 3.5vw, 2.8rem)", fontWeight: 900, margin: "0 0 16px 0", letterSpacing: "-0.5px" }}>
-            One Platform. <span style={{ background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>All Major Global Exams.</span>
+          <h2 style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)", fontWeight: 900, margin: "0 0 20px 0", letterSpacing: "-1px", lineHeight: 1.1 }}>
+            One Master Platform. <br />
+            <span style={{ background: "linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #c084fc 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              All 8 Major Global Exam Ecosystems.
+            </span>
           </h2>
           
-          <p style={{ color: "#94a3b8", fontSize: "1.1rem", maxWidth: "680px", margin: "0 auto", lineHeight: "1.6" }}>
-            Select your exam below to enter its specialized prep ecosystem—complete with AI scoring, study planners, CBT test simulators, and games.
+          <p style={{ color: "#cbd5e1", fontSize: "1.2rem", maxWidth: "720px", margin: "0 auto", lineHeight: "1.6" }}>
+            Select your target exam below to unlock its 100-mock form bank, Groq AI Llama 3.3 diagnostic evaluators, CBT test engine, and multiplayer arcade games.
           </p>
         </div>
 
         {/* Exam Cards Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "28px" }}>
           {EXAM_TRACKS.map((track) => {
             const Icon = track.icon;
             const isSelected = activeTrack === track.id;
@@ -139,18 +148,20 @@ export default function ExamTrackSelector() {
             return (
               <motion.div
                 key={track.id}
-                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                whileHover={{ y: -10, scale: 1.02 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 style={{
-                  background: isSelected ? track.activeBg : "rgba(30, 41, 59, 0.7)",
-                  border: isSelected ? `2px solid ${track.color}` : "1px solid rgba(255, 255, 255, 0.1)",
-                  borderRadius: "24px",
-                  padding: "32px",
+                  background: isSelected ? track.activeBg : "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
+                  border: isSelected ? `2px solid ${track.color}` : "1px solid rgba(255, 255, 255, 0.15)",
+                  borderRadius: "28px",
+                  padding: "36px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
-                  boxShadow: isSelected ? `0 20px 40px ${track.color}35` : "0 10px 30px rgba(0, 0, 0, 0.2)",
+                  boxShadow: isSelected ? `0 20px 50px ${track.color}45, inset 0 1px 0 rgba(255,255,255,0.3)` : "0 12px 40px rgba(0, 0, 0, 0.35)",
                   position: "relative",
-                  backdropFilter: "blur(10px)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
                 }}
               >
                 <div>

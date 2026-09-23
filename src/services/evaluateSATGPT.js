@@ -51,7 +51,7 @@ Respond strictly in valid JSON format with these exact keys:
 
   try {
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "groq/compound-mini",
       messages: [
         { role: "system", content: "You are an expert Digital SAT Psychometrician. Respond strictly in valid JSON." },
         { role: "user", content: prompt }

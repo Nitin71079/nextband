@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { greTests } from "../data/gre/greTests";
 import { getQuantPercentile, getVerbalPercentile } from "../utils/greScoreCalculator";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 import FloatingDanglerPill from "../components/FloatingDanglerPill";
 
 export default function GRECenter() {
@@ -79,15 +78,12 @@ export default function GRECenter() {
     <div style={{ minHeight: "100vh", background: "radial-gradient(circle at 50% 0%, #78350f 0%, #0f172a 70%)", color: "#ffffff", fontFamily: "Inter, sans-serif", padding: "40px 24px 80px" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
-        {/* ── EXAM TRACK SWITCHER ── */}
-        <ExamTrackHeaderSwitcher />
-
         {/* ── HERO BANNER ── */}
         <div style={{ marginBottom: "48px", position: "relative" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 32, alignItems: "center", marginBottom: 36 }}>
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <span style={{ background: "rgba(245,158,11,0.2)", color: "#facc15", border: "1px solid rgba(250,204,21,0.3)", padding: "6px 20px", borderRadius: "999px", fontSize: "13px", fontWeight: "800", letterSpacing: "0.5px", boxShadow: "0 0 20px rgba(245,158,11,0.2)", display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                <Sparkles size={15} color="#facc15" /> OFFICIAL GRE GENERAL TEST 2026 (130 - 170 SCALED SUITE)
+                <Sparkles size={15} color="#facc15" /> KNARROW GRE GENERAL PRACTICE HUB (130 - 170 SCALED SUITE)
               </span>
 
               <h1 style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)", fontWeight: 900, margin: "20px 0 16px", letterSpacing: "-1.5px", background: "linear-gradient(135deg, #ffffff 30%, #facc15 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>

@@ -135,26 +135,22 @@ export function useLiveData() {
     return () => unsub();
   }, [user]);
 
-  // ── Live Firestore: results collection ────────────────────────────────────
+  // ── Live Firestore: results & mockResults collections ────────────────────────
   useEffect(() => {
     if (!user) { setLoading(false); return; }
 
     const db = getFirestore(app);
-    const q = query(
-      collection(db, "results"),
-      where("userId", "==", user.uid),
-      limit(50)
-    );
+    let r1 = [];
+    let r2 = [];
 
-    const unsub = onSnapshot(q, (snap) => {
-      // Sort client-side to avoid composite index requirement
-      const results = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => {
-          const ta = a.completedAt?.toDate ? a.completedAt.toDate() : new Date(a.completedAt || 0);
-          const tb = b.completedAt?.toDate ? b.completedAt.toDate() : new Date(b.completedAt || 0);
-          return tb - ta;
-        });
+    const processCombined = () => {
+      const combinedMap = new Map();
+      [...r1, ...r2].forEach(item => combinedMap.set(item.id, item));
+      const results = Array.from(combinedMap.values()).sort((a, b) => {
+        const ta = a.completedAt?.toDate ? a.completedAt.toDate() : a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.completedAt || a.createdAt || 0);
+        const tb = b.completedAt?.toDate ? b.completedAt.toDate() : b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.completedAt || b.createdAt || 0);
+        return tb - ta;
+      });
 
       // ── Skill bands ──────────────────────────────────────────────────────
       const reading   = bandFromResults(results, "reading");
@@ -263,13 +259,26 @@ export function useLiveData() {
 
       setActivities(recentActivities);
       setLoading(false);
-    }, (err) => {
-      console.error("useLiveData error:", err);
-      setLoading(false);
-    });
+    };
 
-    return () => unsub();
+    const q1 = query(collection(db, "results"), where("userId", "==", user.uid), limit(50));
+    const u1 = onSnapshot(q1, (snap) => {
+      r1 = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      processCombined();
+    }, () => processCombined());
+
+    const q2 = query(collection(db, "mockResults"), where("userId", "==", user.uid), limit(50));
+    const u2 = onSnapshot(q2, (snap) => {
+      r2 = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      processCombined();
+    }, () => processCombined());
+
+    return () => {
+      u1();
+      u2();
+    };
   }, [user, userDoc]);
 
   return { loading, analytics, memory, activities, premium, firstName };
 }
+

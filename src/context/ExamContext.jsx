@@ -25,6 +25,10 @@ export function ExamProvider({ children }) {
       else if (track === "ACT") navigate("/act");
       else if (track === "SAT") navigate("/sat");
       else if (track === "GMAT") navigate("/gmat");
+      else if (track === "GATE") navigate("/gate");
+      else if (track === "JEE") navigate("/jee");
+      else if (track === "NEET") navigate("/neet");
+      else if (track === "CLAT") navigate("/clat");
       else navigate("/dashboard");
     }
   };

@@ -29,7 +29,7 @@ export default function MatchingRenderer({ group, answers, updateAnswer }) {
             >
               <div className="matching-item">
                 <strong>{question.id}.</strong>
-                <span>{question.item}</span>
+                <span>{question.item || question.label}</span>
               </div>
               <select
                 value={answers[question.id] || ""}

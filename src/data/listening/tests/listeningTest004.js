@@ -180,14 +180,13 @@ const listeningTest004 = {
         },
 
         {
-          id: "section2_map",
-          type: "map",
+          id: "section2_matching",
+          type: "matching",
           title: "Questions 16–20",
           instruction:
-            "Label the map of Green Valley Wildlife Rescue Centre below.\n" +
+            "Match each centre feature below with the correct location (A–H).\n" +
             "Choose FIVE answers from the box and write the correct letter, A–H, " +
             "next to Questions 16–20.",
-          image: "/images/listening/test004-map.svg",
           options: [
             { letter: "A", text: "Bird Rehabilitation Unit" },
             { letter: "B", text: "Car Park"                 },
@@ -201,26 +200,31 @@ const listeningTest004 = {
           questions: [
             {
               id: 16,
+              item: "Building where today's training session continues",
               label: "Building where today's training session continues",
               answer: "C"
             },
             {
               id: 17,
+              item: "Unit caring for injured owls and hawks",
               label: "Unit caring for injured owls and hawks",
               answer: "A"
             },
             {
               id: 18,
+              item: "Clinic where animals receive medical treatment",
               label: "Clinic where animals receive medical treatment",
               answer: "G"
             },
             {
               id: 19,
+              item: "Centre where volunteers prepare animal meals each morning",
               label: "Centre where volunteers prepare animal meals each morning",
               answer: "D"
             },
             {
               id: 20,
+              item: "Building where volunteers check in each morning",
               label: "Building where volunteers check in each morning",
               answer: "F"
             }

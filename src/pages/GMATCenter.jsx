@@ -2,13 +2,11 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Sparkles, Zap, BookOpen, PenTool, ArrowRight, CheckCircle2,
-  Calculator, Play, Layers, Clock, Award, Search, ChevronLeft, ChevronRight, ShieldCheck, TrendingUp, Star, BarChart2, Lock
+  Sparkles, Zap, BookOpen, ArrowRight, CheckCircle2,
+  Calculator, Play, Layers, Clock, Award, Search, ChevronLeft, ChevronRight, ShieldCheck, TrendingUp, Star, Lock
 } from "lucide-react";
 import { gmatTests } from "../data/gmat/gmatTests";
 import { isMockUnlocked } from "../utils/planAccess";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
-import FloatingDanglerPill from "../components/FloatingDanglerPill";
 
 export default function GMATCenter() {
   const navigate = useNavigate();
@@ -16,6 +14,7 @@ export default function GMATCenter() {
   // Search & Pagination State
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'simulations' | 'practice_modes'
   const itemsPerPage = 12;
 
   const filteredTests = useMemo(() => {
@@ -31,127 +30,53 @@ export default function GMATCenter() {
     return filteredTests.slice(start, start + itemsPerPage);
   }, [filteredTests, currentPage]);
 
-  const sections = [
-    {
-      title: "⚡ Quantitative Reasoning",
-      score: "60–90 Scale",
-      timing: "21 Questions (45 mins)",
-      color: "#10b981",
-      topics: [
-        "Problem Solving Questions ONLY",
-        "Arithmetic, Number Properties & Algebra",
-        "Linear/Non-linear Systems & Quadratics",
-        "Word Problems, Ratios & Rates",
-        "NO CALCULATOR PERMITTED"
-      ]
-    },
-    {
-      title: "📖 Verbal Reasoning",
-      score: "60–90 Scale",
-      timing: "23 Questions (45 mins)",
-      color: "#3b82f6",
-      topics: [
-        "Reading Comprehension (Main Idea & Inference)",
-        "Critical Reasoning (Strengthen/Weaken/Paradox)",
-        "Argument Structure & Assumption Analysis",
-        "Sentence Correction Retired"
-      ]
-    },
-    {
-      title: "📊 Data Insights",
-      score: "60–90 Scale",
-      timing: "20 Questions (45 mins)",
-      color: "#9333ea",
-      topics: [
-        "Data Sufficiency (A/B/C/D/E Statements)",
-        "Multi-Source Reasoning (Tabbed Data)",
-        "Table Analysis (Interactive Sortable Columns)",
-        "Graphics Interpretation & Two-Part Analysis",
-        "On-Screen Calculator Approved"
-      ]
-    }
+  const practiceModes = [
+    { title: "⚡ Full GMAT CBT Simulation", qCount: "64 Qs", time: "135 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#38bdf8" },
+    { title: "🔢 Quantitative Practice", qCount: "21 Qs", time: "45 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#10b981" },
+    { title: "📖 Verbal Practice", qCount: "23 Qs", time: "45 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#3b82f6" },
+    { title: "📊 Data Insights Practice", qCount: "20 Qs", time: "45 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#9333ea" },
+    { title: "📐 Problem Solving Practice", qCount: "21 Qs", time: "45 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#facc15" },
+    { title: "🧠 Critical Reasoning Practice", qCount: "12 Qs", time: "25 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#ec4899" },
+    { title: "📚 Reading Comprehension Practice", qCount: "11 Qs", time: "20 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#06b6d4" },
+    { title: "⚖️ Data Sufficiency Practice", qCount: "8 Qs", time: "16 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#84cc16" },
+    { title: "📑 Multi-Source Reasoning Practice", qCount: "4 Qs", time: "10 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#a855f7" },
+    { title: "📋 Table Analysis Practice", qCount: "4 Qs", time: "8 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#f97316" },
+    { title: "📈 Graphics Interpretation Practice", qCount: "4 Qs", time: "8 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#14b8a6" },
+    { title: "🔀 Two-Part Analysis Practice", qCount: "4 Qs", time: "8 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#e11d48" },
+    { title: "⏱️ Timed Section Speed Mode", qCount: "20 Qs", time: "40 Mins", route: "/gmat/test/gmat-adaptive-1", color: "#eab308" },
+    { title: "🔄 Adaptive IRT Engine Practice", qCount: "CAT Mode", time: "Dynamic", route: "/gmat/test/gmat-adaptive-1", color: "#6366f1" }
   ];
 
   return (
     <div style={{ minHeight: "100vh", background: "radial-gradient(circle at 50% 0%, #0369a1 0%, #0f172a 70%)", color: "#ffffff", fontFamily: "Inter, sans-serif", padding: "40px 24px 80px" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
-        {/* ── EXAM TRACK SWITCHER ── */}
-        <ExamTrackHeaderSwitcher />
-
         {/* ── HERO BANNER ── */}
-        <div style={{ marginBottom: "48px", position: "relative" }}>
+        <div style={{ marginBottom: "48px" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 32, alignItems: "center", marginBottom: 36 }}>
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <span style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "6px 20px", borderRadius: "999px", fontSize: "13px", fontWeight: "800", letterSpacing: "0.5px", boxShadow: "0 0 20px rgba(56,189,248,0.2)", display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                <Sparkles size={15} color="#38bdf8" /> OFFICIAL GMAT EXAM 2026 100-MOCK SUITE (205–805 SCALE)
+                <Sparkles size={15} color="#38bdf8" /> OFFICIAL GMAT FOCUS SIMULATOR (205–805 SCALE)
               </span>
 
               <h1 style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)", fontWeight: 900, margin: "20px 0 16px", letterSpacing: "-1.5px", background: "linear-gradient(135deg, #ffffff 30%, #38bdf8 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                GMAT 2026 Computer-Adaptive Hub
+                GMAT Focus Computer-Adaptive Hub
               </h1>
               <p style={{ color: "#94a3b8", fontSize: "1.15rem", margin: "0 0 28px", lineHeight: "1.6" }}>
-                Master all <strong>100 Full GMAT Computer-Adaptive Tests</strong> featuring <strong>Quantitative Reasoning</strong> (21 Qs / 45m), <strong>Verbal Reasoning</strong> (23 Qs / 45m), <strong>Data Insights</strong> (20 Qs / 45m), <strong>Section Order Selection</strong>, and <strong>Groq AI Llama 3.3</strong> diagnostics.
+                Practice all <strong>100 Full GMAT Computer-Adaptive Forms</strong> featuring <strong>Quantitative Reasoning</strong> (21 Qs / 45m), <strong>Verbal Reasoning</strong> (23 Qs / 45m), <strong>Data Insights</strong> (20 Qs / 45m), <strong>Section Order Selection</strong>, and <strong>Question Review & Edit</strong>.
               </p>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} style={{ textAlign: "center", position: "relative", display: "inline-block" }}>
-              
-              {/* Decorative Floating Glass Danglers */}
-              <FloatingDanglerPill
-                icon={TrendingUp}
-                value="+15 Pts"
-                label="Predicted Growth"
-                variant="light"
-                iconBg="rgba(56, 189, 248, 0.15)"
-                iconColor="#0284c7"
-                floatDelay={0}
-                style={{ position: "absolute", top: -10, right: -15 }}
-              />
-
-              <FloatingDanglerPill
-                icon={Star}
-                value="98%"
-                label="Candidate Pass Rate"
-                variant="light"
-                iconBg="rgba(192, 132, 252, 0.15)"
-                iconColor="#9333ea"
-                floatDelay={1.5}
-                style={{ position: "absolute", bottom: 20, left: -15 }}
-              />
-
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} style={{ textAlign: "center" }}>
               <img
                 src="/src/assets/images/dashboard_ai_hero.png"
                 alt="3D GMAT Prep Banner"
-                style={{ width: "100%", maxWidth: 400, borderRadius: 24, filter: "drop-shadow(0 15px 35px rgba(2, 132, 199, 0.4))", border: "1px solid rgba(255,255,255,0.15)" }}
+                style={{ width: "100%", maxWidth: 360, borderRadius: 24, filter: "drop-shadow(0 15px 35px rgba(2, 132, 199, 0.4))", border: "1px solid rgba(255,255,255,0.15)" }}
               />
             </motion.div>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, maxWidth: "900px", margin: "0 auto 36px" }}>
-            {[
-              { label: "Adaptive Mocks", val: "100 Full CAT Forms", color: "#38bdf8", icon: Layers },
-              { label: "Total Score Scale", val: "205 – 805 Scale", color: "#c084fc", icon: Award },
-              { label: "Section Scale", val: "60 – 90 per Section", color: "#facc15", icon: Clock },
-              { label: "AI CAT Engine", val: "Groq Llama 3.3", color: "#4ade80", icon: Zap },
-            ].map((stat, idx) => {
-              const IconComp = stat.icon;
-              return (
-                <div key={idx} style={{ background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, backdropFilter: "blur(10px)" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: `rgba(${stat.color === "#38bdf8" ? "56,189,248" : stat.color === "#c084fc" ? "192,132,252" : stat.color === "#facc15" ? "250,204,21" : "74,222,128"}, 0.15)`, display: "flex", alignItems: "center", justifyContent: "center", color: stat.color }}>
-                    <IconComp size={20} />
-                  </div>
-                  <div style={{ textAlign: "left" }}>
-                    <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>{stat.label}</div>
-                    <div style={{ fontSize: 15, fontWeight: 900, color: "#ffffff", marginTop: 2 }}>{stat.val}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
             <button
               onClick={() => {
                 const randomId = Math.floor(Math.random() * gmatTests.length) + 1;
@@ -169,48 +94,57 @@ export default function GMATCenter() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "12px",
-                boxShadow: "0 12px 30px rgba(2, 132, 199, 0.4)",
+                boxShadow: "0 12px 30px rgba(2, 132, 199, 0.4)"
               }}
             >
-              <Play size={20} fill="#ffffff" /> 🎲 Launch Random GMAT Computer-Adaptive Mock (1–100)
+              <Play size={20} fill="#ffffff" /> Launch Random GMAT CAT Simulation (1–100)
             </button>
           </div>
         </div>
 
-        {/* ── 3 COMPUTER-ADAPTIVE SECTIONS OVERVIEW ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20, marginBottom: 56 }}>
-          {sections.map((sec) => (
-            <div key={sec.title} style={{ background: "rgba(30,41,59,0.75)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 24, padding: 24, backdropFilter: "blur(12px)", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <span style={{ fontSize: 12, fontWeight: 900, color: sec.color, background: "rgba(255,255,255,0.06)", padding: "4px 10px", borderRadius: 8 }}>{sec.score}</span>
+        {/* ── 14 PRACTICE MODES GRID ── */}
+        <div style={{ marginBottom: "56px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+            <Zap size={22} color="#facc15" />
+            <h2 style={{ fontSize: "22px", fontWeight: 900, margin: 0, color: "#ffffff" }}>
+              GMAT Practice & Training Modes
+            </h2>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+            {practiceModes.map((pm, idx) => (
+              <div
+                key={idx}
+                onClick={() => navigate(pm.route)}
+                style={{
+                  background: "rgba(30,41,59,0.75)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: 18,
+                  padding: 20,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <div style={{ fontSize: 16, fontWeight: 800, color: pm.color, marginBottom: 6 }}>{pm.title}</div>
+                <div style={{ fontSize: 13, color: "#94a3b8" }}>{pm.qCount} · {pm.time}</div>
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 900, margin: "0 0 6px 0", color: "#ffffff" }}>{sec.title}</h3>
-              <div style={{ fontSize: 13, color: "#cbd5e1", marginBottom: 14, fontWeight: 600 }}>{sec.timing}</div>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, color: "#94a3b8", display: "flex", flexDirection: "column", gap: 8 }}>
-                {sec.topics.map((t, idx) => (
-                  <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 8, lineHeight: 1.4 }}>
-                    <CheckCircle2 size={15} color={sec.color} style={{ marginTop: 2, flexShrink: 0 }} />
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* ── MOCK EXAMS EXPLORER ── */}
-        <div style={{ background: "rgba(30,41,59,0.8)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 28, padding: 32, marginBottom: 48, boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }}>
+        <div style={{ background: "rgba(30,41,59,0.8)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 28, padding: 32, boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }}>
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <Layers size={24} color="#38bdf8" />
                 <h2 style={{ fontSize: 24, fontWeight: 900, margin: 0, color: "#ffffff" }}>
-                  Official GMAT 2026 Computer-Adaptive Mocks
+                  Official GMAT Focus CAT Mock Suite
                 </h2>
               </div>
               <p style={{ fontSize: 14, color: "#94a3b8", margin: "4px 0 0 0" }}>
-                Showing {filteredTests.length} full adaptive simulation forms
+                Showing {filteredTests.length} full computer-adaptive forms
               </p>
             </div>
 
@@ -234,10 +168,8 @@ export default function GMATCenter() {
               const unlocked = isMockUnlocked("GMAT", testNum);
 
               return (
-                <motion.div
+                <div
                   key={t.id}
-                  whileHover={{ y: -4 }}
-                  transition={{ duration: 0.2 }}
                   style={{
                     background: !unlocked ? "rgba(30,41,59,0.7)" : "rgba(15,23,42,0.85)",
                     border: !unlocked ? "1px solid rgba(250,204,21,0.3)" : "1px solid rgba(255,255,255,0.12)",
@@ -245,8 +177,7 @@ export default function GMATCenter() {
                     padding: 24,
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "space-between",
-                    boxShadow: "0 8px 25px rgba(0,0,0,0.25)"
+                    justifyContent: "space-between"
                   }}
                 >
                   <div>
@@ -255,13 +186,13 @@ export default function GMATCenter() {
                         {!unlocked ? `🔒 GMAT CAT #${testNum} (LOCKED)` : `GMAT CAT #${testNum}`}
                       </span>
                       <span style={{ fontSize: 12, color: "#94a3b8", display: "inline-flex", alignItems: "center", gap: 4, fontWeight: 700 }}>
-                        <Clock size={13} /> 2h 15m Testing
+                        <Clock size={13} /> 2h 15m
                       </span>
                     </div>
 
                     <h3 style={{ fontSize: 18, fontWeight: 800, color: "#ffffff", margin: "0 0 6px 0" }}>{t.title}</h3>
                     <p style={{ fontSize: 13, color: "#cbd5e1", margin: "0 0 16px 0", lineHeight: 1.5 }}>
-                      Quant (21 Qs) · Verbal (23 Qs) · Data Insights (20 Qs) · Item-Level IRT Adaptation
+                      Quant (21 Qs) · Verbal (23 Qs) · Data Insights (20 Qs) · Adaptive Scoring
                     </p>
                   </div>
 
@@ -286,83 +217,37 @@ export default function GMATCenter() {
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: 8,
-                      boxShadow: !unlocked ? "0 4px 14px rgba(217,119,6,0.35)" : "0 4px 14px rgba(2,132,199,0.35)"
+                      gap: 8
                     }}
                   >
-                    {!unlocked ? <><Lock size={16} /> Upgrade Plan to Unlock Mock #{testNum}</> : <><Play size={16} fill="#ffffff" /> Launch GMAT CAT #{testNum}</>}
+                    {!unlocked ? <><Lock size={16} /> Unlock Mock #{testNum}</> : <><Play size={16} fill="#ffffff" /> Launch GMAT CAT #{testNum}</>}
                   </button>
-                </motion.div>
+                </div>
               );
             })}
           </div>
 
-          {/* ── PAGINATION CONTROLS ── */}
+          {/* Pagination */}
           {totalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24, marginTop: 24 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24 }}>
               <div style={{ fontSize: 13, color: "#94a3b8", fontWeight: 700 }}>
-                Page <strong style={{ color: "#38bdf8" }}>{currentPage}</strong> of <strong style={{ color: "#ffffff" }}>{totalPages}</strong> ({filteredTests.length} Total Tests Available)
+                Page <strong style={{ color: "#38bdf8" }}>{currentPage}</strong> of <strong style={{ color: "#ffffff" }}>{totalPages}</strong>
               </div>
 
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 8 }}>
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  style={{
-                    background: currentPage === 1 ? "rgba(255,255,255,0.04)" : "rgba(56,189,248,0.2)",
-                    color: currentPage === 1 ? "#64748b" : "#38bdf8",
-                    border: currentPage === 1 ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(56,189,248,0.4)",
-                    borderRadius: 12,
-                    padding: "8px 16px",
-                    fontWeight: 800,
-                    fontSize: 13,
-                    cursor: currentPage === 1 ? "not-allowed" : "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6
-                  }}
+                  style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.4)", borderRadius: 10, padding: "8px 16px", cursor: "pointer", fontWeight: 800, fontSize: 13 }}
                 >
-                  <ChevronLeft size={16} /> Previous
+                  Previous
                 </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                  <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    style={{
-                      background: currentPage === pageNum ? "linear-gradient(135deg, #0284c7, #7c3aed)" : "rgba(255,255,255,0.06)",
-                      color: "#ffffff",
-                      border: currentPage === pageNum ? "1px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: 10,
-                      width: 36,
-                      height: 36,
-                      fontWeight: 800,
-                      fontSize: 13,
-                      cursor: "pointer"
-                    }}
-                  >
-                    {pageNum}
-                  </button>
-                ))}
-
                 <button
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  style={{
-                    background: currentPage === totalPages ? "rgba(255,255,255,0.04)" : "rgba(56,189,248,0.2)",
-                    color: currentPage === totalPages ? "#64748b" : "#38bdf8",
-                    border: currentPage === totalPages ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(56,189,248,0.4)",
-                    borderRadius: 12,
-                    padding: "8px 16px",
-                    fontWeight: 800,
-                    fontSize: 13,
-                    cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6
-                  }}
+                  style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.4)", borderRadius: 10, padding: "8px 16px", cursor: "pointer", fontWeight: 800, fontSize: 13 }}
                 >
-                  Next <ChevronRight size={16} />
+                  Next
                 </button>
               </div>
             </div>

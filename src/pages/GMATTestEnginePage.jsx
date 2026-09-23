@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Clock, ShieldCheck, ChevronLeft, ChevronRight, CheckCircle2,
-  Bookmark, Award, Zap, AlertCircle, Calculator, FileText, X, Play, RotateCcw, PenTool, Ban, Layers, RefreshCw
-} from "lucide-react";
+import { Clock, Bookmark, Calculator, ArrowLeft, ArrowRight, ShieldCheck, CheckCircle2, RotateCcw } from "lucide-react";
 import { gmatTests } from "../data/gmat/gmatTests";
-import { getGMATConfig } from "../config/gmatConfig";
 import { selectNextCATQuestion, updateAbilityEstimate } from "../utils/gmatAdaptiveEngine";
-import {
-  scoreGMATQuestion, calculateGMATSectionScore, calculateGMATTotalScore
-} from "../utils/gmatScoreCalculator";
+import { evaluateFullGMATPerformance, scoreGMATQuestion } from "../utils/gmatScoreCalculator";
+import { saveGMATSessionState, loadGMATSessionState, clearGMATSessionState } from "../utils/gmatSessionPersistence";
+
+import GMATPreExamFlow from "../components/gmat/GMATPreExamFlow";
+import GMATQuestionRenderer from "../components/gmat/GMATQuestionRenderer";
+import GMATCalculator from "../components/gmat/GMATCalculator";
+import GMATQuestionReviewModal from "../components/gmat/GMATQuestionReviewModal";
+import GMATBreakScreen from "../components/gmat/GMATBreakScreen";
 
 export default function GMATTestEnginePage() {
   const { testId } = useParams();
@@ -20,59 +20,81 @@ export default function GMATTestEnginePage() {
     return gmatTests.find((t) => t.id === testId) || gmatTests[0];
   }, [testId]);
 
-  const config = getGMATConfig(testObj.testVersion || "GMAT_2026");
-
-  // Section Order Selection Modal State
+  // Pre-Exam Flow State
   const [hasSelectedOrder, setHasSelectedOrder] = useState(false);
   const [sectionOrder, setSectionOrder] = useState(["quant", "verbal", "di"]);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
 
-  // Workflow Mode: 'exam' (CAT testing) vs 'review' (Section Review Screen)
+  // Workflow Stages: 'exam' | 'review' | 'break'
   const [stageMode, setStageMode] = useState("exam");
 
-  // CAT Trajectory & Ability Theta Tracking per section
+  // CAT Ability Theta & Trajectory
   const [thetas, setThetas] = useState({ quant: 0.0, verbal: 0.0, di: 0.0 });
   const [catTrajectories, setCatTrajectories] = useState({ quant: [0.0], verbal: [0.0], di: [0.0] });
 
-  // Current Question Index & Active Section Key
+  // Current Question List & Active Question Key
   const activeSectionKey = sectionOrder[activeSectionIdx] || "quant";
-  const activePool = testObj.sections[activeSectionKey]?.pool || [];
+  const activePool = useMemo(() => {
+    return testObj.sections[activeSectionKey]?.pool || [];
+  }, [testObj, activeSectionKey]);
 
   const [activeQuestion, setActiveQuestion] = useState(null);
-  const [answeredQuestionIds, setAnsweredQuestionIds] = useState(new Set());
   const [sectionQuestionsList, setSectionQuestionsList] = useState([]);
   const [currentListIdx, setCurrentListIdx] = useState(0);
 
-  // User State
+  // Candidate Response State
   const [userAnswers, setUserAnswers] = useState({});
   const [flaggedQuestions, setFlaggedQuestions] = useState({});
   const [answerChangeCount, setAnswerChangeCount] = useState({ quant: 0, verbal: 0, di: 0 });
 
-  // Tools & Review State
+  // Tools & Calculator State
   const [showCalculator, setShowCalculator] = useState(false);
-  const [calcInput, setCalcInput] = useState("");
-  const maxChanges = config.maxAnswerChangesPerSection || 3;
+  const maxAnswerChangesPerSection = 3;
 
-  // Section Timer (45 minutes per section)
+  // Independent Section Timers (45 mins = 2700s)
   const sectionDurationSeconds = 2700;
   const [timeLeft, setTimeLeft] = useState(sectionDurationSeconds);
 
-  // Initialize First CAT Question when section changes
+  // 1. Recover Session State on Load
   useEffect(() => {
-    if (hasSelectedOrder && stageMode === "exam") {
-      const answeredSet = new Set(sectionQuestionsList.map((q) => q.id));
+    const saved = loadGMATSessionState(testObj.id);
+    if (saved) {
+      setHasSelectedOrder(saved.hasSelectedOrder ?? false);
+      setSectionOrder(saved.sectionOrder || ["quant", "verbal", "di"]);
+      setActiveSectionIdx(saved.activeSectionIdx || 0);
+      setStageMode(saved.stageMode || "exam");
+      setThetas(saved.thetas || { quant: 0.0, verbal: 0.0, di: 0.0 });
+      setCatTrajectories(saved.catTrajectories || { quant: [0.0], verbal: [0.0], di: [0.0] });
+      setUserAnswers(saved.userAnswers || {});
+      setFlaggedQuestions(saved.flaggedQuestions || {});
+      setAnswerChangeCount(saved.answerChangeCount || { quant: 0, verbal: 0, di: 0 });
+      setSectionQuestionsList(saved.sectionQuestionsList || []);
+      setCurrentListIdx(saved.currentListIdx || 0);
+      if (saved.sectionQuestionsList && saved.sectionQuestionsList.length > 0) {
+        setActiveQuestion(saved.sectionQuestionsList[saved.currentListIdx || 0]);
+      }
+      if (typeof saved.timeLeft === "number") {
+        setTimeLeft(saved.timeLeft);
+      }
+    }
+  }, [testObj.id]);
+
+  // 2. Initialize First CAT Question when section changes
+  useEffect(() => {
+    if (hasSelectedOrder && stageMode === "exam" && sectionQuestionsList.length === 0) {
+      const answeredSet = new Set();
       const firstQ = selectNextCATQuestion(thetas[activeSectionKey], activePool, answeredSet);
       if (firstQ) {
         setActiveQuestion(firstQ);
-        setSectionQuestionsList((prev) => [...prev, firstQ]);
-        setCurrentListIdx(sectionQuestionsList.length);
+        setSectionQuestionsList([firstQ]);
+        setCurrentListIdx(0);
       }
     }
-  }, [hasSelectedOrder, activeSectionIdx, stageMode]);
+  }, [hasSelectedOrder, activeSectionIdx, stageMode, activeSectionKey, activePool]);
 
-  // Section Timer Countdown
+  // 3. Section Timer Countdown
   useEffect(() => {
-    if (!hasSelectedOrder) return;
+    if (!hasSelectedOrder || stageMode === "break") return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -91,37 +113,88 @@ export default function GMATTestEnginePage() {
     return () => clearInterval(timer);
   }, [hasSelectedOrder, activeSectionIdx, stageMode]);
 
+  // 4. Auto-save session state to LocalStorage
+  useEffect(() => {
+    if (hasSelectedOrder) {
+      saveGMATSessionState(testObj.id, {
+        hasSelectedOrder,
+        sectionOrder,
+        activeSectionIdx,
+        stageMode,
+        thetas,
+        catTrajectories,
+        userAnswers,
+        flaggedQuestions,
+        answerChangeCount,
+        sectionQuestionsList,
+        currentListIdx,
+        timeLeft
+      });
+    }
+  }, [
+    hasSelectedOrder, sectionOrder, activeSectionIdx, stageMode, thetas,
+    catTrajectories, userAnswers, flaggedQuestions, answerChangeCount,
+    sectionQuestionsList, currentListIdx, timeLeft, testObj.id
+  ]);
+
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
-  // Submit Answer & Trigger CAT Step
+  // Start Exam after choosing Section Order
+  const handleStartExam = (selectedOrderKeys) => {
+    setSectionOrder(selectedOrderKeys);
+    setHasSelectedOrder(true);
+    setActiveSectionIdx(0);
+    setStageMode("exam");
+    setTimeLeft(sectionDurationSeconds);
+  };
+
+  // Handle Option Selection with 3 Answer Edits Limit Enforcement
   const handleSelectOption = (qId, optionVal) => {
     const prevAns = userAnswers[qId];
 
-    if (stageMode === "review") {
-      // In review mode, check answer edit limits
+    if (stageMode === "review" || currentListIdx < sectionQuestionsList.length - 1) {
+      // If candidate is modifying an already answered question
       if (prevAns !== undefined && prevAns !== optionVal) {
         const used = answerChangeCount[activeSectionKey] || 0;
-        if (used >= maxChanges) {
-          alert(`You have reached the maximum allowed ${maxChanges} answer changes for this section.`);
+        if (used >= maxAnswerChangesPerSection) {
+          alert(`Maximum ${maxAnswerChangesPerSection} answer changes per section allowed by GMAT Focus rules.`);
           return;
         }
-        setAnswerChangeCount((prev) => ({ ...prev, [activeSectionKey]: (prev[activeSectionKey] || 0) + 1 }));
+        setAnswerChangeCount((prev) => ({
+          ...prev,
+          [activeSectionKey]: (prev[activeSectionKey] || 0) + 1
+        }));
       }
     }
 
     setUserAnswers((prev) => ({ ...prev, [qId]: optionVal }));
   };
 
-  const handleNextCATStep = () => {
+  // Move to Next Question or Trigger Next CAT Step
+  const handleNextStep = () => {
+    if (currentListIdx < sectionQuestionsList.length - 1) {
+      const nextIdx = currentListIdx + 1;
+      setCurrentListIdx(nextIdx);
+      setActiveQuestion(sectionQuestionsList[nextIdx]);
+      return;
+    }
+
     if (!activeQuestion) return;
 
+    // Evaluate answer & update theta
     const isCorrect = scoreGMATQuestion(activeQuestion, userAnswers[activeQuestion.id]);
     const currentT = thetas[activeSectionKey];
-    const newT = updateAbilityEstimate(currentT, Boolean(isCorrect), activeQuestion.irt?.b || 0, activeQuestion.irt?.a || 1.2);
+    const newT = updateAbilityEstimate(
+      currentT,
+      Boolean(isCorrect),
+      activeQuestion.irt?.b ?? 0,
+      activeQuestion.irt?.a ?? 1.25,
+      activeQuestion.irt?.c ?? 0.20
+    );
 
     setThetas((prev) => ({ ...prev, [activeSectionKey]: newT }));
     setCatTrajectories((prev) => ({ ...prev, [activeSectionKey]: [...(prev[activeSectionKey] || []), newT] }));
@@ -137,11 +210,20 @@ export default function GMATTestEnginePage() {
     const nextQ = selectNextCATQuestion(newT, activePool, answeredSet);
 
     if (nextQ) {
-      setActiveQuestion(nextQ);
       setSectionQuestionsList((prev) => [...prev, nextQ]);
-      setCurrentListIdx(sectionQuestionsList.length);
+      const newIdx = sectionQuestionsList.length;
+      setCurrentListIdx(newIdx);
+      setActiveQuestion(nextQ);
     } else {
       setStageMode("review");
+    }
+  };
+
+  const handlePreviousStep = () => {
+    if (currentListIdx > 0) {
+      const prevIdx = currentListIdx - 1;
+      setCurrentListIdx(prevIdx);
+      setActiveQuestion(sectionQuestionsList[prevIdx]);
     }
   };
 
@@ -149,41 +231,29 @@ export default function GMATTestEnginePage() {
     setFlaggedQuestions((prev) => ({ ...prev, [qId]: !prev[qId] }));
   };
 
-  const handleCalcClick = (val) => {
-    if (val === "C") setCalcInput("");
-    else if (val === "=") {
-      try {
-        const sanitized = calcInput.replace(/×/g, "*").replace(/÷/g, "/").replace(/[^0-9+\-*/.]/g, "");
-        const res = new Function(`"use strict"; return (${sanitized})`)();
-        setCalcInput(String(res));
-      } catch {
-        setCalcInput("Error");
-      }
-    } else {
-      setCalcInput((prev) => prev + val);
-    }
-  };
-
-  // Advance Section or Complete GMAT Exam
+  // Section Advancement & Completion
   const handleAdvanceSection = () => {
     if (activeSectionIdx < sectionOrder.length - 1) {
-      const nextIdx = activeSectionIdx + 1;
-      setActiveSectionIdx(nextIdx);
-      setStageMode("exam");
-      setSectionQuestionsList([]);
-      setCurrentListIdx(0);
-      setTimeLeft(sectionDurationSeconds);
+      setStageMode("break");
     } else {
       handleCompleteGMATExam();
     }
   };
 
-  const handleCompleteGMATExam = () => {
-    const quantScore = calculateGMATSectionScore(thetas.quant);
-    const verbalScore = calculateGMATSectionScore(thetas.verbal);
-    const diScore = calculateGMATSectionScore(thetas.di);
-    const totalScore = calculateGMATTotalScore(quantScore, verbalScore, diScore);
+  const handleEndBreak = () => {
+    const nextIdx = activeSectionIdx + 1;
+    setActiveSectionIdx(nextIdx);
+    setStageMode("exam");
+    setSectionQuestionsList([]);
+    setCurrentListIdx(0);
+    setActiveQuestion(null);
+    setTimeLeft(sectionDurationSeconds);
+  };
 
+  const handleCompleteGMATExam = () => {
+    clearGMATSessionState(testObj.id);
+
+    const evalResult = evaluateFullGMATPerformance({ thetas, sectionOrder });
     const resultId = `gmat_res_${Date.now()}`;
     const resultPayload = {
       resultId,
@@ -191,434 +261,224 @@ export default function GMATTestEnginePage() {
       title: testObj.title,
       date: new Date().toISOString(),
       sectionOrder,
-      quantScore,
-      verbalScore,
-      diScore,
-      totalScore,
-      thetas,
-      catTrajectories,
-      userAnswers
+      quantScore: evalResult.quantScore,
+      verbalScore: evalResult.verbalScore,
+      diScore: evalResult.diScore,
+      totalScore: evalResult.totalScore,
+      percentile: evalResult.percentile,
+      userAnswers,
+      flaggedQuestions,
+      answerChangeCount,
+      thetas
     };
 
-    localStorage.setItem(`gmat_result_${resultId}`, JSON.stringify(resultPayload));
+    localStorage.setItem(`knarrow_gmat_res_${resultId}`, JSON.stringify(resultPayload));
     navigate(`/gmat/results/${resultId}`);
   };
 
-  const isCalculatorAllowed = activeSectionKey === "di";
+  // Section Display Names
+  const sectionDisplayNames = {
+    quant: "Quantitative Reasoning",
+    verbal: "Verbal Reasoning",
+    di: "Data Insights"
+  };
+
+  // Render Pre-Exam Flow if Section Order not selected
+  if (!hasSelectedOrder) {
+    return <GMATPreExamFlow onStartExam={handleStartExam} />;
+  }
+
+  // Render Break Screen if in break stage
+  if (stageMode === "break") {
+    const nextSecKey = sectionOrder[activeSectionIdx + 1] || "quant";
+    return (
+      <GMATBreakScreen
+        onEndBreak={handleEndBreak}
+        nextSectionTitle={sectionDisplayNames[nextSecKey]}
+      />
+    );
+  }
+
+  const isBookmarked = activeQuestion ? Boolean(flaggedQuestions[activeQuestion.id]) : false;
+  const maxQs = activeSectionKey === "quant" ? 21 : activeSectionKey === "verbal" ? 23 : 20;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#080c14", color: "#ffffff", fontFamily: "Inter, sans-serif", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100vh", background: "#090d16", color: "#ffffff", fontFamily: "Inter, sans-serif", display: "flex", flexDirection: "column" }}>
+      
+      {/* ── TOP EXAM HEADER ── */}
+      <div style={{ background: "#0f172a", borderBottom: "1px solid #334155", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <span style={{ fontWeight: 900, fontSize: "16px", color: "#ffffff", letterSpacing: "-0.5px" }}>
+            Knarrow <span style={{ color: "#38bdf8", fontWeight: 700, fontSize: "13px" }}>GMAT Practice Exam</span>
+          </span>
+          <span style={{ height: "18px", width: "1px", background: "#334155" }} />
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#e2e8f0" }}>
+            Section: <strong style={{ color: "#38bdf8" }}>{sectionDisplayNames[activeSectionKey]}</strong>
+          </span>
+        </div>
 
-      {/* ── SECTION ORDER SELECTION MODAL (BEFORE EXAM START) ── */}
-      {!hasSelectedOrder && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(8,12,20,0.95)", backdropFilter: "blur(20px)", zIndex: 99999, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <div style={{ background: "#0f172a", border: "2px solid #38bdf8", borderRadius: 28, padding: 40, maxWidth: 600, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.6)", textAlign: "center" }}>
-            <span style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", padding: "6px 16px", borderRadius: 999, fontSize: 12, fontWeight: 900 }}>
-              OFFICIAL GMAT EXAM 2026 PRE-TEST SETUP
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          {/* Question Counter */}
+          <div style={{ fontSize: "14px", fontWeight: 700, color: "#cbd5e1" }}>
+            Question: <strong style={{ color: "#ffffff" }}>{currentListIdx + 1}</strong> / {maxQs}
+          </div>
+
+          {/* Section Timer */}
+          <div style={{ background: "#1e293b", border: "1px solid #334155", padding: "6px 14px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <Clock size={16} color="#38bdf8" />
+            <span style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff", fontFamily: "monospace" }}>
+              {formatTime(timeLeft)}
             </span>
-            <h2 style={{ fontSize: 26, fontWeight: 900, color: "#ffffff", margin: "20px 0 12px 0" }}>
-              Select Your Preferred Section Order
-            </h2>
-            <p style={{ color: "#cbd5e1", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
-              Per official GMAC specifications, you may choose the sequence in which you complete the Quantitative Reasoning, Verbal Reasoning, and Data Insights sections.
-            </p>
+          </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
-              {config.permittedSectionOrders.map((ord, idx) => {
-                const isSelected = sectionOrder.join() === ord.join();
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => setSectionOrder(ord)}
-                    style={{
-                      background: isSelected ? "rgba(56,189,248,0.18)" : "rgba(30,41,59,0.6)",
-                      border: isSelected ? "2px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: 16,
-                      padding: "16px 20px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between"
-                    }}
-                  >
-                    <span style={{ fontSize: 15, fontWeight: 900, color: "#ffffff" }}>
-                      Option {idx + 1}: {ord.map((s) => s.toUpperCase()).join("  →  ")}
-                    </span>
-                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: isSelected ? "5px solid #38bdf8" : "2px solid #64748b", background: isSelected ? "#ffffff" : "transparent" }} />
-                  </div>
-                );
-              })}
-            </div>
-
+          {/* Data Insights Calculator Toggle (Only in DI) */}
+          {activeSectionKey === "di" && (
             <button
-              onClick={() => setHasSelectedOrder(true)}
-              style={{ width: "100%", background: "linear-gradient(135deg, #0284c7, #7c3aed)", color: "#ffffff", border: "none", borderRadius: 16, padding: "16px", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 8px 25px rgba(2,132,199,0.4)" }}
+              onClick={() => setShowCalculator(!showCalculator)}
+              style={{
+                background: showCalculator ? "#0284c7" : "#1e293b",
+                color: "#ffffff",
+                border: "1px solid #334155",
+                borderRadius: "8px",
+                padding: "6px 14px",
+                fontSize: "13px",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
+              }}
             >
-              Begin GMAT Computer-Adaptive Exam
+              <Calculator size={16} /> Calculator
             </button>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* ── TOP HEADER BAR ── */}
-      <div style={{ background: "#0f172a", borderBottom: "1px solid rgba(255,255,255,0.12)", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 999 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {/* Question Review Stage Launcher */}
           <button
-            onClick={() => navigate("/gmat")}
-            style={{ background: "rgba(255,255,255,0.08)", color: "#cbd5e1", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "6px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}
-          >
-            <ChevronLeft size={16} /> Exit Exam
-          </button>
-          <div>
-            <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: "#ffffff" }}>{testObj.title}</h2>
-            <div style={{ fontSize: 11, color: "#38bdf8", fontWeight: 800 }}>COMPUTER-ADAPTIVE GMAT EXAM (205–805 SCALE)</div>
-          </div>
-        </div>
-
-        {/* Center: Section Order Indicator */}
-        <div style={{ display: "flex", gap: 8 }}>
-          {sectionOrder.map((secKey, idx) => {
-            const isLocked = idx < activeSectionIdx;
-            const isActive = idx === activeSectionIdx;
-            return (
-              <div
-                key={secKey}
-                style={{
-                  background: isActive ? "linear-gradient(135deg, #0284c7, #7c3aed)" : isLocked ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.08)",
-                  color: isActive ? "#ffffff" : isLocked ? "#64748b" : "#cbd5e1",
-                  border: isActive ? "1px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)",
-                  padding: "6px 16px",
-                  borderRadius: 999,
-                  fontSize: 12,
-                  fontWeight: 800,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6
-                }}
-              >
-                <span>{secKey.toUpperCase()}</span>
-                {isLocked && <span style={{ fontSize: 10, opacity: 0.8 }}>(LOCKED)</span>}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Right Tools & Timer */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          {/* On-Screen Calculator (Data Insights Only) */}
-          <button
-            disabled={!isCalculatorAllowed}
-            onClick={() => setShowCalculator((prev) => !prev)}
+            onClick={() => setStageMode("review")}
             style={{
-              background: !isCalculatorAllowed ? "rgba(239,68,68,0.1)" : showCalculator ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.08)",
-              color: !isCalculatorAllowed ? "#ef4444" : showCalculator ? "#facc15" : "#cbd5e1",
-              border: !isCalculatorAllowed ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 10,
-              padding: "8px 14px",
-              fontSize: 12,
-              fontWeight: 800,
-              cursor: !isCalculatorAllowed ? "not-allowed" : "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6
+              background: "#1e293b",
+              color: "#38bdf8",
+              border: "1px solid #0284c7",
+              borderRadius: "8px",
+              padding: "6px 14px",
+              fontSize: "13px",
+              fontWeight: 700,
+              cursor: "pointer"
             }}
           >
-            {!isCalculatorAllowed ? <Ban size={16} /> : <Calculator size={16} />}
-            {!isCalculatorAllowed ? "No Calc" : "Calculator"}
+            Review & Edit Stage
           </button>
-
-          {/* Timer */}
-          <div style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(248,113,113,0.3)", borderRadius: 12, padding: "8px 16px", fontWeight: 900, fontSize: 15, display: "flex", alignItems: "center", gap: 8 }}>
-            <Clock size={16} /> {formatTime(timeLeft)}
-          </div>
         </div>
       </div>
 
-      {/* ── MAIN EXAM AREA ── */}
-      {stageMode === "review" ? (
-        /* SECTION REVIEW SCREEN */
-        <div style={{ flex: 1, padding: 40, maxWidth: 950, margin: "0 auto", width: "100%" }}>
-          <div style={{ background: "rgba(30,41,59,0.8)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 28, padding: 36, boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <span style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", padding: "6px 16px", borderRadius: 999, fontSize: 12, fontWeight: 900 }}>
-                {activeSectionKey.toUpperCase()} SECTION REVIEW &amp; EDIT
-              </span>
-              <span style={{ fontSize: 13, color: "#facc15", fontWeight: 800 }}>
-                Answer Changes Remaining: {maxChanges - (answerChangeCount[activeSectionKey] || 0)} / {maxChanges}
-              </span>
-            </div>
+      {/* ── MAIN QUESTION AREA ── */}
+      <div style={{ flex: 1, maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "28px 24px", display: "flex", flexDirection: "column" }}>
+        
+        {activeQuestion ? (
+          <GMATQuestionRenderer
+            question={activeQuestion}
+            selectedOption={userAnswers[activeQuestion.id]}
+            onSelectOption={(opt) => handleSelectOption(activeQuestion.id, opt)}
+          />
+        ) : (
+          <div style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
+            Loading next computer-adaptive question...
+          </div>
+        )}
+      </div>
 
-            <h2 style={{ fontSize: 24, fontWeight: 900, color: "#ffffff", margin: "0 0 16px 0" }}>
-              Review Your Answers
-            </h2>
-            <p style={{ color: "#cbd5e1", fontSize: 14, marginBottom: 28 }}>
-              You may review your flagged questions and modify up to {maxChanges} answers before locking this section.
-            </p>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14, marginBottom: 32 }}>
-              {sectionQuestionsList.map((q, idx) => {
-                const ans = userAnswers[q.id];
-                const isFlagged = flaggedQuestions[q.id];
-                return (
-                  <div
-                    key={q.id}
-                    onClick={() => {
-                      setActiveQuestion(q);
-                      setCurrentListIdx(idx);
-                    }}
-                    style={{
-                      background: "rgba(15,23,42,0.8)",
-                      border: isFlagged ? "2px solid #facc15" : "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: 14,
-                      padding: 16,
-                      cursor: "pointer"
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 800, color: "#94a3b8", marginBottom: 6 }}>
-                      <span>Q{idx + 1} ({q.questionType})</span>
-                      {isFlagged && <span style={{ color: "#facc15" }}>★ FLAGGED</span>}
-                    </div>
-                    <div style={{ fontSize: 13, color: ans ? "#4ade80" : "#ef4444", fontWeight: 800 }}>
-                      {ans ? `Answered: ${typeof ans === "object" ? "Dual Answer" : ans}` : "Unanswered"}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
+      {/* ── EXAM BOTTOM CONTROLS ── */}
+      <div style={{ background: "#0f172a", borderTop: "1px solid #334155", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          {activeQuestion && (
             <button
-              onClick={handleAdvanceSection}
-              style={{ width: "100%", background: "linear-gradient(135deg, #0284c7, #7c3aed)", color: "#ffffff", border: "none", borderRadius: 16, padding: "16px", fontWeight: 900, fontSize: 16, cursor: "pointer", boxShadow: "0 8px 25px rgba(2,132,199,0.4)" }}
+              onClick={() => toggleFlag(activeQuestion.id)}
+              style={{
+                background: isBookmarked ? "rgba(250, 204, 21, 0.2)" : "transparent",
+                color: isBookmarked ? "#facc15" : "#94a3b8",
+                border: isBookmarked ? "1px solid #facc15" : "1px solid #334155",
+                borderRadius: "8px",
+                padding: "10px 18px",
+                fontSize: "13px",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px"
+              }}
             >
-              Lock Section &amp; Proceed
+              <Bookmark size={16} fill={isBookmarked ? "#facc15" : "none"} />
+              {isBookmarked ? "Bookmarked" : "Bookmark Question"}
             </button>
-          </div>
+          )}
         </div>
-      ) : (
-        /* ITEM-LEVEL CAT EXAM AREA */
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", flex: 1, minHeight: "calc(100vh - 65px)" }}>
 
-          {/* LEFT COLUMN: QUESTION CONTENT & INTERACTIVE RENDERERS */}
-          <div style={{ padding: 32, overflowY: "auto", borderRight: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ display: "flex", gap: "14px" }}>
+          <button
+            disabled={currentListIdx === 0}
+            onClick={handlePreviousStep}
+            style={{
+              background: currentListIdx === 0 ? "rgba(255,255,255,0.05)" : "#1e293b",
+              color: currentListIdx === 0 ? "#64748b" : "#ffffff",
+              border: "1px solid #334155",
+              borderRadius: "10px",
+              padding: "10px 20px",
+              fontSize: "14px",
+              fontWeight: 700,
+              cursor: currentListIdx === 0 ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            <ArrowLeft size={16} /> Previous
+          </button>
 
-            {/* Micro-Passage / Scenario Box */}
-            {activeQuestion?.passageText && (
-              <div style={{ background: "rgba(30,41,59,0.75)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: 24, marginBottom: 28, maxHeight: 260, overflowY: "auto" }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#38bdf8", textTransform: "uppercase", marginBottom: 8 }}>
-                  Passage / Stimulus Text
-                </div>
-                <div style={{ color: "#e2e8f0", fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-line" }}>
-                  {activeQuestion.passageText}
-                </div>
-              </div>
-            )}
-
-            {/* Question Header */}
-            <div style={{ marginBottom: 28 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <span style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "4px 12px", borderRadius: 8, fontSize: 12, fontWeight: 900 }}>
-                  CAT QUESTION {sectionQuestionsList.length} ({activeSectionKey.toUpperCase()})
-                </span>
-                {activeQuestion?.topic && (
-                  <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700 }}>
-                    Topic: {activeQuestion.topic}
-                  </span>
-                )}
-              </div>
-
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: "#ffffff", lineHeight: 1.6, whiteSpace: "pre-line" }}>
-                {activeQuestion?.questionText}
-              </h3>
-            </div>
-
-            {/* TWO-PART ANALYSIS RENDERER */}
-            {activeQuestion?.questionType === "TWO_PART_ANALYSIS" ? (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 36 }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#38bdf8", marginBottom: 8 }}>PART A SELECTION</div>
-                  {(activeQuestion.options || []).map((opt) => {
-                    const isPartA = userAnswers[activeQuestion.id]?.partA === opt;
-                    return (
-                      <div
-                        key={opt}
-                        onClick={() => handleSelectOption(activeQuestion.id, { ...(userAnswers[activeQuestion.id] || {}), partA: opt })}
-                        style={{ background: isPartA ? "rgba(56,189,248,0.2)" : "rgba(30,41,59,0.6)", border: isPartA ? "2px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "12px 16px", marginBottom: 8, cursor: "pointer", fontSize: 14, color: "#ffffff", fontWeight: isPartA ? 800 : 500 }}
-                      >
-                        {opt}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#c084fc", marginBottom: 8 }}>PART B SELECTION</div>
-                  {(activeQuestion.options || []).map((opt) => {
-                    const isPartB = userAnswers[activeQuestion.id]?.partB === opt;
-                    return (
-                      <div
-                        key={opt}
-                        onClick={() => handleSelectOption(activeQuestion.id, { ...(userAnswers[activeQuestion.id] || {}), partB: opt })}
-                        style={{ background: isPartB ? "rgba(192,132,252,0.2)" : "rgba(30,41,59,0.6)", border: isPartB ? "2px solid #c084fc" : "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "12px 16px", marginBottom: 8, cursor: "pointer", fontSize: 14, color: "#ffffff", fontWeight: isPartB ? 800 : 500 }}
-                      >
-                        {opt}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              /* STANDARD MCQ / DATA SUFFICIENCY OPTIONS */
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 36 }}>
-                {(activeQuestion?.options || []).map((opt) => {
-                  const isSelected = userAnswers[activeQuestion?.id] === opt;
-                  return (
-                    <div
-                      key={opt}
-                      onClick={() => handleSelectOption(activeQuestion.id, opt)}
-                      style={{
-                        background: isSelected ? "rgba(56,189,248,0.18)" : "rgba(30,41,59,0.6)",
-                        border: isSelected ? "2px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)",
-                        borderRadius: 16,
-                        padding: "16px 20px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 14,
-                        transition: "all 0.2s ease"
-                      }}
-                    >
-                      <div style={{ width: 22, height: 22, borderRadius: "50%", border: isSelected ? "6px solid #38bdf8" : "2px solid #64748b", background: isSelected ? "#ffffff" : "transparent" }} />
-                      <span style={{ fontSize: 15, fontWeight: isSelected ? 800 : 500, color: isSelected ? "#ffffff" : "#cbd5e1" }}>{opt}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Navigation Bar */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24 }}>
-              <button
-                onClick={() => activeQuestion && toggleFlag(activeQuestion.id)}
-                style={{
-                  background: activeQuestion && flaggedQuestions[activeQuestion.id] ? "rgba(245,158,11,0.25)" : "rgba(255,255,255,0.08)",
-                  color: activeQuestion && flaggedQuestions[activeQuestion.id] ? "#facc15" : "#cbd5e1",
-                  border: activeQuestion && flaggedQuestions[activeQuestion.id] ? "1px solid #facc15" : "1px solid rgba(255,255,255,0.15)",
-                  borderRadius: 12,
-                  padding: "12px 20px",
-                  fontWeight: 800,
-                  fontSize: 13,
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8
-                }}
-              >
-                <Bookmark size={16} /> {activeQuestion && flaggedQuestions[activeQuestion.id] ? "Flagged for Review" : "Flag Question"}
-              </button>
-
-              <button
-                onClick={handleNextCATStep}
-                style={{ background: "linear-gradient(135deg, #0284c7, #7c3aed)", color: "#ffffff", border: "none", borderRadius: 12, padding: "12px 28px", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
-              >
-                Submit Answer &amp; Get Next CAT Question <ChevronRight size={16} style={{ display: "inline", marginLeft: 4 }} />
-              </button>
-            </div>
-
-          </div>
-
-          {/* RIGHT COLUMN: PALETTE & SECTION PROGRESS */}
-          <div style={{ background: "#0f172a", padding: 24, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-
-            <div>
-              <h3 style={{ fontSize: 15, fontWeight: 900, color: "#ffffff", marginBottom: 16 }}>
-                Section Question Trail
-              </h3>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
-                {sectionQuestionsList.map((q, idx) => {
-                  const isAnswered = userAnswers[q.id] !== undefined && userAnswers[q.id] !== "";
-                  const isFlagged = flaggedQuestions[q.id];
-                  const isCurrent = activeQuestion?.id === q.id;
-
-                  let bg = "rgba(255,255,255,0.06)";
-                  let color = "#cbd5e1";
-                  let border = "1px solid rgba(255,255,255,0.1)";
-
-                  if (isAnswered && isFlagged) {
-                    bg = "#a855f7"; color = "#ffffff";
-                  } else if (isAnswered) {
-                    bg = "#22c55e"; color = "#ffffff";
-                  } else if (isFlagged) {
-                    bg = "#facc15"; color = "#0f172a";
-                  }
-
-                  if (isCurrent) {
-                    border = "2px solid #ffffff";
-                  }
-
-                  return (
-                    <button
-                      key={q.id}
-                      onClick={() => {
-                        setActiveQuestion(q);
-                        setCurrentListIdx(idx);
-                      }}
-                      style={{
-                        background: bg,
-                        color: color,
-                        border: border,
-                        borderRadius: 10,
-                        height: 40,
-                        fontWeight: 800,
-                        fontSize: 13,
-                        cursor: "pointer"
-                      }}
-                    >
-                      {idx + 1}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Advance to Section Review */}
-            <div style={{ marginTop: 28, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-              <button
-                onClick={() => setStageMode("review")}
-                style={{ width: "100%", background: "linear-gradient(135deg, #0284c7, #0369a1)", color: "#ffffff", border: "none", borderRadius: 14, padding: "14px", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
-              >
-                Proceed to Section Review
-              </button>
-            </div>
-
-          </div>
-
+          <button
+            onClick={handleNextStep}
+            style={{
+              background: "linear-gradient(135deg, #0284c7, #10b981)",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "10px 24px",
+              fontSize: "14px",
+              fontWeight: 800,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)"
+            }}
+          >
+            {currentListIdx < sectionQuestionsList.length - 1 ? "Next" : "Submit & Continue"} <ArrowRight size={16} />
+          </button>
         </div>
+      </div>
+
+      {/* Floating Calculator Modal */}
+      {showCalculator && activeSectionKey === "di" && (
+        <GMATCalculator onClose={() => setShowCalculator(false)} />
       )}
 
-      {/* ── ON-SCREEN CALCULATOR MODAL (DATA INSIGHTS ONLY) ── */}
-      {showCalculator && isCalculatorAllowed && (
-        <div style={{ position: "fixed", bottom: 80, right: 360, background: "#0f172a", border: "2px solid #facc15", borderRadius: 20, padding: 20, width: 260, zIndex: 9999, boxShadow: "0 20px 40px rgba(0,0,0,0.6)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 900, color: "#facc15" }}>DATA INSIGHTS CALCULATOR</span>
-            <X size={16} cursor="pointer" onClick={() => setShowCalculator(false)} />
-          </div>
-          <div style={{ background: "#020617", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, padding: 12, fontSize: 20, fontWeight: 900, color: "#4ade80", textAlign: "right", marginBottom: 14, minHeight: 45 }}>
-            {calcInput || "0"}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-            {["7", "8", "9", "÷", "4", "5", "6", "×", "1", "2", "3", "-", "C", "0", "=", "+"].map((btn) => (
-              <button
-                key={btn}
-                onClick={() => handleCalcClick(btn)}
-                style={{ background: btn === "=" ? "#22c55e" : btn === "C" ? "#ef4444" : "rgba(255,255,255,0.1)", color: "#ffffff", border: "none", borderRadius: 10, padding: "12px 0", fontWeight: 800, fontSize: 15, cursor: "pointer" }}
-              >
-                {btn}
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* Question Review & Edit Stage Modal */}
+      {stageMode === "review" && (
+        <GMATQuestionReviewModal
+          questionsList={sectionQuestionsList}
+          userAnswers={userAnswers}
+          flaggedQuestions={flaggedQuestions}
+          answerChangeCount={answerChangeCount[activeSectionKey] || 0}
+          maxChanges={maxAnswerChangesPerSection}
+          timeLeftFormatted={formatTime(timeLeft)}
+          onSelectQuestionToEdit={(idx) => {
+            setCurrentListIdx(idx);
+            setActiveQuestion(sectionQuestionsList[idx]);
+            setStageMode("exam");
+          }}
+          onFinishSectionReview={handleAdvanceSection}
+        />
       )}
-
     </div>
   );
 }

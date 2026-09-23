@@ -1,22 +1,77 @@
 import { useEffect, useState, useMemo } from "react";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, onSnapshot, doc } from "firebase/firestore";
 import { app } from "../firebase";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { useExam } from "../context/ExamContext";
+import { getExamAnalyticsConfig } from "../config/examAnalyticsConfig";
+import { Link, useSearchParams } from "react-router-dom";
 import {
-  TrendingUp, TrendingDown, Minus, BookOpen, Headphones,
+  TrendingUp, TrendingDown, BookOpen, Headphones,
   PenSquare, Mic, Target, Flame, Trophy, BrainCircuit,
-  Calendar, BarChart3, ArrowRight, AlertCircle, CheckCircle2,
-  Zap
+  BarChart3, ArrowRight, AlertCircle, CheckCircle2,
+  Zap, Layers, Sparkles, Activity, Radio
 } from "lucide-react";
 import "../styles/insights.css";
 
 /* ── helpers ── */
-const band = (v) => Number(v || 0).toFixed(1);
-const bandClass = (v) => v >= 7 ? "high" : v >= 5.5 ? "medium" : "low";
+function formatVal(v, max = 9) {
+  if (v == null || isNaN(v) || v === 0) return "—";
+  if (max <= 10) return Number(v).toFixed(1);
+  if (max <= 100 && max > 90) return `${Number(v).toFixed(1)}%`;
+  return Math.round(v).toString();
+}
+
+function bandClass(v, max = 9) {
+  const pct = (v / max) * 100;
+  return pct >= 75 ? "high" : pct >= 55 ? "medium" : "low";
+}
+
+function calculateStreak(allResults) {
+  if (!allResults || !allResults.length) return 0;
+  const dates = new Set(allResults.map(r => {
+    const d = r.completedAt?.toDate ? r.completedAt.toDate()
+            : r.createdAt?.toDate ? r.createdAt.toDate()
+            : new Date(r.completedAt || r.createdAt || Date.now());
+    return d.toISOString().slice(0, 10);
+  }));
+
+  let streak = 0;
+  let curr = new Date();
+  while (true) {
+    const key = curr.toISOString().slice(0, 10);
+    if (dates.has(key)) {
+      streak++;
+      curr.setDate(curr.getDate() - 1);
+    } else {
+      if (streak === 0) {
+        curr.setDate(curr.getDate() - 1);
+        const prevKey = curr.toISOString().slice(0, 10);
+        if (dates.has(prevKey)) {
+          streak++;
+          curr.setDate(curr.getDate() - 1);
+          continue;
+        }
+      }
+      break;
+    }
+  }
+  return streak;
+}
+
+function calculateWeeklyGoalPct(allResults) {
+  if (!allResults || !allResults.length) return 0;
+  const oneWeekAgo = Date.now() - 7 * 86400000;
+  const count = allResults.filter(r => {
+    const d = r.completedAt?.toDate ? r.completedAt.toDate()
+            : r.createdAt?.toDate ? r.createdAt.toDate()
+            : new Date(r.completedAt || r.createdAt || Date.now());
+    return d.getTime() > oneWeekAgo;
+  }).length;
+  return Math.min(100, Math.round((count / 5) * 100));
+}
 
 function SparklineSVG({ data = [], color = "#4f8ef7", height = 70 }) {
-  if (data.length < 2) return null;
+  if (!data || data.length < 2) return null;
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -46,7 +101,7 @@ function SparklineSVG({ data = [], color = "#4f8ef7", height = 70 }) {
 function RadialRing({ value, max = 9, color, size = 80, stroke = 7 }) {
   const r = (size / 2) - stroke;
   const circ = 2 * Math.PI * r;
-  const pct = Math.min(value / max, 1);
+  const pct = Math.min((value || 0) / max, 1);
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
       <circle cx={size/2} cy={size/2} r={r} fill="none"
@@ -66,7 +121,7 @@ function DonutChart({ segments, size = 140, stroke = 18 }) {
   const r = (size / 2) - stroke;
   const circ = 2 * Math.PI * r;
   let offset = 0;
-  const total = segments.reduce((a, s) => a + s.value, 0);
+  const total = segments.reduce((a, s) => a + (s.value || 0), 0) || 1;
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
       <circle cx={size/2} cy={size/2} r={r} fill="none"
@@ -89,13 +144,17 @@ function DonutChart({ segments, size = 140, stroke = 18 }) {
   );
 }
 
-/* ── Heatmap helpers ── */
+/* ── Heatmap helper ── */
 function buildHeatmap(results) {
   const map = {};
-  results.forEach(r => {
-    const d = r.completedAt?.toDate ? r.completedAt.toDate() : new Date(r.completedAt || 0);
-    const key = d.toISOString().slice(0, 10);
-    map[key] = (map[key] || 0) + 1;
+  (results || []).forEach(r => {
+    const d = r.completedAt?.toDate ? r.completedAt.toDate()
+            : r.createdAt?.toDate ? r.createdAt.toDate()
+            : new Date(r.completedAt || r.createdAt || 0);
+    if (!isNaN(d.getTime())) {
+      const key = d.toISOString().slice(0, 10);
+      map[key] = (map[key] || 0) + 1;
+    }
   });
   const cells = [];
   for (let i = 181; i >= 0; i--) {
@@ -107,147 +166,235 @@ function buildHeatmap(results) {
   return cells;
 }
 
-/* ── Mock history for demo (when no Firestore data) ── */
-const DEMO_HISTORY = [
-  { section: "Listening", band: 8.0, score: 35, total: 40, date: "Jul 25", testName: "Listening Test 002" },
-  { section: "Reading",   band: 7.5, score: 33, total: 40, date: "Jul 23", testName: "Reading Test 001" },
-  { section: "Listening", band: 7.5, score: 32, total: 40, date: "Jul 20", testName: "Listening Test 001" },
-  { section: "Writing",   band: 7.0, score: null, total: null, date: "Jul 18", testName: "Writing Task 2" },
-  { section: "Speaking",  band: 6.5, score: null, total: null, date: "Jul 15", testName: "Speaking Cue Card" },
-  { section: "Reading",   band: 7.0, score: 30, total: 40, date: "Jul 12", testName: "Reading Test 002" },
-  { section: "Listening", band: 7.0, score: 30, total: 40, date: "Jul 10", testName: "Listening Test 003" },
-  { section: "Writing",   band: 6.5, score: null, total: null, date: "Jul 8",  testName: "Writing Task 1" },
-];
-
-const SKILL_COLORS = {
-  Reading: "#4f8ef7", Listening: "#22d3ee", Writing: "#8b5cf6", Speaking: "#22d3a5"
-};
-const SKILL_ICONS = {
-  Reading: <BookOpen size={16} />, Listening: <Headphones size={16} />,
-  Writing: <PenSquare size={16} />, Speaking: <Mic size={16} />
-};
-
 const TABS = ["Overview", "Skills", "History", "Goals"];
+
+const SKILL_ICONS_MAP = {
+  Listening: <Headphones size={16} />,
+  Reading: <BookOpen size={16} />,
+  Writing: <PenSquare size={16} />,
+  Speaking: <Mic size={16} />,
+  "Reading & Writing": <BookOpen size={16} />,
+  Mathematics: <BarChart3 size={16} />,
+  Quantitative: <BarChart3 size={16} />,
+  "Quantitative Reasoning": <BarChart3 size={16} />,
+  "Verbal Reasoning": <BookOpen size={16} />,
+  "Analytical Writing": <PenSquare size={16} />,
+  "Data Insights": <BrainCircuit size={16} />,
+  "Speaking & Writing": <Mic size={16} />,
+  Literacy: <BookOpen size={16} />,
+  Comprehension: <Headphones size={16} />,
+  Conversation: <Mic size={16} />,
+  Production: <PenSquare size={16} />,
+  VARC: <BookOpen size={16} />,
+  DILR: <BrainCircuit size={16} />,
+  QA: <BarChart3 size={16} />,
+};
 
 export default function Insights() {
   const { user } = useAuth();
-  const [results, setResults] = useState([]);
+  const { activeTrack } = useExam();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const initialTab = searchParams.get("tab") || "Overview";
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [liveRawResults, setLiveRawResults] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("Overview");
+
+  // Active exam analytics configuration
+  const examConfig = useMemo(() => getExamAnalyticsConfig(activeTrack), [activeTrack]);
 
   useEffect(() => {
-    async function fetchResults() {
-      try {
-        if (!user) { setLoading(false); return; }
-        const db = getFirestore(app);
-        const q = query(collection(db, "mockResults"), where("userId", "==", user.uid));
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setResults(data.length ? data : DEMO_HISTORY);
-      } catch { setResults(DEMO_HISTORY); }
-      finally { setLoading(false); }
+    const tabFromUrl = searchParams.get("tab");
+    if (tabFromUrl && TABS.includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
     }
-    fetchResults();
+  }, [searchParams]);
+
+  // Real-time Firestore Listeners (onSnapshot) for Live Updates
+  useEffect(() => {
+    if (!user) { setLoading(false); return; }
+    setLoading(true);
+    const db = getFirestore(app);
+
+    // 1. Live User Document Listener
+    const userUnsub = onSnapshot(doc(db, "users", user.uid), (snap) => {
+      if (snap.exists()) setUserProfile(snap.data());
+    }, () => {});
+
+    let mockData = [];
+    let resultsData = [];
+
+    const updateMergedResults = () => {
+      const mergedMap = new Map();
+      [...mockData, ...resultsData].forEach(item => mergedMap.set(item.id, item));
+      const sorted = Array.from(mergedMap.values()).sort((a, b) => {
+        const ta = a.completedAt?.toDate ? a.completedAt.toDate()
+                 : a.createdAt?.toDate ? a.createdAt.toDate()
+                 : new Date(a.completedAt || a.createdAt || 0);
+        const tb = b.completedAt?.toDate ? b.completedAt.toDate()
+                 : b.createdAt?.toDate ? b.createdAt.toDate()
+                 : new Date(b.completedAt || b.createdAt || 0);
+        return tb - ta;
+      });
+      setLiveRawResults(sorted);
+      setLoading(false);
+    };
+
+    // 2. Real-time Listener on "mockResults" collection
+    const q1 = query(collection(db, "mockResults"), where("userId", "==", user.uid));
+    const unsubMock = onSnapshot(q1, (snap) => {
+      mockData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateMergedResults();
+    }, () => updateMergedResults());
+
+    // 3. Real-time Listener on "results" collection
+    const q2 = query(collection(db, "results"), where("userId", "==", user.uid));
+    const unsubResults = onSnapshot(q2, (snap) => {
+      resultsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateMergedResults();
+    }, () => updateMergedResults());
+
+    return () => {
+      userUnsub();
+      unsubMock();
+      unsubResults();
+    };
   }, [user]);
 
-  const allData = results.length ? results : DEMO_HISTORY;
+  // Real-time track-filtered results
+  const trackResults = useMemo(() => {
+    if (!liveRawResults.length) return [];
+    return liveRawResults.filter(r => {
+      const trackVal = (r.track || r.examType || r.exam || "").toUpperCase();
+      if (!trackVal) return true; // Include if general test
+      return trackVal === activeTrack.toUpperCase();
+    });
+  }, [liveRawResults, activeTrack]);
 
+  const hasLiveTrackData = trackResults.length > 0;
+  const displayData = hasLiveTrackData ? trackResults : examConfig.demoHistory;
+
+  // Real-time calculated sectional averages
   const avgBySection = useMemo(() => {
     const map = {};
-    ["Reading", "Listening", "Writing", "Speaking"].forEach(s => {
-      const items = allData.filter(r => r.section === s);
-      map[s] = items.length ? items.reduce((a, r) => a + Number(r.band || 0), 0) / items.length : 0;
+    examConfig.skills.forEach(s => {
+      if (hasLiveTrackData) {
+        const items = trackResults.filter(r => {
+          const sec = (r.section || r.module || r.type || "").toLowerCase();
+          return sec === s.id.toLowerCase() || sec === s.label.toLowerCase();
+        });
+        map[s.id] = items.length
+          ? items.reduce((a, r) => a + Number(r.band || r.score || s.defaultVal), 0) / items.length
+          : s.defaultVal;
+      } else {
+        map[s.id] = s.defaultVal;
+      }
     });
     return map;
-  }, [allData]);
+  }, [trackResults, examConfig, hasLiveTrackData]);
 
-  const overall = useMemo(() => {
-    const vals = Object.values(avgBySection).filter(v => v > 0);
-    return vals.length ? (vals.reduce((a, v) => a + v, 0) / vals.length).toFixed(1) : "—";
-  }, [avgBySection]);
+  // Real-time overall score
+  const overallVal = useMemo(() => {
+    const vals = Object.values(avgBySection);
+    if (!vals.length) return examConfig.overallScoreDefault;
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    return formatVal(avg, examConfig.overallMax);
+  }, [avgBySection, examConfig]);
 
-  const totalTests  = allData.length;
-  const streak      = 18; // from analytics hook (mock)
-  const weeklyGoal  = 82;
+  // Real-time streak & weekly progress calculated from actual live timestamps
+  const streak = useMemo(() => {
+    if (userProfile?.studyStreak != null) return userProfile.studyStreak;
+    return calculateStreak(liveRawResults);
+  }, [liveRawResults, userProfile]);
+
+  const weeklyGoal = useMemo(() => {
+    return calculateWeeklyGoalPct(liveRawResults);
+  }, [liveRawResults]);
+
+  const totalTests = hasLiveTrackData ? trackResults.length : examConfig.demoHistory.length;
 
   const strongest = Object.entries(avgBySection).sort((a, b) => b[1] - a[1])[0];
-  const weakest   = Object.entries(avgBySection).filter(([,v]) => v > 0).sort((a, b) => a[1] - b[1])[0];
+  const weakest = Object.entries(avgBySection).sort((a, b) => a[1] - b[1])[0];
 
-  const trendData = {
-    Listening: [6.5, 7.0, 7.0, 7.5, 7.5, 8.0],
-    Reading:   [6.5, 7.0, 7.0, 7.0, 7.5, 7.5],
-    Writing:   [5.5, 6.0, 6.0, 6.5, 6.5, 7.0],
-    Speaking:  [5.5, 6.0, 6.0, 6.5, 6.5, 6.5],
+  const heatCells = useMemo(() => buildHeatmap(displayData), [displayData]);
+
+  const handleTabChange = (t) => {
+    setActiveTab(t);
+    setSearchParams({ tab: t });
   };
-
-  const heatCells = useMemo(() => buildHeatmap(allData), [allData]);
-
-  const targets = { Reading: 8.0, Listening: 8.5, Writing: 7.5, Speaking: 7.5 };
-
-  const recs = [
-    { icon: "✍️", bg: "rgba(139,92,246,.12)", title: "Focus on Writing Task 2", desc: "Improve coherence and lexical resource. Practice 3 essays this week.", priority: "high" },
-    { icon: "🎤", bg: "rgba(34,211,165,.12)", title: "Speaking Fluency Drills", desc: "Record yourself for 10 min daily. Use AI Speaking tool for instant feedback.", priority: "medium" },
-    { icon: "📖", bg: "rgba(79,142,247,.12)", title: "Reading Speed Training", desc: "Complete one timed passage daily. Focus on skimming and scanning techniques.", priority: "low" },
-    { icon: "🧠", bg: "rgba(249,115,22,.12)", title: "Vocabulary Expansion", desc: "Learn 10 academic words daily using the AI flashcard system.", priority: "medium" },
-  ];
 
   /* ── Overview tab content ── */
   const overviewContent = (
     <>
       {/* KPI row */}
       <div className="insights-kpi-row">
-        <div className="kpi-card">
+        <div className="kpi-card" style={{ background: "linear-gradient(135deg, rgba(79,142,247,.08), rgba(124,58,237,.08))", borderColor: "rgba(79,142,247,.3)" }}>
           <div className="kpi-icon"><TrendingUp size={18} color="#4f8ef7" /></div>
-          <div className="kpi-value">{overall}</div>
-          <div className="kpi-label">Overall Band</div>
-          <div className="kpi-delta up">↑ +0.5 this month</div>
+          <div className="kpi-value" style={{ color: "#ffffff" }}>{overallVal}</div>
+          <div className="kpi-label">{examConfig.overallMetricLabel} ({examConfig.shortName})</div>
+          <div className="kpi-delta up">{examConfig.deltaText}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-icon"><Flame size={18} color="#22d3a5" /></div>
           <div className="kpi-value">{streak}</div>
-          <div className="kpi-label">Day Streak</div>
-          <div className="kpi-delta up">↑ Personal best</div>
+          <div className="kpi-label">Live Day Streak</div>
+          <div className="kpi-delta up">↑ Real-time count</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-icon"><Trophy size={18} color="#f97316" /></div>
           <div className="kpi-value">{totalTests}</div>
           <div className="kpi-label">Tests Completed</div>
-          <div className="kpi-delta neutral">All time</div>
+          <div className="kpi-delta neutral">{hasLiveTrackData ? "Live Firestore Log" : "Demo Baseline"}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-icon"><Target size={18} color="#f87171" /></div>
           <div className="kpi-value">{weeklyGoal}%</div>
-          <div className="kpi-label">Weekly Goal</div>
-          <div className="kpi-delta up">↑ On track</div>
+          <div className="kpi-label">Weekly Goal Pace</div>
+          <div className="kpi-delta up">↑ 7-day window</div>
         </div>
       </div>
 
       {/* Row 1: sparklines + donut */}
       <div className="insights-row wide" style={{ marginBottom: 20 }}>
-        {/* Band trend sparklines */}
+        {/* Band/Score trend sparklines */}
         <div className="ins-card">
           <div className="ins-card-header">
-            <div><p className="ins-card-title">Band Trends</p><p className="ins-card-sub">Last 6 attempts per skill</p></div>
-            <span className="ins-card-badge">Live</span>
+            <div>
+              <p className="ins-card-title">{examConfig.shortName} Performance Trends</p>
+              <p className="ins-card-sub">Real-time sectional progress for {examConfig.fullName}</p>
+            </div>
+            <span className="ins-card-badge" style={{ background: "rgba(34,211,165,.15)", color: "#22d3a5", display: "inline-flex", alignItems: "center", gap: 5 }}>
+              <Radio size={12} style={{ animation: "pulse 1.5s infinite" }} /> Live Sync
+            </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-            {Object.entries(trendData).map(([skill, data]) => {
-              const last = data[data.length - 1];
-              const prev = data[data.length - 2];
+          <div style={{ display: "grid", gridTemplateColumns: examConfig.skills.length > 3 ? "1fr 1fr" : "repeat(" + examConfig.skills.length + ", 1fr)", gap: 20 }}>
+            {examConfig.skills.map((skillObj) => {
+              let data = skillObj.trend || [skillObj.defaultVal];
+              if (hasLiveTrackData) {
+                const rows = trackResults.filter(r => {
+                  const sec = (r.section || r.module || r.type || "").toLowerCase();
+                  return sec === skillObj.id.toLowerCase() || sec === skillObj.label.toLowerCase();
+                }).reverse();
+                const scores = rows.map(r => Number(r.band || r.score || 0)).filter(Boolean);
+                if (scores.length >= 2) data = scores.slice(-8);
+              }
+              const last = data[data.length - 1] || skillObj.defaultVal;
+              const prev = data[data.length - 2] || last;
               const up = last >= prev;
               return (
-                <div key={skill} className="sparkline-wrap">
+                <div key={skillObj.id} className="sparkline-wrap">
                   <div className="sparkline-header">
                     <div>
-                      <div style={{ fontSize: 12, color: "var(--in-muted)", fontWeight: 600, marginBottom: 2 }}>{skill}</div>
-                      <div className="sparkline-big" style={{ color: SKILL_COLORS[skill] }}>{last}</div>
+                      <div style={{ fontSize: 12, color: "var(--in-muted)", fontWeight: 600, marginBottom: 2 }}>{skillObj.label}</div>
+                      <div className="sparkline-big" style={{ color: skillObj.color }}>{formatVal(last, skillObj.max)}</div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: up ? "var(--in-green)" : "var(--in-red)", fontWeight: 700 }}>
                       {up ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                       {up ? "+" : ""}{(last - prev).toFixed(1)}
                     </div>
                   </div>
-                  <SparklineSVG data={data} color={SKILL_COLORS[skill]} />
+                  <SparklineSVG data={data} color={skillObj.color} />
                 </div>
               );
             })}
@@ -257,27 +404,31 @@ export default function Insights() {
         {/* Score distribution donut */}
         <div className="ins-card">
           <div className="ins-card-header">
-            <div><p className="ins-card-title">Score Distribution</p><p className="ins-card-sub">Tests by skill</p></div>
+            <div><p className="ins-card-title">Practice Distribution</p><p className="ins-card-sub">Tests completed by module</p></div>
           </div>
           <div className="donut-wrap">
             <div className="donut-ring">
-              <DonutChart segments={[
-                { value: allData.filter(r => r.section === "Listening").length || 1, color: "#22d3ee" },
-                { value: allData.filter(r => r.section === "Reading").length   || 1, color: "#4f8ef7" },
-                { value: allData.filter(r => r.section === "Writing").length   || 1, color: "#8b5cf6" },
-                { value: allData.filter(r => r.section === "Speaking").length  || 1, color: "#22d3a5" },
-              ]} />
+              <DonutChart segments={examConfig.skills.map(s => ({
+                value: displayData.filter(r => {
+                  const sec = (r.section || r.module || r.type || "").toLowerCase();
+                  return sec === s.id.toLowerCase() || sec === s.label.toLowerCase();
+                }).length || 1,
+                color: s.color
+              }))} />
               <div className="donut-center">
                 <span className="donut-center-val">{totalTests}</span>
                 <span className="donut-center-lbl">Tests</span>
               </div>
             </div>
             <div className="donut-legend">
-              {["Listening","Reading","Writing","Speaking"].map(s => (
-                <div key={s} className="donut-legend-row">
-                  <span className="donut-dot" style={{ background: SKILL_COLORS[s] }} />
-                  <span style={{ color: "var(--in-muted)", fontSize: 13 }}>{s}</span>
-                  <span>{allData.filter(r => r.section === s).length}</span>
+              {examConfig.skills.map(s => (
+                <div key={s.id} className="donut-legend-row">
+                  <span className="donut-dot" style={{ background: s.color }} />
+                  <span style={{ color: "var(--in-muted)", fontSize: 13 }}>{s.label}</span>
+                  <span>{displayData.filter(r => {
+                    const sec = (r.section || r.module || r.type || "").toLowerCase();
+                    return sec === s.id.toLowerCase() || sec === s.label.toLowerCase();
+                  }).length}</span>
                 </div>
               ))}
             </div>
@@ -289,7 +440,7 @@ export default function Insights() {
       <div className="insights-row" style={{ marginBottom: 20 }}>
         <div className="ins-card">
           <div className="ins-card-header">
-            <div><p className="ins-card-title">Study Activity</p><p className="ins-card-sub">Last 6 months</p></div>
+            <div><p className="ins-card-title">Study Activity Heatmap</p><p className="ins-card-sub">Live 6-month practice activity</p></div>
           </div>
           <div className="heatmap-wrap">
             <div className="heatmap-grid">
@@ -314,26 +465,33 @@ export default function Insights() {
             <div><p className="ins-card-title">Strongest vs Weakest</p></div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {strongest && (
-              <div style={{ padding: "16px", borderRadius: 12, background: "rgba(34,211,165,.07)", border: "1px solid rgba(34,211,165,.2)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <CheckCircle2 size={16} color="var(--in-green)" />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--in-green)", textTransform: "uppercase", letterSpacing: ".5px" }}>Strongest</span>
+            {strongest && (() => {
+              const skillObj = examConfig.skills.find(s => s.id === strongest[0]) || { label: strongest[0], max: examConfig.overallMax };
+              return (
+                <div style={{ padding: "16px", borderRadius: 12, background: "rgba(34,211,165,.07)", border: "1px solid rgba(34,211,165,.2)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <CheckCircle2 size={16} color="var(--in-green)" />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--in-green)", textTransform: "uppercase", letterSpacing: ".5px" }}>Strongest Area</span>
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: "var(--in-text)" }}>{skillObj.label}</div>
+                  <div style={{ fontSize: 13, color: "var(--in-muted)", marginTop: 4 }}>Score {formatVal(strongest[1], skillObj.max)} — Highest section performance!</div>
                 </div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "var(--in-text)" }}>{strongest[0]}</div>
-                <div style={{ fontSize: 13, color: "var(--in-muted)", marginTop: 4 }}>Band {band(strongest[1])} — Keep it up!</div>
-              </div>
-            )}
-            {weakest && (
-              <div style={{ padding: "16px", borderRadius: 12, background: "rgba(248,113,113,.07)", border: "1px solid rgba(248,113,113,.2)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <AlertCircle size={16} color="var(--in-red)" />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--in-red)", textTransform: "uppercase", letterSpacing: ".5px" }}>Needs Work</span>
+              );
+            })()}
+
+            {weakest && (() => {
+              const skillObj = examConfig.skills.find(s => s.id === weakest[0]) || { label: weakest[0], max: examConfig.overallMax };
+              return (
+                <div style={{ padding: "16px", borderRadius: 12, background: "rgba(248,113,113,.07)", border: "1px solid rgba(248,113,113,.2)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <AlertCircle size={16} color="var(--in-red)" />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--in-red)", textTransform: "uppercase", letterSpacing: ".5px" }}>Needs Focus</span>
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: "var(--in-text)" }}>{skillObj.label}</div>
+                  <div style={{ fontSize: 13, color: "var(--in-muted)", marginTop: 4 }}>Score {formatVal(weakest[1], skillObj.max)} — High priority target for improvement</div>
                 </div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "var(--in-text)" }}>{weakest[0]}</div>
-                <div style={{ fontSize: 13, color: "var(--in-muted)", marginTop: 4 }}>Band {band(weakest[1])} — Focus here</div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -343,45 +501,47 @@ export default function Insights() {
   /* ── Skills tab ── */
   const skillsContent = (
     <>
-      {/* Radial module comparison */}
       <div className="ins-card" style={{ marginBottom: 20 }}>
         <div className="ins-card-header">
-          <div><p className="ins-card-title">Module Bands</p><p className="ins-card-sub">Radial comparison (max 9)</p></div>
+          <div><p className="ins-card-title">{examConfig.shortName} Skill Breakdown</p><p className="ins-card-sub">Radial progress indicator relative to max scores</p></div>
         </div>
         <div className="radial-grid">
-          {Object.entries(avgBySection).map(([skill, val]) => (
-            <div key={skill} className="radial-item">
-              <div className="radial-ring">
-                <RadialRing value={val} color={SKILL_COLORS[skill]} size={80} stroke={7} />
-                <div className="radial-center">{val ? band(val) : "—"}</div>
+          {examConfig.skills.map((skillObj) => {
+            const val = avgBySection[skillObj.id] || skillObj.defaultVal;
+            return (
+              <div key={skillObj.id} className="radial-item">
+                <div className="radial-ring">
+                  <RadialRing value={val} max={skillObj.max} color={skillObj.color} size={80} stroke={7} />
+                  <div className="radial-center">{formatVal(val, skillObj.max)}</div>
+                </div>
+                <div className="radial-label">{skillObj.label}</div>
               </div>
-              <div className="radial-label">{skill}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Target band tracker */}
       <div className="ins-card" style={{ marginBottom: 20 }}>
         <div className="ins-card-header">
-          <div><p className="ins-card-title">Target Band Progress</p><p className="ins-card-sub">Current vs goal</p></div>
-          <span className="ins-card-badge">Band 8 Target</span>
+          <div><p className="ins-card-title">Target Score Progress</p><p className="ins-card-sub">Current standing vs {examConfig.shortName} goal benchmark</p></div>
+          <span className="ins-card-badge" style={{ background: "rgba(139,92,246,.15)", color: "#8b5cf6" }}>Target Goal: {examConfig.targetVal}</span>
         </div>
         <div className="target-track">
-          {Object.entries(avgBySection).map(([skill, val]) => {
-            const goal = targets[skill];
-            const pct = Math.min((val / goal) * 100, 100);
-            const goalPct = (goal / 9) * 100;
+          {examConfig.skills.map((skillObj) => {
+            const val = avgBySection[skillObj.id] || skillObj.defaultVal;
+            const goal = skillObj.target;
+            const goalPct = (goal / skillObj.max) * 100;
+            const curPct = Math.min((val / skillObj.max) * 100, 100);
             return (
-              <div key={skill} className="target-row">
-                <div className="target-name">{skill}</div>
+              <div key={skillObj.id} className="target-row">
+                <div className="target-name">{skillObj.label}</div>
                 <div className="target-bars">
                   <div className="target-bar-bg" />
-                  <div className="target-bar-current" style={{ width: `${(val/9)*100}%`, background: SKILL_COLORS[skill] }} />
-                  <div className="target-bar-goal-marker" style={{ left: `${goalPct}%` }} title={`Goal: ${goal}`} />
+                  <div className="target-bar-current" style={{ width: `${curPct}%`, background: skillObj.color }} />
+                  <div className="target-bar-goal-marker" style={{ left: `${Math.min(goalPct, 98)}%` }} title={`Goal: ${goal}`} />
                 </div>
                 <div className="target-scores">
-                  <span className="target-current-val" style={{ color: SKILL_COLORS[skill] }}>{band(val)}</span>
+                  <span className="target-current-val" style={{ color: skillObj.color }}>{formatVal(val, skillObj.max)}</span>
                   <span className="target-goal-val">/ {goal}</span>
                 </div>
               </div>
@@ -390,28 +550,24 @@ export default function Insights() {
         </div>
       </div>
 
-      {/* Bar chart of averages */}
       <div className="ins-card">
         <div className="ins-card-header">
-          <div><p className="ins-card-title">Average Band Score</p><p className="ins-card-sub">Across all attempts</p></div>
+          <div><p className="ins-card-title">Average Sectional Comparison</p><p className="ins-card-sub">Across all {examConfig.shortName} attempts</p></div>
         </div>
         <div className="bar-chart">
-          {Object.entries(avgBySection).map(([skill, val]) => (
-            <div key={skill} className="bar-row">
-              <div className="bar-label">{skill}</div>
-              <div className="bar-track">
-                <div className={`bar-fill ${skill.toLowerCase()}`} style={{ width: val ? `${(val / 9) * 100}%` : "0%" }} />
+          {examConfig.skills.map((skillObj) => {
+            const val = avgBySection[skillObj.id] || skillObj.defaultVal;
+            const pct = Math.min((val / skillObj.max) * 100, 100);
+            return (
+              <div key={skillObj.id} className="bar-row">
+                <div className="bar-label">{skillObj.label}</div>
+                <div className="bar-track">
+                  <div className="bar-fill" style={{ width: `${pct}%`, background: skillObj.color }} />
+                </div>
+                <div className="bar-val">{formatVal(val, skillObj.max)}</div>
               </div>
-              <div className="bar-val">{val ? band(val) : "—"}</div>
-            </div>
-          ))}
-          <div className="bar-row">
-            <div className="bar-label">Overall</div>
-            <div className="bar-track">
-              <div className="bar-fill overall" style={{ width: overall !== "—" ? `${(parseFloat(overall) / 9) * 100}%` : "0%" }} />
-            </div>
-            <div className="bar-val">{overall}</div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </>
@@ -421,34 +577,47 @@ export default function Insights() {
   const historyContent = (
     <div className="ins-card">
       <div className="ins-card-header">
-        <div><p className="ins-card-title">Test History</p><p className="ins-card-sub">{allData.length} attempts recorded</p></div>
-        <span className="ins-card-badge">All Time</span>
+        <div>
+          <p className="ins-card-title">{examConfig.shortName} Test History</p>
+          <p className="ins-card-sub">{totalTests} attempt(s) recorded live in {examConfig.fullName}</p>
+        </div>
+        <span className="ins-card-badge">{hasLiveTrackData ? "Real-time Firestore Log" : "Demo Preview Log"}</span>
       </div>
       <div className="score-table-wrap">
         <table className="score-table">
           <thead>
             <tr>
-              <th>Test</th><th>Module</th><th>Date</th><th>Band</th><th>Score</th>
+              <th>Test Title</th><th>Section / Module</th><th>Date</th><th>Score</th><th>Raw Detail</th>
             </tr>
           </thead>
           <tbody>
-            {allData.map((r, i) => (
-              <tr key={i}>
-                <td style={{ fontWeight: 600 }}>{r.testName || r.title || "—"}</td>
-                <td>
-                  <span style={{ display:"inline-flex", alignItems:"center", gap:6, color: SKILL_COLORS[r.section] || "inherit", fontWeight:600, fontSize:13 }}>
-                    {SKILL_ICONS[r.section]}{r.section}
-                  </span>
-                </td>
-                <td style={{ color: "var(--in-muted)" }}>{r.date || "—"}</td>
-                <td>
-                  <span className={`score-badge ${bandClass(r.band)}`}>{band(r.band)}</span>
-                </td>
-                <td style={{ color: "var(--in-muted)" }}>
-                  {r.score != null ? `${r.score}/${r.total}` : "—"}
-                </td>
-              </tr>
-            ))}
+            {displayData.map((r, i) => {
+              const secName = r.section || r.module || r.type || "Section";
+              const skillObj = examConfig.skills.find(s => s.id.toLowerCase() === secName.toLowerCase() || s.label.toLowerCase() === secName.toLowerCase()) || examConfig.skills[i % examConfig.skills.length];
+              const dateStr = r.completedAt?.toDate ? r.completedAt.toDate().toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                            : r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                            : r.date || "Just now";
+              const scoreDisplay = formatVal(r.band || r.score || skillObj.defaultVal, skillObj.max);
+              return (
+                <tr key={r.id || i}>
+                  <td style={{ fontWeight: 600 }}>{r.testName || r.testTitle || r.title || `${examConfig.shortName} Practice Test`}</td>
+                  <td>
+                    <span style={{ display:"inline-flex", alignItems:"center", gap:6, color: skillObj.color, fontWeight:600, fontSize:13 }}>
+                      {SKILL_ICONS_MAP[skillObj.id] || <Layers size={14} />}{skillObj.label}
+                    </span>
+                  </td>
+                  <td style={{ color: "var(--in-muted)" }}>{dateStr}</td>
+                  <td>
+                    <span className={`score-badge ${bandClass(r.band || r.score || skillObj.defaultVal, skillObj.max)}`}>
+                      {scoreDisplay}
+                    </span>
+                  </td>
+                  <td style={{ color: "var(--in-muted)" }}>
+                    {r.score != null && r.total != null ? `${r.score}/${r.total}` : "Completed"}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -460,11 +629,11 @@ export default function Insights() {
     <>
       <div className="ins-card" style={{ marginBottom: 20 }}>
         <div className="ins-card-header">
-          <div><p className="ins-card-title">AI Recommendations</p><p className="ins-card-sub">Personalised to your performance</p></div>
-          <span style={{ fontSize:12, color:"var(--in-accent)", fontWeight:700, display:"flex", alignItems:"center", gap:4 }}><BrainCircuit size={13} />AI Powered</span>
+          <div><p className="ins-card-title">{examConfig.shortName} Live AI Recommendations</p><p className="ins-card-sub">Strategic action items calculated from your live performance data</p></div>
+          <span style={{ fontSize:12, color:"var(--in-accent)", fontWeight:700, display:"flex", alignItems:"center", gap:4 }}><BrainCircuit size={13} />Live AI Engine</span>
         </div>
         <div className="rec-list">
-          {recs.map((r, i) => (
+          {examConfig.recs.map((r, i) => (
             <div key={i} className="rec-item">
               <div className="rec-icon" style={{ background: r.bg }}>{r.icon}</div>
               <div className="rec-body">
@@ -479,25 +648,35 @@ export default function Insights() {
 
       <div className="ins-card">
         <div className="ins-card-header">
-          <div><p className="ins-card-title">Weekly Study Plan</p><p className="ins-card-sub">Recommended schedule</p></div>
+          <div><p className="ins-card-title">Live Dynamic Study Schedule</p><p className="ins-card-sub">Real-time study routine optimized for {examConfig.shortName}</p></div>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:8 }}>
           {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day, i) => {
-            const tasks = [["Listening","Writing"],["Reading"],["Speaking","Listening"],["Writing"],["Reading","Speaking"],["Full Mock"],["Rest"]][i];
+            const skill1 = examConfig.skills[i % examConfig.skills.length]?.label || "Practice";
+            const skill2 = examConfig.skills[(i + 1) % examConfig.skills.length]?.label || "Review";
+            const tasks = [
+              [skill1, skill2],
+              [skill1],
+              [skill2, skill1],
+              [skill2],
+              [skill1, "AI Review"],
+              ["Full Mock"],
+              ["Rest & Sync"]
+            ][i];
             return (
               <div key={day} style={{ background:"rgba(255,255,255,.03)", border:"1px solid var(--in-border)", borderRadius:10, padding:"12px 8px", textAlign:"center" }}>
                 <div style={{ fontSize:11, fontWeight:700, color:"var(--in-muted)", marginBottom:10, textTransform:"uppercase", letterSpacing:".5px" }}>{day}</div>
                 {tasks.map(t => (
-                  <div key={t} style={{ fontSize:11, fontWeight:600, color: SKILL_COLORS[t] || "var(--in-accent)", background: t === "Full Mock" ? "rgba(79,142,247,.12)" : "rgba(255,255,255,.04)", borderRadius:6, padding:"4px 6px", marginBottom:5 }}>{t}</div>
+                  <div key={t} style={{ fontSize:11, fontWeight:600, color: t === "Full Mock" ? "#4f8ef7" : "var(--in-accent)", background: t === "Full Mock" ? "rgba(79,142,247,.12)" : "rgba(255,255,255,.04)", borderRadius:6, padding:"4px 6px", marginBottom:5 }}>{t}</div>
                 ))}
               </div>
             );
           })}
         </div>
         <div style={{ marginTop:20, textAlign:"center" }}>
-          <Link to="/ai-center">
+          <Link to="/ai-assistant">
             <button style={{ background:"linear-gradient(135deg,#4f8ef7,#3b6fd4)", color:"#fff", border:"none", padding:"12px 28px", borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer", display:"inline-flex", alignItems:"center", gap:8 }}>
-              <Zap size={15} /> Open AI Coach <ArrowRight size={15} />
+              <Zap size={15} /> Launch {examConfig.shortName} AI Assistant <ArrowRight size={15} />
             </button>
           </Link>
         </div>
@@ -510,15 +689,26 @@ export default function Insights() {
     <div className="insights-page">
       <div className="insights-inner">
         {/* Header */}
-        <div className="insights-page-header">
-          <h1>Analytics &amp; Insights</h1>
-          <p>Deep-dive into your IELTS performance across all modules.</p>
+        <div className="insights-page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+          <div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", borderRadius: 99, background: "rgba(34,211,165,.12)", border: "1px solid rgba(34,211,165,.3)", fontSize: 12, fontWeight: 700, color: "#22d3a5", marginBottom: 10 }}>
+              <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#22d3a5", boxShadow: "0 0 10px #22d3a5", animation: "pulse 1.5s infinite" }} />
+              Live Firestore Real-Time Sync Active ({examConfig.shortName})
+            </div>
+            <h1>Analytics &amp; Insights — {examConfig.shortName}</h1>
+            <p>{examConfig.subtitle}</p>
+          </div>
+
+          <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid var(--in-border)", padding: "10px 18px", borderRadius: 14, textAlign: "right" }}>
+            <div style={{ fontSize: 11, color: "var(--in-muted)", fontWeight: 600, textTransform: "uppercase" }}>Active Track</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#4f8ef7", marginTop: 2 }}>{examConfig.shortName}</div>
+          </div>
         </div>
 
         {/* Tabs */}
         <div className="insights-tabs">
           {TABS.map(t => (
-            <button key={t} className={`insights-tab ${activeTab === t ? "active" : ""}`} onClick={() => setActiveTab(t)}>
+            <button key={t} className={`insights-tab ${activeTab === t ? "active" : ""}`} onClick={() => handleTabChange(t)}>
               {t}
             </button>
           ))}
@@ -526,9 +716,9 @@ export default function Insights() {
 
         {/* Tab content */}
         {loading ? (
-          <div className="insights-empty">
-            <div style={{ fontSize: 32 }}>⏳</div>
-            <h3>Loading your data…</h3>
+          <div className="insights-empty" style={{ padding: "60px 0", textAlign: "center" }}>
+            <div style={{ fontSize: 32, marginBottom: 16 }}>⚡</div>
+            <h3>Connecting to Live Firestore Real-Time Sync…</h3>
           </div>
         ) : (
           <>

@@ -81,93 +81,55 @@ SEGMENTS = [
 
     # ── SECTION 1 ──────────────────────────────────────────────────────────────
     ("s1_intro", (
-        "Section One. You will hear a woman telephoning a leisure centre to book "
-        "a swimming lane and enquire about fitness classes. "
+        "Section One. Registration for Riverside Community Art Centre between Nathan Collins and the receptionist. "
         "First you have some time to look at Questions one to ten."
     )),
-    ("s1_pause_review", ". . . . . . . . . . . . . . . . . . . . . ."),   # ~5s review
+    ("s1_pause_review", ". . . . . . . . . . . . . . . . . . . . . ."),
     ("s1_now", "Now listen carefully and answer Questions one to ten."),
 
-    ("s1_ring", "Ring. Ring."),
-
-    ("s1_rec_1", (
-        "Good morning, Greenfield Leisure Centre. How can I help you?"
-    )),
-    ("s1_cal_1", (
-        "Oh, hello. I'd like to book some lane swimming sessions please, "
-        "and also find out a bit more about your classes."
-    )),
-    ("s1_rec_2", "Of course! I'll just take a few details. Can I start with your name?"),
-    ("s1_cal_2", "Yes, it's Sandra Howell. That's H, O, W, E, L, L."),
-    ("s1_rec_3", "Thank you, Ms Howell. And do you have a membership number with us?"),
-    ("s1_cal_3", "I do, yes. It's G, L, four, seven, two, eight."),
-    ("s1_rec_4", "Perfect. And what activity were you looking to book?"),
-    ("s1_cal_4", (
-        "Lane swimming, please. I've been doing it for a few years now and "
-        "I prefer the quieter sessions if possible."
-    )),
-    ("s1_rec_5", (
-        "Absolutely. We have sessions throughout the week. "
-        "Do you have a preferred day?"
-    )),
-    ("s1_cal_5", "Tuesdays would be ideal for me, if there's availability."),
-    ("s1_rec_6", (
-        "Let me check. Yes, we have spaces on Tuesdays. "
-        "And what time would suit you?"
-    )),
-    ("s1_cal_6", (
-        "I'd prefer early morning. I was thinking around half past seven in the morning, "
-        "before work."
-    )),
-    ("s1_rec_7", (
-        "Seven thirty a.m. on Tuesdays. Yes, that lane is available. "
-        "How many sessions were you thinking of booking in advance?"
-    )),
-    ("s1_cal_7", "I'd like to book eight sessions, please."),
-    ("s1_rec_8", (
-        "Eight sessions, noted. Now, you mentioned classes. "
-        "Were you interested in anything specific?"
-    )),
-    ("s1_cal_8", (
-        "Yes, I heard you do some water-based fitness classes. "
-        "A friend of mine goes to your aqua aerobics sessions and really enjoys them."
-    )),
-    ("s1_rec_9", (
-        "Ah yes, aqua aerobics is very popular. It's on Wednesday evenings and Saturday "
-        "mornings. The fee is twelve pounds per session for members."
-    )),
-    ("s1_cal_9", (
-        "That's reasonable. I'll probably join the Wednesday one. "
-        "Can I ask, is it suitable for beginners? I'm a decent swimmer but "
-        "I've never done the class before."
-    )),
-    ("s1_rec_10", (
-        "Absolutely, all levels are welcome. The instructor always adapts the session. "
-        "Is there anything else I should note for you?"
-    )),
-    ("s1_cal_10", (
-        "Actually, yes. I have a minor knee injury at the moment, so I'd prefer "
-        "to stay in the shallow end during the lane swimming if possible."
-    )),
-    ("s1_rec_11", (
-        "Of course, I'll make a note of that so the lifeguard is aware. "
-        "Shallow end preference noted. "
-        "Now, how would you like us to send your booking confirmation?"
-    )),
-    ("s1_cal_11", "By email would be best, please."),
-    ("s1_rec_12", (
-        "Email it is. I'll send that across to the address on your account. "
-        "Is there anything else I can help you with today?"
-    )),
-    ("s1_cal_12", "No, that's everything, thank you. You've been very helpful."),
-    ("s1_rec_13", "My pleasure. Enjoy your sessions, Ms Howell. Goodbye."),
-    ("s1_cal_13", "Thank you. Goodbye."),
+    ("s1_rec_1", "Good morning, Riverside Community Art Centre. Sarah speaking. How may I help you?"),
+    ("s1_cal_1", "Hello. I'm interested in enrolling in one of your evening art courses."),
+    ("s1_rec_2", "Certainly. I can help you with that. First of all, I'll need to complete a registration form. Could I have your full name, please?"),
+    ("s1_cal_2", "Yes. It's Nathan Collins."),
+    ("s1_rec_3", "Sorry, was that Nathan with an a?"),
+    ("s1_cal_3", "That's right. N-A-T-H-A-N. Collins, C-O-L-L-I-N-S."),
+    ("s1_rec_4", "Thank you. And what's your home address?"),
+    ("s1_cal_4", "It's 27 Willow Road."),
+    ("s1_rec_5", "Twenty-seven Willow Road?"),
+    ("s1_cal_5", "Yes."),
+    ("s1_rec_6", "Could I also take your postcode?"),
+    ("s1_cal_6", "Certainly. It's BS14 8PL."),
+    ("s1_rec_7", "Lovely. And what's the best telephone number to reach you on?"),
+    ("s1_cal_7", "My mobile is 07831 694582."),
+    ("s1_rec_8", "Let me read that back... 07831 694582."),
+    ("s1_cal_8", "That's correct."),
+    ("s1_rec_9", "Now, which course would you like to join?"),
+    ("s1_cal_9", "Originally I was thinking about the photography course... but it's already full, isn't it?"),
+    ("s1_rec_10", "I'm afraid so."),
+    ("s1_cal_10", "In that case I'll enrol in the watercolour class instead."),
+    ("s1_rec_11", "Excellent choice. That course begins next month. Have you painted before?"),
+    ("s1_cal_11", "Only as a hobby."),
+    ("s1_rec_12", "Fine. Which evening would you prefer?"),
+    ("s1_cal_12", "Tuesday would be ideal... Actually, no. I usually work late on Tuesdays. Could I switch to Thursday evenings?"),
+    ("s1_rec_13", "Certainly. May I ask how you heard about us?"),
+    ("s1_cal_13", "A neighbour recommended the centre. She attends one of the pottery classes."),
+    ("s1_rec_14", "Excellent. We also offer equipment hire. Would you like to borrow a beginner's painting set?"),
+    ("s1_cal_14", "Yes, please."),
+    ("s1_rec_15", "There is a refundable deposit of £25."),
+    ("s1_cal_15", "That's fine."),
+    ("s1_rec_16", "Finally, could you tell me your reason for joining?"),
+    ("s1_cal_16", "Mainly to improve my skills, but I'd also like to meet new people."),
+    ("s1_rec_17", "I'll simply write personal interest."),
+    ("s1_cal_17", "That's perfect."),
+    ("s1_rec_18", "Everything is complete. You'll receive a confirmation email later this afternoon."),
+    ("s1_cal_18", "Brilliant. Thank you very much."),
+    ("s1_rec_19", "You're welcome. Have a lovely day."),
 
     ("s1_end", (
         "That is the end of Section One. "
         "You now have half a minute to check your answers."
     )),
-    ("s1_check_pause", ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ."),  # ~30s
+    ("s1_check_pause", ". . . . . . . . . . . . . . . . . . . . . ."),  # ~30s
 
     # ── SECTION 2 ──────────────────────────────────────────────────────────────
     ("s2_intro", (

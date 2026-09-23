@@ -2,10 +2,19 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    // 1. Reset the window / document scroll
+    // If there is an intentional hash anchor on the page (e.g. #pricing, #faq), scroll to it
+    if (hash) {
+      const element = document.getElementById(hash.replace("#", ""));
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+
+    // 1. Reset window / document scroll position instantly
     try {
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
@@ -14,27 +23,24 @@ export default function ScrollToTop() {
       window.scrollTo(0, 0);
     }
 
-    // 2. Reset every overflow scroll container in the page.
-    //    Some pages (e.g. exam panels, modals) use their own
-    //    scrollable divs that window.scrollTo can't reach.
+    // 2. Reset internal scroll containers (exam containers, panels, modals)
     const resetContainers = () => {
       const scrollables = document.querySelectorAll(
         "[style*='overflow'], .overflow-y-auto, .overflow-auto, " +
         ".ielts-passage-panel, .ielts-questions-panel, " +
         ".mock-reading-passage, .mock-reading-questions, " +
-        ".listening-panel, .exam-scroll-container"
+        ".listening-panel, .exam-scroll-container, .gre-exam-container"
       );
       scrollables.forEach((el) => {
         el.scrollTop = 0;
       });
     };
 
-    // Run immediately and also after a short tick so lazy-loaded
-    // pages have had time to mount their containers.
     resetContainers();
     const t = setTimeout(resetContainers, 50);
     return () => clearTimeout(t);
-  }, [pathname]);
+  }, [pathname, hash]);
 
   return null;
 }
+

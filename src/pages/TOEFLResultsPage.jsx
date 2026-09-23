@@ -91,10 +91,10 @@ export default function TOEFLResultsPage() {
         {/* ── HEADER BADGE ── */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <span style={{ background: "rgba(34,197,94,0.15)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)", padding: "6px 18px", borderRadius: 999, fontSize: 12, fontWeight: 800 }}>
-            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> TOEFL iBT 2026 AI PREDICTED SCORE REPORT
+            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> 2026 TOEFL iBT PRACTICE REPORT
           </span>
           <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, margin: "16px 0 8px 0" }}>
-            Your 2026 TOEFL iBT Exam Results
+            Your 2026 TOEFL iBT Practice Results
           </h1>
           <p style={{ color: "#94a3b8", fontSize: 15 }}>Test Date: {new Date(result.date).toLocaleDateString()}</p>
         </div>
@@ -118,7 +118,11 @@ export default function TOEFLResultsPage() {
               <div style={{ fontSize: 18, fontWeight: 800, color: "#ffffff" }}>{cefrEquiv}</div>
             </div>
             <div>
-              <div style={{ fontSize: 12, color: "#e9d5ff" }}>Legacy 0–120 Score</div>
+              <div style={{ fontSize: 12, color: "#e9d5ff" }}>IELTS Academic Band</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: "#4ade80" }}>{ieltsEquiv}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 12, color: "#e9d5ff" }}>Comparable 0–120 Score</div>
               <div style={{ fontSize: 18, fontWeight: 800, color: "#facc15" }}>{oldScaleEquiv} / 120</div>
             </div>
           </div>
@@ -161,10 +165,10 @@ export default function TOEFLResultsPage() {
             <div style={{ background: "#0f172a", padding: 18, borderRadius: 16 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#c084fc", marginBottom: 10 }}>🎧 Listening Skills</div>
               <div style={{ fontSize: 13, color: "#cbd5e1", display: "flex", flexDirection: "column", gap: 6 }}>
-                <div>Choose Response: <strong>{analytics.listening.chooseResponsePct}%</strong></div>
-                <div>Conversations: <strong>{analytics.listening.conversationPct}%</strong></div>
-                <div>Announcements: <strong>{analytics.listening.announcementPct}%</strong></div>
-                <div>Academic Talks: <strong>{analytics.listening.academicTalkPct}%</strong></div>
+                <div>Listen and Choose a Response: <strong>{analytics.listening.chooseResponsePct}%</strong></div>
+                <div>Listen to a Conversation: <strong>{analytics.listening.conversationPct}%</strong></div>
+                <div>Listen to an Announcement: <strong>{analytics.listening.announcementPct}%</strong></div>
+                <div>Listen to an Academic Talk: <strong>{analytics.listening.academicTalkPct}%</strong></div>
               </div>
             </div>
 
@@ -172,9 +176,9 @@ export default function TOEFLResultsPage() {
             <div style={{ background: "#0f172a", padding: 18, borderRadius: 16 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#f59e0b", marginBottom: 10 }}>✍️ Writing Tasks (0–5 Rubric)</div>
               <div style={{ fontSize: 13, color: "#cbd5e1", display: "flex", flexDirection: "column", gap: 6 }}>
-                <div>Build Sentence: <strong>{analytics.writing.buildSentenceScore} / 10</strong></div>
-                <div>Email Task Rubric: <strong>{writingFeedback?.email?.rawTaskScore ?? 4} / 5</strong></div>
-                <div>Discussion Rubric: <strong>{writingFeedback?.discussion?.rawTaskScore ?? 4} / 5</strong></div>
+                <div>Build a Sentence: <strong>{analytics.writing.buildSentenceScore} / 10</strong></div>
+                <div>Write an Email Rubric: <strong>{writingFeedback?.email?.rawTaskScore ?? 4} / 5</strong></div>
+                <div>Write for an Academic Discussion: <strong>{writingFeedback?.discussion?.rawTaskScore ?? 4} / 5</strong></div>
                 <div>Social Register: <strong>{analytics.writing.socialRegister}%</strong></div>
               </div>
             </div>
@@ -183,8 +187,8 @@ export default function TOEFLResultsPage() {
             <div style={{ background: "#0f172a", padding: 18, borderRadius: 16 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#4ade80", marginBottom: 10 }}>🎙️ Speaking Tasks (0–5 Rubric)</div>
               <div style={{ fontSize: 13, color: "#cbd5e1", display: "flex", flexDirection: "column", gap: 6 }}>
-                <div>Listen &amp; Repeat: <strong>{analytics.speaking.listenRepeatScore} / 35</strong></div>
-                <div>Interview Rubric: <strong>{speakingFeedback?.rawTaskScore ?? 4} / 5</strong></div>
+                <div>Listen and Repeat: <strong>{analytics.speaking.listenRepeatScore} / 35</strong></div>
+                <div>Take an Interview Rubric: <strong>{speakingFeedback?.rawTaskScore ?? 4} / 5</strong></div>
                 <div>Pronunciation &amp; Accuracy: <strong>{analytics.speaking.pronunciation}%</strong></div>
                 <div>Prosody &amp; Intonation: <strong>{analytics.speaking.prosody}%</strong></div>
               </div>
@@ -200,7 +204,7 @@ export default function TOEFLResultsPage() {
               {writingFeedback.email && (
                 <div style={{ marginBottom: 18 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff", marginBottom: 6 }}>
-                    Email Task (Raw Score: {writingFeedback.email.rawTaskScore ?? 4}/5 · Band {writingFeedback.email.bandScore.toFixed(1)}):
+                    Write an Email (Raw Score: {writingFeedback.email.rawTaskScore ?? 4}/5 · Band {writingFeedback.email.bandScore.toFixed(1)}):
                   </div>
                   <p style={{ color: "#cbd5e1", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{writingFeedback.email.feedback}</p>
                 </div>
@@ -208,7 +212,7 @@ export default function TOEFLResultsPage() {
               {writingFeedback.discussion && (
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff", marginBottom: 6 }}>
-                    Academic Discussion (Raw Score: {writingFeedback.discussion.rawTaskScore ?? 4}/5 · Band {writingFeedback.discussion.bandScore.toFixed(1)}):
+                    Write for an Academic Discussion (Raw Score: {writingFeedback.discussion.rawTaskScore ?? 4}/5 · Band {writingFeedback.discussion.bandScore.toFixed(1)}):
                   </div>
                   <p style={{ color: "#cbd5e1", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{writingFeedback.discussion.feedback}</p>
                 </div>

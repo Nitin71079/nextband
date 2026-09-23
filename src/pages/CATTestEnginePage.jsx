@@ -5,8 +5,8 @@ import {
   Clock, ShieldCheck, ChevronLeft, ChevronRight, CheckCircle2,
   Bookmark, Award, Zap, AlertCircle, Calculator, FileText, X, Play, RotateCcw
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { catTests } from "../data/cat/catTests";
-import { getCATConfig } from "../config/catConfig";
 import { calculateCATSectionScores } from "../utils/catScoreCalculator";
 
 export default function CATTestEnginePage() {
@@ -18,78 +18,75 @@ export default function CATTestEnginePage() {
     return catTests.find((t) => t.id === testId) || catTests[0];
   }, [testId]);
 
-  const config = getCATConfig(testObj.testVersion || "CAT_2026");
-
-  // Section Order
+  // Fixed CAT Section Sequence (VARC -> DILR -> QA)
   const SECTIONS = ["varc", "dilr", "qa"];
-  const [activeSectionIdx, setActiveSectionIdx] = useState(0); // 0: VARC, 1: DILR, 2: QA
+  const SECTION_LABELS = {
+    varc: "VARC (Verbal Ability & Reading Comp)",
+    dilr: "DILR (Data Interpretation & Logical Reasoning)",
+    qa: "QA (Quantitative Aptitude)"
+  };
+
+  const [activeSectionIdx, setActiveSectionIdx] = useState(0); // 0: VARC (24 Q), 1: DILR (22 Q), 2: QA (22 Q)
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
 
-  // User State
+  // User Responses & Palette State
   const [userAnswers, setUserAnswers] = useState({});
   const [markedForReview, setMarkedForReview] = useState({});
   const [titaInputs, setTitaInputs] = useState({});
-  const [isExamMode, setIsExamMode] = useState(true); // Full Simulation vs Practice
 
   // On-Screen Tools State
   const [showCalculator, setShowCalculator] = useState(false);
   const [showScratchpad, setShowScratchpad] = useState(false);
   const [scratchText, setScratchText] = useState("");
   const [calcInput, setCalcInput] = useState("");
+  const [showExitModal, setShowExitModal] = useState(false);
 
-  // Timers (40:00 per section)
-  const [sectionTimeLeft, setSectionTimeLeft] = useState(2400);
+  // 40-Minute Section Timers (Timestamp-based persistence)
+  const SECTION_DURATION_SECS = 40 * 60; // 40 minutes per section
+  const [sectionStartTime, setSectionStartTime] = useState(Date.now());
+  const [sectionTimeLeft, setSectionTimeLeft] = useState(SECTION_DURATION_SECS);
 
-  // Active section question list
-  const activeSectionKey = SECTIONS[activeSectionIdx];
-  const activeQuestions = testObj.sections[activeSectionKey]?.questions || [];
-  const currentQ = activeQuestions[currentQuestionIdx] || activeQuestions[0];
-
-  // Auto-Save / Session Recovery
+  // CRITICAL SCROLL RESET: Scroll to top whenever question or section changes
   useEffect(() => {
-    const saved = localStorage.getItem(`cat_session_${testId}`);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setUserAnswers(parsed.userAnswers || {});
-        setMarkedForReview(parsed.markedForReview || {});
-        setTitaInputs(parsed.titaInputs || {});
-        setActiveSectionIdx(parsed.activeSectionIdx || 0);
-        setCurrentQuestionIdx(parsed.currentQuestionIdx || 0);
-      } catch (err) {
-        console.error("CAT session recovery error:", err);
-      }
-    }
-  }, [testId]);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const container = document.querySelector(".cat-exam-container");
+    if (container) container.scrollTop = 0;
+    const panel = document.querySelector(".cat-question-panel");
+    if (panel) panel.scrollTop = 0;
+  }, [currentQuestionIdx, activeSectionIdx]);
 
+  // Section Start Timestamp Init
   useEffect(() => {
-    localStorage.setItem(
-      `cat_session_${testId}`,
-      JSON.stringify({ userAnswers, markedForReview, titaInputs, activeSectionIdx, currentQuestionIdx })
-    );
-  }, [userAnswers, markedForReview, titaInputs, activeSectionIdx, currentQuestionIdx, testId]);
+    setSectionStartTime(Date.now());
+    setSectionTimeLeft(SECTION_DURATION_SECS);
+  }, [activeSectionIdx]);
 
-  // Section Timer Countdown
+  // Robust Section Timer Effect
   useEffect(() => {
     const timer = setInterval(() => {
-      setSectionTimeLeft((prev) => {
-        if (prev <= 1) {
-          // Auto Lock section & advance
-          if (activeSectionIdx < SECTIONS.length - 1) {
-            setActiveSectionIdx((s) => s + 1);
-            setCurrentQuestionIdx(0);
-            return 2400; // Reset next section timer
-          } else {
-            handleCompleteCATExam(); // Auto submit final test
-            return 0;
-          }
+      const elapsed = Math.floor((Date.now() - sectionStartTime) / 1000);
+      const remaining = Math.max(0, SECTION_DURATION_SECS - elapsed);
+      setSectionTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(timer);
+        toast.error(`40-minute timer expired for ${SECTIONS[activeSectionIdx].toUpperCase()}. Locking section.`);
+        if (activeSectionIdx < SECTIONS.length - 1) {
+          setActiveSectionIdx((s) => s + 1);
+          setCurrentQuestionIdx(0);
+        } else {
+          handleCompleteCATExam();
         }
-        return prev - 1;
-      });
+      }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [activeSectionIdx]);
+  }, [activeSectionIdx, sectionStartTime]);
+
+  // Active Questions for Current Section
+  const activeSectionKey = SECTIONS[activeSectionIdx];
+  const activeQuestions = testObj.sections[activeSectionKey]?.questions || [];
+  const currentQ = activeQuestions[currentQuestionIdx] || activeQuestions[0];
 
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60);
@@ -148,25 +145,24 @@ export default function CATTestEnginePage() {
     };
 
     localStorage.setItem(`cat_result_${resultId}`, JSON.stringify(resultPayload));
-    localStorage.removeItem(`cat_session_${testId}`);
     navigate(`/cat/results/${resultId}`);
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#090d16", color: "#ffffff", fontFamily: "Inter, sans-serif", display: "flex", flexDirection: "column" }}>
+    <div className="cat-exam-container" style={{ minHeight: "100vh", background: "#090d16", color: "#ffffff", fontFamily: "Inter, sans-serif", display: "flex", flexDirection: "column" }}>
 
       {/* ── TOP HEADER BAR ── */}
       <div style={{ background: "#0f172a", borderBottom: "1px solid rgba(255,255,255,0.12)", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 999 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <button
-            onClick={() => navigate("/cat")}
+            onClick={() => setShowExitModal(true)}
             style={{ background: "rgba(255,255,255,0.08)", color: "#cbd5e1", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "6px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}
           >
             <ChevronLeft size={16} /> Exit Exam
           </button>
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 900, margin: 0, color: "#ffffff" }}>{testObj.title}</h2>
-            <div style={{ fontSize: 11, color: "#ec4899", fontWeight: 800 }}>CAT 2026 OFFICIAL COMPUTER SIMULATION</div>
+            <div style={{ fontSize: 11, color: "#ec4899", fontWeight: 800 }}>KNARROW CAT COMPUTER PRACTICE ENGINE</div>
           </div>
         </div>
 
@@ -223,11 +219,38 @@ export default function CATTestEnginePage() {
         </div>
       </div>
 
+      {/* ── EXIT CONFIRMATION MODAL ── */}
+      {showExitModal && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 99999, background: "rgba(15,23,42,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div style={{ background: "#1e293b", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 24, padding: 32, maxWidth: 460, width: "100%", textAlign: "center" }}>
+            <AlertCircle size={48} color="#f87171" style={{ margin: "0 auto 16px" }} />
+            <h3 style={{ fontSize: 22, fontWeight: 900, marginBottom: 12 }}>Exit CAT Practice Mock?</h3>
+            <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
+              Your test progress will not be submitted. Are you sure you want to exit?
+            </p>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                onClick={() => setShowExitModal(false)}
+                style={{ flex: 1, background: "rgba(255,255,255,0.08)", color: "#ffffff", border: "none", borderRadius: 12, padding: 12, fontWeight: 800, cursor: "pointer" }}
+              >
+                Resume Test
+              </button>
+              <button
+                onClick={() => navigate("/cat")}
+                style={{ flex: 1, background: "#ef4444", color: "#ffffff", border: "none", borderRadius: 12, padding: 12, fontWeight: 800, cursor: "pointer" }}
+              >
+                Confirm Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── MAIN EXAM AREA ── */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", flex: 1, minHeight: "calc(100vh - 65px)" }}>
 
         {/* LEFT COLUMN: QUESTION CONTENT & INPUT */}
-        <div style={{ padding: 32, overflowY: "auto", borderRight: "1px solid rgba(255,255,255,0.1)" }}>
+        <div className="cat-question-panel" style={{ padding: 32, overflowY: "auto", borderRight: "1px solid rgba(255,255,255,0.1)" }}>
 
           {/* Passage / Scenario Box if RC or DILR */}
           {(currentQ?.passageText || currentQ?.scenario) && (
@@ -248,7 +271,7 @@ export default function CATTestEnginePage() {
                 QUESTION {currentQuestionIdx + 1} OF {activeQuestions.length} ({currentQ?.questionType || "MCQ"})
               </span>
               <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700 }}>
-                {currentQ?.questionType === "TITA" ? "Non-MCQ (+3 / 0 Marking)" : "MCQ (+3 / -1 Marking)"}
+                {currentQ?.questionType === "TITA" || currentQ?.isTita ? "Non-MCQ (+3 / 0 Marking - No Penalty)" : "MCQ (+3 / -1 Marking)"}
               </span>
             </div>
 
@@ -258,10 +281,10 @@ export default function CATTestEnginePage() {
           </div>
 
           {/* Answer Option Selector / TITA Input */}
-          {currentQ?.questionType === "TITA" ? (
+          {(currentQ?.questionType === "TITA" || currentQ?.isTita) ? (
             <div style={{ marginBottom: 36 }}>
               <label style={{ display: "block", fontSize: 13, color: "#94a3b8", fontWeight: 700, marginBottom: 8 }}>
-                Type In The Answer (TITA Numeric Input):
+                Type In The Answer (TITA Input):
               </label>
               <input
                 type="text"
@@ -408,7 +431,6 @@ export default function CATTestEnginePage() {
                 onClick={() => {
                   setActiveSectionIdx((s) => s + 1);
                   setCurrentQuestionIdx(0);
-                  setSectionTimeLeft(2400);
                 }}
                 style={{ width: "100%", background: "linear-gradient(135deg, #d97706, #b45309)", color: "#ffffff", border: "none", borderRadius: 14, padding: "14px", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
               >
@@ -419,7 +441,7 @@ export default function CATTestEnginePage() {
                 onClick={handleCompleteCATExam}
                 style={{ width: "100%", background: "linear-gradient(135deg, #22c55e, #15803d)", color: "#ffffff", border: "none", borderRadius: 14, padding: "14px", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.4)" }}
               >
-                Submit Official CAT Exam
+                Submit CAT Practice Exam
               </button>
             )}
           </div>

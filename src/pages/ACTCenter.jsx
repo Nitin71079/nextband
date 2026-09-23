@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { actTests } from "../data/act/actTests";
 import { calculateACTComposite } from "../utils/actScoreCalculator";
-import ExamTrackHeaderSwitcher from "../components/ExamTrackHeaderSwitcher";
 import FloatingDanglerPill from "../components/FloatingDanglerPill";
 
 export default function ACTCenter() {
@@ -86,9 +85,6 @@ export default function ACTCenter() {
   return (
     <div style={{ minHeight: "100vh", background: "radial-gradient(circle at 50% 0%, #0369a1 0%, #0f172a 70%)", color: "#ffffff", fontFamily: "Inter, sans-serif", padding: "40px 24px 80px" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-
-        {/* ── EXAM TRACK SWITCHER ── */}
-        <ExamTrackHeaderSwitcher />
 
         {/* ── HERO BANNER ── */}
         <div style={{ marginBottom: "48px", position: "relative" }}>

@@ -7,30 +7,24 @@ import {
 } from "lucide-react";
 import PremiumGate from "../components/PremiumGate";
 import { askGroq } from "../services/aiService";
-import { PROMPTS } from "../agents/prompts";
 import { useAuth } from "../context/AuthContext";
+import { useExam } from "../context/ExamContext";
 import { useLiveData } from "../hooks/useLiveData";
+import { getExamAiConfig } from "../config/examAiConfig";
 import "../styles/ai-assistant.css";
-
-const QUICK_PROMPTS = [
-  { label: "Reach Band 7", text: "How do I reach Band 7 in IELTS?" },
-  { label: "Writing Tips", text: "Improve my Writing Task 2 score" },
-  { label: "Speaking Tips", text: "How can I improve my Speaking fluency?" },
-  { label: "Reading Strategy", text: "Best strategies for IELTS Reading" },
-  { label: "Listening Tips", text: "Best strategies for IELTS Listening" },
-  { label: "30-Day Plan", text: "Create a 30-day IELTS study plan for me" },
-  { label: "Vocabulary", text: "How do I improve my vocabulary for IELTS?" },
-  { label: "Grammar Help", text: "What grammar mistakes lower my band score?" },
-];
 
 export default function AIAssistant() {
   const navigate = useNavigate();
   const { name, user } = useAuth();
   const { analytics } = useLiveData();
+  const { activeTrack } = useExam();
+  
+  const currentTrack = activeTrack || localStorage.getItem("knarrow_active_track") || "IELTS";
+  const aiConfig = getExamAiConfig(currentTrack);
+
   const firstName = name || user?.email?.split("@")[0] || "Student";
 
   const band       = analytics?.averageBand    || "—";
-  const confidence = analytics?.ai?.confidence || 0;
   const streak     = analytics?.studyStreak    || 0;
   const weakSkill  = analytics?.ai?.weakestSkill || "Writing";
   const totalTests = analytics?.testsCompleted  || 0;
@@ -38,7 +32,7 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: `👋 Hello ${firstName}! I'm your **Knarrow AI Coach** powered by Groq.\n\nAsk me anything about:\n- Reading, Listening, Writing, Speaking\n- Vocabulary & Grammar\n- Study Plans & Band Strategies\n- IELTS Tips & Techniques`,
+      content: aiConfig.welcomeMessage(firstName),
     },
   ]);
   const [input, setInput] = useState("");
@@ -46,6 +40,16 @@ export default function AIAssistant() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const chatRef = useRef(null);
+
+  // Update initial message when track changes
+  useEffect(() => {
+    setMessages([
+      {
+        role: "assistant",
+        content: aiConfig.welcomeMessage(firstName),
+      },
+    ]);
+  }, [currentTrack, firstName]);
 
   useEffect(() => {
     if (chatRef.current) {
@@ -62,12 +66,16 @@ export default function AIAssistant() {
     setLoading(true);
 
     try {
-      const aiReply = await askGroq(content, PROMPTS.default);
-      setMessages((prev) => [...prev, { role: "assistant", content: aiReply }]);
+      const aiReply = await askGroq([
+        { role: "system", content: aiConfig.systemPrompt },
+        ...messages.map((m) => ({ role: m.role, content: m.content })),
+        { role: "user", content }
+      ]);
+      setMessages((prev) => [...prev, { role: "assistant", content: aiReply || "How else can I assist with your prep?" }]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "❌ Unable to reach AI Coach. Please try again." },
+        { role: "assistant", content: `❌ Unable to reach ${aiConfig.title}. Please try again.` },
       ]);
     } finally {
       setLoading(false);
@@ -79,7 +87,7 @@ export default function AIAssistant() {
     setMessages([
       {
         role: "assistant",
-        content: `👋 Hello ${firstName}! I'm your **Knarrow AI Coach**. What would you like help with today?`,
+        content: aiConfig.welcomeMessage(firstName),
       },
     ]);
   }
@@ -103,34 +111,34 @@ export default function AIAssistant() {
               <Cpu size={28} />
             </div>
             <div>
-              <h2>AI Coach</h2>
+              <h2>{aiConfig.title}</h2>
               <span className="online-badge">
                 <span className="green-pulse" />
-                Groq · Online
+                Groq · {aiConfig.name} Mode
               </span>
             </div>
           </div>
 
-          {/* Band Prediction */}
+          {/* Target Score Prediction */}
           <div className="sidebar-card">
-            <p className="card-label">BAND PREDICTION</p>
-            <div className="band-score">{band}</div>
+            <p className="card-label">{aiConfig.name} TARGET SCORE</p>
+            <div className="band-score">{band !== "—" ? band : aiConfig.name}</div>
             <div className="band-bar">
-              <div className="band-fill" style={{ width: band !== "—" ? `${Math.round((Number(band) / 9) * 100)}%` : "0%" }} />
+              <div className="band-fill" style={{ width: "85%" }} />
             </div>
-            <p className="band-target">Target: Band {analytics?.memory?.profile?.targetBand || 8}</p>
+            <p className="band-target">{aiConfig.targetScore}</p>
           </div>
 
           {/* AI Memory */}
           <div className="sidebar-card">
             <div className="card-title-row">
               <BrainCircuit size={18} />
-              AI Memory
+              AI Memory ({aiConfig.name})
             </div>
             {[
               ["Strongest", analytics?.listening >= analytics?.reading ? "Listening" : "Reading"],
               ["Weakest",   weakSkill.replace(" Accuracy", "")],
-              ["Target",    `Band ${analytics?.memory?.profile?.targetBand || 8}`],
+              ["Target",    aiConfig.targetScore.replace("Target: ", "")],
               ["Streak",    `🔥 ${streak} Day${streak !== 1 ? "s" : ""}`],
             ].map(([label, val]) => (
               <div key={label} className="memory-row">
@@ -144,9 +152,9 @@ export default function AIAssistant() {
           <div className="sidebar-card">
             <div className="card-title-row">
               <Target size={18} />
-              Today's Mission
+              Today's Mission ({aiConfig.name})
             </div>
-            {["Writing Task 2", "20 min Speaking", "Vocabulary Review", "Grammar Practice"].map((task) => (
+            {aiConfig.mission.map((task) => (
               <div key={task} className="mission-row">
                 <CheckCircle2 size={15} />
                 {task}
@@ -232,10 +240,10 @@ export default function AIAssistant() {
                 <Bot size={22} />
               </div>
               <div>
-                <h1>Knarrow AI Coach</h1>
+                <h1>{aiConfig.title}</h1>
                 <span>
                   <Zap size={13} />
-                  Powered by Groq · Llama 3.3 70B
+                  Powered by Groq · {aiConfig.name} Expert Mode
                 </span>
               </div>
             </div>
@@ -251,10 +259,10 @@ export default function AIAssistant() {
           <div className="quick-prompts">
             <p className="quick-label">
               <Sparkles size={14} />
-              Quick Prompts
+              Quick Prompts ({aiConfig.name})
             </p>
             <div className="quick-chips">
-              {QUICK_PROMPTS.map((q) => (
+              {aiConfig.quickPrompts.map((q) => (
                 <button
                   key={q.label}
                   className="quick-chip"
@@ -302,7 +310,7 @@ export default function AIAssistant() {
               <textarea
                 ref={inputRef}
                 className="chat-input"
-                placeholder="Ask anything about IELTS…"
+                placeholder={aiConfig.placeholder}
                 value={input}
                 rows={1}
                 onChange={(e) => {

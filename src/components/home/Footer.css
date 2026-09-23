@@ -261,7 +261,12 @@
 
 .footer-socials a:nth-child(1):hover{
 
-    background:#181717;
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #0284c7
+        );
 
 }
 

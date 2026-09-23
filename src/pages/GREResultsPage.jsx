@@ -68,25 +68,25 @@ export default function GREResultsPage() {
         {/* ── HEADER BADGE ── */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <span style={{ background: "rgba(245,158,11,0.15)", color: "#facc15", border: "1px solid rgba(250,204,21,0.3)", padding: "6px 18px", borderRadius: 999, fontSize: 12, fontWeight: 800 }}>
-            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> OFFICIAL GRE GENERAL TEST SCORE REPORT (2026 CALIBRATED)
+            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> GRE GENERAL TEST PRACTICE RESULTS
           </span>
           <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, margin: "16px 0 8px 0" }}>
-            Your 2026 GRE Exam Results
+            Your GRE Practice Results
           </h1>
           <p style={{ color: "#94a3b8", fontSize: 15 }}>Test Date: {new Date(result.date).toLocaleDateString()}</p>
         </div>
 
-        {/* ── RAW ACCURACY & PSYCHOMETRIC SCALE BANNER ── */}
+        {/* ── RAW ACCURACY & PRACTICE ESTIMATE BANNER ── */}
         <div style={{ background: "rgba(30,41,59,0.85)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: 24, marginBottom: 36, display: "flex", alignItems: "flex-start", gap: 16 }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(56,189,248,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#38bdf8", flexShrink: 0 }}>
             <Info size={22} />
           </div>
           <div>
             <h3 style={{ fontSize: 16, fontWeight: 800, margin: "0 0 6px", color: "#ffffff" }}>
-              Raw Performance: {totalCorrect} / 54 Questions Correct ({overallAccuracy}% Accuracy)
+              Raw Practice Performance: {totalCorrect} / 54 Questions Correct ({overallAccuracy}% Accuracy)
             </h3>
             <p style={{ fontSize: 14, color: "#94a3b8", margin: 0, lineHeight: 1.6 }}>
-              <strong>ETS Psychometric Scale Note:</strong> The official GRE General scale spans from <strong>130 to 170</strong> for Verbal and Quantitative Reasoning. A raw score of 0 correct answers yields the baseline score of <strong>130</strong> (5th percentile Quant / 8th percentile Verbal).
+              <strong>Practice Scoring Estimate Note:</strong> The GRE General scale spans from <strong>130 to 170</strong> for Verbal and Quantitative Reasoning. This report provides a Knarrow practice estimate and is not an official ETS score.
             </p>
           </div>
         </div>

@@ -64,12 +64,14 @@ const listeningTest002 = {
         {
           id: 5,
           label: "Course selected",
-          answer: "watercolour"
+          answer: "watercolour class",
+          altAnswers: ["watercolour", "watercolour course"]
         },
         {
           id: 6,
-          label: "Preferred evening",
-          answer: "Thursday"
+          label: "Preferred class",
+          answer: "Thursday evenings",
+          altAnswers: ["Thursday", "Thursday evening"]
         },
         {
           id: 7,
@@ -181,14 +183,13 @@ const listeningTest002 = {
         },
 
         {
-          id: "section2_map",
-          type: "map",
+          id: "section2_matching",
+          type: "matching",
           title: "Questions 16–20",
           instruction:
-            "Label the map of Riverside Botanical Gardens below.\n" +
+            "Match each park description below with the correct location (A–H).\n" +
             "Choose FIVE answers from the box and write the correct letter, A–H, " +
             "next to Questions 16–20.",
-          image: "/images/listening/test002-map.svg",
           options: [
             { letter: "A", text: "Bridge"           },
             { letter: "B", text: "Café"              },
@@ -202,26 +203,31 @@ const listeningTest002 = {
           questions: [
             {
               id: 16,
+              item: "Current starting point (southern side)",
               label: "Current starting point (southern side)",
               answer: "H"
             },
             {
               id: 17,
+              item: "First stop on today's tour",
               label: "First stop on today's tour",
               answer: "F"
             },
             {
               id: 18,
+              item: "Structure crossed to reach Glasshouse",
               label: "Structure crossed to reach Glasshouse",
               answer: "A"
             },
             {
               id: 19,
+              item: "Building visited after the bridge",
               label: "Building visited after the bridge",
               answer: "E"
             },
             {
               id: 20,
+              item: "Where the guided tour officially ends",
               label: "Where the guided tour officially ends",
               answer: "C"
             }

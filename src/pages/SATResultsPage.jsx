@@ -57,9 +57,16 @@ export default function SATResultsPage() {
     );
   }
 
-  const { totalScore = 400, rwScore = 200, mathScore = 200, rwRoute = "HIGHER", mathRoute = "HIGHER" } = result;
+  const { totalScore = 400, rwScore = 200, mathScore = 200, rwRoute = "HIGHER", mathRoute = "HIGHER", audit, userAnswers = {} } = result;
   const percentile = calculateSATPercentile(totalScore);
   const benchmarks = calculateSATBenchmark(rwScore, mathScore);
+
+  // Check attempt status
+  let attemptedCount = audit?.attemptedCount;
+  if (attemptedCount === undefined) {
+    attemptedCount = Object.values(userAnswers).filter((a) => a !== undefined && a !== null && String(a).trim() !== "").length;
+  }
+  const isZeroSubmission = audit?.isZeroSubmission || attemptedCount === 0;
 
   return (
     <div style={{ minHeight: "100vh", background: "#0f172a", color: "#ffffff", fontFamily: "Inter, sans-serif", padding: "60px 24px 80px" }}>
@@ -67,14 +74,33 @@ export default function SATResultsPage() {
 
         {/* ── HEADER BADGE ── */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <span style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "6px 18px", borderRadius: 999, fontSize: 12, fontWeight: 800 }}>
-            <CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> OFFICIAL DIGITAL SAT 2026 SCORE REPORT &amp; DIAGNOSTIC
+          <span style={{ background: isZeroSubmission ? "rgba(239,68,68,0.2)" : "rgba(56,189,248,0.15)", color: isZeroSubmission ? "#f87171" : "#38bdf8", border: isZeroSubmission ? "1px solid rgba(239,68,68,0.4)" : "1px solid rgba(56,189,248,0.3)", padding: "6px 18px", borderRadius: 999, fontSize: 12, fontWeight: 800 }}>
+            {isZeroSubmission ? (
+              <><AlertTriangle size={14} style={{ display: "inline", marginRight: 6 }} /> ZERO-ATTEMPT BLANK SUBMISSION DETECTED</>
+            ) : (
+              <><CheckCircle2 size={14} style={{ display: "inline", marginRight: 6 }} /> OFFICIAL DIGITAL SAT 2026 SCORE REPORT &amp; DIAGNOSTIC</>
+            )}
           </span>
           <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 900, margin: "16px 0 8px 0" }}>
             Your Digital SAT Examination Results
           </h1>
           <p style={{ color: "#94a3b8", fontSize: 15 }}>Test Date: {new Date(result.date || Date.now()).toLocaleDateString()}</p>
         </div>
+
+        {/* ── ZERO SUBMISSION DIAGNOSTIC WARNING BANNER ── */}
+        {isZeroSubmission && (
+          <div style={{ background: "rgba(239,68,68,0.12)", border: "2px solid #ef4444", borderRadius: 20, padding: 24, marginBottom: 32, display: "flex", alignItems: "flex-start", gap: 16 }}>
+            <AlertTriangle size={24} color="#f87171" style={{ flexShrink: 0, marginTop: 2 }} />
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 900, color: "#f87171", margin: "0 0 6px 0" }}>
+                Blank Exam Submission (0 Questions Attempted)
+              </h3>
+              <p style={{ fontSize: 14, color: "#cbd5e1", margin: 0, lineHeight: 1.6 }}>
+                This assessment was submitted without selecting any answers. Official College Board score floor boundaries have been enforced (<strong>200 Reading &amp; Writing / 200 Math = 400 Total</strong>). Both modules routed to the <strong>LOWER Tier</strong> form.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* ── PREDICTED TOTAL SCORE BANNER (400-1600 SCALE) ── */}
         <div style={{ background: "linear-gradient(135deg, #0284c7 0%, #7c3aed 100%)", borderRadius: 28, padding: 36, marginBottom: 40, textAlign: "center", boxShadow: "0 15px 40px rgba(2,132,199,0.4)", position: "relative", overflow: "hidden" }}>
