@@ -12,6 +12,10 @@ import { AuthProvider } from "./context/AuthContext";
 import { ExamProvider } from "./context/ExamContext";
 
 import { Toaster } from "react-hot-toast";
+import { initSecurityProtection } from "./utils/securityProtection";
+
+// Initialize anti-screenshot & anti-copying protection
+initSecurityProtection();
 
 ReactDOM.createRoot(
   document.getElementById("root")

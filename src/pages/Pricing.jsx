@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles, CheckCircle2, Zap, ShieldCheck, Award, Layers,
   Lock, ArrowRight, HelpCircle, RefreshCw, Star, Check, X, Crown, Clock,
-  BookOpen, Calculator, Atom, Stethoscope, Scale, Cpu, Globe, Target, Mic, Headphones, BarChart3, Search, Info
+  BookOpen, Calculator, Atom, Stethoscope, Scale, Cpu, Globe, Target, Mic, Headphones, BarChart3, Search, Info, Flame
 } from "lucide-react";
 import { getActiveUserPlan, activateUserPlan } from "../utils/planAccess";
 import { startRazorpayCheckout } from "../services/billingService";
 import FloatingDanglerPill from "../components/FloatingDanglerPill";
 
 /* ─────────────────────────────────────────────
-   DIFFERENTIATED EXAM PRICING (BASED ON EXAM FEE & MARKET DEMAND)
+   DIFFERENTIATED EXAM PRICING (WITH STRIKETHROUGH & 40% OFF DISCOUNT TAGS)
 ───────────────────────────────────────────── */
 
 const INDIVIDUAL_EXAMS = [
@@ -34,10 +34,10 @@ const INDIVIDUAL_EXAMS = [
       "Question Difficulty Adaptive Curve"
     ],
     pricing: {
-      weekly:   { priceUSD: "$9",  priceINR: "₹699" },
-      monthly:  { priceUSD: "$29", priceINR: "₹1,999" },
-      yearly:   { priceUSD: "$99", priceINR: "₹6,999" },
-      lifetime: { priceUSD: "$179", priceINR: "₹12,999" }
+      weekly:   { priceUSD: "$9",    priceINR: "₹699",   originalPriceINR: "₹1,160", originalPriceUSD: "$15",  discount: "40% OFF" },
+      monthly:  { priceUSD: "$29",   priceINR: "₹1,999",  originalPriceINR: "₹3,330", originalPriceUSD: "$49",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$99",   priceINR: "₹6,999",  originalPriceINR: "₹11,660",originalPriceUSD: "$165", discount: "40% OFF" },
+      lifetime: { priceUSD: "$179",  priceINR: "₹12,999", originalPriceINR: "₹21,660",originalPriceUSD: "$299", discount: "40% OFF" }
     }
   },
 
@@ -60,10 +60,10 @@ const INDIVIDUAL_EXAMS = [
       "GRE High-Frequency Vocab Flashcards"
     ],
     pricing: {
-      weekly:   { priceUSD: "$8",  priceINR: "₹599" },
-      monthly:  { priceUSD: "$24", priceINR: "₹1,699" },
-      yearly:   { priceUSD: "$89", priceINR: "₹5,999" },
-      lifetime: { priceUSD: "$149", priceINR: "₹10,999" }
+      weekly:   { priceUSD: "$8",    priceINR: "₹599",   originalPriceINR: "₹999",   originalPriceUSD: "$14",  discount: "40% OFF" },
+      monthly:  { priceUSD: "$24",   priceINR: "₹1,699",  originalPriceINR: "₹2,830", originalPriceUSD: "$40",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$89",   priceINR: "₹5,999",  originalPriceINR: "₹9,999", originalPriceUSD: "$149", discount: "40% OFF" },
+      lifetime: { priceUSD: "$149",  priceINR: "₹10,999", originalPriceINR: "₹18,330",originalPriceUSD: "$249", discount: "40% OFF" }
     }
   },
 
@@ -86,10 +86,10 @@ const INDIVIDUAL_EXAMS = [
       "SAT Passage Annotation & Highlight Tools"
     ],
     pricing: {
-      weekly:   { priceUSD: "$7",  priceINR: "₹549" },
-      monthly:  { priceUSD: "$21", priceINR: "₹1,499" },
-      yearly:   { priceUSD: "$79", priceINR: "₹4,999" },
-      lifetime: { priceUSD: "$139", priceINR: "₹9,999" }
+      weekly:   { priceUSD: "$7",    priceINR: "₹549",   originalPriceINR: "₹915",   originalPriceUSD: "$12",  discount: "40% OFF" },
+      monthly:  { priceUSD: "$21",   priceINR: "₹1,499",  originalPriceINR: "₹2,499", originalPriceUSD: "$35",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$79",   priceINR: "₹4,999",  originalPriceINR: "₹8,330", originalPriceUSD: "$132", discount: "40% OFF" },
+      lifetime: { priceUSD: "$139",  priceINR: "₹9,999",  originalPriceINR: "₹16,660",originalPriceUSD: "$232", discount: "40% OFF" }
     }
   },
 
@@ -112,10 +112,10 @@ const INDIVIDUAL_EXAMS = [
       "Groq AI Llama 3.3 Diagnostic Report"
     ],
     pricing: {
-      weekly:   { priceUSD: "$6.5", priceINR: "₹499" },
-      monthly:  { priceUSD: "$18",   priceINR: "₹1,299" },
-      yearly:   { priceUSD: "$65",   priceINR: "₹4,499" },
-      lifetime: { priceUSD: "$129",  priceINR: "₹8,999" }
+      weekly:   { priceUSD: "$6.5",  priceINR: "₹499",   originalPriceINR: "₹830",   originalPriceUSD: "$11",  discount: "40% OFF" },
+      monthly:  { priceUSD: "$18",   priceINR: "₹1,299",  originalPriceINR: "₹2,165", originalPriceUSD: "$30",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$65",   priceINR: "₹4,499",  originalPriceINR: "₹7,499", originalPriceUSD: "$109", discount: "40% OFF" },
+      lifetime: { priceUSD: "$129",  priceINR: "₹8,999",  originalPriceINR: "₹14,999",originalPriceUSD: "$215", discount: "40% OFF" }
     }
   },
 
@@ -138,10 +138,10 @@ const INDIVIDUAL_EXAMS = [
       "MyBest Scores Performance Tracker"
     ],
     pricing: {
-      weekly:   { priceUSD: "$6.5", priceINR: "₹499" },
-      monthly:  { priceUSD: "$18",   priceINR: "₹1,299" },
-      yearly:   { priceUSD: "$65",   priceINR: "₹4,499" },
-      lifetime: { priceUSD: "$129",  priceINR: "₹8,999" }
+      weekly:   { priceUSD: "$6.5",  priceINR: "₹499",   originalPriceINR: "₹830",   originalPriceUSD: "$11",  discount: "40% OFF" },
+      monthly:  { priceUSD: "$18",   priceINR: "₹1,299",  originalPriceINR: "₹2,165", originalPriceUSD: "$30",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$65",   priceINR: "₹4,499",  originalPriceINR: "₹7,499", originalPriceUSD: "$109", discount: "40% OFF" },
+      lifetime: { priceUSD: "$129",  priceINR: "₹8,999",  originalPriceINR: "₹14,999",originalPriceUSD: "$215", discount: "40% OFF" }
     }
   },
 
@@ -164,10 +164,10 @@ const INDIVIDUAL_EXAMS = [
       "1–36 Composite Score Calculator"
     ],
     pricing: {
-      weekly:   { priceUSD: "$6.5", priceINR: "₹499" },
-      monthly:  { priceUSD: "$19.5", priceINR: "₹1,399" },
-      yearly:   { priceUSD: "$69",   priceINR: "₹4,799" },
-      lifetime: { priceUSD: "$135",  priceINR: "₹9,499" }
+      weekly:   { priceUSD: "$6.5",  priceINR: "₹499",   originalPriceINR: "₹830",   originalPriceUSD: "$11",  discount: "40% OFF" },
+      monthly:  { priceUSD: "$19.5", priceINR: "₹1,399",  originalPriceINR: "₹2,330", originalPriceUSD: "$32.5",discount: "40% OFF" },
+      yearly:   { priceUSD: "$69",   priceINR: "₹4,799",  originalPriceINR: "₹7,999", originalPriceUSD: "$115", discount: "40% OFF" },
+      lifetime: { priceUSD: "$135",  priceINR: "₹9,499",  originalPriceINR: "₹15,830",originalPriceUSD: "$225", discount: "40% OFF" }
     }
   },
 
@@ -190,10 +190,10 @@ const INDIVIDUAL_EXAMS = [
       "10–90 Score Scale & Enabling Skills"
     ],
     pricing: {
-      weekly:   { priceUSD: "$6",  priceINR: "₹449" },
-      monthly:  { priceUSD: "$16.5", priceINR: "₹1,199" },
-      yearly:   { priceUSD: "$59", priceINR: "₹3,999" },
-      lifetime: { priceUSD: "$119", priceINR: "₹7,999" }
+      weekly:   { priceUSD: "$6",    priceINR: "₹449",   originalPriceINR: "₹749",   originalPriceUSD: "$10",  discount: "40% OFF" },
+      monthly:  { priceUSD: "$16.5", priceINR: "₹1,199",  originalPriceINR: "₹1,999", originalPriceUSD: "$27.5",discount: "40% OFF" },
+      yearly:   { priceUSD: "$59",   priceINR: "₹3,999",  originalPriceINR: "₹6,660", originalPriceUSD: "$99",  discount: "40% OFF" },
+      lifetime: { priceUSD: "$119",  priceINR: "₹7,999",  originalPriceINR: "₹13,330",originalPriceUSD: "$199", discount: "40% OFF" }
     }
   },
 
@@ -216,10 +216,10 @@ const INDIVIDUAL_EXAMS = [
       "CAT Percentile Estimator Engine"
     ],
     pricing: {
-      weekly:   { priceUSD: "$5",  priceINR: "₹399" },
-      monthly:  { priceUSD: "$14", priceINR: "₹999" },
-      yearly:   { priceUSD: "$49", priceINR: "₹3,499" },
-      lifetime: { priceUSD: "$99", priceINR: "₹6,999" }
+      weekly:   { priceUSD: "$5",    priceINR: "₹399",   originalPriceINR: "₹665",   originalPriceUSD: "$8.5", discount: "40% OFF" },
+      monthly:  { priceUSD: "$14",   priceINR: "₹999",   originalPriceINR: "₹1,665", originalPriceUSD: "$23.5",discount: "40% OFF" },
+      yearly:   { priceUSD: "$49",   priceINR: "₹3,499",  originalPriceINR: "₹5,830", originalPriceUSD: "$82",  discount: "40% OFF" },
+      lifetime: { priceUSD: "$99",   priceINR: "₹6,999",  originalPriceINR: "₹11,660",originalPriceUSD: "$165", discount: "40% OFF" }
     }
   },
 
@@ -242,10 +242,10 @@ const INDIVIDUAL_EXAMS = [
       "NLU Cutoff & Rank Estimator"
     ],
     pricing: {
-      weekly:   { priceUSD: "$4.5", priceINR: "₹349" },
-      monthly:  { priceUSD: "$12.5", priceINR: "₹899" },
-      yearly:   { priceUSD: "$42",  priceINR: "₹2,999" },
-      lifetime: { priceUSD: "$85",  priceINR: "₹5,999" }
+      weekly:   { priceUSD: "$4.5",  priceINR: "₹349",   originalPriceINR: "₹580",   originalPriceUSD: "$7.5", discount: "40% OFF" },
+      monthly:  { priceUSD: "$12.5", priceINR: "₹899",   originalPriceINR: "₹1,499", originalPriceUSD: "$21",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$42",   priceINR: "₹2,999",  originalPriceINR: "₹4,999", originalPriceUSD: "$70",  discount: "40% OFF" },
+      lifetime: { priceUSD: "$85",   priceINR: "₹5,999",  originalPriceINR: "₹9,999", originalPriceUSD: "$142", discount: "40% OFF" }
     }
   },
 
@@ -268,10 +268,10 @@ const INDIVIDUAL_EXAMS = [
       "AI Error Diagnostic & Weak Topic Analysis"
     ],
     pricing: {
-      weekly:   { priceUSD: "$4",  priceINR: "₹299" },
-      monthly:  { priceUSD: "$11", priceINR: "₹799" },
-      yearly:   { priceUSD: "$38", priceINR: "₹2,699" },
-      lifetime: { priceUSD: "$79", priceINR: "₹5,499" }
+      weekly:   { priceUSD: "$4",    priceINR: "₹299",   originalPriceINR: "₹499",   originalPriceUSD: "$7",   discount: "40% OFF" },
+      monthly:  { priceUSD: "$11",   priceINR: "₹799",   originalPriceINR: "₹1,330", originalPriceUSD: "$18.5",discount: "40% OFF" },
+      yearly:   { priceUSD: "$38",   priceINR: "₹2,699",  originalPriceINR: "₹4,499", originalPriceUSD: "$64",  discount: "40% OFF" },
+      lifetime: { priceUSD: "$79",   priceINR: "₹5,499",  originalPriceINR: "₹9,160", originalPriceUSD: "$132", discount: "40% OFF" }
     }
   },
 
@@ -294,10 +294,10 @@ const INDIVIDUAL_EXAMS = [
       "NEET Rank & College Cutoff Predictor"
     ],
     pricing: {
-      weekly:   { priceUSD: "$4",  priceINR: "₹299" },
-      monthly:  { priceUSD: "$11", priceINR: "₹799" },
-      yearly:   { priceUSD: "$38", priceINR: "₹2,699" },
-      lifetime: { priceUSD: "$79", priceINR: "₹5,499" }
+      weekly:   { priceUSD: "$4",    priceINR: "₹299",   originalPriceINR: "₹499",   originalPriceUSD: "$7",   discount: "40% OFF" },
+      monthly:  { priceUSD: "$11",   priceINR: "₹799",   originalPriceINR: "₹1,330", originalPriceUSD: "$18.5",discount: "40% OFF" },
+      yearly:   { priceUSD: "$38",   priceINR: "₹2,699",  originalPriceINR: "₹4,499", originalPriceUSD: "$64",  discount: "40% OFF" },
+      lifetime: { priceUSD: "$79",   priceINR: "₹5,499",  originalPriceINR: "₹9,160", originalPriceUSD: "$132", discount: "40% OFF" }
     }
   },
 
@@ -320,10 +320,10 @@ const INDIVIDUAL_EXAMS = [
       "Engineering Math & Aptitude Mocks"
     ],
     pricing: {
-      weekly:   { priceUSD: "$3.5", priceINR: "₹249" },
-      monthly:  { priceUSD: "$9.5", priceINR: "₹699" },
-      yearly:   { priceUSD: "$32",  priceINR: "₹2,299" },
-      lifetime: { priceUSD: "$69",  priceINR: "₹4,999" }
+      weekly:   { priceUSD: "$3.5",  priceINR: "₹249",   originalPriceINR: "₹415",   originalPriceUSD: "$6",   discount: "40% OFF" },
+      monthly:  { priceUSD: "$9.5",  priceINR: "₹699",   originalPriceINR: "₹1,165", originalPriceUSD: "$16",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$32",   priceINR: "₹2,299",  originalPriceINR: "₹3,830", originalPriceUSD: "$54",  discount: "40% OFF" },
+      lifetime: { priceUSD: "$69",   priceINR: "₹4,999",  originalPriceINR: "₹8,330", originalPriceUSD: "$115", discount: "40% OFF" }
     }
   },
 
@@ -346,19 +346,19 @@ const INDIVIDUAL_EXAMS = [
       "Security & Camera Rule Simulation"
     ],
     pricing: {
-      weekly:   { priceUSD: "$3",   priceINR: "₹219" },
-      monthly:  { priceUSD: "$8.5", priceINR: "₹599" },
-      yearly:   { priceUSD: "$26",  priceINR: "₹1,899" },
-      lifetime: { priceUSD: "$55",  priceINR: "₹3,999" }
+      weekly:   { priceUSD: "$3",    priceINR: "₹219",   originalPriceINR: "₹365",   originalPriceUSD: "$5",   discount: "40% OFF" },
+      monthly:  { priceUSD: "$8.5",  priceINR: "₹599",   originalPriceINR: "₹999",   originalPriceUSD: "$14",  discount: "40% OFF" },
+      yearly:   { priceUSD: "$26",   priceINR: "₹1,899",  originalPriceINR: "₹3,165", originalPriceUSD: "$44",  discount: "40% OFF" },
+      lifetime: { priceUSD: "$55",   priceINR: "₹3,999",  originalPriceINR: "₹6,660", originalPriceUSD: "$92",  discount: "40% OFF" }
     }
   }
 ];
 
 const ALL_ACCESS_PRICING = {
-  weekly:   { priceUSD: "$15",  priceINR: "₹999",   period: "per week", badge: "QUICK SPRINT", discount: null },
-  monthly:  { priceUSD: "$35",  priceINR: "₹2,499",  period: "per month", badge: "BEST SELLER — 13 EXAMS UNLIMITED", discount: "SAVE 75%" },
-  yearly:   { priceUSD: "$109", priceINR: "₹7,999",  period: "per year", badge: "MAX SAVINGS", discount: "SAVE 80%" },
-  lifetime: { priceUSD: "$199", priceINR: "₹14,999", period: "one-time payment", badge: "LIFETIME VIP FOREVER", discount: "PAY ONCE FOREVER" }
+  weekly:   { priceUSD: "$15",  priceINR: "₹999",   originalPriceINR: "₹3,999",  originalPriceUSD: "$60",  period: "per week", badge: "QUICK SPRINT", discount: "75% OFF" },
+  monthly:  { priceUSD: "$35",  priceINR: "₹2,499",  originalPriceINR: "₹9,999",  originalPriceUSD: "$140", period: "per month", badge: "BEST SELLER — 13 EXAMS UNLIMITED", discount: "75% OFF" },
+  yearly:   { priceUSD: "$109", priceINR: "₹7,999",  originalPriceINR: "₹31,999", originalPriceUSD: "$440", period: "per year", badge: "MAX SAVINGS", discount: "75% OFF" },
+  lifetime: { priceUSD: "$199", priceINR: "₹14,999", originalPriceINR: "₹59,999", originalPriceUSD: "$799", period: "one-time payment", badge: "LIFETIME VIP FOREVER", discount: "75% OFF" }
 };
 
 export default function Pricing() {
@@ -397,8 +397,18 @@ export default function Pricing() {
   };
 
   const handleActivateAllAccess = () => {
-    const payload = activateUserPlan(`all_access_${billingCycle}`, "all_access", null, billingCycle);
-    setSuccessModal(payload);
+    const priceINR = ALL_ACCESS_PRICING[billingCycle].priceINR;
+
+    startRazorpayCheckout({
+      planName: `Knarrow 13-Exam VIP Pass`,
+      amountINR: priceINR,
+      packType: "all_access",
+      trackId: null,
+      duration: billingCycle,
+      onSuccessCallback: (payload) => {
+        setSuccessModal(payload);
+      }
+    });
   };
 
   // Filter individual exams by search query
@@ -418,26 +428,26 @@ export default function Pricing() {
         {/* ── HERO BANNER ── */}
         <div style={{ textAlign: "center", marginBottom: 48, position: "relative" }}>
           
-          <span style={{ background: "rgba(56,189,248,0.2)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)", padding: "6px 20px", borderRadius: 999, fontSize: 13, fontWeight: 900, letterSpacing: 0.5, display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-            <Sparkles size={15} /> INDIVIDUAL EXAM PLANS TIERED BY MARKET DEMAND
+          <span style={{ background: "rgba(239, 68, 68, 0.2)", color: "#f87171", border: "1px solid rgba(239, 68, 68, 0.3)", padding: "6px 20px", borderRadius: 999, fontSize: 13, fontWeight: 900, letterSpacing: 0.5, display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <Flame size={16} /> SPECIAL LAUNCH OFFER: 40% OFF ALL INDIVIDUAL EXAM PASSES
           </span>
 
           <h1 style={{ fontSize: "clamp(2.4rem, 5vw, 3.8rem)", fontWeight: 900, margin: "0 0 16px", letterSpacing: "-1px" }}>
             Invest in Your Specific Target Exam
           </h1>
           <p style={{ color: "#cbd5e1", fontSize: "1.15rem", maxWidth: 780, margin: "0 auto 28px", lineHeight: 1.6 }}>
-            Each individual exam plan is uniquely priced based on its real-world exam registration fees, candidate demand, and prep market standards. Get a targeted pass or unlock <strong>All 13 Global Exam Tracks</strong> for ultimate savings!
+            Limited-time launch pricing applied across all 13 exam tracks. Get a targeted pass starting at <strong>₹299</strong> or unlock <strong>All 13 Global Exam Tracks</strong> for 75% OFF!
           </p>
 
           {/* Clean Non-Overlapping Floating Glass Danglers Bar */}
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, flexWrap: "wrap", margin: "0 auto 32px" }}>
             <FloatingDanglerPill
               icon={Crown}
-              value="Differentiated Pricing"
-              label="Adjusted for Exam Fees & Demand"
+              value="Flat 40% OFF"
+              label="Instant Launch Discount"
               variant="light"
-              iconBg="rgba(250, 204, 21, 0.15)"
-              iconColor="#facc15"
+              iconBg="rgba(239, 68, 68, 0.15)"
+              iconColor="#ef4444"
               floatDelay={0}
             />
 
@@ -627,9 +637,19 @@ export default function Pricing() {
                         </div>
                       </div>
 
+                      {/* Strikethrough & Discount Tag */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16 }}>
+                        <span style={{ fontSize: 15, color: "#94a3b8", textDecoration: "line-through", fontWeight: 700 }}>
+                          {priceInfo.originalPriceINR} ({priceInfo.originalPriceUSD})
+                        </span>
+                        <span style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "#ffffff", padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 900, boxShadow: "0 2px 10px rgba(239,68,68,0.4)" }}>
+                          🔥 {priceInfo.discount || "40% OFF"}
+                        </span>
+                      </div>
+
                       {/* Pricing Block */}
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "20px 0 16px" }}>
-                        <span style={{ fontSize: 36, fontWeight: 900, color: "#ffffff" }}>{priceInfo.priceINR}</span>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "4px 0 16px" }}>
+                        <span style={{ fontSize: 38, fontWeight: 900, color: "#ffffff" }}>{priceInfo.priceINR}</span>
                         <span style={{ fontSize: 16, color: "#94a3b8" }}>({priceInfo.priceUSD})</span>
                         <span style={{ fontSize: 13, color: "#cbd5e1" }}>/ {billingCycle}</span>
                       </div>
@@ -720,7 +740,17 @@ export default function Pricing() {
                     {selectedExamObj.icon} {selectedExamObj.name} Pass
                   </h3>
 
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                  {/* Strikethrough & Discount Tag */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
+                    <span style={{ fontSize: 16, color: "#94a3b8", textDecoration: "line-through", fontWeight: 700 }}>
+                      {selectedExamObj.pricing[billingCycle].originalPriceINR} ({selectedExamObj.pricing[billingCycle].originalPriceUSD})
+                    </span>
+                    <span style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "#ffffff", padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 900 }}>
+                      🔥 {selectedExamObj.pricing[billingCycle].discount || "40% OFF"}
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, margin: "4px 0 16px" }}>
                     <div style={{ fontSize: 44, fontWeight: 900, color: "#ffffff" }}>
                       {selectedExamObj.pricing[billingCycle].priceINR}
                     </div>
@@ -767,8 +797,8 @@ export default function Pricing() {
               {/* ALL ACCESS UNLIMITED VIP PASS CARD */}
               <div style={{ background: "linear-gradient(135deg, rgba(2,132,199,0.25) 0%, rgba(124,58,237,0.25) 100%)", border: "2px solid #38bdf8", borderRadius: 28, padding: 36, display: "flex", flexDirection: "column", justifyContent: "space-between", boxShadow: "0 20px 50px rgba(2,132,199,0.4)", position: "relative" }}>
                 
-                <span style={{ position: "absolute", top: -14, right: 28, background: "linear-gradient(135deg, #eab308, #ca8a04)", color: "#000000", padding: "4px 16px", borderRadius: 999, fontSize: 11, fontWeight: 900, letterSpacing: 0.5, boxShadow: "0 4px 15px rgba(234,179,8,0.4)" }}>
-                  MAX SAVINGS — ALL 13 EXAMS UNLIMITED
+                <span style={{ position: "absolute", top: -14, right: 28, background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "#ffffff", padding: "4px 16px", borderRadius: 999, fontSize: 11, fontWeight: 900, letterSpacing: 0.5, boxShadow: "0 4px 15px rgba(239,68,68,0.4)" }}>
+                  🔥 LAUNCH SPECIAL — 75% OFF UNLIMITED
                 </span>
 
                 <div>
@@ -780,7 +810,17 @@ export default function Pricing() {
                     Knarrow 13-Exam VIP Pass
                   </h3>
 
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                  {/* Strikethrough & Discount Tag */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
+                    <span style={{ fontSize: 18, color: "#94a3b8", textDecoration: "line-through", fontWeight: 700 }}>
+                      {ALL_ACCESS_PRICING[billingCycle].originalPriceINR} ({ALL_ACCESS_PRICING[billingCycle].originalPriceUSD})
+                    </span>
+                    <span style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "#ffffff", padding: "3px 12px", borderRadius: 999, fontSize: 12, fontWeight: 900 }}>
+                      75% OFF LAUNCH OFFER
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, margin: "4px 0 16px" }}>
                     <div style={{ fontSize: 44, fontWeight: 900, color: "#ffffff" }}>
                       {ALL_ACCESS_PRICING[billingCycle].priceINR}
                     </div>
@@ -843,8 +883,8 @@ export default function Pricing() {
                   <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
                     <th style={{ padding: 16 }}>Platform Feature</th>
                     <th style={{ padding: 16, color: "#94a3b8" }}>Free Tier</th>
-                    <th style={{ padding: 16, color: "#38bdf8" }}>Single Exam Pass (Tiered ₹599 – ₹1,999/mo)</th>
-                    <th style={{ padding: 16, color: "#c084fc" }}>All-Access VIP Pass (₹2,499/mo)</th>
+                    <th style={{ padding: 16, color: "#38bdf8" }}>Single Exam Pass (40% OFF Tiered)</th>
+                    <th style={{ padding: 16, color: "#c084fc" }}>All-Access VIP Pass (75% OFF Launch)</th>
                   </tr>
                 </thead>
                 <tbody>
