@@ -45,7 +45,7 @@ export async function startRazorpayCheckout({
 
   try {
     let orderId = null;
-    let razorpayKey = import.meta.env?.VITE_RAZORPAY_KEY_ID || window.RAZORPAY_KEY_ID || localStorage.getItem("knarrow_razorpay_key") || "";
+    let razorpayKey = import.meta.env?.VITE_RAZORPAY_KEY_ID || import.meta.env?.RAZORPAY_KEY_ID || window.RAZORPAY_KEY_ID || localStorage.getItem("knarrow_razorpay_key") || "";
 
     // Try backend order creation endpoint if server API is available
     try {
