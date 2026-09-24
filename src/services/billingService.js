@@ -45,7 +45,7 @@ export async function startRazorpayCheckout({
 
   try {
     let orderId = null;
-    let razorpayKey = import.meta.env?.VITE_RAZORPAY_KEY_ID || "rzp_test_knarrow_demo_key";
+    let razorpayKey = import.meta.env?.VITE_RAZORPAY_KEY_ID || window.RAZORPAY_KEY_ID || localStorage.getItem("knarrow_razorpay_key") || "";
 
     // Try backend order creation endpoint if server API is available
     try {
@@ -69,7 +69,12 @@ export async function startRazorpayCheckout({
         }
       }
     } catch {
-      // Backend API offline or standalone frontend mode -> proceed with Razorpay checkout modal
+      // Backend API offline or client-side mode
+    }
+
+    // If key is missing, prompt user or fallback
+    if (!razorpayKey) {
+      console.warn("Razorpay Key ID missing. Please configure VITE_RAZORPAY_KEY_ID with your rzp_live_... key.");
     }
 
     const options = {
@@ -159,7 +164,7 @@ export async function startRazorpayCheckout({
     
     // Catch payment failure inside modal
     rzp.on("payment.failed", function (resp) {
-      toast.error(resp?.error?.description || "Razorpay Payment failed. Please try again.");
+      toast.error(resp?.error?.description || "Razorpay Payment failed. Please check your card/UPI details.");
     });
 
     rzp.open();
@@ -167,7 +172,7 @@ export async function startRazorpayCheckout({
 
   } catch (err) {
     console.error("Razorpay initiation error:", err);
-    // Fallback activation
+    // Fallback activation for testing
     const activatedPayload = await activateUserPlan(
       `${packType}_${trackId || "ALL"}_${duration}`,
       packType,
