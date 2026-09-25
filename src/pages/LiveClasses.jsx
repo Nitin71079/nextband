@@ -1,51 +1,39 @@
 import React, { useState } from "react";
-import { Calendar, Video, Clock, Users, BookOpen, CheckCircle, Bell, Sparkles } from "lucide-react";
+import { Video, Clock, Users, BookOpen, CheckCircle, Bell, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 
-const UPCOMING_CLASSES = [
+const MASTERCLASS_TOPICS = [
   {
     id: 1,
-    title: "IELTS Writing Task 2: Band 8.0 Advanced Essay Structures",
-    instructor: "Dr. Eleanor Vance",
-    role: "Former Senior IELTS Examiner (12+ Yrs Experience)",
-    date: "Tomorrow, 6:00 PM IST",
+    title: "IELTS Writing Task 2: Advanced Essay Structuring & Coherence",
+    focus: "Essay templates, paragraph linking, and band 7.0+ vocabulary strategies.",
     duration: "60 mins",
     exam: "IELTS Academic & General",
-    seatsLeft: 14,
-    tags: ["Writing", "Band 8.0+", "Live Q&A"]
+    level: "Intermediate to Advanced"
   },
   {
     id: 2,
-    title: "GRE Verbal Reasoning: Cracking Text Completion & Sentence Equivalence",
-    instructor: "Prof. Rajesh Kumar",
-    role: "Quant & Verbal Strategist (IIT / IIM Alumnus)",
-    date: "Saturday, 11:00 AM IST",
+    title: "GRE Verbal Reasoning: Text Completion & Sentence Equivalence Strategy",
+    focus: "Context clue identification, elimination techniques, and high-yield vocabulary.",
     duration: "75 mins",
     exam: "GRE General",
-    seatsLeft: 8,
-    tags: ["GRE Verbal", "330+ Strategy"]
+    level: "All Levels"
   },
   {
     id: 3,
-    title: "CAT 2026 Data Interpretation & Logical Reasoning Masterclass",
-    instructor: "Vikram Sethi",
-    role: "CAT 99.98%iler & Lead Mentor",
-    date: "Sunday, 4:00 PM IST",
+    title: "CAT Data Interpretation & Logical Reasoning Masterclass",
+    focus: "Set selection algorithms, calculation shortcuts, and time management.",
     duration: "90 mins",
     exam: "CAT MBA Entrance",
-    seatsLeft: 22,
-    tags: ["DILR", "CAT 99%ile", "Problem Sets"]
+    level: "Advanced"
   },
   {
     id: 4,
-    title: "Duolingo DET 120+ Interactive Speaking & Production Workshop",
-    instructor: "Sarah Jenkins",
-    role: "Certified ESL Trainer & DET Specialist",
-    date: "Next Tuesday, 7:00 PM IST",
+    title: "Duolingo DET Interactive Speaking & Production Workshop",
+    focus: "Picture description technique, Read Aloud fluency, and 120+ subscore tactics.",
     duration: "60 mins",
     exam: "Duolingo DET",
-    seatsLeft: 19,
-    tags: ["DET Speaking", "Real-Time AI Eval"]
+    level: "All Levels"
   }
 ];
 
@@ -54,11 +42,11 @@ export default function LiveClasses() {
 
   const handleRegister = (cls) => {
     if (registeredIds.includes(cls.id)) {
-      toast.error(`You are already registered for ${cls.title}`);
+      toast.error(`You are already registered for alerts on ${cls.title}`);
       return;
     }
     setRegisteredIds((prev) => [...prev, cls.id]);
-    toast.success(`Seat reserved for "${cls.title}"! Reminder link sent to your email.`, { id: `reg-${cls.id}` });
+    toast.success(`Registered for notifications on "${cls.title}"! We'll notify you when the session opens.`, { id: `reg-${cls.id}` });
   };
 
   return (
@@ -94,15 +82,15 @@ export default function LiveClasses() {
             </div>
             <div>
               <span style={{ fontSize: "12px", fontWeight: 800, color: "#10b981", textTransform: "uppercase", letterSpacing: "1px" }}>
-                LIVE MASTERCLASSES & EXPERT SESSIONS
+                LIVE MASTERCLASSES & STUDY SESSIONS
               </span>
               <h1 style={{ fontSize: "2.2rem", fontWeight: 900, margin: "2px 0 0" }}>
-                Knarrow Live Learning Hub
+                Interactive Live Learning Hub
               </h1>
             </div>
           </div>
           <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: 1.6, maxWidth: "780px" }}>
-            Join interactive live masterclasses hosted by top exam mentors, former IELTS examiners, and 99th percentile strategists. Participate in real-time Q&A, strategy teardowns, and live mock test breakdowns.
+            Participate in upcoming interactive study sessions, strategy workshops, and group live practice modules. Register below to receive notifications and access links when live streams go live.
           </p>
         </div>
 
@@ -110,15 +98,15 @@ export default function LiveClasses() {
         <div style={{ marginBottom: "40px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <h2 style={{ fontSize: "1.5rem", fontWeight: 800, margin: 0 }}>
-              Upcoming Live Masterclasses
+              Live Workshop Curriculum
             </h2>
             <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#10b981", background: "rgba(16,185,129,0.1)", padding: "6px 14px", borderRadius: "20px" }}>
-              Live Schedule Sync
+              Notification Registration
             </span>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            {UPCOMING_CLASSES.map((cls) => {
+            {MASTERCLASS_TOPICS.map((cls) => {
               const isReg = registeredIds.includes(cls.id);
               return (
                 <div
@@ -141,8 +129,8 @@ export default function LiveClasses() {
                       <h3 style={{ fontSize: "1.25rem", fontWeight: 800, margin: "10px 0 6px" }}>
                         {cls.title}
                       </h3>
-                      <div style={{ fontSize: "0.9rem", color: "var(--text-secondary)", fontWeight: 600 }}>
-                        Instructor: <strong style={{ color: "var(--text)" }}>{cls.instructor}</strong> — {cls.role}
+                      <div style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                        {cls.focus}
                       </div>
                     </div>
 
@@ -163,28 +151,17 @@ export default function LiveClasses() {
                       }}
                     >
                       {isReg ? <CheckCircle size={18} /> : <Bell size={18} />}
-                      {isReg ? "Reserved & Registered" : "Reserve Free Seat"}
+                      {isReg ? "Notification Set" : "Notify Me"}
                     </button>
                   </div>
 
                   <div style={{ display: "flex", gap: "20px", fontSize: "0.85rem", color: "var(--text-secondary)", flexWrap: "wrap" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <Calendar size={16} color="#10b981" /> {cls.date}
+                      <Clock size={16} color="#10b981" /> Duration: {cls.duration}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <Clock size={16} color="#10b981" /> {cls.duration}
+                      <Users size={16} color="#10b981" /> Target Level: {cls.level}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <Users size={16} color="#10b981" /> Only {cls.seatsLeft} seats remaining
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                    {cls.tags.map((tag, i) => (
-                      <span key={i} style={{ fontSize: "0.75rem", fontWeight: 700, background: "rgba(255,255,255,0.06)", padding: "4px 10px", borderRadius: "6px" }}>
-                        #{tag}
-                      </span>
-                    ))}
                   </div>
                 </div>
               );

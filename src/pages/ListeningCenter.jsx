@@ -62,7 +62,7 @@ export default function ListeningCenter() {
                 textTransform: "uppercase",
                 letterSpacing: "1px"
               }}>
-                OFFICIAL IELTS LISTENING MODULE
+                IELTS LISTENING PRACTICE MODULE
               </span>
               <h1 style={{ fontSize: "2.4rem", fontWeight: 900, margin: "2px 0 0", color: "var(--text)" }}>
                 Listening Center
@@ -71,7 +71,7 @@ export default function ListeningCenter() {
           </div>
 
           <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 28, maxWidth: "780px" }}>
-            Experience official IELTS Academic &amp; General Listening exam conditions. Each session presents full-length audio tracks (Social Dialogue, Monologue, Academic Discussion, and University Lecture) with 40 questions and authentic timing.
+            Experience realistic IELTS Academic &amp; General Listening exam conditions. Each session presents full-length audio tracks (Social Dialogue, Monologue, Academic Discussion, and University Lecture) with 40 questions and authentic timing.
           </p>
 
           {/* PRECIOUS & RANDOMIZED NOTICE CARD */}
