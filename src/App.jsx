@@ -45,6 +45,8 @@ import Terms from "./pages/Terms";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+const About = lazy(() => import("./pages/About"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const ExpertProfile =
   lazy(() =>
     import(
@@ -470,14 +472,7 @@ element={<ExamHistory/>}
             }
           />
 
-          <Route
-            path="/pricing"
-            element={
-              <PrivateRoute>
-                <Pricing />
-              </PrivateRoute>
-            }
-          />
+          <Route path="/pricing" element={<Pricing />} />
 
           <Route
             path="/success"
@@ -754,6 +749,8 @@ element={<ExamHistory/>}
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
 
           <Route path="*" element={<NotFound />} />
            </Routes>

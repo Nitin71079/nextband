@@ -1,4 +1,49 @@
+# www.knarrow.in Robots File
 User-agent: *
 Allow: /
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /refund-policy
+Allow: /pricing
+Allow: /faq
+Allow: /help
+Allow: /full-mocks
+Allow: /games
+Allow: /toefl
+Allow: /gre
+Allow: /pte
+Allow: /duolingo
+Allow: /det
+Allow: /cat
+Allow: /gmat
+Allow: /sat
+Allow: /act
+Allow: /gate
+Allow: /jee
+Allow: /neet
+Allow: /clat
+Allow: /reading
+Allow: /listening
+Allow: /writing
+Allow: /speaking
 
-Sitemap: https://nextband.vercel.app/sitemap.xml   
+# Disallow Private & Authenticated Routes
+Disallow: /admin/
+Disallow: /admin
+Disallow: /dashboard/
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /monitor
+Disallow: /results
+Disallow: /results-history
+Disallow: /evaluation-history
+Disallow: /exam-results
+Disallow: /analytics
+Disallow: /my-sessions
+Disallow: /payment-success
+Disallow: /payment-cancelled
+
+Sitemap: https://www.knarrow.in/sitemap.xml

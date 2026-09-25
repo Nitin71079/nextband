@@ -9,6 +9,7 @@ import {
 import { toeflTests } from "../data/toefl/toeflTests";
 import { toeflToIelts, toeflToCEFR, toeflToOldScale } from "../utils/toeflScoreCalculator";
 import FloatingDanglerPill from "../components/FloatingDanglerPill";
+import ExamNonAffiliationDisclaimer from "../components/ExamNonAffiliationDisclaimer";
 
 export default function TOEFLCenter() {
   const navigate = useNavigate();
@@ -228,6 +229,8 @@ export default function TOEFLCenter() {
               <Calculator size={18} /> Score Converter (1.0 – 6.0)
             </a>
           </div>
+
+          <ExamNonAffiliationDisclaimer examName="TOEFL iBT" organizationName="Educational Testing Service (ETS)" />
         </div>
 
         {/* ── 4 SECTIONS SUMMARY GRID ── */}

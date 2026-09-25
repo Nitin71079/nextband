@@ -81,12 +81,14 @@ export default function Footer() {
         {/* ── Company ──────────────────────────────── */}
         <div className="footer-links">
           <h4>Company</h4>
+          <Link to="/about">About Us</Link>
           <Link to="/pricing">Pricing</Link>
           <Link to="/help">Help Center</Link>
           <Link to="/faq">FAQ</Link>
           <Link to="/contact">Contact Us</Link>
           <Link to="/privacy">Privacy Policy</Link>
           <Link to="/terms">Terms &amp; Conditions</Link>
+          <Link to="/refund-policy">Refund Policy</Link>
           <Link to="/leaderboard">Leaderboard</Link>
         </div>
 

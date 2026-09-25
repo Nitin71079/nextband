@@ -4,73 +4,69 @@ const SECTIONS = [
   {
     title: "Acceptance of Terms",
     content:
-      "By accessing or using Knarrow, you confirm that you are at least 13 years of age and agree to be bound by these Terms & Conditions. If you do not agree, please discontinue use of the platform immediately.",
+      "By accessing, registering for, or using Knarrow (knarrow.in), you acknowledge that you have read, understood, and agree to be bound by these Terms & Conditions. If you do not agree to these terms, you must refrain from using the platform.",
   },
   {
-    title: "Platform Usage",
+    title: "Platform Overview & Permitted Use",
     content:
-      "Knarrow is an AI-powered IELTS preparation platform. You agree to use it solely for lawful educational purposes. Prohibited activities include:",
+      "Knarrow provides AI-powered exam preparation software, computer-based test (CBT) practice suites, adaptive analytics, and study planning tools across 13 major examination modules (IELTS, TOEFL, GRE, PTE, DET, CAT, GMAT, SAT, ACT, GATE, JEE, NEET, CLAT). You agree to use the platform strictly for personal, non-commercial educational purposes.",
+  },
+  {
+    title: "Independent Educational Service Disclaimer",
+    content:
+      "Knarrow is an independent educational technology platform. Knarrow is NOT affiliated with, authorized by, endorsed by, or partnered with ETS, GMAC, NTA, IDP, British Council, Cambridge Assessment, College Board, Duolingo, Pearson, or any official examination governing body. All trademarked examination names belong solely to their respective copyright and trademark owners.",
+  },
+  {
+    title: "AI Feedback & Score Estimation Limitations",
+    content:
+      "Score estimates, band predictors, essay evaluations, and speaking feedback provided by Knarrow's AI algorithms are simulated diagnostic tools designed for practice purposes. They do not constitute official examination scores, official certificates, or guaranteed test results on actual examination days.",
+  },
+  {
+    title: "Account Registration & Security",
+    content:
+      "You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately at support@knarrow.in of any unauthorized access or security breach.",
+  },
+  {
+    title: "Prohibited Conduct & Anti-Theft Protection",
+    content:
+      "To safeguard our proprietary content and technical infrastructure, users are strictly prohibited from:",
     bullets: [
-      "Attempting to reverse-engineer, scrape, or copy platform content",
-      "Sharing account credentials with other users",
-      "Using the platform to distribute spam, malware, or harmful content",
-      "Impersonating other users or Knarrow staff",
+      "Using automated scripts, web scrapers, or bots to extract test questions or platform content.",
+      "Attempting to circumvent security mechanisms, anti-screenshot measures, or payment gates.",
+      "Sharing, reselling, or sub-licensing user accounts or premium subscriptions.",
+      "Posting harmful, offensive, unlawful, or infringing content in community discussion spaces.",
+      "Attempting to reverse-engineer, decompile, or copy any software logic or source code."
     ],
   },
   {
-    title: "Account Responsibility",
+    title: "Subscriptions, Pricing & Payments",
     content:
-      "You are solely responsible for maintaining the confidentiality of your login credentials and for all activity that occurs under your account. Notify us immediately at support@knarrow.in if you suspect unauthorised access.",
+      "Access to certain premium test suites and AI evaluation limits requires a paid subscription. Prices are displayed in INR (or USD equivalent) at checkout. Payments are processed securely via Razorpay. Subscriptions renew according to the chosen plan unless cancelled prior to the billing date.",
   },
   {
-    title: "Educational Content & AI Evaluations",
+    title: "Refunds & Cancellations",
     content:
-      "Knarrow provides AI-generated feedback, band score estimates, mock tests, and study analytics for educational purposes only. These are simulated indicators and do not constitute official IELTS scores or certifications issued by IDP, British Council, or Cambridge Assessment.",
+      "Refund requests are handled in accordance with our Refund & Cancellation Policy. Refund requests submitted within 7 days of purchase are eligible for full refunds, provided platform fair-use usage limits have not been exceeded.",
   },
   {
-    title: "Premium Subscriptions & Payments",
+    title: "Intellectual Property Rights",
     content:
-      "Certain features require a paid subscription. By subscribing you agree to:",
-    bullets: [
-      "Pay the applicable fees as displayed at checkout",
-      "Automatic renewal unless cancelled before the billing date",
-      "Our refund policy: refunds are considered within 7 days of purchase if the service has not been substantially used",
-    ],
+      "All platform branding, visual design, custom UI components, software algorithms, practice test questions, software code, and educational content are the exclusive intellectual property of Knarrow. All rights reserved.",
   },
   {
-    title: "Intellectual Property",
+    title: "Service Availability & Modifications",
     content:
-      "All platform branding, UI elements, design systems, AI models, educational content, and source code are the intellectual property of Knarrow. Reproducing, distributing, or creating derivative works without explicit written permission is prohibited.",
-  },
-  {
-    title: "Service Availability",
-    content:
-      "We aim to maintain high uptime but do not guarantee continuous, uninterrupted access. Scheduled maintenance, technical issues, or events beyond our control may cause temporary unavailability.",
+      "We strive to maintain 99.9% platform availability. However, scheduled updates, emergency maintenance, or server outages may occasionally interrupt access. We reserve the right to modify or enhance platform features at any time.",
   },
   {
     title: "Limitation of Liability",
     content:
-      "To the fullest extent permitted by law, Knarrow shall not be liable for any indirect, incidental, or consequential damages arising from platform usage, including but not limited to actual IELTS exam results, data loss, or service interruptions.",
+      "To the maximum extent permitted by applicable law, Knarrow shall not be liable for any indirect, incidental, or consequential damages, score discrepancies, or university admission outcomes resulting from your use of the platform.",
   },
   {
-    title: "Third-Party Services",
+    title: "Governing Law & Jurisdiction",
     content:
-      "The platform integrates with third-party services including Firebase (authentication & database), Razorpay (payments), OpenAI (AI evaluations), and Vercel (hosting). Use of these services is subject to their respective terms and policies.",
-  },
-  {
-    title: "Termination",
-    content:
-      "We reserve the right to suspend or terminate accounts that violate these Terms at our discretion, without prior notice. Users may also delete their account at any time via the Settings page.",
-  },
-  {
-    title: "Governing Law",
-    content:
-      "These Terms are governed by the laws of India. Any disputes arising from use of the platform shall be subject to the exclusive jurisdiction of courts in Bangalore, Karnataka.",
-  },
-  {
-    title: "Updates to Terms",
-    content:
-      "These Terms may be revised periodically. Continued use of the platform after updates constitutes acceptance of the revised Terms. We will notify users of material changes via email or in-app notification.",
+      "These Terms & Conditions are governed by the laws of India. Any legal disputes arising out of or related to platform usage shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka, India.",
   },
 ];
 
@@ -78,14 +74,12 @@ export default function Terms() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-
         {/* Hero */}
         <div className="legal-hero">
           <div className="legal-hero-badge">Legal</div>
           <h1>Terms &amp; Conditions</h1>
           <p>
-            Please read these terms carefully before using Knarrow. They govern
-            your access to and use of our AI-powered IELTS preparation platform.
+            Please review these terms governing your use of Knarrow's AI-powered test preparation platform.
           </p>
           <div className="legal-hero-meta">Last updated: July 2026 · Effective immediately</div>
         </div>
@@ -108,18 +102,16 @@ export default function Terms() {
           ))}
         </div>
 
-        {/* Agreement */}
+        {/* Highlight */}
         <div className="legal-highlight">
           <p>
-            <strong>Agreement:</strong> By continuing to use Knarrow, you confirm
-            that you have read, understood, and agree to these Terms &amp; Conditions.
-            Questions? Contact us at{" "}
-            <a href="mailto:support@knarrow.in" style={{ color: "#2563eb" }}>
+            <strong>Questions regarding our terms?</strong> Reach out to our team at{" "}
+            <a href="mailto:support@knarrow.in" style={{ color: "#2563eb", fontWeight: 700 }}>
               support@knarrow.in
             </a>
+            . We are happy to assist you.
           </p>
         </div>
-
       </div>
     </div>
   );

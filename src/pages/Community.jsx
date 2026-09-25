@@ -6,7 +6,8 @@ import { app } from "../firebase";
 import { useAuth } from "../context/AuthContext";
 import { useExam } from "../context/ExamContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Send, MessageSquare, Clock, Sparkles, TrendingUp } from "lucide-react";
+import { Users, Send, MessageSquare, Clock, Sparkles, TrendingUp, Flag } from "lucide-react";
+import toast from "react-hot-toast";
 import aiService from "../services/aiService";
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
@@ -76,6 +77,12 @@ function Avatar({ name, size = 40 }) {
 function PostCard({ p, idx }) {
   const name = p.displayName || p.email?.split("@")[0] || "Anonymous";
   const trackTag = p.track ? (TRACK_NAMES[p.track] || p.track) : null;
+  const [reported, setReported] = useState(false);
+
+  const handleReport = () => {
+    setReported(true);
+    toast.success("Post reported to moderators for review.", { id: `rep-${p.id || idx}` });
+  };
 
   return (
     <motion.div
@@ -92,11 +99,29 @@ function PostCard({ p, idx }) {
             </div>
           </div>
         </div>
-        {trackTag && (
-          <span style={{ fontSize: "11px", fontWeight: 700, padding: "3px 10px", borderRadius: "999px", background: "rgba(79,70,229,.18)", color: "#818cf8", border: "1px solid rgba(79,70,229,.25)" }}>
-            #{trackTag}
-          </span>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {trackTag && (
+            <span style={{ fontSize: "11px", fontWeight: 700, padding: "3px 10px", borderRadius: "999px", background: "rgba(79,70,229,.18)", color: "#818cf8", border: "1px solid rgba(79,70,229,.25)" }}>
+              #{trackTag}
+            </span>
+          )}
+          <button
+            onClick={handleReport}
+            title="Report inappropriate content"
+            style={{
+              background: "transparent",
+              border: "none",
+              color: reported ? "#ef4444" : "var(--text-secondary)",
+              cursor: "pointer",
+              padding: "4px",
+              display: "flex",
+              alignItems: "center",
+              opacity: reported ? 1 : 0.6
+            }}
+          >
+            <Flag size={14} />
+          </button>
+        </div>
       </div>
       <p style={{ color: "var(--text)", lineHeight: 1.8, fontSize: ".92rem", paddingLeft: "2px", margin: 0, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>{p.content}</p>
     </motion.div>

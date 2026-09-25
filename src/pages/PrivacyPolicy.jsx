@@ -3,77 +3,75 @@ import "../styles/legal.css";
 const SECTIONS = [
   {
     title: "Information We Collect",
-    content: "We collect the following types of information when you use Knarrow:",
+    content: "We collect the following categories of information when you interact with Knarrow:",
     bullets: [
-      "Account data: email address, display name, and profile photo (via Google or email sign-in)",
-      "Usage data: mock test attempts, band scores, time spent, features used",
-      "Device data: browser type, operating system, IP address, and referral source",
-      "Payment data: transaction IDs processed via Razorpay (we do not store card details)",
-      "AI interaction data: speaking recordings and writing submissions processed for evaluation",
+      "Account Information: Email address, display name, profile photo, and authentication identifiers collected via Firebase Auth (Google Sign-In or email/password).",
+      "Exam & Performance Data: Test attempts, band scores, section scores, raw answers, timing metrics, and study plan progress across all 13 supported exam modules (IELTS, TOEFL, GRE, PTE, DET, CAT, GMAT, SAT, ACT, GATE, JEE, NEET, CLAT).",
+      "AI Evaluation Data: Text essay submissions and audio recordings submitted for automated writing and speaking assessment.",
+      "Billing & Transaction Data: Payment status, order IDs, and transaction references processed via Razorpay. We do not collect or store full credit/debit card numbers or banking passwords.",
+      "Technical & Device Data: IP address, browser type, device type, operating system version, and system logs for security and performance optimization."
     ],
   },
   {
     title: "How We Use Your Information",
-    content: "Your data is used to:",
+    content: "Your information is used strictly to provide, maintain, and improve our services:",
     bullets: [
-      "Personalise your dashboard, recommendations, and study plan",
-      "Generate AI-powered feedback and estimated band scores",
-      "Track your learning progress across all four IELTS skills",
-      "Process and manage your subscription payments",
-      "Improve platform features, performance, and AI accuracy",
-      "Send important service updates (you can unsubscribe at any time)",
+      "To power your personalized user dashboard, progress analytics, and adaptive study planners.",
+      "To evaluate writing essays and speaking audio using automated AI models and generate diagnostic feedback.",
+      "To manage your premium subscriptions, process payment receipts, and handle billing inquiries via Razorpay.",
+      "To prevent fraud, security breaches, and illegal copying of test preparation material.",
+      "To send essential transactional notifications, password reset links, and service announcements."
     ],
   },
   {
-    title: "Data Storage & Security",
+    title: "Data Storage & Security Measures",
     content:
-      "Your data is stored securely using Google Firebase (Firestore & Firebase Auth). We implement industry-standard security measures including encrypted connections (HTTPS), Firebase security rules, and regular access audits. However, no system is completely immune to breaches — we encourage you to use a strong, unique password.",
+      "All user account records and exam histories are stored securely in Google Firebase (Firestore Database and Firebase Authentication). Data in transit is protected using SSL/TLS encryption (HTTPS). Access to production databases is restricted to authorized systems, and strict security rules enforce user-level data isolation.",
   },
   {
-    title: "Third-Party Services",
-    content: "Knarrow uses the following third-party services that may process your data:",
+    title: "Third-Party Service Providers",
+    content: "Knarrow integrates with trusted third-party service providers to deliver core features:",
     bullets: [
-      "Firebase / Google Cloud — authentication, database, storage",
-      "OpenAI — AI writing and speaking evaluations (submissions are not stored by OpenAI beyond the API call)",
-      "Razorpay — payment processing (governed by Razorpay's Privacy Policy)",
-      "Vercel — platform hosting and edge delivery",
+      "Google Firebase — User authentication, cloud database, and hosting infrastructure.",
+      "Razorpay — Payment gateway processing for INR transactions (governed by Razorpay Privacy Policy).",
+      "Groq / OpenAI API — AI language model providers used to evaluate essay text and speaking transcripts.",
+      "Vercel — Global CDN hosting and application delivery."
     ],
   },
   {
-    title: "Cookies & Analytics",
+    title: "Cookies & Browser Storage",
     content:
-      "We use cookies and browser storage to maintain your session and preferences. We may use anonymised analytics to understand user engagement and improve the platform. You can disable cookies in your browser settings, though some features may not function correctly.",
+      "We utilize essential browser local storage and cookies to maintain active login sessions, save offline test states, store user preferences (such as dark mode preferences), and ensure secure navigation. Disabling browser storage may prevent certain interactive test features from functioning properly.",
   },
   {
-    title: "AI Data Processing",
+    title: "AI Processing & Voice Submissions",
     content:
-      "When you submit speaking recordings or writing essays for AI evaluation, the content is sent to our AI provider (OpenAI) via encrypted API calls solely to generate feedback. We do not sell, share, or use this content for training AI models without explicit consent.",
+      "When you submit essays or audio recordings in speaking and writing modules, your inputs are transmitted over secure API connections to evaluation servers to compute scores, feedback, and error analyses. Voice recordings and text are used exclusively to process your specific evaluation request.",
   },
   {
-    title: "Your Rights",
-    content: "You have the right to:",
+    title: "User Rights & Data Controls",
+    content: "Under applicable privacy laws, you possess the following rights regarding your personal data:",
     bullets: [
-      "Access the personal data we hold about you",
-      "Request correction of inaccurate data",
-      "Request deletion of your account and associated data",
-      "Withdraw consent for optional data processing",
-      "Data portability — export your test history and results",
+      "Right to Access: View your stored profile, score history, and account metrics at any time.",
+      "Right to Rectification: Update your display name and profile settings directly in your account settings.",
+      "Right to Erasure: Request permanent deletion of your account and test history by contacting support@knarrow.in.",
+      "Right to Export: Request a copy of your historical performance records."
     ],
   },
   {
-    title: "Children's Privacy",
+    title: "Children's Privacy Protection",
     content:
-      "Knarrow is not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal data, please contact us and we will promptly delete it.",
+      "Knarrow is intended for students and learners aged 13 and older. We do not knowingly collect personal information from individuals under the age of 13. If we become aware that a child under 13 has provided personal data, we will take immediate steps to delete such records.",
   },
   {
-    title: "Data Retention",
+    title: "Data Retention Period",
     content:
-      "We retain your account data for as long as your account is active. If you delete your account, your personal data will be removed within 30 days, except where retention is required by law.",
+      "We retain active account data for as long as your account remains open. If you request account deletion, all personal profile data and performance records will be permanently removed or anonymized within 30 days.",
   },
   {
-    title: "Policy Updates",
+    title: "Updates to Privacy Policy",
     content:
-      "This Privacy Policy may be updated to reflect platform changes, new integrations, or legal requirements. We will notify you of significant changes via email or in-app notification. Continued use after updates constitutes acceptance.",
+      "This policy may be revised from time to time to reflect platform enhancements, legal requirements, or new features. Material changes will be communicated via website notices or email notifications.",
   },
 ];
 
@@ -81,14 +79,12 @@ export default function PrivacyPolicy() {
   return (
     <div className="legal-page">
       <div className="legal-container">
-
         {/* Hero */}
         <div className="legal-hero">
           <div className="legal-hero-badge">Legal</div>
           <h1>Privacy Policy</h1>
           <p>
-            At Knarrow, your privacy matters. This policy explains exactly what
-            data we collect, how we use it, and the controls you have over it.
+            At Knarrow, we respect your privacy and are committed to protecting your personal data and educational records.
           </p>
           <div className="legal-hero-meta">Last updated: July 2026 · Effective immediately</div>
         </div>
@@ -114,14 +110,13 @@ export default function PrivacyPolicy() {
         {/* Contact */}
         <div className="legal-highlight">
           <p>
-            <strong>Questions about your data?</strong> Contact our privacy team at{" "}
-            <a href="mailto:support@knarrow.in" style={{ color: "#2563eb" }}>
+            <strong>Privacy Questions?</strong> Contact our data privacy support team at{" "}
+            <a href="mailto:support@knarrow.in" style={{ color: "#2563eb", fontWeight: 700 }}>
               support@knarrow.in
             </a>
-            . We aim to respond to all privacy-related requests within 5 business days.
+            . We address all privacy inquiries within 48 business hours.
           </p>
         </div>
-
       </div>
     </div>
   );
